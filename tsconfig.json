@@ -1,0 +1,23 @@
+{
+  "include": ["src", "scripts", "packages/**/*", "./*.mjs"],
+  "exclude": ["packages/**/test/*"],
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "outDir": "dist",
+    "module": "commonjs",
+    "target": "ES2022",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "tsBuildInfoFile": null,
+    "baseUrl": ".",
+    "paths": {
+      "reactive-route": ["packages/core/index.ts"],
+      "reactive-route/react": ["packages/react/index.ts"],
+      "reactive-route/solid": ["packages/solid/index.ts"]
+    }
+  },
+  "types": ["vite/client", "@testing-library/jest-dom"]
+}

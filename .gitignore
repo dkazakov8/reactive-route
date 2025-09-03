@@ -1,0 +1,12 @@
+dist/
+.nyc_output
+dist
+*.log
+.idea/
+.DS_Store
+Thumbs.db
+*.DS_Store
+.idea
+.vscode
+node_modules
+npm-debug.*

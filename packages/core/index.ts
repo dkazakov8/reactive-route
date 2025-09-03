@@ -1,0 +1,11 @@
+export { createRouterConfig } from './createRouterConfig';
+export type { InterfaceRouterStore } from './types/InterfaceRouterStore';
+export type { TypeCurrentRoute } from './types/TypeCurrentRoute';
+export type { TypeRedirectToParams } from './types/TypeRedirectToParams';
+export type { TypeRoute } from './types/TypeRoute';
+export { isDynamicRoute } from './utils/dynamic';
+export { findRouteByPathname } from './utils/findRouteByPathname';
+export { getInitialRoute } from './utils/getInitialRoute';
+export { history } from './utils/history';
+export { loadComponentToConfig } from './utils/loadComponentToConfig';
+export { replaceDynamicValues } from './utils/replaceDynamicValues';
