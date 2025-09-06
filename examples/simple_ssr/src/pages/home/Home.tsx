@@ -4,5 +4,4 @@ const Home = observer(() => {
   return 'Home';
 });
 
-
 export default Home;

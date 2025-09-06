@@ -31,5 +31,4 @@ const Query = observer(() => {
   );
 });
 
-
 export default Query;

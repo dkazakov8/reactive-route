@@ -1,2 +1,3 @@
 pnpm run check-types
+pnpm run check-types-example
 npx lint-staged

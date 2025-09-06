@@ -1,5 +1,7 @@
 import { createContext } from 'react';
 
-import { RouterStore } from '../routerStore';
+import { getRouterStore } from '../routerStore';
 
-export const StoreContext = createContext(undefined as unknown as { routerStore: RouterStore });
+export const StoreContext = createContext(
+  undefined as unknown as { routerStore: ReturnType<typeof getRouterStore> }
+);

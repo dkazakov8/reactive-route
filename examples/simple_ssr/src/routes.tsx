@@ -1,4 +1,4 @@
-import { createRouterConfig } from 'dk-react-mobx-router';
+import { createRouterConfig } from 'reactive-route';
 
 export const routes = createRouterConfig({
   home: {

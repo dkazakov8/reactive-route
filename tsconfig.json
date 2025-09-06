@@ -11,7 +11,6 @@
     "noEmit": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "tsBuildInfoFile": null,
     "baseUrl": ".",
     "paths": {
       "reactive-route": ["packages/core/index.ts"],

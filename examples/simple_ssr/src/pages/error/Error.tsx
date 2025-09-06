@@ -4,5 +4,4 @@ const Error = observer((props: { errorCode: number }) => {
   return `Error ${props.errorCode}`;
 });
 
-
 export default Error;

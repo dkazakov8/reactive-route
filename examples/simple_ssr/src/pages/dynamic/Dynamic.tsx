@@ -31,5 +31,4 @@ const Dynamic = observer(() => {
   );
 });
 
-
 export default Dynamic;

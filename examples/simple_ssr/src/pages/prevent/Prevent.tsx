@@ -11,5 +11,4 @@ const Prevent = observer(() => {
   );
 });
 
-
 export default Prevent;

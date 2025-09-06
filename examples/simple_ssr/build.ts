@@ -1,40 +1,14 @@
-/* eslint-disable no-restricted-syntax, no-console */
-
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { htmlPlugin } from '@craftamap/esbuild-plugin-html';
+import { pluginInjectPreload } from '@espcom/esbuild-plugin-inject-preload';
+import { modifierDirname, modifierFilename, pluginReplace } from '@espcom/esbuild-plugin-replace';
 // @ts-ignore
 import betterSpawn from 'better-spawn';
 import { runManual } from 'dk-reload-server';
-import { BuildOptions, context, Loader, Plugin } from 'esbuild';
+import { BuildOptions, context, Plugin } from 'esbuild';
 
-export const pluginReplaceDirname = ({
-  filter = /.*/,
-  loader = 'tsx',
-  rootDir = process.cwd(),
-}: {
-  filter?: RegExp;
-  loader?: Loader;
-  rootDir?: string;
-}): Plugin => ({
-  name: 'dk-esbuild-plugin-replace',
-  setup(build) {
-    const rootDirDefined = rootDir || process.cwd();
-    const isWindows = process.platform.startsWith('win');
-    const esc = (p: string) => (isWindows ? p.replace(/\\/g, '/') : p);
-
-    build.onLoad({ filter }, (args) => {
-      return fs.promises.readFile(args.path, 'utf-8').then((content) => {
-        const contents = content
-          .replace(/__dirname/g, `"${esc(path.relative(rootDirDefined, path.dirname(args.path)))}"`)
-          .replace(/__filename/g, `"${esc(path.relative(rootDirDefined, args.path))}"`);
-
-        return { loader, contents };
-      });
-    });
-  },
-});
+const __dirname = import.meta.dirname;
 
 export const createPluginParallel = (callback: () => void) => {
   const activeProcesses = new Set<string>();
@@ -65,7 +39,7 @@ export const createPluginParallel = (callback: () => void) => {
 async function watch() {
   const { sendReloadSignal } = runManual({
     port: 8001,
-    watchPaths: [path.resolve(__dirname, './build')],
+    watchPaths: [path.resolve(__dirname, './dist')],
   });
   const pluginParallel = createPluginParallel(sendReloadSignal);
 
@@ -76,22 +50,29 @@ async function watch() {
     metafile: true,
     treeShaking: true,
     sourcemap: false,
-    outdir: path.resolve(__dirname, 'build'),
+    outdir: path.resolve(__dirname, 'dist'),
     platform: 'node',
     packages: 'external',
+    format: 'esm',
     target: 'node18',
     define: {
       'process.env.NODE_ENV': JSON.stringify('development'),
       PATH_SEP: JSON.stringify(path.sep),
     },
     resolveExtensions: ['.js', '.ts', '.tsx'],
-    plugins: [pluginReplaceDirname({ filter: /\.(tsx?)$/ }), pluginParallel({ name: 'server' })],
+    plugins: [
+      pluginReplace([
+        modifierDirname({ filter: /\.(tsx?)$/ }),
+        modifierFilename({ filter: /\.(tsx?)$/ }),
+      ]),
+      pluginParallel({ name: 'server' }),
+    ],
   };
 
   const configClient: BuildOptions = {
     ...configServer,
     entryPoints: ['src/client.tsx'],
-    outdir: path.resolve(__dirname, 'build/public'),
+    outdir: path.resolve(__dirname, 'dist/public'),
     format: 'esm',
     publicPath: '/',
     splitting: true,
@@ -99,34 +80,68 @@ async function watch() {
     target: 'es2020',
     packages: undefined,
     plugins: [
-      pluginReplaceDirname({ filter: /\.(tsx?)$/ }),
+      pluginReplace([
+        modifierDirname({ filter: /\.(tsx?)$/ }),
+        modifierFilename({ filter: /\.(tsx?)$/ }),
+      ]),
       pluginParallel({ name: 'client' }),
-      // https://github.com/craftamap/esbuild-plugin-html
-      // @ts-ignore
-      htmlPlugin({
-        files: [
-          {
-            entryPoints: ['src/client.tsx'],
-            filename: 'template.html',
-            scriptLoading: 'module',
-            htmlTemplate: fs.readFileSync(path.resolve('./template.html'), 'utf-8'),
+      pluginInjectPreload([
+        {
+          templatePath: path.resolve(__dirname, 'dist/public', 'template.html'),
+          replace: '<!-- ENTRY_CSS --><!-- /ENTRY_CSS -->',
+          as(filePath) {
+            if (/client([^.]+)?\.css$/.test(filePath)) {
+              return `<link rel="stylesheet" type="text/css" href="${filePath}" />`;
+            }
+
+            return undefined;
           },
-        ],
-      }),
+        },
+        {
+          templatePath: path.resolve(__dirname, 'dist/public', 'template.html'),
+          replace: '<!-- ENTRY_JS --><!-- /ENTRY_JS -->',
+          as(filePath) {
+            if (/client([^.]+)?\.js$/.test(filePath)) {
+              return `<script src="${filePath}" type="module"></script>`;
+            }
+          },
+        },
+        {
+          templatePath: path.resolve(__dirname, 'dist/public', 'template.html'),
+          replace: '<!-- HOT_RELOAD --><!-- /HOT_RELOAD -->',
+          as(filePath) {
+            if (/client([^.]+)?\.js$/.test(filePath)) {
+              const hotReloadUrl = `http://localhost:8001`;
+
+              return `<script src="${hotReloadUrl}"></script>`;
+            }
+
+            return undefined;
+          },
+        },
+      ]),
     ],
   };
+
+  fs.rmSync(path.resolve(__dirname, 'dist'), { recursive: true, force: true });
+  fs.mkdirSync(path.resolve(__dirname, 'dist'));
+  fs.mkdirSync(path.resolve(__dirname, 'dist/public'));
+  fs.cpSync(
+    path.resolve(__dirname, 'template.html'),
+    path.resolve(path.resolve(__dirname, 'dist/public'), 'template.html'),
+    { force: true }
+  );
 
   const ctxClient = await context(configClient);
   const ctxServer = await context(configServer);
 
   await Promise.all([ctxClient.watch(), ctxServer.watch()]);
 
-  const serverProcess = betterSpawn('node-dev --no-warnings --notify=false ./build/server.js', {
+  const serverProcess = betterSpawn('node-dev --no-warnings --notify=false ./dist/server.js', {
     stdio: ['pipe', 'pipe', 'pipe'],
   });
 
   serverProcess.stdout?.on('data', (msg: Buffer) => {
-    
     console.log(msg.toString().trim());
   });
   serverProcess.stderr?.on('data', (msg: Buffer) => console.error(msg.toString().trim()));
