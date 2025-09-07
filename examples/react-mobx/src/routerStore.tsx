@@ -1,12 +1,13 @@
-import { observable, runInAction } from 'mobx';
+import { autorun, observable, runInAction } from 'mobx';
 import { createRouterStore } from 'reactive-route';
 
 import { routes } from './routes';
 
-export const getRouterStore = () =>
-  createRouterStore({
+export function getRouterStore() {
+  return createRouterStore({
     routes,
     batch: runInAction,
+    autorun,
     routeError500: routes.error500,
     makeObservable: observable,
     replaceObject: (obj, newObj) => {
@@ -22,3 +23,4 @@ export const getRouterStore = () =>
       return obj;
     },
   });
+}

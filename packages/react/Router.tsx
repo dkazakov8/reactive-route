@@ -1,19 +1,11 @@
-import { autorun, makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { getInitialRoute, history, InterfaceRouterStore, TypeRoute } from 'reactive-route';
+import { getInitialRoute, history, TypePropsRouter, TypeRoute } from 'reactive-route';
 
 import { useStore, ViewModelConstructor } from './useStore';
 
-type TypeProps<TRoutes extends Record<string, TypeRoute>> = {
-  routes: TRoutes;
-  routerStore: InterfaceRouterStore<TRoutes>;
-  beforeMount?: () => void;
-  beforeSetPageComponent?: (componentConfig: TRoutes[keyof TRoutes]) => void;
-  beforeUpdatePageComponent?: () => void;
-};
-
 class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstructor {
-  constructor(public props: TypeProps<TRoutes>) {
+  constructor(public props: TypePropsRouter<TRoutes>) {
     makeAutoObservable(
       this,
       { loadedComponent: false, setLoadedComponent: false, props: false },
@@ -26,6 +18,10 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
   loadedComponent?: any;
   currentProps: Record<string, any> = {};
 
+  get utils() {
+    return this.props.routerStore.utils;
+  }
+
   beforeMount() {
     this.props.beforeMount?.();
 
@@ -33,7 +29,7 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
 
     this.setLoadedComponent();
 
-    this.autorunDisposers.push(autorun(this.setLoadedComponent));
+    this.autorunDisposers.push(this.utils.autorun(this.setLoadedComponent));
   }
 
   redirectOnHistoryPop() {
@@ -46,7 +42,7 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
         this.props.routerStore.routesHistory[this.props.routerStore.routesHistory.length - 2];
 
       if (previousRoutePathname === params.location.pathname) {
-        runInAction(() => this.props.routerStore.routesHistory.pop());
+        this.utils.batch(() => this.props.routerStore.routesHistory.pop());
       }
 
       void this.props.routerStore.redirectTo({
@@ -73,7 +69,7 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
     else if (loadedComponentPage != null && currentRouteName != null) {
       if (loadedComponentPage === currentRoutePage) {
         const componentConfig = this.props.routes[currentRouteName];
-        runInAction(() => {
+        this.utils.batch(() => {
           this.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
         });
         preventRedirect = true;
@@ -82,7 +78,7 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
 
     if (preventRedirect) return;
 
-    runInAction(() => {
+    this.utils.batch(() => {
       if (!loadedComponentName) {
         this.setComponent(currentRouteName);
       } else {
@@ -94,22 +90,20 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
   };
 
   setComponent(currentRouteName: keyof TRoutes) {
-    runInAction(() => {
-      const componentConfig = this.props.routes[currentRouteName];
-      const RouteComponent: any = componentConfig.component;
+    const componentConfig = this.props.routes[currentRouteName];
+    const RouteComponent: any = componentConfig.component;
 
-      this.props.beforeSetPageComponent?.(componentConfig);
+    this.props.beforeSetPageComponent?.(componentConfig);
 
-      this.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
-      this.loadedComponentName = currentRouteName;
-      this.loadedComponentPage = componentConfig.pageName;
-      this.loadedComponent = RouteComponent;
-    });
+    this.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
+    this.loadedComponentName = currentRouteName;
+    this.loadedComponentPage = componentConfig.pageName;
+    this.loadedComponent = RouteComponent;
   }
 }
 
 export const Router = observer(
-  <TRoutes extends Record<string, TypeRoute>>(props: TypeProps<TRoutes>) => {
+  <TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) => {
     const vm: VM<TRoutes> = useStore(VM<TRoutes>, props);
 
     const LoadedComponent = vm.loadedComponentName ? vm.loadedComponent : null;

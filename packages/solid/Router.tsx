@@ -1,33 +1,28 @@
-import { getInitialRoute, history, InterfaceRouterStore, TypeRoute } from 'reactive-route';
-import { batch, createRenderEffect, Show } from 'solid-js';
+import { getInitialRoute, history, TypePropsRouter, TypeRoute } from 'reactive-route';
+import { Show } from 'solid-js';
 import { createMutable } from 'solid-js/store';
 import { Dynamic } from 'solid-js/web';
 
-import { replaceObject } from './replaceObject';
 import { useStore, ViewModelConstructor } from './useStore';
 
-type TypeProps<TRoutes extends Record<string, TypeRoute>> = {
-  routes: TRoutes;
-  routerStore: InterfaceRouterStore<TRoutes>;
-  beforeMount?: () => void;
-  beforeSetPageComponent?: (componentConfig: TRoutes[keyof TRoutes]) => void;
-  beforeUpdatePageComponent?: () => void;
-};
-
 class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstructor {
-  constructor(public props: TypeProps<TRoutes>) {
+  constructor(public props: TypePropsRouter<TRoutes>) {
     return createMutable(this);
   }
   loadedComponentName?: keyof TRoutes = undefined;
   loadedComponentPage?: string = undefined;
   currentProps: Record<string, any> = {};
 
+  get utils() {
+    return this.props.routerStore.utils;
+  }
+
   beforeMount() {
     this.props.beforeMount?.();
 
     this.redirectOnHistoryPop();
 
-    createRenderEffect(() => this.setLoadedComponent());
+    this.utils.autorun(() => this.setLoadedComponent());
   }
 
   redirectOnHistoryPop() {
@@ -65,14 +60,17 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
     } else if (this.loadedComponentPage != null && currentRouteName != null) {
       if (this.loadedComponentPage === currentRoutePage) {
         const componentConfig = this.props.routes[currentRouteName];
-        replaceObject(this.currentProps, 'props' in componentConfig ? componentConfig.props! : {});
+        this.utils.replaceObject(
+          this.currentProps,
+          'props' in componentConfig ? componentConfig.props! : {}
+        );
         preventRedirect = true;
       }
     }
 
     if (preventRedirect) return;
 
-    batch(() => {
+    this.utils.batch(() => {
       if (!this.loadedComponentName) {
         this.setComponent();
       } else {
@@ -89,15 +87,18 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
 
     this.props.beforeSetPageComponent?.(componentConfig);
 
-    batch(() => {
-      replaceObject(this.currentProps, 'props' in componentConfig ? componentConfig.props! : {});
+    this.utils.batch(() => {
+      this.utils.replaceObject(
+        this.currentProps,
+        'props' in componentConfig ? componentConfig.props! : {}
+      );
       this.loadedComponentName = currentRouteName;
       this.loadedComponentPage = componentConfig.pageName;
     });
   }
 }
 
-export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypeProps<TRoutes>) {
+export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
   const vm: VM<TRoutes> = useStore(VM<TRoutes>, props);
 
   return (

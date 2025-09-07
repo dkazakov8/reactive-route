@@ -1,9 +1,9 @@
 import { render as renderSolid } from '@solidjs/testing-library';
 import { render as renderReact } from '@testing-library/react/pure';
-import { observable, runInAction } from 'mobx';
+import { autorun as autorunMobx, observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { batch } from 'solid-js';
+import { batch, createRenderEffect } from 'solid-js';
 import { createMutable, modifyMutable, produce } from 'solid-js/store';
 import { expect, vi } from 'vitest';
 
@@ -26,6 +26,10 @@ export function getData<TRoutes extends Record<string, TypeRoute>>(
   let batchFn = (cb: () => void) => cb();
   if (options.reactivity === 'mobx') batchFn = runInAction;
   if (options.reactivity === 'solid') batchFn = batch;
+
+  let autorunFn = (cb: () => void) => cb();
+  if (options.reactivity === 'mobx') autorunFn = autorunMobx;
+  if (options.reactivity === 'solid') autorunFn = createRenderEffect;
 
   let replaceObject = (obj: any, newObj: any) => {
     Object.assign(obj, newObj);
@@ -69,6 +73,7 @@ export function getData<TRoutes extends Record<string, TypeRoute>>(
     lifecycleParams,
     routeError500: customRoutes.error500 as any,
     batch: batchFn,
+    autorun: autorunFn,
     replaceObject,
     makeObservable: makeObservableFn,
   });

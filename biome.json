@@ -31,7 +31,7 @@
       "quoteStyle": "single",
       "attributePosition": "auto"
     },
-    "globals": ["describe", "it", "beforeEach", "afterEach"]
+    "globals": ["describe", "it", "beforeEach", "afterEach", "SSR_ENABLED"]
   },
   "linter": {
     "enabled": true,

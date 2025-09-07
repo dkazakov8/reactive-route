@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import { escapeHelper } from './escapeHelper';
 
 const htmlUnescapes: Record<string, string> = {

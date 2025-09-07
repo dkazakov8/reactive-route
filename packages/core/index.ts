@@ -2,6 +2,7 @@ export { createRouterConfig } from './createRouterConfig';
 export { createRouterStore } from './createRouterStore';
 export type { InterfaceRouterStore } from './types/InterfaceRouterStore';
 export type { TypeCurrentRoute } from './types/TypeCurrentRoute';
+export type { TypePropsRouter } from './types/TypePropsRouter';
 export type { TypeRedirectToParams } from './types/TypeRedirectToParams';
 export type { TypeRoute } from './types/TypeRoute';
 export { isDynamicRoute } from './utils/dynamic';

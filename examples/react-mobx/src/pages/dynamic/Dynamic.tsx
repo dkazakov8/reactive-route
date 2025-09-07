@@ -9,7 +9,6 @@ const Dynamic = observer(() => {
   return (
     <>
       <div>Dynamic {JSON.stringify(routerStore.currentRoute.params)}</div>
-      {/* eslint-disable-next-line react/forbid-elements */}
       <button
         type={'button'}
         style={{ marginTop: 20 }}
@@ -23,7 +22,6 @@ const Dynamic = observer(() => {
         Go to random dynamic value
       </button>
       <div style={{ marginTop: 20 }}>
-        {/* eslint-disable-next-line react/no-unescaped-entities */}
         Click button and see raw page markup. With SSR we don't even look at URL on frontend during
         hydration, just restore from the server
       </div>

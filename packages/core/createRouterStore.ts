@@ -1,38 +1,56 @@
 import queryString from 'query-string';
 
-import { InterfaceRouterStore } from './types/InterfaceRouterStore';
+import { InterfaceRouterStore, TypeCreateRouterStore } from './types/InterfaceRouterStore';
 import { TypeRedirectToParams } from './types/TypeRedirectToParams';
 import { TypeRoute } from './types/TypeRoute';
 import { constants } from './utils/constants';
 import { getDynamicValues } from './utils/getDynamicValues';
+import { getInitialRoute } from './utils/getInitialRoute';
 import { getQueryValues } from './utils/getQueryValues';
 import { history } from './utils/history';
 import { loadComponentToConfig } from './utils/loadComponentToConfig';
 import { replaceDynamicValues } from './utils/replaceDynamicValues';
 
-type TypeCreateRouterStore<TRoutes extends Record<string, TypeRoute>> = {
-  routes: TRoutes;
-  routeError500: TRoutes[keyof TRoutes];
-  lifecycleParams?: Array<any>;
-  batch: (cb: () => void) => void;
-  makeObservable: <TObj extends Record<string, any>>(obj: TObj) => TObj;
-  replaceObject: <TObj extends Record<string, any>>(obj: TObj, newObj: TObj) => void;
-};
-
 export function createRouterStore<TRoutes extends Record<string, TypeRoute>>({
   batch,
   routes,
+  autorun,
+  replaceObject,
   routeError500,
   makeObservable,
   lifecycleParams,
-  replaceObject,
 }: TypeCreateRouterStore<TRoutes>): InterfaceRouterStore<TRoutes> {
   const routerStore: InterfaceRouterStore<TRoutes> = makeObservable({
     routesHistory: [],
     currentRoute: {} as any,
     isRedirecting: false,
     redirectTo: undefined as any,
+    restoreFromURL: undefined as any,
+    restoreFromServer: undefined as any,
+    utils: {
+      batch,
+      autorun,
+      replaceObject,
+      makeObservable,
+    },
   });
+
+  routerStore.restoreFromServer = function restoreFromServer(obj) {
+    batch(() => {
+      routerStore.routesHistory.push(...(obj.routesHistory || []));
+      Object.assign(routerStore.currentRoute, obj.currentRoute);
+    });
+
+    const preloadedRouteName = Object.keys(routes).find(
+      (routeName) => routerStore.currentRoute.name === routeName
+    ) as keyof typeof routes;
+
+    return loadComponentToConfig({ route: routes[preloadedRouteName] });
+  };
+
+  routerStore.restoreFromURL = function restoreFromURL(params) {
+    return routerStore.redirectTo(getInitialRoute({ routes, ...params }));
+  };
 
   routerStore.redirectTo = async function redirectTo<TRouteName extends keyof TRoutes>(
     config: TypeRedirectToParams<TRoutes, TRouteName>

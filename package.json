@@ -2,7 +2,7 @@
   "name": "reactive-route",
   "author": "Dmitry Kazakov",
   "license": "MIT",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.4",
   "description": "Reactive Router for different frameworks",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
     "analyze:js": "biome check --no-errors-on-unmatched .",
     "format:js": "biome check --no-errors-on-unmatched --write",
     "check-types": "tsc --project tsconfig.json",
-    "check-types-example": "tsc --project ./examples/simple_ssr/tsconfig.json",
+    "check-types-example": "tsc --project examples/react-mobx/tsconfig.json",
     "prepare": "husky"
   },
   "dependencies": {
