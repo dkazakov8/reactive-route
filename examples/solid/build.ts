@@ -1,11 +1,14 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
-import path from 'node:path';
+import path, { parse } from 'node:path';
 
+import { transformAsync } from '@babel/core';
+import ts from '@babel/preset-typescript';
 import { pluginInjectPreload } from '@espcom/esbuild-plugin-inject-preload';
 import { modifierDirname, modifierFilename, pluginReplace } from '@espcom/esbuild-plugin-replace';
+import solid from 'babel-preset-solid';
 import { runManual } from 'dk-reload-server';
-import { BuildOptions, context } from 'esbuild';
+import { BuildOptions, context, Plugin } from 'esbuild';
 
 const __dirname = import.meta.dirname;
 const outdirPath = path.resolve(__dirname, 'dist');
@@ -13,6 +16,28 @@ const publicPath = path.resolve(outdirPath, 'public');
 const templatePath = path.resolve(outdirPath, 'template.html');
 
 const SSR_ENABLED = process.argv[2] === 'ssr';
+
+function generateSolidModifier(ssr: boolean) {
+  return {
+    filter: /\.tsx?$/,
+    replace: /.*/gs,
+    replacer(onLoadArgs) {
+      return async (source) => {
+        const result = await transformAsync(source, {
+          presets: [[solid, { generate: ssr ? 'ssr' : 'dom', hydratable: true }], [ts]],
+          filename: parse(onLoadArgs.path).base,
+          sourceMaps: 'inline',
+        });
+
+        if (result?.code == null) {
+          throw new Error('No result was provided from Babel');
+        }
+
+        return result.code;
+      };
+    },
+  };
+}
 
 async function watch() {
   const { sendReloadSignal } = runManual({ port: 8001 });
@@ -41,6 +66,7 @@ async function watch() {
       pluginReplace([
         modifierDirname({ filter: /\.(tsx?)$/ }),
         modifierFilename({ filter: /\.(tsx?)$/ }),
+        generateSolidModifier(true),
       ]),
       {
         name: 'plugin-parallel',
@@ -66,6 +92,7 @@ async function watch() {
       pluginReplace([
         modifierDirname({ filter: /\.(tsx?)$/ }),
         modifierFilename({ filter: /\.(tsx?)$/ }),
+        generateSolidModifier(false),
       ]),
       {
         name: 'plugin-parallel',

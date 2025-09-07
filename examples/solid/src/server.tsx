@@ -1,0 +1,65 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { generateHydrationScript, renderToString } from 'solid-js/web';
+import express from 'ultimate-express';
+
+import { App } from './components/App';
+import { StoreContext } from './components/StoreContext';
+import { getRouterStore } from './routerStore';
+import { escapeAllStrings } from './utils/escapeAllStrings';
+
+const outdirPath = path.resolve(__dirname, '../dist');
+const publicPath = path.resolve(outdirPath, 'public');
+const templatePath = path.resolve(outdirPath, 'template.html');
+
+const app = express();
+
+app.use(express.static(publicPath, { index: false, etag: true }));
+
+app.get('*', async (req, res) => {
+  if (req.originalUrl.includes('.')) return res.sendStatus(404);
+
+  const template = fs.readFileSync(templatePath, 'utf-8');
+
+  if (!SSR_ENABLED) {
+    return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- INITIAL_DATA -->', '{}'));
+  }
+
+  const contextValue = { routerStore: getRouterStore() };
+
+  try {
+    await contextValue.routerStore.restoreFromURL({
+      pathname: req.originalUrl,
+      fallback: 'error404',
+    });
+  } catch (error: any) {
+    if (error.name === 'REDIRECT') {
+      console.log('redirect', error.message);
+
+      return res.redirect(error.message);
+    }
+
+    console.error(error);
+
+    return res.status(500).send('Unexpected error');
+  }
+
+  const htmlMarkup = renderToString(() => (
+    <StoreContext.Provider value={contextValue}>
+      <App />
+    </StoreContext.Provider>
+  ));
+  const storeJS = JSON.parse(JSON.stringify(contextValue));
+
+  res.send(
+    template
+      .replace(`<!-- HTML -->`, htmlMarkup)
+      .replace(`<!-- HYDRATION -->`, generateHydrationScript())
+      .replace('<!-- INITIAL_DATA -->', JSON.stringify(escapeAllStrings(storeJS)))
+  );
+});
+
+app.listen(8000, () => {
+  console.log(`started on`, `http://localhost:8000`);
+});

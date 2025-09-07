@@ -1,0 +1,16 @@
+{
+  "include": [
+    "src",
+    "build.ts"
+  ],
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "target": "es2022",
+    "module": "es2022",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "moduleResolution": "bundler"
+  }
+}
