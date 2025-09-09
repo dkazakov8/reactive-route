@@ -3,7 +3,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { pluginInjectPreload } from '@espcom/esbuild-plugin-inject-preload';
-import { modifierDirname, modifierFilename, pluginReplace } from '@espcom/esbuild-plugin-replace';
+import {
+  modifierDirname,
+  modifierFilename,
+  modifierMobxObserverFC,
+  pluginReplace,
+} from '@espcom/esbuild-plugin-replace';
 import { runManual } from 'dk-reload-server';
 import { BuildOptions, context } from 'esbuild';
 
@@ -66,6 +71,7 @@ async function watch() {
       pluginReplace([
         modifierDirname({ filter: /\.(tsx?)$/ }),
         modifierFilename({ filter: /\.(tsx?)$/ }),
+        modifierMobxObserverFC({ filter: /\.tsx?$/ }),
       ]),
       {
         name: 'plugin-parallel',

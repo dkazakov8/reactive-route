@@ -1,9 +1,8 @@
-import { observer } from 'mobx-react-lite';
 import { useContext } from 'react';
 
 import { StoreContext } from '../../components/StoreContext';
 
-const Query = observer(() => {
+export default function Query() {
   const { routerStore } = useContext(StoreContext);
 
   return (
@@ -27,6 +26,4 @@ const Query = observer(() => {
       </div>
     </>
   );
-});
-
-export default Query;
+}

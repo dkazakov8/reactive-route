@@ -1,7 +1,3 @@
-import { observer } from 'mobx-react-lite';
-
-const Static = observer(() => {
+export default function Static() {
   return <>Static</>;
-});
-
-export default Static;
+}

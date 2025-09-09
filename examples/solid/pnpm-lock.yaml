@@ -8,9 +8,15 @@ importers:
 
   .:
     dependencies:
+      mobx:
+        specifier: 6.13.7
+        version: 6.13.7
+      mobx-react-lite:
+        specifier: 4.1.0
+        version: 4.1.0(mobx@6.13.7)(react@19.1.1)
       reactive-route:
-        specifier: 0.0.1-alpha.4
-        version: 0.0.1-alpha.4
+        specifier: 0.0.1-alpha.5
+        version: 0.0.1-alpha.5
       solid-js:
         specifier: 1.9.6
         version: 1.9.6
@@ -682,6 +688,22 @@ packages:
     resolution: {integrity: sha512-xRc4oEhT6eaBpU1XF7AjpOFD+xQmXNB5OVKwp4tqCuBpHLS/ZbBDrc07mYTDqVMg6PfxUjjNp85O6Cd2Z/5HWA==}
     engines: {node: '>= 0.6'}
 
+  mobx-react-lite@4.1.0:
+    resolution: {integrity: sha512-QEP10dpHHBeQNv1pks3WnHRCem2Zp636lq54M2nKO2Sarr13pL4u6diQXf65yzXUn0mkk18SyIDCm9UOJYTi1w==}
+    peerDependencies:
+      mobx: ^6.9.0
+      react: ^16.8.0 || ^17 || ^18 || ^19
+      react-dom: '*'
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+
+  mobx@6.13.7:
+    resolution: {integrity: sha512-aChaVU/DO5aRPmk1GX8L+whocagUUpBQqoPtJk+cm7UOXUk87J4PeWCh6nNmTTIfEhiR9DI/+FnA8dln/hTK7g==}
+
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
@@ -726,8 +748,12 @@ packages:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==}
     engines: {node: '>= 0.6'}
 
-  reactive-route@0.0.1-alpha.4:
-    resolution: {integrity: sha512-7e+gPH/QmMdj+w+BDUz5jBhJCKC6dtMDYpeSXE/wLZhJc68xhTrnxVgLEIXtRGInS/zMhdyUxrR4huckjbJdjA==}
+  react@19.1.1:
+    resolution: {integrity: sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ==}
+    engines: {node: '>=0.10.0'}
+
+  reactive-route@0.0.1-alpha.5:
+    resolution: {integrity: sha512-PQqwgwptkGZWP+Gt1AHyBoQF0AeN3me+sF1OY1YklunpAXHgeAZGag3wIxlryDwwXR22fANt6xzrKvLxGvsIJQ==}
 
   readdirp@3.6.0:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
@@ -822,6 +848,11 @@ packages:
     hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
+
+  use-sync-external-store@1.5.0:
+    resolution: {integrity: sha512-Rb46I4cGGVBmjamjphe8L/UnvJD+uPPtTkNvX5mZgqdbavhI4EbgIWJiIHXJ8bc/i9EQGPRh4DwEURJ552Do0A==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   validate-html-nesting@1.2.3:
     resolution: {integrity: sha512-kdkWdCl6eCeLlRShJKbjVOU2kFKxMF8Ghu50n+crEoyx+VKm3FxAxF9z4DCy6+bbTOqNW0+jcIYRnjoIRzigRw==}
@@ -1456,6 +1487,14 @@ snapshots:
     dependencies:
       mime-db: 1.54.0
 
+  mobx-react-lite@4.1.0(mobx@6.13.7)(react@19.1.1):
+    dependencies:
+      mobx: 6.13.7
+      react: 19.1.1
+      use-sync-external-store: 1.5.0(react@19.1.1)
+
+  mobx@6.13.7: {}
+
   ms@2.1.3: {}
 
   negotiator@0.6.3: {}
@@ -1492,7 +1531,9 @@ snapshots:
 
   range-parser@1.2.1: {}
 
-  reactive-route@0.0.1-alpha.4:
+  react@19.1.1: {}
+
+  reactive-route@0.0.1-alpha.5:
     dependencies:
       history: 5.3.0
       query-string: 7.1.3
@@ -1609,6 +1650,10 @@ snapshots:
       browserslist: 4.25.4
       escalade: 3.2.0
       picocolors: 1.1.1
+
+  use-sync-external-store@1.5.0(react@19.1.1):
+    dependencies:
+      react: 19.1.1
 
   validate-html-nesting@1.2.3: {}
 

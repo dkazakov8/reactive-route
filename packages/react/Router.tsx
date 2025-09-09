@@ -1,64 +1,81 @@
-import { makeAutoObservable } from 'mobx';
-import { observer } from 'mobx-react-lite';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { getInitialRoute, history, TypePropsRouter, TypeRoute } from 'reactive-route';
 
-import { useStore, ViewModelConstructor } from './useStore';
+function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
+  // const [c] = useState(() =>
+  //   props.routerStore.adapters.makeObservable({
+  //     secondsPassed: 0,
+  //   })
+  // );
+  //
+  // useEffect(() => {
+  //   props.routerStore.adapters.autorun(() => {
+  //     c.secondsPassed += 1;
+  //     console.log('autorun set', c.secondsPassed, Date.now());
+  //   });
+  // }, []);
+  //
+  // console.log('render', c.secondsPassed, Date.now());
+  //
+  // return null;
 
-class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstructor {
-  constructor(public props: TypePropsRouter<TRoutes>) {
-    makeAutoObservable(
-      this,
-      { loadedComponent: false, setLoadedComponent: false, props: false },
-      { autoBind: true }
-    );
-  }
-  autorunDisposers: Array<() => void> = [];
-  loadedComponentName?: keyof TRoutes = undefined;
-  loadedComponentPage?: string = undefined;
-  loadedComponent?: any;
-  currentProps: Record<string, any> = {};
+  const disposerRef = useRef<() => void>(null);
 
-  get utils() {
-    return this.props.routerStore.utils;
-  }
+  const [config] = useState<{
+    loadedComponentName?: keyof TRoutes;
+    loadedComponentPage?: string;
+    currentProps: Record<string, any>;
+  }>(() =>
+    props.routerStore.adapters.makeObservable({
+      loadedComponentName: undefined,
+      loadedComponentPage: undefined,
+      currentProps: {},
+    })
+  );
 
-  beforeMount() {
-    this.props.beforeMount?.();
-
-    this.redirectOnHistoryPop();
-
-    this.setLoadedComponent();
-
-    this.autorunDisposers.push(this.utils.autorun(this.setLoadedComponent));
-  }
-
-  redirectOnHistoryPop() {
+  const redirectOnHistoryPop = useCallback(() => {
     if (!history) return;
 
     history.listen((params) => {
       if (params.action !== 'POP') return;
 
       const previousRoutePathname =
-        this.props.routerStore.routesHistory[this.props.routerStore.routesHistory.length - 2];
+        props.routerStore.routesHistory[props.routerStore.routesHistory.length - 2];
 
       if (previousRoutePathname === params.location.pathname) {
-        this.utils.batch(() => this.props.routerStore.routesHistory.pop());
+        props.routerStore.adapters.batch(() => props.routerStore.routesHistory.pop());
       }
 
-      void this.props.routerStore.redirectTo({
+      void props.routerStore.redirectTo({
         noHistoryPush: true,
         ...getInitialRoute({
-          routes: this.props.routes,
+          routes: props.routes,
           pathname: history.location.pathname,
           fallback: 'error404',
         }),
       });
     });
-  }
+  }, []);
 
-  setLoadedComponent = () => {
-    const { loadedComponentName, loadedComponentPage } = this;
-    const { currentRoute, isRedirecting } = this.props.routerStore;
+  const setComponent = useCallback((currentRouteName: keyof TRoutes) => {
+    const componentConfig = props.routes[currentRouteName];
+
+    props.beforeSetPageComponent?.(componentConfig);
+
+    // props.routerStore.adapters.replaceObject(config, {
+    //   currentProps: 'props' in componentConfig ? componentConfig.props || {} : {},
+    //   loadedComponentName: currentRouteName,
+    //   loadedComponentPage: componentConfig.pageName,
+    // });
+
+    config.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
+    config.loadedComponentName = currentRouteName;
+    config.loadedComponentPage = componentConfig.pageName;
+  }, []);
+
+  const setLoadedComponent = useCallback(() => {
+    const { loadedComponentName, loadedComponentPage } = config;
+    const { currentRoute, isRedirecting } = props.routerStore;
 
     const currentRouteName = currentRoute.name;
     const currentRoutePage = currentRoute.pageName;
@@ -68,9 +85,9 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
     else if (loadedComponentName === currentRouteName) preventRedirect = true;
     else if (loadedComponentPage != null && currentRouteName != null) {
       if (loadedComponentPage === currentRoutePage) {
-        const componentConfig = this.props.routes[currentRouteName];
-        this.utils.batch(() => {
-          this.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
+        const componentConfig = props.routes[currentRouteName];
+        props.routerStore.adapters.batch(() => {
+          config.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
         });
         preventRedirect = true;
       }
@@ -78,38 +95,50 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
 
     if (preventRedirect) return;
 
-    this.utils.batch(() => {
+    props.routerStore.adapters.batch(() => {
       if (!loadedComponentName) {
-        this.setComponent(currentRouteName);
+        setComponent(currentRouteName);
       } else {
-        this.props.beforeUpdatePageComponent?.();
+        props.beforeUpdatePageComponent?.();
 
-        this.setComponent(currentRouteName);
+        setComponent(currentRouteName);
       }
     });
-  };
+  }, []);
 
-  setComponent(currentRouteName: keyof TRoutes) {
-    const componentConfig = this.props.routes[currentRouteName];
-    const RouteComponent: any = componentConfig.component;
+  useState(() => {
+    props.routerStore.adapters.batch(() => {
+      props.beforeMount?.();
 
-    this.props.beforeSetPageComponent?.(componentConfig);
+      redirectOnHistoryPop();
 
-    this.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
-    this.loadedComponentName = currentRouteName;
-    this.loadedComponentPage = componentConfig.pageName;
-    this.loadedComponent = RouteComponent;
-  }
+      setLoadedComponent();
+
+      disposerRef.current = props.routerStore.adapters.autorun(setLoadedComponent);
+    });
+  });
+
+  useEffect(() => {
+    return () => {
+      disposerRef.current?.();
+    };
+  }, []);
+
+  if (!config.loadedComponentName) return null;
+
+  const LoadedComponent = props.routes[config.loadedComponentName]?.component || null;
+
+  if (LoadedComponent) return (<LoadedComponent {...config.currentProps} />) as any;
+
+  return null;
 }
 
-export const Router = observer(
+export const Router = memo(
   <TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) => {
-    const vm: VM<TRoutes> = useStore(VM<TRoutes>, props);
+    const Component = props.routerStore.adapters.observer
+      ? props.routerStore.adapters.observer(RouterInner)
+      : RouterInner;
 
-    const LoadedComponent = vm.loadedComponentName ? vm.loadedComponent : null;
-
-    if (LoadedComponent) return (<LoadedComponent {...vm.currentProps} />) as any;
-
-    return null;
+    return (<Component {...props} />) as any;
   }
 );

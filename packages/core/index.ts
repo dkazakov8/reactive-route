@@ -1,6 +1,6 @@
 export { createRouterConfig } from './createRouterConfig';
 export { createRouterStore } from './createRouterStore';
-export type { InterfaceRouterStore } from './types/InterfaceRouterStore';
+export type { InterfaceRouterStore, TypeAdapters } from './types/InterfaceRouterStore';
 export type { TypeCurrentRoute } from './types/TypeCurrentRoute';
 export type { TypePropsRouter } from './types/TypePropsRouter';
 export type { TypeRedirectToParams } from './types/TypeRedirectToParams';

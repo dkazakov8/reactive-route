@@ -10,7 +10,7 @@
   "dependencies": {
     "mobx": "6.13.7",
     "mobx-react-lite": "4.1.0",
-    "reactive-route": "0.0.1-alpha.4",
+    "reactive-route": "0.0.1-alpha.5",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "ultimate-express": "2.0.9"

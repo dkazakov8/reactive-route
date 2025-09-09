@@ -12,31 +12,23 @@ import { loadComponentToConfig } from './utils/loadComponentToConfig';
 import { replaceDynamicValues } from './utils/replaceDynamicValues';
 
 export function createRouterStore<TRoutes extends Record<string, TypeRoute>>({
-  batch,
+  adapters,
   routes,
-  autorun,
-  replaceObject,
   routeError500,
-  makeObservable,
   lifecycleParams,
 }: TypeCreateRouterStore<TRoutes>): InterfaceRouterStore<TRoutes> {
-  const routerStore: InterfaceRouterStore<TRoutes> = makeObservable({
+  const routerStore: InterfaceRouterStore<TRoutes> = adapters.makeObservable({
     routesHistory: [],
     currentRoute: {} as any,
     isRedirecting: false,
     redirectTo: undefined as any,
     restoreFromURL: undefined as any,
     restoreFromServer: undefined as any,
-    utils: {
-      batch,
-      autorun,
-      replaceObject,
-      makeObservable,
-    },
+    adapters,
   });
 
   routerStore.restoreFromServer = function restoreFromServer(obj) {
-    batch(() => {
+    adapters.batch(() => {
       routerStore.routesHistory.push(...(obj.routesHistory || []));
       Object.assign(routerStore.currentRoute, obj.currentRoute);
     });
@@ -125,8 +117,8 @@ export function createRouterStore<TRoutes extends Record<string, TypeRoute>>({
 
     if (currentPathname === nextPathname) {
       if (currentSearch !== nextSearch) {
-        batch(() => {
-          replaceObject(routerStore.currentRoute.query, nextQuery || {});
+        adapters.batch(() => {
+          adapters.replaceObject(routerStore.currentRoute.query, nextQuery || {});
           routerStore.routesHistory.push(nextUrl);
         });
 
@@ -142,7 +134,7 @@ export function createRouterStore<TRoutes extends Record<string, TypeRoute>>({
       return Promise.resolve();
     }
 
-    batch(() => {
+    adapters.batch(() => {
       routerStore.isRedirecting = true;
     });
 
@@ -227,8 +219,8 @@ export function createRouterStore<TRoutes extends Record<string, TypeRoute>>({
 
       await loadComponentToConfig({ route: routeError500 });
 
-      batch(() => {
-        replaceObject(routerStore.currentRoute, {
+      adapters.batch(() => {
+        adapters.replaceObject(routerStore.currentRoute, {
           name: routeError500.name,
           path: routeError500.path,
           props: routes[routeError500.name].props,
@@ -243,8 +235,8 @@ export function createRouterStore<TRoutes extends Record<string, TypeRoute>>({
       return Promise.resolve();
     }
 
-    batch(() => {
-      replaceObject(routerStore.currentRoute, {
+    adapters.batch(() => {
+      adapters.replaceObject(routerStore.currentRoute, {
         name: nextRoute.name,
         path: nextRoute.path,
         props: routes[nextRoute.name].props,

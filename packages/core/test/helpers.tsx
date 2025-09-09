@@ -1,93 +1,59 @@
 import { render as renderSolid } from '@solidjs/testing-library';
 import { render as renderReact } from '@testing-library/react/pure';
-import { autorun as autorunMobx, observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { batch, createRenderEffect } from 'solid-js';
-import { createMutable, modifyMutable, produce } from 'solid-js/store';
 import { expect, vi } from 'vitest';
 
+import { adapters as adaptersKrObservable } from '../../adapters/kr-observable';
+import { adapters as adaptersMobx } from '../../adapters/mobx';
+import { adapters as adaptersSolid } from '../../adapters/solid';
 import { Router as RouterReact } from '../../react';
 import { routes as routesReact } from '../../react/test/routes';
+import { routesKrObservable } from '../../react/test/routesKrObservable';
 import { Router as RouterSolid } from '../../solid';
 import { routes as routesSolid } from '../../solid/test/routes';
 import { createRouterStore } from '../createRouterStore';
 import { TypeRoute } from '../index';
 
+type TypeOptions = { renderer: 'react' | 'solid'; reactivity: 'mobx' | 'solid' | 'kr-observable' };
+
 export function getData<TRoutes extends Record<string, TypeRoute>>(
-  options: { renderer: 'react' | 'solid'; reactivity: 'mobx' | 'solid' },
+  options: TypeOptions,
   customRoutes: TRoutes,
   lifecycleParams?: any
 ) {
   let routes = customRoutes;
-  if (!routes && options.renderer === 'react') routes = routesReact as any;
+  if (!routes && options.renderer === 'react') {
+    if (options.reactivity === 'mobx') routes = routesReact as any;
+    if (options.reactivity === 'kr-observable') routes = routesKrObservable as any;
+  }
   if (!routes && options.renderer === 'solid') routes = routesSolid as any;
 
-  let batchFn = (cb: () => void) => cb();
-  if (options.reactivity === 'mobx') batchFn = runInAction;
-  if (options.reactivity === 'solid') batchFn = batch;
-
-  let autorunFn = (cb: () => void) => cb();
-  if (options.reactivity === 'mobx') autorunFn = autorunMobx;
-  if (options.reactivity === 'solid') autorunFn = createRenderEffect;
-
-  let replaceObject = (obj: any, newObj: any) => {
-    Object.assign(obj, newObj);
-  };
-  if (options.reactivity === 'mobx')
-    replaceObject = (obj, newObj) => {
-      runInAction(() => {
-        for (const variableKey in obj) {
-          if ((obj as Record<string, any>).hasOwnProperty(variableKey)) {
-            delete obj[variableKey];
-          }
-        }
-        Object.assign(obj as Record<string, any>, newObj);
-      });
-
-      return obj;
-    };
-  if (options.reactivity === 'solid')
-    replaceObject = (obj, newObj) => {
-      modifyMutable(
-        obj,
-        produce((state) => {
-          if (typeof state === 'object' && state != null) {
-            // biome-ignore lint/suspicious/useGuardForIn: false
-            for (const variableKey in state) {
-              delete state[variableKey];
-            }
-          }
-
-          Object.assign(state || {}, newObj);
-        })
-      );
-    };
-
-  let makeObservableFn = (obj: any) => obj;
-  if (options.reactivity === 'mobx') makeObservableFn = observable;
-  if (options.reactivity === 'solid') makeObservableFn = createMutable;
+  let adapters = {} as any;
+  if (options.reactivity === 'mobx') adapters = adaptersMobx;
+  if (options.reactivity === 'solid') adapters = adaptersSolid;
+  if (options.reactivity === 'kr-observable') adapters = adaptersKrObservable;
 
   const routerStore = createRouterStore({
     routes,
     lifecycleParams,
     routeError500: customRoutes.error500 as any,
-    batch: batchFn,
-    autorun: autorunFn,
-    replaceObject,
-    makeObservable: makeObservableFn,
+    adapters,
   });
 
   return routerStore;
 }
 
-export function prepareComponentWithSpy(options: {
-  renderer: 'react' | 'solid';
-  reactivity: 'mobx' | 'solid';
-  ssrRender?: boolean;
-}) {
+export function prepareComponentWithSpy(
+  options: TypeOptions & {
+    ssrRender?: boolean;
+  }
+) {
   let routes = routesReact;
-  if (options.renderer === 'react') routes = routesReact;
+  if (options.renderer === 'react') {
+    if (options.reactivity === 'mobx') routes = routesReact as any;
+    if (options.reactivity === 'kr-observable') routes = routesKrObservable as any;
+  }
   if (options.renderer === 'solid') routes = routesSolid;
 
   const routerStore = getData(options, routes);
@@ -116,7 +82,9 @@ export function prepareComponentWithSpy(options: {
       spy_render();
 
       return (
+        // @ts-ignore
         <RouterReact
+          // @ts-ignore
           routerStore={routerStore}
           routes={routes}
           beforeSetPageComponent={spy_beforeSetPageComponent}

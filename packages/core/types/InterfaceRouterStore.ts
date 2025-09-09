@@ -2,21 +2,24 @@ import { TypeCurrentRoute } from './TypeCurrentRoute';
 import { TypeRedirectToParams } from './TypeRedirectToParams';
 import { TypeRoute } from './TypeRoute';
 
-type TypeUtils = {
+export type TypeAdapters = {
   batch: (cb: () => void) => void;
   autorun: (cb: () => void) => any;
   replaceObject: <TObj extends Record<string, any>>(obj: TObj, newObj: TObj) => void;
   makeObservable: <TObj extends Record<string, any>>(obj: TObj) => TObj;
+  makeAutoObservable: (...args: Array<any>) => any;
+  observer?: (comp: any) => any;
 };
 
-export type TypeCreateRouterStore<TRoutes extends Record<string, TypeRoute>> = TypeUtils & {
+export type TypeCreateRouterStore<TRoutes extends Record<string, TypeRoute>> = {
   routes: TRoutes;
   routeError500: TRoutes[keyof TRoutes];
   lifecycleParams?: Array<any>;
+  adapters: TypeAdapters;
 };
 
 export type InterfaceRouterStore<TRoutes extends Record<string, TypeRoute>> = {
-  utils: TypeUtils;
+  adapters: TypeAdapters;
   currentRoute: TypeCurrentRoute<TRoutes[keyof TRoutes]>;
   routesHistory: Array<string>;
   isRedirecting: boolean;

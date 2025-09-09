@@ -1,4 +1,3 @@
-dist/
 .nyc_output
 dist
 *.log
@@ -10,3 +9,4 @@ Thumbs.db
 .vscode
 node_modules
 npm-debug.*
+docs/.vitepress/cache

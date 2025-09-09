@@ -10,6 +10,26 @@ const prepareParams = {
 } as const;
 
 describe('Router', () => {
+  // it('Only beforeSetPageComponent called on first render2', async () => {
+  //   const { routerStore, checkSpy, calls, render } = prepareComponentWithSpy({
+  //     renderer: 'react',
+  //     reactivity: 'kr-observable',
+  //   });
+  //
+  //   const container = render();
+  //
+  //   await routerStore.redirectTo({ route: 'staticRoute' });
+  //
+  //   await new Promise((resolve) => setTimeout(resolve, 1000));
+  //
+  //   calls.renderTimes += 1;
+  //   calls.beforeSetPageComponent += 1;
+  //
+  //   expect(container.innerHTML).to.eq('Static');
+  //
+  //   checkSpy();
+  // });
+
   it('Only beforeSetPageComponent called on first render', async () => {
     const { routerStore, checkSpy, calls, render } = prepareComponentWithSpy(prepareParams);
 

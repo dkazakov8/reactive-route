@@ -1,6 +1,4 @@
-import { observer } from 'mobx-react-lite';
-
-const Prevent = observer(() => {
+export default function Prevent() {
   return (
     <div>
       If you come from Dynamic page you will be redirected to Static page. Otherwise this page is
@@ -9,6 +7,4 @@ const Prevent = observer(() => {
       Also you can not leave from this page to Query page
     </div>
   );
-});
-
-export default Prevent;
+}

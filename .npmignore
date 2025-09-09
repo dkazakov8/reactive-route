@@ -15,5 +15,6 @@ biome.json
 /.nyc_output
 /.husky
 .github
+/docs
 tsconfig.json
 tsconfig.types.json

@@ -1,20 +1,19 @@
 import { getInitialRoute, history, TypePropsRouter, TypeRoute } from 'reactive-route';
 import { Show } from 'solid-js';
-import { createMutable } from 'solid-js/store';
 import { Dynamic } from 'solid-js/web';
 
 import { useStore, ViewModelConstructor } from './useStore';
 
 class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstructor {
   constructor(public props: TypePropsRouter<TRoutes>) {
-    return createMutable(this);
+    return this.adapters.makeAutoObservable(this);
   }
   loadedComponentName?: keyof TRoutes = undefined;
   loadedComponentPage?: string = undefined;
   currentProps: Record<string, any> = {};
 
-  get utils() {
-    return this.props.routerStore.utils;
+  get adapters() {
+    return this.props.routerStore.adapters;
   }
 
   beforeMount() {
@@ -22,7 +21,7 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
 
     this.redirectOnHistoryPop();
 
-    this.utils.autorun(() => this.setLoadedComponent());
+    this.adapters.autorun(() => this.setLoadedComponent());
   }
 
   redirectOnHistoryPop() {
@@ -60,7 +59,7 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
     } else if (this.loadedComponentPage != null && currentRouteName != null) {
       if (this.loadedComponentPage === currentRoutePage) {
         const componentConfig = this.props.routes[currentRouteName];
-        this.utils.replaceObject(
+        this.adapters.replaceObject(
           this.currentProps,
           'props' in componentConfig ? componentConfig.props! : {}
         );
@@ -70,7 +69,7 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
 
     if (preventRedirect) return;
 
-    this.utils.batch(() => {
+    this.adapters.batch(() => {
       if (!this.loadedComponentName) {
         this.setComponent();
       } else {
@@ -87,8 +86,8 @@ class VM<TRoutes extends Record<string, TypeRoute>> implements ViewModelConstruc
 
     this.props.beforeSetPageComponent?.(componentConfig);
 
-    this.utils.batch(() => {
-      this.utils.replaceObject(
+    this.adapters.batch(() => {
+      this.adapters.replaceObject(
         this.currentProps,
         'props' in componentConfig ? componentConfig.props! : {}
       );

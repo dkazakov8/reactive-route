@@ -16,11 +16,12 @@ function bytesForHuman(bytes: number, decimals = 2) {
   return `${parseFloat(bytesDivided.toFixed(decimals))} ${units[i]}`;
 }
 
-function afterBuild(result: BuildResult, packageName: string) {
+function afterBuild(result: BuildResult, packageName: string, fileName?: string) {
   const size = bytesForHuman(result.metafile!.outputs['index.js'].bytes);
 
+  const fullName = packageName + (fileName ? `-${fileName}` : '');
   const assetsPath = path.resolve(process.cwd(), 'assets');
-  const svgPath = path.resolve(assetsPath, `${packageName}.svg`);
+  const svgPath = path.resolve(assetsPath, `${fullName}.svg`);
 
   if (!fs.existsSync(assetsPath)) fs.mkdirSync(assetsPath);
 
@@ -31,18 +32,18 @@ function afterBuild(result: BuildResult, packageName: string) {
     const prevSize = match?.[1];
 
     if (size === prevSize) {
-      console.log(`(unchanged) Size ${packageName} ${prevSize}`);
+      console.log(`(unchanged) Size ${fullName} ${prevSize}`);
 
       return;
     }
 
-    console.log(`(changed) Size ${packageName} changed from ${prevSize} to ${size}`);
+    console.log(`(changed) Size ${fullName} changed from ${prevSize} to ${size}`);
   } else {
-    console.log(`(new) Size ${packageName} ${size}`);
+    console.log(`(new) Size ${fullName} ${size}`);
   }
 
   const svg = makeBadge({
-    label: `${packageName} size${packageName === 'core' ? ' + deps' : ''}`,
+    label: `${fullName} size${fullName === 'core' ? ' + deps' : ''}`,
     message: size,
     color: 'blue',
   });
@@ -50,18 +51,18 @@ function afterBuild(result: BuildResult, packageName: string) {
   fs.writeFileSync(path.resolve(svgPath), svg, 'utf-8');
 }
 
-export function genSizeBadges(outFolder: string, packageName: string) {
-  return esbuild
-    .build({
-      bundle: true,
-      write: false,
-      minify: true,
-      metafile: true,
-      sourcemap: false,
-      target: 'es2022',
-      packages: packageName === 'core' ? 'bundle' : 'external',
-      entryPoints: [outFolder],
-      format: 'esm',
-    })
-    .then((res) => afterBuild(res, packageName));
+export async function genSizeBadges(outFolder: string, packageName: string, fileName?: string) {
+  const result = await esbuild.build({
+    bundle: true,
+    write: false,
+    minify: true,
+    metafile: true,
+    sourcemap: false,
+    target: 'es2022',
+    packages: packageName === 'core' ? 'bundle' : 'external',
+    entryPoints: [outFolder],
+    format: 'esm',
+  });
+
+  afterBuild(result, packageName, fileName);
 }

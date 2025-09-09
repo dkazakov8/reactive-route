@@ -1,9 +1,8 @@
-import { observer } from 'mobx-react-lite';
 import { useContext } from 'react';
 
 import { StoreContext } from '../../components/StoreContext';
 
-const Dynamic = observer(() => {
+export default function Dynamic() {
   const { routerStore } = useContext(StoreContext);
 
   return (
@@ -27,6 +26,4 @@ const Dynamic = observer(() => {
       </div>
     </>
   );
-});
-
-export default Dynamic;
+}

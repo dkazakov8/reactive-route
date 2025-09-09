@@ -1,7 +1,3 @@
-import { observer } from 'mobx-react-lite';
-
-const Home = observer(() => {
+export default function Home() {
   return 'Home';
-});
-
-export default Home;
+}

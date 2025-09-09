@@ -21,8 +21,8 @@ importers:
         specifier: 19.1.1
         version: 19.1.1(react@19.1.1)
       reactive-route:
-        specifier: 0.0.1-alpha.4
-        version: 0.0.1-alpha.4
+        specifier: 0.0.1-alpha.5
+        version: 0.0.1-alpha.5
       ultimate-express:
         specifier: 2.0.9
         version: 2.0.9
@@ -525,8 +525,8 @@ packages:
     resolution: {integrity: sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ==}
     engines: {node: '>=0.10.0'}
 
-  reactive-route@0.0.1-alpha.4:
-    resolution: {integrity: sha512-7e+gPH/QmMdj+w+BDUz5jBhJCKC6dtMDYpeSXE/wLZhJc68xhTrnxVgLEIXtRGInS/zMhdyUxrR4huckjbJdjA==}
+  reactive-route@0.0.1-alpha.5:
+    resolution: {integrity: sha512-PQqwgwptkGZWP+Gt1AHyBoQF0AeN3me+sF1OY1YklunpAXHgeAZGag3wIxlryDwwXR22fANt6xzrKvLxGvsIJQ==}
 
   readdirp@3.6.0:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
@@ -1018,7 +1018,7 @@ snapshots:
 
   react@19.1.1: {}
 
-  reactive-route@0.0.1-alpha.4:
+  reactive-route@0.0.1-alpha.5:
     dependencies:
       history: 5.3.0
       query-string: 7.1.3

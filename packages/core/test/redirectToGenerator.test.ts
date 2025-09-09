@@ -202,7 +202,7 @@ describe('redirectToGenerator', () => {
     const customRoutes = createRouterConfig({
       spyOne: {
         path: '/test/static',
-        loader: (() => import('../../react/test/pages/static/Static.js')) as any,
+        loader: (() => import('../../react/test/pages/static/StaticMobx.js')) as any,
         beforeEnter(config, param: string) {
           beforeEnter_spy(param);
 
@@ -214,7 +214,7 @@ describe('redirectToGenerator', () => {
         params: {
           static: (value) => value.length > 2,
         },
-        loader: (() => import('../../react/test/pages/dynamic/Dynamic.js')) as any,
+        loader: (() => import('../../react/test/pages/dynamic/./DynamicMobx')) as any,
         beforeEnter(config, param: string) {
           beforeEnter_spy2(param);
 
@@ -223,14 +223,14 @@ describe('redirectToGenerator', () => {
       },
       redirectToSpyOne: {
         path: '/test/static3',
-        loader: (() => import('../../react/test/pages/dynamic/Dynamic.js')) as any,
+        loader: (() => import('../../react/test/pages/dynamic/./DynamicMobx')) as any,
         beforeEnter: (() => {
           return Promise.resolve({ route: 'spyOne' });
         }) as any,
       },
       buggyCode: {
         path: '/test/static4',
-        loader: (() => import('../../react/test/pages/dynamic/Dynamic.js')) as any,
+        loader: (() => import('../../react/test/pages/dynamic/./DynamicMobx')) as any,
         beforeEnter: (() => {
           // @ts-ignore
           // biome-ignore lint/correctness/noUndeclaredVariables: false
@@ -242,7 +242,7 @@ describe('redirectToGenerator', () => {
       error500: {
         path: '/error500',
         props: { errorNumber: 500 },
-        loader: (() => import('../../react/test/pages/error/Error.js')) as any,
+        loader: (() => import('../../react/test/pages/error/./ErrorMobx')) as any,
       },
     });
 
@@ -342,7 +342,7 @@ describe('redirectToGenerator', () => {
     const customRoutes = createRouterConfig({
       spyOne: {
         path: '/test/static',
-        loader: (() => import('../../react/test/pages/static/Static.js')) as any,
+        loader: (() => import('../../react/test/pages/static/StaticMobx.js')) as any,
         beforeLeave(config, param: string) {
           beforeLeave_spy(param);
 
@@ -354,7 +354,7 @@ describe('redirectToGenerator', () => {
         params: {
           static: (value) => value.length > 2,
         },
-        loader: (() => import('../../react/test/pages/dynamic/Dynamic.js')) as any,
+        loader: (() => import('../../react/test/pages/dynamic/./DynamicMobx')) as any,
         beforeLeave(config, param: string) {
           beforeLeave_spy2(param);
 
@@ -363,7 +363,7 @@ describe('redirectToGenerator', () => {
       },
       preventRedirect: {
         path: '/test/prevent-redirect',
-        loader: (() => import('../../react/test/pages/dynamic/Dynamic.js')) as any,
+        loader: (() => import('../../react/test/pages/dynamic/./DynamicMobx')) as any,
         beforeLeave: (config) => {
           if (config.nextRoute.name === 'spyOne') {
             const err = Object.assign(new Error(''), { name: constants.errorPrevent });
@@ -376,7 +376,7 @@ describe('redirectToGenerator', () => {
       },
       buggyCode: {
         path: '/test/buggy-code',
-        loader: (() => import('../../react/test/pages/dynamic/Dynamic.js')) as any,
+        loader: (() => import('../../react/test/pages/dynamic/./DynamicMobx')) as any,
         beforeLeave: () => {
           // @ts-ignore
           // biome-ignore lint/correctness/noUndeclaredVariables: false
@@ -388,7 +388,7 @@ describe('redirectToGenerator', () => {
       error500: {
         path: '/error500',
         props: { errorNumber: 500 },
-        loader: (() => import('../../react/test/pages/error/Error.js')) as any,
+        loader: (() => import('../../react/test/pages/error/./ErrorMobx')) as any,
       },
     });
 
@@ -584,7 +584,7 @@ describe('redirectToGenerator', () => {
         query: {
           q: (value) => value.length > 2,
         },
-        loader: (() => import('../../react/test/pages/static/Static.js')) as any,
+        loader: (() => import('../../react/test/pages/static/StaticMobx.js')) as any,
         beforeEnter(config, param: string) {
           beforeEnter_spy(param);
 
@@ -600,7 +600,7 @@ describe('redirectToGenerator', () => {
           q: (value) => value.length > 2,
           s: (value) => value.length > 2,
         },
-        loader: (() => import('../../react/test/pages/dynamic/Dynamic.js')) as any,
+        loader: (() => import('../../react/test/pages/dynamic/./DynamicMobx')) as any,
         beforeEnter(config, param: string) {
           beforeEnter_spy2(param);
 
@@ -609,7 +609,7 @@ describe('redirectToGenerator', () => {
       },
       redirectToSpyOne: {
         path: '/test/static3',
-        loader: (() => import('../../react/test/pages/dynamic/Dynamic.js')) as any,
+        loader: (() => import('../../react/test/pages/dynamic/./DynamicMobx')) as any,
         query: {
           q: (value) => value.length > 2,
         },
@@ -619,7 +619,7 @@ describe('redirectToGenerator', () => {
       },
       buggyCode: {
         path: '/test/static4',
-        loader: (() => import('../../react/test/pages/dynamic/Dynamic.js')) as any,
+        loader: (() => import('../../react/test/pages/dynamic/./DynamicMobx')) as any,
         beforeEnter: (() => {
           // @ts-ignore
           // biome-ignore lint/correctness/noUndeclaredVariables: false
@@ -631,7 +631,7 @@ describe('redirectToGenerator', () => {
       error500: {
         path: '/error500',
         props: { errorNumber: 500 },
-        loader: (() => import('../../react/test/pages/error/Error.js')) as any,
+        loader: (() => import('../../react/test/pages/error/./ErrorMobx')) as any,
       },
     });
 

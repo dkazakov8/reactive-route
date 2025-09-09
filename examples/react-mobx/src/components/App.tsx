@@ -1,10 +1,9 @@
-import { observer } from 'mobx-react-lite';
 import { useContext } from 'react';
 
 import { Router } from './Router';
 import { StoreContext } from './StoreContext';
 
-export const App = observer(() => {
+export function App() {
   const { routerStore } = useContext(StoreContext);
 
   return (
@@ -75,4 +74,4 @@ export const App = observer(() => {
       </div>
     </>
   );
-});
+}

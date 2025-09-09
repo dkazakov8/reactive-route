@@ -16,10 +16,15 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve('./package.json'), 'utf8'));
 
 function generateBuild(type: 'cjs' | 'esm', folderName: string) {
   const packageName = folderName.split('/')[1]!;
-  const outFolder = path.resolve(
+  const fileName = folderName.split('/')[2];
+  let outFolder = path.resolve(
     process.cwd(),
     packageName === 'core' ? `./dist/${type}` : `./dist/${type}/${packageName}`
   );
+  if (fileName) {
+    outFolder = path.resolve(outFolder, fileName);
+  }
+
   const outFile = path.resolve(outFolder, `index.js`);
 
   return esbuild
@@ -71,7 +76,7 @@ function generateBuild(type: 'cjs' | 'esm', folderName: string) {
       );
 
       if (type === 'esm') {
-        return genSizeBadges(outFile, packageName);
+        return genSizeBadges(outFile, packageName, fileName);
       }
     });
 }
@@ -83,4 +88,10 @@ void Promise.all([
   generateBuild('cjs', 'packages/solid'),
   generateBuild('esm', 'packages/react'),
   generateBuild('cjs', 'packages/react'),
+  generateBuild('esm', 'packages/adapters/mobx'),
+  generateBuild('cjs', 'packages/adapters/mobx'),
+  generateBuild('esm', 'packages/adapters/solid'),
+  generateBuild('cjs', 'packages/adapters/solid'),
+  generateBuild('esm', 'packages/adapters/kr-observable'),
+  generateBuild('cjs', 'packages/adapters/kr-observable'),
 ]);
