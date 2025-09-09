@@ -15,7 +15,10 @@ import { routes as routesSolid } from '../../solid/test/routes';
 import { createRouterStore } from '../createRouterStore';
 import { TypeRoute } from '../index';
 
-type TypeOptions = { renderer: 'react' | 'solid'; reactivity: 'mobx' | 'solid' | 'kr-observable' };
+export type TypeOptions = {
+  renderer: 'react' | 'solid';
+  reactivity: 'mobx' | 'solid' | 'kr-observable';
+};
 
 export function getData<TRoutes extends Record<string, TypeRoute>>(
   options: TypeOptions,

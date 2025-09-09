@@ -10,28 +10,19 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
   //
   // useEffect(() => {
   //   props.routerStore.adapters.autorun(() => {
-  //     c.secondsPassed += 1;
-  //     console.log('autorun set', c.secondsPassed, Date.now());
+  //     props.routerStore.adapters.batch(() => {
+  //       c.secondsPassed += 1;
+  //       c[Symbol.for('$adm')]?.batch();
+  //       console.log('autorun set', c.secondsPassed, Date.now());
+  //     });
   //   });
   // }, []);
   //
   // console.log('render', c.secondsPassed, Date.now());
   //
-  // return null;
+  // return c.secondsPassed;
 
   const disposerRef = useRef<() => void>(null);
-
-  const [config] = useState<{
-    loadedComponentName?: keyof TRoutes;
-    loadedComponentPage?: string;
-    currentProps: Record<string, any>;
-  }>(() =>
-    props.routerStore.adapters.makeObservable({
-      loadedComponentName: undefined,
-      loadedComponentPage: undefined,
-      currentProps: {},
-    })
-  );
 
   const redirectOnHistoryPop = useCallback(() => {
     if (!history) return;
@@ -57,37 +48,33 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
     });
   }, []);
 
-  const setComponent = useCallback((currentRouteName: keyof TRoutes) => {
-    const componentConfig = props.routes[currentRouteName];
-
-    props.beforeSetPageComponent?.(componentConfig);
-
-    // props.routerStore.adapters.replaceObject(config, {
-    //   currentProps: 'props' in componentConfig ? componentConfig.props || {} : {},
-    //   loadedComponentName: currentRouteName,
-    //   loadedComponentPage: componentConfig.pageName,
-    // });
-
-    config.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
-    config.loadedComponentName = currentRouteName;
-    config.loadedComponentPage = componentConfig.pageName;
-  }, []);
+  const [config] = useState<{
+    loadedComponentName?: keyof TRoutes;
+    loadedComponentPage?: string;
+    currentProps: Record<string, any>;
+  }>(() =>
+    props.routerStore.adapters.makeObservable({
+      loadedComponentName: undefined,
+      loadedComponentPage: undefined,
+      currentProps: {},
+    })
+  );
 
   const setLoadedComponent = useCallback(() => {
     const { loadedComponentName, loadedComponentPage } = config;
     const { currentRoute, isRedirecting } = props.routerStore;
 
-    const currentRouteName = currentRoute.name;
-    const currentRoutePage = currentRoute.pageName;
+    const componentConfig = props.routes[currentRoute.name];
 
     let preventRedirect = false;
     if (isRedirecting) preventRedirect = true;
-    else if (loadedComponentName === currentRouteName) preventRedirect = true;
-    else if (loadedComponentPage != null && currentRouteName != null) {
-      if (loadedComponentPage === currentRoutePage) {
-        const componentConfig = props.routes[currentRouteName];
+    else if (loadedComponentName === currentRoute.name) preventRedirect = true;
+    else if (loadedComponentPage != null && currentRoute.name != null) {
+      if (loadedComponentPage === currentRoute.pageName) {
         props.routerStore.adapters.batch(() => {
           config.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
+          // @ts-ignore
+          config[Symbol.for('$adm')]?.batch();
         });
         preventRedirect = true;
       }
@@ -96,13 +83,16 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
     if (preventRedirect) return;
 
     props.routerStore.adapters.batch(() => {
-      if (!loadedComponentName) {
-        setComponent(currentRouteName);
-      } else {
-        props.beforeUpdatePageComponent?.();
+      if (loadedComponentName) props.beforeUpdatePageComponent?.();
 
-        setComponent(currentRouteName);
-      }
+      props.beforeSetPageComponent?.(componentConfig);
+
+      config.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
+      config.loadedComponentName = currentRoute.name;
+      config.loadedComponentPage = componentConfig.pageName;
+
+      // @ts-ignore
+      config[Symbol.for('$adm')]?.batch();
     });
   }, []);
 

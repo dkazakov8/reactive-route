@@ -9,6 +9,7 @@ import {
   modifierMobxObserverFC,
   pluginReplace,
 } from '@espcom/esbuild-plugin-replace';
+import { pluginWebpackAnalyzer } from '@espcom/esbuild-plugin-webpack-analyzer';
 import { runManual } from 'dk-reload-server';
 import { BuildOptions, context } from 'esbuild';
 
@@ -63,7 +64,7 @@ async function watch() {
     entryPoints: ['src/client.tsx'],
     outdir: publicPath,
     publicPath: '/',
-    splitting: true,
+    splitting: false,
     platform: 'browser',
     target: 'es2022',
     packages: 'bundle',
@@ -72,6 +73,39 @@ async function watch() {
         modifierDirname({ filter: /\.(tsx?)$/ }),
         modifierFilename({ filter: /\.(tsx?)$/ }),
         modifierMobxObserverFC({ filter: /\.tsx?$/ }),
+        // {
+        //   filter: /\.tsx?$/,
+        //   replace: /(export default |export )?function ([A-Z][a-zA-Z0-9]+)(.*?(?=;\n}\n));\n}\n/gs,
+        //   replacer() {
+        //     let observerInjected = false;
+        //
+        //     return (
+        //       match: string,
+        //       exportStatement: string,
+        //       functionName: string,
+        //       functionContent: string
+        //       // eslint-disable-next-line max-params
+        //     ) => {
+        //       const wrappedComponent = `observer(function ${functionName}${functionContent};\n})\n`;
+        //
+        //       let str = observerInjected
+        //         ? ''
+        //         : "\nimport { observer } from 'kr-observable/react';\n";
+        //
+        //       if (exportStatement) str += exportStatement;
+        //
+        //       if (!exportStatement || !exportStatement.includes('default')) {
+        //         str += `const ${functionName} = ${wrappedComponent}`;
+        //       } else {
+        //         str += wrappedComponent;
+        //       }
+        //
+        //       observerInjected = true;
+        //
+        //       return str;
+        //     };
+        //   },
+        // },
       ]),
       {
         name: 'plugin-parallel',
@@ -114,6 +148,11 @@ async function watch() {
               : undefined,
         },
       ]),
+      pluginWebpackAnalyzer({
+        port: 8002,
+        open: false,
+        extensions: ['.js', '.cjs', '.mjs', '.ts', '.tsx', '.json'],
+      }),
     ],
   };
 
