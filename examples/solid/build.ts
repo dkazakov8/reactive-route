@@ -16,7 +16,8 @@ const outdirPath = path.resolve(__dirname, 'dist');
 const publicPath = path.resolve(outdirPath, 'public');
 const templatePath = path.resolve(outdirPath, 'template.html');
 
-const SSR_ENABLED = process.argv[2] === 'ssr';
+const REACTIVITY_SYSTEM: 'mobx' | 'kr-observable' = process.argv[2] as any;
+const SSR_ENABLED = process.argv[3] === 'ssr';
 
 function generateSolidModifier(ssr: boolean) {
   return {
@@ -61,6 +62,7 @@ async function watch() {
       'process.env.NODE_ENV': JSON.stringify('development'),
       PATH_SEP: JSON.stringify(path.sep),
       SSR_ENABLED: JSON.stringify(SSR_ENABLED),
+      REACTIVITY_SYSTEM: JSON.stringify(REACTIVITY_SYSTEM),
     },
     resolveExtensions: ['.js', '.ts', '.tsx'],
     plugins: [

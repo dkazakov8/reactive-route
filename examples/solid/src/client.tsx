@@ -2,11 +2,19 @@ import { hydrate, render } from 'solid-js/web';
 
 import './style.css';
 
+import { enableObservable } from 'kr-observable/solidjs';
+
 import { App } from './components/App';
 import { StoreContext } from './components/StoreContext';
 import { getRouterStore } from './routerStore';
 
-const contextValue = { routerStore: getRouterStore() };
+if (REACTIVITY_SYSTEM === 'kr-observable') {
+  enableObservable(false);
+}
+
+const routerStore = await getRouterStore();
+
+const contextValue = { routerStore };
 
 const initialData = (window as any).INITIAL_DATA as typeof contextValue;
 
@@ -15,13 +23,15 @@ async function renderSSR() {
 
   await contextValue.routerStore.restoreFromServer(initialData.routerStore);
 
-  const ApToRender = () => (
-    <StoreContext.Provider value={contextValue}>
-      <App />
-    </StoreContext.Provider>
-  );
+  function AppToRender() {
+    return (
+      <StoreContext.Provider value={contextValue}>
+        <App />
+      </StoreContext.Provider>
+    );
+  }
 
-  hydrate(ApToRender, document.getElementById('app')!);
+  hydrate(AppToRender, document.getElementById('app')!);
 }
 
 async function renderCSR() {

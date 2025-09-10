@@ -10,10 +10,9 @@ export const adapters: TypeAdapters = {
       obj,
       produce((state) => {
         if (typeof state === 'object' && state != null) {
+          // biome-ignore lint/suspicious/useGuardForIn: false
           for (const variableKey in state) {
-            if (state.hasOwnProperty(variableKey)) {
-              delete state[variableKey];
-            }
+            delete state[variableKey];
           }
         }
 

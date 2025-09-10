@@ -4,11 +4,13 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "tsx build.ts",
-    "dev-ssr": "tsx build.ts ssr"
+    "dev-solid": "tsx build.ts solid",
+    "dev-observable": "tsx build.ts kr-observable",
+    "dev-ssr-solid": "tsx build.ts solid ssr",
+    "dev-ssr-observable": "tsx build.ts kr-observable ssr"
   },
   "dependencies": {
-    "reactive-route": "0.0.1-alpha.8",
+    "reactive-route": "0.0.1-alpha.12",
     "solid-js": "1.9.6",
     "ultimate-express": "2.0.9",
     "mobx": "6.13.7",

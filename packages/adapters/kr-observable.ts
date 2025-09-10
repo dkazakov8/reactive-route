@@ -7,10 +7,9 @@ export const adapters: TypeAdapters = {
   batch: (cb) => cb(),
   autorun,
   replaceObject: (obj, newObj) => {
+    // biome-ignore lint/suspicious/useGuardForIn: false
     for (const variableKey in obj) {
-      if ((obj as Record<string, any>).hasOwnProperty(variableKey)) {
-        delete obj[variableKey];
-      }
+      delete obj[variableKey];
     }
     Object.assign(obj as Record<string, any>, newObj);
   },

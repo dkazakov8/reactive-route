@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { enableObservable } from 'kr-observable/solidjs';
 import { generateHydrationScript, renderToString } from 'solid-js/web';
 import express from 'ultimate-express';
 
@@ -12,6 +13,10 @@ import { escapeAllStrings } from './utils/escapeAllStrings';
 const outdirPath = path.resolve(__dirname, '../dist');
 const publicPath = path.resolve(outdirPath, 'public');
 const templatePath = path.resolve(outdirPath, 'template.html');
+
+if (REACTIVITY_SYSTEM === 'kr-observable') {
+  enableObservable(false);
+}
 
 const app = express();
 
@@ -26,7 +31,9 @@ app.get('*', async (req, res) => {
     return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- INITIAL_DATA -->', '{}'));
   }
 
-  const contextValue = { routerStore: getRouterStore() };
+  const routerStore = await getRouterStore();
+
+  const contextValue = { routerStore };
 
   try {
     await contextValue.routerStore.restoreFromURL({

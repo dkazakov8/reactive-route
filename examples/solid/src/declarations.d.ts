@@ -1,5 +1,6 @@
 declare const PATH_SEP: string;
 declare const SSR_ENABLED: string;
+declare const REACTIVITY_SYSTEM: 'mobx' | 'kr-observable' | 'solid';
 
 declare global {
   declare module 'solid-js' {
