@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { prepareComponentWithSpy } from '../../core/test/helpers.js';
+import { prepareComponentWithSpy } from '../../shared/helpers.js';
 
 const prepareParams = {
   renderer: 'solid',
@@ -8,6 +8,25 @@ const prepareParams = {
 } as const;
 
 describe('Router', () => {
+  // it('TEST', async () => {
+  //   const { routerStore, checkSpy, calls, render } = prepareComponentWithSpy({
+  //     renderer: 'solid',
+  //     reactivity: 'kr-observable',
+  //   });
+  //
+  //   const container = render();
+  //
+  //   await routerStore.redirectTo({ route: 'staticRoute' });
+  //
+  //   await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+  //
+  //   calls.renderTimes += 1;
+  //   calls.beforeSetPageComponent += 1;
+  //
+  //   expect(container.innerHTML).to.eq('Static');
+  //
+  //   checkSpy();
+  // });
   it('Only beforeSetPageComponent called on first render', async () => {
     const { routerStore, checkSpy, calls, render } = prepareComponentWithSpy(prepareParams);
 

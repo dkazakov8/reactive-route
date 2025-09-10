@@ -26,16 +26,16 @@ app.get('*', async (req, res) => {
     return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- INITIAL_DATA -->', '{}'));
   }
 
-  const contextValue = { routerStore: getRouterStore() };
+  const routerStore = await getRouterStore();
 
   const reactApp = (
-    <StoreContext.Provider value={contextValue}>
+    <StoreContext.Provider value={{ routerStore }}>
       <App />
     </StoreContext.Provider>
   );
 
   try {
-    await contextValue.routerStore.restoreFromURL({
+    await routerStore.restoreFromURL({
       pathname: req.originalUrl,
       fallback: 'error404',
     });
@@ -52,7 +52,7 @@ app.get('*', async (req, res) => {
   }
 
   const htmlMarkup = renderToString(reactApp);
-  const storeJS = JSON.parse(JSON.stringify(contextValue));
+  const storeJS = JSON.parse(JSON.stringify({ routerStore }));
 
   res.send(
     template

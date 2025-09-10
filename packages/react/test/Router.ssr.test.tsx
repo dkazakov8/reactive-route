@@ -2,7 +2,7 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 
-import { prepareComponentWithSpy } from '../../core/test/helpers';
+import { prepareComponentWithSpy } from '../../shared/helpers';
 
 const prepareParams = {
   renderer: 'react',

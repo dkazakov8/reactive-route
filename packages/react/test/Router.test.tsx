@@ -2,7 +2,7 @@ import 'global-jsdom/register';
 
 import { describe, expect, it } from 'vitest';
 
-import { prepareComponentWithSpy, TypeOptions } from '../../core/test/helpers';
+import { prepareComponentWithSpy, TypeOptions } from '../../shared/helpers';
 
 const prepareParamsArray: Array<TypeOptions> = [
   {

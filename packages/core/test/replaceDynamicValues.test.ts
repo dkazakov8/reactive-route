@@ -1,19 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
-import { routes } from '../../react/test/routes';
+import { routesMobx } from '../../react/test/routesMobx';
 import { replaceDynamicValues } from '../utils/replaceDynamicValues';
 
 describe('replaceDynamicValues', () => {
   it('Dynamic params', () => {
     const pathname = replaceDynamicValues({
-      route: routes.dynamicRoute,
+      route: routesMobx.dynamicRoute,
       params: { static: 'dynamic' },
     });
 
     expect(pathname).to.be.eq('/test/dynamic');
 
     const pathname2 = replaceDynamicValues({
-      route: routes.dynamicRoute3,
+      route: routesMobx.dynamicRoute3,
       params: { ':static': 'dynamic' },
     });
 
@@ -22,7 +22,7 @@ describe('replaceDynamicValues', () => {
 
   it('Dynamic params multiple', () => {
     const pathname = replaceDynamicValues({
-      route: routes.dynamicRouteMultiple,
+      route: routesMobx.dynamicRouteMultiple,
       params: { param: 'dynamic', param2: 'dynamic2' },
     });
 
@@ -32,7 +32,7 @@ describe('replaceDynamicValues', () => {
   it('(error) No dynamic param value', () => {
     expect(() => {
       replaceDynamicValues({
-        route: routes.dynamicRoute,
+        route: routesMobx.dynamicRoute,
         params: {} as any,
       });
     }).to.throw(`replaceDynamicValues: no param ":static" passed for route dynamicRoute`);
@@ -41,7 +41,7 @@ describe('replaceDynamicValues', () => {
   it('(error) No dynamic param value multiple', () => {
     expect(() => {
       replaceDynamicValues({
-        route: routes.dynamicRouteMultiple,
+        route: routesMobx.dynamicRouteMultiple,
         params: { param: 'dynamic' } as any,
       });
     }).to.throw(`replaceDynamicValues: no param ":param2" passed for route dynamicRoute`);
@@ -49,7 +49,7 @@ describe('replaceDynamicValues', () => {
 
   it('Special symbols', () => {
     const pathname = replaceDynamicValues({
-      route: routes.dynamicRoute,
+      route: routesMobx.dynamicRoute,
       params: { static: 'шеллы' },
     });
 

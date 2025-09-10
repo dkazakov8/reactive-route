@@ -18,7 +18,8 @@ const outdirPath = path.resolve(__dirname, 'dist');
 const publicPath = path.resolve(outdirPath, 'public');
 const templatePath = path.resolve(outdirPath, 'template.html');
 
-const SSR_ENABLED = process.argv[2] === 'ssr';
+const REACTIVITY_SYSTEM: 'mobx' | 'kr-observable' = process.argv[2] as any;
+const SSR_ENABLED = process.argv[3] === 'ssr';
 
 async function watch() {
   const { sendReloadSignal } = runManual({ port: 8001 });
@@ -41,6 +42,7 @@ async function watch() {
       'process.env.NODE_ENV': JSON.stringify('development'),
       PATH_SEP: JSON.stringify(path.sep),
       SSR_ENABLED: JSON.stringify(SSR_ENABLED),
+      REACTIVITY_SYSTEM: JSON.stringify(REACTIVITY_SYSTEM),
     },
     resolveExtensions: ['.js', '.ts', '.tsx'],
     plugins: [
@@ -72,40 +74,13 @@ async function watch() {
       pluginReplace([
         modifierDirname({ filter: /\.(tsx?)$/ }),
         modifierFilename({ filter: /\.(tsx?)$/ }),
-        modifierMobxObserverFC({ filter: /\.tsx?$/ }),
-        // {
-        //   filter: /\.tsx?$/,
-        //   replace: /(export default |export )?function ([A-Z][a-zA-Z0-9]+)(.*?(?=;\n}\n));\n}\n/gs,
-        //   replacer() {
-        //     let observerInjected = false;
-        //
-        //     return (
-        //       match: string,
-        //       exportStatement: string,
-        //       functionName: string,
-        //       functionContent: string
-        //       // eslint-disable-next-line max-params
-        //     ) => {
-        //       const wrappedComponent = `observer(function ${functionName}${functionContent};\n})\n`;
-        //
-        //       let str = observerInjected
-        //         ? ''
-        //         : "\nimport { observer } from 'kr-observable/react';\n";
-        //
-        //       if (exportStatement) str += exportStatement;
-        //
-        //       if (!exportStatement || !exportStatement.includes('default')) {
-        //         str += `const ${functionName} = ${wrappedComponent}`;
-        //       } else {
-        //         str += wrappedComponent;
-        //       }
-        //
-        //       observerInjected = true;
-        //
-        //       return str;
-        //     };
-        //   },
-        // },
+        modifierMobxObserverFC({
+          filter: /\.tsx?$/,
+          customImport:
+            REACTIVITY_SYSTEM === 'mobx'
+              ? undefined
+              : `import { observer } from 'kr-observable/react';`,
+        }),
       ]),
       {
         name: 'plugin-parallel',

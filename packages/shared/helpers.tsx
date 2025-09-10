@@ -4,16 +4,15 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { expect, vi } from 'vitest';
 
-import { adapters as adaptersKrObservable } from '../../adapters/kr-observable';
-import { adapters as adaptersMobx } from '../../adapters/mobx';
-import { adapters as adaptersSolid } from '../../adapters/solid';
-import { Router as RouterReact } from '../../react';
-import { routes as routesReact } from '../../react/test/routes';
-import { routesKrObservable } from '../../react/test/routesKrObservable';
-import { Router as RouterSolid } from '../../solid';
-import { routes as routesSolid } from '../../solid/test/routes';
-import { createRouterStore } from '../createRouterStore';
-import { TypeRoute } from '../index';
+import { adapters as adaptersKrObservable } from '../adapters/kr-observable';
+import { adapters as adaptersMobx } from '../adapters/mobx';
+import { adapters as adaptersSolid } from '../adapters/solid';
+import { createRouterStore, TypeRoute } from '../core';
+import { Router as RouterReact } from '../react';
+import { routesKrObservable } from '../react/test/routesKrObservable';
+import { routesMobx } from '../react/test/routesMobx';
+import { Router as RouterSolid } from '../solid';
+import { routes as routesSolid } from '../solid/test/routes';
 
 export type TypeOptions = {
   renderer: 'react' | 'solid';
@@ -25,9 +24,9 @@ export function getData<TRoutes extends Record<string, TypeRoute>>(
   customRoutes: TRoutes,
   lifecycleParams?: any
 ) {
-  let routes = customRoutes;
+  let routes = customRoutes as any;
   if (!routes && options.renderer === 'react') {
-    if (options.reactivity === 'mobx') routes = routesReact as any;
+    if (options.reactivity === 'mobx') routes = routesMobx as any;
     if (options.reactivity === 'kr-observable') routes = routesKrObservable as any;
   }
   if (!routes && options.renderer === 'solid') routes = routesSolid as any;
@@ -52,9 +51,9 @@ export function prepareComponentWithSpy(
     ssrRender?: boolean;
   }
 ) {
-  let routes = routesReact;
+  let routes = routesMobx as any;
   if (options.renderer === 'react') {
-    if (options.reactivity === 'mobx') routes = routesReact as any;
+    if (options.reactivity === 'mobx') routes = routesMobx as any;
     if (options.reactivity === 'kr-observable') routes = routesKrObservable as any;
   }
   if (options.renderer === 'solid') routes = routesSolid;
@@ -85,9 +84,7 @@ export function prepareComponentWithSpy(
       spy_render();
 
       return (
-        // @ts-ignore
         <RouterReact
-          // @ts-ignore
           routerStore={routerStore}
           routes={routes}
           beforeSetPageComponent={spy_beforeSetPageComponent}

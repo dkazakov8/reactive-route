@@ -6,6 +6,7 @@ import { transformAsync } from '@babel/core';
 import ts from '@babel/preset-typescript';
 import { pluginInjectPreload } from '@espcom/esbuild-plugin-inject-preload';
 import { modifierDirname, modifierFilename, pluginReplace } from '@espcom/esbuild-plugin-replace';
+import { pluginWebpackAnalyzer } from '@espcom/esbuild-plugin-webpack-analyzer';
 import solid from 'babel-preset-solid';
 import { runManual } from 'dk-reload-server';
 import { BuildOptions, context, Plugin } from 'esbuild';
@@ -135,6 +136,11 @@ async function watch() {
               : undefined,
         },
       ]),
+      pluginWebpackAnalyzer({
+        port: 8002,
+        open: false,
+        extensions: ['.js', '.cjs', '.mjs', '.ts', '.tsx', '.json'],
+      }),
     ],
   };
 

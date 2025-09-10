@@ -1,7 +1,7 @@
 import { renderToString } from 'solid-js/web';
 import { describe, expect, it } from 'vitest';
 
-import { prepareComponentWithSpy } from '../../core/test/helpers';
+import { prepareComponentWithSpy } from '../../shared/helpers';
 
 const prepareParams = {
   renderer: 'solid',

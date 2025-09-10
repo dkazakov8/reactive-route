@@ -1,9 +1,8 @@
 {
-  "include": ["src", "scripts", "packages/**/*", "./*.mjs"],
-  "exclude": ["packages/**/test/*"],
+  "include": ["scripts", "packages", "./*.mjs"],
+  "exclude": ["packages/**/test/*", "packages/shared", "packages/solid"],
   "compilerOptions": {
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
+    "jsx": "react-jsx",
     "outDir": "dist",
     "module": "commonjs",
     "target": "ES2022",

@@ -2,7 +2,8 @@ import _ from 'lodash';
 import queryString from 'query-string';
 import { describe, expect, it, vi } from 'vitest';
 
-import { routes } from '../../react/test/routes';
+import { routesMobx } from '../../react/test/routesMobx';
+import { getData } from '../../shared/helpers';
 import { createRouterConfig } from '../createRouterConfig';
 import { InterfaceRouterStore } from '../types/InterfaceRouterStore';
 import { TypeRoute } from '../types/TypeRoute';
@@ -10,7 +11,6 @@ import { TypeRouteWithParams } from '../types/TypeRouteWithParams';
 import { constants } from '../utils/constants';
 import { getInitialRoute } from '../utils/getInitialRoute';
 import { replaceDynamicValues } from '../utils/replaceDynamicValues';
-import { getData } from './helpers';
 
 function checkHistory(routerStore: InterfaceRouterStore<any>, history: Array<TypeRouteWithParams>) {
   expect(routerStore.routesHistory).to.deep.eq(
@@ -79,7 +79,7 @@ function cloneWithParams<TRoute extends TypeRoute>(config: {
 
 describe('redirectToGenerator', () => {
   it('Creates', async () => {
-    const customRoutes = routes;
+    const customRoutes = routesMobx;
 
     const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes);
 
@@ -89,7 +89,7 @@ describe('redirectToGenerator', () => {
   });
 
   it('Sets initial route', async () => {
-    const customRoutes = routes;
+    const customRoutes = routesMobx;
 
     const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes);
 
@@ -109,7 +109,7 @@ describe('redirectToGenerator', () => {
   });
 
   it('Sets initial route not found', async () => {
-    const customRoutes = routes;
+    const customRoutes = routesMobx;
 
     const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes);
 
@@ -129,7 +129,7 @@ describe('redirectToGenerator', () => {
   });
 
   it('Several redirect to same route', async () => {
-    const customRoutes = routes;
+    const customRoutes = routesMobx;
 
     const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes);
 
@@ -148,7 +148,7 @@ describe('redirectToGenerator', () => {
   });
 
   it('Several redirects', async () => {
-    const customRoutes = routes;
+    const customRoutes = routesMobx;
 
     const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes);
 
@@ -483,7 +483,7 @@ describe('redirectToGenerator', () => {
   });
 
   it('Query', async () => {
-    const customRoutes = routes;
+    const customRoutes = routesMobx;
 
     const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes);
 

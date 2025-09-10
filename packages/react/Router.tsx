@@ -2,26 +2,6 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { getInitialRoute, history, TypePropsRouter, TypeRoute } from 'reactive-route';
 
 function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
-  // const [c] = useState(() =>
-  //   props.routerStore.adapters.makeObservable({
-  //     secondsPassed: 0,
-  //   })
-  // );
-  //
-  // useEffect(() => {
-  //   props.routerStore.adapters.autorun(() => {
-  //     props.routerStore.adapters.batch(() => {
-  //       c.secondsPassed += 1;
-  //       c[Symbol.for('$adm')]?.batch();
-  //       console.log('autorun set', c.secondsPassed, Date.now());
-  //     });
-  //   });
-  // }, []);
-  //
-  // console.log('render', c.secondsPassed, Date.now());
-  //
-  // return c.secondsPassed;
-
   const disposerRef = useRef<() => void>(null);
 
   const redirectOnHistoryPop = useCallback(() => {
@@ -123,12 +103,12 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
   return null;
 }
 
-export const Router = memo(
-  <TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) => {
-    const Component = props.routerStore.adapters.observer
-      ? props.routerStore.adapters.observer(RouterInner)
-      : RouterInner;
+function RouterWrapper<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
+  const Component = props.routerStore.adapters.observer
+    ? props.routerStore.adapters.observer(RouterInner)
+    : RouterInner;
 
-    return (<Component {...props} />) as any;
-  }
-);
+  return (<Component {...props} />) as any;
+}
+
+export const Router = memo(RouterWrapper) as typeof RouterWrapper;

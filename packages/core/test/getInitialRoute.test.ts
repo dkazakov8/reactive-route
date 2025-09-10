@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { routes } from '../../react/test/routes';
+import { routesMobx } from '../../react/test/routesMobx';
 import { getInitialRoute } from '../utils/getInitialRoute';
 
 describe('getInitialRoute', () => {
   it('Get correct static route by path', () => {
     expect(
       getInitialRoute({
-        routes,
+        routes: routesMobx,
         pathname: '/test/static',
         fallback: 'error404',
       })
@@ -15,7 +15,7 @@ describe('getInitialRoute', () => {
 
     expect(
       getInitialRoute({
-        routes,
+        routes: routesMobx,
         pathname: '/test/static?q=test&bar=non',
         fallback: 'error404',
       })
@@ -25,7 +25,7 @@ describe('getInitialRoute', () => {
   it('Get correct dynamic route by path', () => {
     expect(
       getInitialRoute({
-        routes,
+        routes: routesMobx,
         pathname: '/test/foo',
         fallback: 'error404',
       })
@@ -33,7 +33,7 @@ describe('getInitialRoute', () => {
 
     expect(
       getInitialRoute({
-        routes,
+        routes: routesMobx,
         pathname: '/test/foo?q=test',
         fallback: 'error404',
       })
@@ -43,7 +43,7 @@ describe('getInitialRoute', () => {
   it('Fallback', () => {
     expect(
       getInitialRoute({
-        routes,
+        routes: routesMobx,
         pathname: '/testX/static',
         fallback: 'error404',
       })
@@ -51,7 +51,7 @@ describe('getInitialRoute', () => {
 
     expect(
       getInitialRoute({
-        routes,
+        routes: routesMobx,
         pathname: '/testX/foo',
         fallback: 'error404',
       })

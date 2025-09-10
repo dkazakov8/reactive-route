@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { routes } from '../../react/test/routes';
+import { routesMobx } from '../../react/test/routesMobx';
 import { clearDynamic, isDynamic, isDynamicRoute } from '../utils/dynamic';
 
 describe('isDynamic', () => {
@@ -25,7 +25,7 @@ describe('clearDynamic', () => {
 
 describe('isDynamicRoute', () => {
   it('Correctly detects', () => {
-    expect(isDynamicRoute(routes.staticRoute)).to.eq(false);
-    expect(isDynamicRoute(routes.dynamicRoute)).to.eq(true);
+    expect(isDynamicRoute(routesMobx.staticRoute)).to.eq(false);
+    expect(isDynamicRoute(routesMobx.dynamicRoute)).to.eq(true);
   });
 });

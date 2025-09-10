@@ -10,7 +10,7 @@ export default defineConfig({
       reporter: ['text', ['cobertura', { file: 'core.xml' }]],
       reportsDirectory: './.nyc_output',
       include: ['packages/*'],
-      exclude: ['packages/*/test/*'],
+      exclude: ['packages/*/test/*', 'packages/shared'],
     },
     onConsoleLog(log) {
       if (log.includes('a is not defined')) {

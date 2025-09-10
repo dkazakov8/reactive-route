@@ -6,18 +6,18 @@ import { App } from './components/App';
 import { StoreContext } from './components/StoreContext';
 import { getRouterStore } from './routerStore';
 
-const contextValue = { routerStore: getRouterStore() };
+const routerStore = await getRouterStore();
 
-const initialData = (window as any).INITIAL_DATA as typeof contextValue;
+const initialData = (window as any).INITIAL_DATA as any;
 
 async function renderSSR() {
   console.log('renderSSR');
 
-  await contextValue.routerStore.restoreFromServer(initialData.routerStore);
+  await routerStore.restoreFromServer(initialData.routerStore);
 
   hydrateRoot(
     document.getElementById('app')!,
-    <StoreContext.Provider value={contextValue}>
+    <StoreContext.Provider value={{ routerStore }}>
       <App />
     </StoreContext.Provider>
   );
@@ -26,13 +26,13 @@ async function renderSSR() {
 async function renderCSR() {
   console.log('renderCSR');
 
-  await contextValue.routerStore.restoreFromURL({
+  await routerStore.restoreFromURL({
     pathname: location.pathname + location.search,
     fallback: 'error404',
   });
 
   createRoot(document.getElementById('app')!).render(
-    <StoreContext.Provider value={contextValue}>
+    <StoreContext.Provider value={{ routerStore }}>
       <App />
     </StoreContext.Provider>
   );
