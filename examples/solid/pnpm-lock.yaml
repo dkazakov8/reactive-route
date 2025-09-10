@@ -18,8 +18,8 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(mobx@6.13.7)(react@19.1.1)
       reactive-route:
-        specifier: 0.0.1-alpha.12
-        version: 0.0.1-alpha.12
+        specifier: 0.0.1-alpha.13
+        version: 0.0.1-alpha.13
       solid-js:
         specifier: 1.9.6
         version: 1.9.6
@@ -807,8 +807,8 @@ packages:
     resolution: {integrity: sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ==}
     engines: {node: '>=0.10.0'}
 
-  reactive-route@0.0.1-alpha.12:
-    resolution: {integrity: sha512-KXs+Kz8kkctoVkqvZGS2tS5VCtteH9zYh6fnDC5hFIh03YKFQcJPs8rnIy8eLOFe6qzVi065Uv0WvHQ51q//vA==}
+  reactive-route@0.0.1-alpha.13:
+    resolution: {integrity: sha512-8n5g0mjKKEdeK7LTA/6O33U99u7i0V7cVHT9Ie3/H2WECTN/7Ecww5TJS999zMe1ilDKRaqwvEn60V2yg/CdYw==}
 
   readdirp@3.6.0:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
@@ -1649,7 +1649,7 @@ snapshots:
 
   react@19.1.1: {}
 
-  reactive-route@0.0.1-alpha.12:
+  reactive-route@0.0.1-alpha.13:
     dependencies:
       history: 5.3.0
       query-string: 7.1.3

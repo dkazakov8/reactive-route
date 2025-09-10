@@ -2,7 +2,7 @@
   "name": "reactive-route",
   "author": "Dmitry Kazakov",
   "license": "MIT",
-  "version": "0.0.1-alpha.13",
+  "version": "0.0.1-alpha.14",
   "description": "Reactive Router for different frameworks",
   "repository": {
     "type": "git",
@@ -67,37 +67,37 @@
   "packageManager": "pnpm@10.9.0",
   "exports": {
     ".": {
-      "types": "./dist/types/core/index.d.ts",
+      "types": "./dist/core/index.d.ts",
       "require": "./dist/cjs/index.js",
       "import": "./dist/esm/index.js"
     },
     "./react": {
-      "types": "./dist/types/react/index.d.ts",
+      "types": "./dist/react/index.d.ts",
       "require": "./dist/cjs/react/index.js",
       "import": "./dist/esm/react/index.js"
     },
     "./solid": {
-      "types": "./dist/types/solid/index.d.ts",
+      "types": "./dist/solid/index.d.ts",
       "require": "./dist/cjs/solid/index.js",
       "import": "./dist/esm/solid/index.js"
     },
     "./adapters/mobx": {
-      "types": "./dist/types/adapters/mobx.d.ts",
+      "types": "./dist/adapters/mobx.d.ts",
       "require": "./dist/cjs/adapters/mobx/index.js",
       "import": "./dist/esm/adapters/mobx/index.js"
     },
     "./adapters/solid": {
-      "types": "./dist/types/adapters/solid.d.ts",
+      "types": "./dist/adapters/solid.d.ts",
       "require": "./dist/cjs/adapters/solid/index.js",
       "import": "./dist/esm/adapters/solid/index.js"
     },
     "./adapters/kr-observable": {
-      "types": "./dist/types/adapters/kr-observable.d.ts",
+      "types": "./dist/adapters/kr-observable.d.ts",
       "require": "./dist/cjs/adapters/kr-observable/index.js",
       "import": "./dist/esm/adapters/kr-observable/index.js"
     }
   },
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
-  "types": "dist/types/core/index.d.ts"
+  "types": "dist/core/index.d.ts"
 }

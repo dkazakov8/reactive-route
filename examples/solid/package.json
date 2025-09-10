@@ -10,7 +10,7 @@
     "dev-ssr-observable": "tsx build.ts kr-observable ssr"
   },
   "dependencies": {
-    "reactive-route": "0.0.1-alpha.12",
+    "reactive-route": "0.0.1-alpha.13",
     "solid-js": "1.9.6",
     "ultimate-express": "2.0.9",
     "mobx": "6.13.7",
