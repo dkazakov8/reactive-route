@@ -21,5 +21,4 @@ export const adapters: TypeAdapters = {
     );
   },
   makeObservable: createMutable,
-  makeAutoObservable: createMutable,
 };

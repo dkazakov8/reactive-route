@@ -23,16 +23,25 @@ const routes = createRouterConfig({
     path: '/',
     loader: () => import('./pages/home'),
   },
-  about: {
-    path: '/about',
-    loader: () => import('./pages/about'),
-  },
   user: {
     path: '/user/:id',
     params: {
       id: (value) => /^\d+$/.test(value),
     },
+    query: {
+      phone: (value) => value.length > 0 && value.length < 10,
+    },
     loader: () => import('./pages/user'),
+  },
+  notFound: {
+    path: '/not-found',
+    props: { errorCode: 404 },
+    loader: () => import('./pages/error'),
+  },
+  internalError: {
+    path: '/internal-error',
+    props: { errorCode: 500 },
+    loader: () => import('./pages/error'),
   },
 });
 ```
@@ -52,7 +61,12 @@ const routes = createRouterConfig({
     loader: () => import('./pages/protected'),
     async beforeEnter() {
       if (!isAuthenticated()) {
-        return Promise.resolve({ route: 'login' });
+        return { route: 'login' };
+      }
+    },
+    async beforeLeave({ nextRoute }) {
+      if (nextRoute.name === 'user') {
+        throw Object.assign(new Error(''), { name: 'PREVENT_REDIRECT' });
       }
     },
   },

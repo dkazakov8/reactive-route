@@ -10,7 +10,17 @@ Use the `createRouterConfig` function to create a router configuration:
 import { createRouterConfig } from 'reactive-route';
 
 export const routes = createRouterConfig({
-  // Route definitions go here
+  // Your route definitions go here.
+  
+  // These routes are required
+  notFound: {
+    path: '/not-found',
+    loader: () => import('./pages/error'),
+  },
+  internalError: {
+    path: '/internal-error',
+    loader: () => import('./pages/error'),
+  },
 });
 ```
 
@@ -30,15 +40,15 @@ home: {
 
 ### Route Properties Reference
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `path` | `string` | The URL path for the route. Can include dynamic segments prefixed with `:` |
-| `loader` | `() => Promise<any>` | A function that returns a Promise resolving to the component |
-| `props` | `object` | Static props to pass to the component (optional) |
-| `params` | `Record<string, (value: string) => boolean>` | Validation functions for path parameters (optional) |
-| `query` | `Record<string, (value: string) => boolean>` | Validation functions for query parameters (optional) |
-| `beforeEnter` | `(config: { currentRoute, nextRoute }) => Promise<void \| { route: string, params?: object, query?: object }>` | Hook called before entering the route (optional) |
-| `beforeLeave` | `(config: { currentRoute, nextRoute }) => Promise<void>` | Hook called before leaving the route (optional) |
+| Property | Type                                                                                                           | Description                                                                                       |
+|----------|----------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| `path` | `string`                                                                                                       | The URL path for the route. Can include dynamic segments prefixed with `:`                        |
+| `loader` | `() => Promise<{ default, pageName, ...rest }>`                                                                | A function that returns a Promise resolving to the component (it should be in the default export) |
+| `props` | `Record<string, any>`                                                                                          | Static props to pass to the component (optional)                                                  |
+| `params` | `Record<string, (value: string) => boolean>`                                                                   | Validation functions for path parameters (required if route type is Dynamic)                             |
+| `query` | `Record<string, (value: string) => boolean>`                                                                   | Validation functions for query parameters (optional)                                              |
+| `beforeEnter` | `(config: { currentRoute, nextRoute }) => Promise<void \| { route: string, params?: object, query?: object }>` | Hook called before entering the route (optional)                                                  |
+| `beforeLeave` | `(config: { currentRoute, nextRoute }) => Promise<void>`                                                       | Hook called before leaving the route (optional)                                                   |
 
 ## Route Types
 
@@ -47,9 +57,9 @@ home: {
 Static routes have fixed paths without parameters:
 
 ```typescript
-about: {
-  path: '/about',
-  loader: () => import('./About'),
+home: {
+  path: '/',
+  loader: () => import('./pages/Home'),
 }
 ```
 
@@ -61,29 +71,16 @@ Dynamic routes have parameters in their paths, indicated by a colon prefix:
 user: {
   path: '/user/:id',
   params: {
-    id: (value) => /^\d+$/.test(value), // Validate that id is a number
+    id: (value) => /^\d+$/.test(value), // Validation function
   },
-  loader: () => import('./User'),
+  loader: () => import('./pages/User'),
 }
 ```
 
-In this example, the `:id` segment in the path is a dynamic parameter. The `params` object defines a validation function for the `id` parameter.
+Validation function is required and if it's not satisfied, the user will be redirected to "notFound" route.
+So, if the page is rendered, be sure that all the params are validated and present in `router.currentRoute`
 
-### Nested Routes
-
-You can create nested routes by using slashes in the path:
-
-```typescript
-userProfile: {
-  path: '/user/:id/profile',
-  params: {
-    id: (value) => /^\d+$/.test(value),
-  },
-  loader: () => import('./UserProfile'),
-}
-```
-
-### Query Parameters
+### Routes with Query Parameters
 
 You can define validation for query parameters:
 
@@ -91,134 +88,54 @@ You can define validation for query parameters:
 search: {
   path: '/search',
   query: {
-    q: (value) => value && value.length > 0, // Validate that q is not empty
+    text: (value) => value.length > 0,
   },
-  loader: () => import('./Search'),
+  loader: () => import('./pages/Search'),
 }
 ```
+
+Validation function is required and if it's not satisfied, the parameter will be inaccessible from the
+store. It means that all the query parameters are optional and may be `undefined` in `router.currentRoute`
 
 ## Navigation Guards
 
-Navigation guards allow you to control the navigation flow in your application.
+Navigation guards allow you to control the navigation flow in your application. Both are async functions
 
-### beforeEnter
+The `beforeEnter` hook is called before entering a route. It can be used to redirect to another route, 
+to perform authentication checks and to load some data.
 
-The `beforeEnter` hook is called before entering a route. It can be used to redirect to another route or to perform authentication checks:
+The `beforeLeave` hook is called before leaving a route. It can be used to prevent navigation or 
+to show a confirmation dialog.
 
 ```typescript
 dashboard: {
-  path: '/dashboard',
-  beforeEnter(config) {
+  path: '/dashboard', 
+  loader: () => import('./pages/protected'),
+  async beforeEnter() {
+    await api.loadUser();
+    
     if (!isAuthenticated()) {
-      // Redirect to login if not authenticated
-      return Promise.resolve({ route: 'login' });
+      return { route: 'login' };
     }
-    return Promise.resolve();
+    
+    await api.loadDashboard();
   },
-  loader: () => import('./Dashboard'),
-}
-```
-
-### beforeLeave
-
-The `beforeLeave` hook is called before leaving a route. It can be used to prevent navigation or to show a confirmation dialog:
-
-```typescript
-editor: {
-  path: '/editor',
-  beforeLeave(config) {
-    if (hasUnsavedChanges()) {
-      // Prevent navigation if there are unsaved changes
-      throw new Error('PREVENT_REDIRECT');
+  async beforeLeave({ nextRoute }) {
+    const hasUnsavedChanges = await api.checkSavedForm();
+    
+    if (hasUnsavedChanges) {
+      throw Object.assign(new Error(''), { name: 'PREVENT_REDIRECT' });
     }
-    return Promise.resolve();
+    
+    if (nextRoute.name === 'user') {
+      throw Object.assign(new Error(''), { name: 'PREVENT_REDIRECT' });
+    }
   },
-  loader: () => import('./Editor'),
 }
 ```
 
-## Error Routes
-
-It's recommended to define special routes for handling errors:
-
-```typescript
-error404: {
-  path: '/404',
-  props: { errorCode: 404 },
-  loader: () => import('./Error'),
-},
-error500: {
-  path: '/500',
-  props: { errorCode: 500 },
-  loader: () => import('./Error'),
-}
-```
-
-These routes can be used as fallbacks when a route is not found or when an error occurs during navigation.
-
-## Example Configuration
-
-Here's a complete example of a router configuration:
-
-```typescript
-import { createRouterConfig } from 'reactive-route';
-
-export const routes = createRouterConfig({
-  home: {
-    path: '/',
-    loader: () => import('./pages/Home'),
-  },
-  about: {
-    path: '/about',
-    loader: () => import('./pages/About'),
-  },
-  user: {
-    path: '/user/:id',
-    params: {
-      id: (value) => /^\d+$/.test(value),
-    },
-    loader: () => import('./pages/User'),
-  },
-  userProfile: {
-    path: '/user/:id/profile',
-    params: {
-      id: (value) => /^\d+$/.test(value),
-    },
-    loader: () => import('./pages/UserProfile'),
-  },
-  search: {
-    path: '/search',
-    query: {
-      q: (value) => value && value.length > 0,
-    },
-    loader: () => import('./pages/Search'),
-  },
-  dashboard: {
-    path: '/dashboard',
-    beforeEnter(config) {
-      if (!isAuthenticated()) {
-        return Promise.resolve({ route: 'login' });
-      }
-      return Promise.resolve();
-    },
-    loader: () => import('./pages/Dashboard'),
-  },
-  login: {
-    path: '/login',
-    loader: () => import('./pages/Login'),
-  },
-  error404: {
-    path: '/404',
-    props: { errorCode: 404 },
-    loader: () => import('./pages/Error'),
-  },
-  error500: {
-    path: '/500',
-    props: { errorCode: 500 },
-    loader: () => import('./pages/Error'),
-  },
-});
-```
+Uncatched errors in `beforeEnter` or `beforeLeave` will lead to the rendering of "internalError" route,
+so be sure to handle errors here with `try-catch` or `Promise.catch()`.
 
 ## Next Steps
 

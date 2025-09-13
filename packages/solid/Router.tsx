@@ -73,7 +73,7 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
         config.loadedComponentName = currentRouteName;
         config.loadedComponentPage = componentConfig.pageName;
         // @ts-ignore
-        config[Symbol.for('$adm')]?.batch();
+        // config[Symbol.for('$adm')]?.batch();
       });
     });
   }
@@ -85,7 +85,9 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
   props.routerStore.adapters.autorun(() => setLoadedComponent());
 
   return (
+    // @ts-ignore
     <Show when={config.loadedComponentName}>
+      {/* @ts-ignore */}
       <Dynamic
         component={(props.routes[config.loadedComponentName!]?.component || undefined) as any}
         {...config.currentProps}

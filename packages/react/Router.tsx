@@ -53,7 +53,7 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
         props.routerStore.adapters.batch(() => {
           config.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
           // @ts-ignore
-          config[Symbol.for('$adm')]?.batch();
+          // config[Symbol.for('$adm')]?.batch();
         });
         preventRedirect = true;
       }
@@ -71,7 +71,7 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
       config.loadedComponentPage = componentConfig.pageName;
 
       // @ts-ignore
-      config[Symbol.for('$adm')]?.batch();
+      // config[Symbol.for('$adm')]?.batch();
     });
   }, []);
 

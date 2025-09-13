@@ -7,9 +7,7 @@ export type TypeAdapters = {
   autorun: (cb: () => void) => any;
   replaceObject: <TObj extends Record<string, any>>(obj: TObj, newObj: TObj) => void;
   makeObservable: <TObj extends Record<string, any>>(obj: TObj) => TObj;
-  makeAutoObservable: (...args: Array<any>) => any;
   observer?: (comp: any) => any;
-  subscribe?: (target: any, cb: () => void, keys: Set<any>) => any;
 };
 
 export type TypeCreateRouterStore<

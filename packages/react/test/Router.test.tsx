@@ -15,12 +15,11 @@ const prepareParamsArray: Array<TypeOptions> = [
   },
 ];
 
-describe('Router', () => {
-  prepareParamsArray.forEach((prepareParams) => {
-    async function wrap(cb: () => Promise<void>) {
-      await cb();
-    }
-
+prepareParamsArray.forEach((prepareParams) => {
+  async function wrap(cb: () => Promise<void>) {
+    await cb();
+  }
+  describe(`Router + [${prepareParams.reactivity}]`, () => {
     it('Only beforeSetPageComponent called on first render', async () => {
       const { routerStore, checkSpy, calls, render } = prepareComponentWithSpy(prepareParams);
 

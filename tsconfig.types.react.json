@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "include": ["packages"],
+  "exclude": ["packages/**/test/*", "packages/shared", "packages/solid"],
   "compilerOptions": {
     "outDir": "./dist",
     "noEmit": false,

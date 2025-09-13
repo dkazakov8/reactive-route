@@ -6,28 +6,37 @@ The router store is the central piece that manages the state of the router and p
 
 ```typescript
 import { createRouterStore } from 'reactive-route';
-import { adapters } from 'reactive-route/adapters/mobx'; // or any other adapter
+import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
 import { routes } from './routes';
 
-export function getRouterStore() {
-  return createRouterStore({
-    routes,
-    routeError500: routes.error500, // Fallback route for errors
-    adapters,
-  });
+//  If you prefer Context and SSR
+export function getRouter() {
+  return createRouterStore({ routes, adapters });
 }
-```
 
-## Router Store Configuration
+//  If you prefer singletons
+export const router = createRouterStore({ routes, adapters })
+```
 
 The `createRouterStore` function accepts an object with the following properties:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `routes` | `object` | The router configuration created with `createRouterConfig` |
-| `routeError500` | `object` | The route to use when an error occurs |
-| `adapters` | `object` | Adapters for the state management system |
+| Property | Type                  | Description |
+|----------|-----------------------|-------------|
+| `routes` | `ReturnType<typeof createRouterConfig>` | The router configuration |
+| `adapters` | `TypeAdapters`              | Adapters for the state management system |
+
+You may pass your own adapters if they satisfy the model
+
+```typescript
+type TypeAdapters = {
+  batch: (cb: () => void) => void;
+  autorun: (cb: () => void) => any;
+  replaceObject: <TObj extends Record<string, any>>(obj: TObj, newObj: TObj) => void;
+  makeObservable: <TObj extends Record<string, any>>(obj: TObj) => TObj;
+  observer?: (comp: any) => any;
+};
+```
 
 ## Router Store API
 
@@ -38,66 +47,93 @@ The router store provides several methods for navigation and state management:
 Navigates to a specified route:
 
 ```typescript
-routerStore.redirectTo({
+await routerStore.redirectTo({
   route: 'about',
-});
-```
-
-With parameters:
-
-```typescript
-routerStore.redirectTo({
-  route: 'user',
+  // with dynamic parameters
   params: { id: '123' },
+  // with query parameters
+  query: { q: 's' },
+  // if you want to replace history state instead of pushing,
+  // the user will not be able to come back
+  noHistoryPush: true,
 });
 ```
 
-With query parameters:
+This function is fully TypeScript-typed, and TypeScript hints will be shown for autocomplete.
 
 ```typescript
-routerStore.redirectTo({
-  route: 'search',
-  query: { q: 'reactive-route' },
+const routes = createRouterConfig({
+  static: {
+    path: '/static',
+    loader: () => import('./pages/static'),
+  },
+  dynamic: {
+    path: '/page/:foo',
+    params: {
+      foo: (value: string) => value.length > 0,
+    },
+    query: {
+      q: (value: string) => value.length > 0,
+    },
+    loader: () => import('./pages/dynamic'),
+  },
 });
+
+// Good
+redirectTo({ route: 'static' })
+redirectTo({ route: 'dynamic', params: { foo: 'bar' } })
+redirectTo({ route: 'dynamic', params: { foo: 'bar' }, query: { q: 's' } })
+
+// TS errors
+redirectTo({ });
+redirectTo({ route: 'nonExisting' });
+redirectTo({ route: 'static', params: {} });
+redirectTo({ route: 'dynamic' });
+redirectTo({ route: 'dynamic', params: {} });
+redirectTo({ route: 'dynamic', params: { a: 'b' } });
+redirectTo({ route: 'dynamic', params: { foo: 'bar' }, query: { some: 'value' } });
 ```
 
 ### restoreFromURL
 
-Initializes the router from the current URL:
+Initializes the basic route from the current URL:
 
 ```typescript
+// Client-side
 await routerStore.restoreFromURL({
   pathname: location.pathname + location.search,
-  fallback: 'notFound', // Route to use if the URL doesn't match any route
+});
+
+// Server-side
+await routerStore.restoreFromURL({
+  pathname: req.originalUrl,
 });
 ```
 
 ### restoreFromServer
 
-Initializes the router from server-side data (for SSR):
+Initializes the basic route from an object, for example SSR-prepared data:
 
 ```typescript
-await routerStore.restoreFromServer(serverData);
+await routerStore.restoreFromServer({ routesHistory, currentRoute });
 ```
 
-### getCurrentRoute
-
-Returns the current route:
+### currentRoute
 
 ```typescript
-const currentRoute = routerStore.getCurrentRoute();
+const currentRoute = routerStore.currentRoute;
 ```
 
 The current route object has the following properties:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `name` | `string` | The name of the route |
-| `path` | `string` | The path of the route |
-| `params` | `object` | The parameters of the route |
-| `query` | `object` | The query parameters of the route |
-| `Component` | `React.ComponentType` or `SolidJS.Component` | The component for the route |
-| `props` | `object` | The props for the component |
+| Property | Type                                                  | Description                                                       |
+|----------|-------------------------------------------------------|-------------------------------------------------------------------|
+| `name` | `string (keyof typeof routes)`                        | The name of the route                                             |
+| `path` | `string (typeof routes[keyof typeof routes]['path'])` | The path of the route                                             |
+| `params` | `Record<string, string>`                              | The parameters of the route                                       |
+| `query` | `Record<string, string>`                              | The query parameters of the route                                 |
+| `props` | `Record<string, any>`                                 | The props for the component                                       |
+| `pageName` | `string`                                 | The name of the page, if exported from the page loader (optional) |
 
 ## Using the Router Store
 

@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       kr-observable:
-        specifier: 3.0.23
-        version: 3.0.23
+        specifier: 3.1.1
+        version: 3.1.1
       mobx:
         specifier: 6.13.7
         version: 6.13.7
@@ -18,8 +18,8 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(mobx@6.13.7)(react@19.1.1)
       reactive-route:
-        specifier: 0.0.1-alpha.15
-        version: 0.0.1-alpha.15
+        specifier: 0.0.1-alpha.16
+        version: 0.0.1-alpha.16
       solid-js:
         specifier: 1.9.6
         version: 1.9.6
@@ -705,8 +705,8 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  kr-observable@3.0.23:
-    resolution: {integrity: sha512-g5EaBNKUKOyzENqxlJ13onxN3ZZnvuW1vNpN27j+qdUIgq+NALf8V5+akifrFn7qxh5h+6i9bg8VSB21VGD+fw==}
+  kr-observable@3.1.1:
+    resolution: {integrity: sha512-EL2lFgS914V27ipmhEBHS8ZYEcg540ZDOKt8Xh4Am1YzR6+JNT4U9BhGg0bce+5kUd4jLSPYVPPMtvjiC/QKsQ==}
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
@@ -807,8 +807,8 @@ packages:
     resolution: {integrity: sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ==}
     engines: {node: '>=0.10.0'}
 
-  reactive-route@0.0.1-alpha.15:
-    resolution: {integrity: sha512-+30ug9QprcKIpYapmT+lR2sikRkRbZnOkA5HMROOEmB5pobFqec4mLKByD+XSSO0O41oOuJFbNWDc/JD6e7IWA==}
+  reactive-route@0.0.1-alpha.16:
+    resolution: {integrity: sha512-5XBM6SEdXkgpWKPbDHNT4vCCGHivTakdO/hNiOWuD/oLocuTWROlOnBCvbbKp6TrFUCigJanaG70ZHVd2aFabA==}
 
   readdirp@3.6.0:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
@@ -1577,7 +1577,7 @@ snapshots:
 
   json5@2.2.3: {}
 
-  kr-observable@3.0.23: {}
+  kr-observable@3.1.1: {}
 
   lru-cache@5.1.1:
     dependencies:
@@ -1649,7 +1649,7 @@ snapshots:
 
   react@19.1.1: {}
 
-  reactive-route@0.0.1-alpha.15:
+  reactive-route@0.0.1-alpha.16:
     dependencies:
       history: 5.3.0
       query-string: 7.1.3

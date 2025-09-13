@@ -36,7 +36,6 @@ export default defineConfig({
         {
           text: 'Core Concepts',
           items: [
-            { text: 'Route Types', link: '/guide/route-types' },
             { text: 'Router Configuration', link: '/guide/router-configuration' },
             { text: 'Router Store', link: '/guide/router-store' },
             { text: 'Navigation Guards', link: '/guide/navigation-guards' },

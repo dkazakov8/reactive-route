@@ -2,7 +2,7 @@
   "name": "reactive-route",
   "author": "Dmitry Kazakov",
   "license": "MIT",
-  "version": "0.0.1-alpha.15",
+  "version": "0.0.1-alpha.16",
   "description": "Reactive Router for different frameworks",
   "repository": {
     "type": "git",
@@ -48,7 +48,7 @@
     "esbuild": "0.25.9",
     "global-jsdom": "26.0.0",
     "husky": "9.1.7",
-    "kr-observable": "3.0.23",
+    "kr-observable": "3.1.1",
     "lint-staged": "16.1.6",
     "lodash": "4.17.21",
     "mobx": "6.13.7",

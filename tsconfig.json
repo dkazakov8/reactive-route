@@ -1,6 +1,6 @@
 {
   "include": ["scripts", "packages", "./*.mjs"],
-  "exclude": ["packages/**/test/*", "packages/shared", "packages/solid"],
+  "exclude": ["packages/solid"],
   "compilerOptions": {
     "jsx": "react-jsx",
     "outDir": "dist",

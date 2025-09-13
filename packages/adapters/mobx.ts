@@ -1,4 +1,4 @@
-import { autorun, makeAutoObservable, observable, runInAction } from 'mobx';
+import { autorun, observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { TypeAdapters } from 'reactive-route';
 
@@ -17,5 +17,4 @@ export const adapters: TypeAdapters = {
     });
   },
   makeObservable: observable,
-  makeAutoObservable: makeAutoObservable,
 };

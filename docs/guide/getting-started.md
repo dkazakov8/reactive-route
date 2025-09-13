@@ -5,6 +5,7 @@ This guide will help you set up Reactive Route in your application and create yo
 ### Installation
 
 The package includes the core router, React and Solid.js implementations, and adapters for different state management solutions.
+Note that every combination requires corresponding libraries to be installed in your project.
 
 ::: code-group
 ```sh [npm]
@@ -44,25 +45,32 @@ import { createRouterConfig } from 'reactive-route';
 export const routes = createRouterConfig({
   home: {
     path: '/',
-    loader: () => import('./pages/Home'),
-  },
-  about: {
-    path: '/about',
-    loader: () => import('./pages/About'),
+    loader: () => import('./pages/home'),
   },
   user: {
     path: '/user/:id',
     params: {
       id: (value) => /^\d+$/.test(value),
     },
-    loader: () => import('./pages/User'),
+    query: {
+      phone: (value) => value.length > 0 && value.length < 10,
+    },
+    loader: () => import('./pages/user'),
   },
   notFound: {
-    path: '/404',
-    loader: () => import('./pages/NotFound'),
+    path: '/not-found',
+    props: { errorCode: 404 },
+    loader: () => import('./pages/error'),
+  },
+  internalError: {
+    path: '/internal-error',
+    props: { errorCode: 500 },
+    loader: () => import('./pages/error'),
   },
 });
 ```
+
+Pages "notFound" and "internalError" are required for error handling in the library.
 
 ### 2. Create a Router Store
 
@@ -75,13 +83,13 @@ import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
 import { routes } from './routes';
 
-//  If you prefer Context
+//  If you prefer Context and SSR
 export function getRouter() {
-  return createRouterStore({ routes, routeError500: routes.notFound, adapters });
+  return createRouterStore({ routes, adapters });
 }
 
 //  If you prefer singletons
-export const router = createRouterStore({ routes, routeError500: routes.notFound, adapters })
+export const router = createRouterStore({ routes, adapters })
 ```
 
 The recommended way is to use Context to pass it to UI components to avoid circular dependencies,
@@ -129,7 +137,6 @@ const router = getRouterStore();
 
 await router.restoreFromURL({
   pathname: location.pathname + location.search,
-  fallback: 'notFound',
 });
 
 render(
