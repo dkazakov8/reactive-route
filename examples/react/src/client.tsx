@@ -26,10 +26,7 @@ async function renderSSR() {
 async function renderCSR() {
   console.log('renderCSR');
 
-  await routerStore.restoreFromURL({
-    pathname: location.pathname + location.search,
-    fallback: 'error404',
-  });
+  await routerStore.restoreFromURL({ pathname: location.pathname + location.search });
 
   createRoot(document.getElementById('app')!).render(
     <StoreContext.Provider value={{ routerStore }}>

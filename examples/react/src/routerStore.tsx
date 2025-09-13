@@ -8,5 +8,5 @@ export async function getRouterStore() {
       ? await import('reactive-route/adapters/mobx').then((m) => m.adapters)
       : await import('reactive-route/adapters/kr-observable').then((m) => m.adapters);
 
-  return createRouterStore({ routes, routeError500: routes.error500, adapters });
+  return createRouterStore({ routes, adapters });
 }

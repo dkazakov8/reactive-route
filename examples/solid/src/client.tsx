@@ -37,10 +37,8 @@ async function renderSSR() {
 async function renderCSR() {
   console.log('renderCSR');
 
-  await contextValue.routerStore.restoreFromURL({
-    pathname: location.pathname + location.search,
-    fallback: 'error404',
-  });
+  await contextValue.routerStore.restoreFromURL({ pathname: location.pathname + location.search });
+
   render(
     () => (
       <StoreContext.Provider value={contextValue}>

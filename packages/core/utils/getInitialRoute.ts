@@ -4,14 +4,12 @@ import { findRouteByPathname } from './findRouteByPathname';
 import { getDynamicValues } from './getDynamicValues';
 import { getQueryValues } from './getQueryValues';
 
-export function getInitialRoute<TRoutes extends Record<string, TypeRoute>>(params: {
-  routes: TRoutes;
-  pathname: string;
-  fallback: TRoutes[keyof TRoutes]['name'];
-}): TypeRedirectToParams<TRoutes, keyof TRoutes> {
+export function getInitialRoute<
+  TRoutes extends Record<string | 'notFound' | 'internalError', TypeRoute>,
+>(params: { routes: TRoutes; pathname: string }): TypeRedirectToParams<TRoutes, keyof TRoutes> {
   const route =
     findRouteByPathname({ pathname: params.pathname, routes: params.routes }) ||
-    params.routes[params.fallback];
+    params.routes.notFound;
 
   return {
     route: route.name as keyof TRoutes,

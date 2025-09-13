@@ -52,12 +52,12 @@ export const routesKrObservable = createRouterConfig({
     },
     loader: (() => import('./pages/dynamic/DynamicKrObservable')) as any,
   },
-  error404: {
+  notFound: {
     path: '/error404',
     props: { errorNumber: 404 },
     loader: (() => import('./pages/error/ErrorKrObservable')) as any,
   },
-  error500: {
+  internalError: {
     path: '/error500',
     props: { errorNumber: 500 },
     loader: (() => import('./pages/error/ErrorKrObservable')) as any,

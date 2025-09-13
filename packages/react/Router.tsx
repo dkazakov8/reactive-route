@@ -22,7 +22,6 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
         ...getInitialRoute({
           routes: props.routes,
           pathname: history.location.pathname,
-          fallback: 'error404',
         }),
       });
     });

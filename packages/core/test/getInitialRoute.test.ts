@@ -9,7 +9,6 @@ describe('getInitialRoute', () => {
       getInitialRoute({
         routes: routesMobx,
         pathname: '/test/static',
-        fallback: 'error404',
       })
     ).to.deep.eq({ route: 'staticRoute', params: {}, query: {} });
 
@@ -17,7 +16,6 @@ describe('getInitialRoute', () => {
       getInitialRoute({
         routes: routesMobx,
         pathname: '/test/static?q=test&bar=non',
-        fallback: 'error404',
       })
     ).to.deep.eq({ route: 'staticRoute', params: {}, query: { q: 'test' } });
   });
@@ -27,7 +25,6 @@ describe('getInitialRoute', () => {
       getInitialRoute({
         routes: routesMobx,
         pathname: '/test/foo',
-        fallback: 'error404',
       })
     ).to.deep.eq({ route: 'dynamicRoute', params: { static: 'foo' }, query: {} });
 
@@ -35,7 +32,6 @@ describe('getInitialRoute', () => {
       getInitialRoute({
         routes: routesMobx,
         pathname: '/test/foo?q=test',
-        fallback: 'error404',
       })
     ).to.deep.eq({ route: 'dynamicRoute', params: { static: 'foo' }, query: { q: 'test' } });
   });
@@ -45,16 +41,14 @@ describe('getInitialRoute', () => {
       getInitialRoute({
         routes: routesMobx,
         pathname: '/testX/static',
-        fallback: 'error404',
       })
-    ).to.deep.eq({ route: 'error404', params: {}, query: {} });
+    ).to.deep.eq({ route: 'notFound', params: {}, query: {} });
 
     expect(
       getInitialRoute({
         routes: routesMobx,
         pathname: '/testX/foo',
-        fallback: 'error404',
       })
-    ).to.deep.eq({ route: 'error404', params: {}, query: {} });
+    ).to.deep.eq({ route: 'notFound', params: {}, query: {} });
   });
 });

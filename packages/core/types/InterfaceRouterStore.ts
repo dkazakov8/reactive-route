@@ -12,14 +12,17 @@ export type TypeAdapters = {
   subscribe?: (target: any, cb: () => void, keys: Set<any>) => any;
 };
 
-export type TypeCreateRouterStore<TRoutes extends Record<string, TypeRoute>> = {
+export type TypeCreateRouterStore<
+  TRoutes extends Record<string | 'notFound' | 'internalError', TypeRoute>,
+> = {
   routes: TRoutes;
-  routeError500: TRoutes[keyof TRoutes];
   lifecycleParams?: Array<any>;
   adapters: TypeAdapters;
 };
 
-export type InterfaceRouterStore<TRoutes extends Record<string, TypeRoute>> = {
+export type InterfaceRouterStore<
+  TRoutes extends Record<string | 'notFound' | 'internalError', TypeRoute>,
+> = {
   adapters: TypeAdapters;
   currentRoute: TypeCurrentRoute<TRoutes[keyof TRoutes]>;
   routesHistory: Array<string>;
@@ -27,9 +30,6 @@ export type InterfaceRouterStore<TRoutes extends Record<string, TypeRoute>> = {
   redirectTo<TRouteName extends keyof TRoutes>(
     config: TypeRedirectToParams<TRoutes, TRouteName>
   ): Promise<void>;
-  restoreFromURL(params: {
-    pathname: string;
-    fallback: TRoutes[keyof TRoutes]['name'];
-  }): Promise<void>;
+  restoreFromURL(params: { pathname: string }): Promise<void>;
   restoreFromServer(obj: InterfaceRouterStore<TRoutes>): Promise<void>;
 };

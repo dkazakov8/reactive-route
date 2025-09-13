@@ -36,10 +36,7 @@ app.get('*', async (req, res) => {
   const contextValue = { routerStore };
 
   try {
-    await contextValue.routerStore.restoreFromURL({
-      pathname: req.originalUrl,
-      fallback: 'error404',
-    });
+    await contextValue.routerStore.restoreFromURL({ pathname: req.originalUrl });
   } catch (error: any) {
     if (error.name === 'REDIRECT') {
       console.log('redirect', error.message);

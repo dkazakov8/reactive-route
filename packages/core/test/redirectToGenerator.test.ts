@@ -96,7 +96,6 @@ describe('redirectToGenerator', () => {
     const initialRoute = getInitialRoute({
       routes: customRoutes,
       pathname: customRoutes.staticRoute.path,
-      fallback: 'error404',
     });
 
     const history: Array<TypeRouteWithParams> = [];
@@ -116,14 +115,13 @@ describe('redirectToGenerator', () => {
     const initialRoute = getInitialRoute({
       routes: customRoutes,
       pathname: '/testX/static',
-      fallback: 'error404',
     });
 
     const history: Array<TypeRouteWithParams> = [];
 
     await routerStore.redirectTo(initialRoute);
 
-    history.push(cloneWithParams({ route: customRoutes.error404 }));
+    history.push(cloneWithParams({ route: customRoutes.notFound }));
 
     checkHistoryAndCurrent(routerStore, history);
   });
@@ -239,7 +237,12 @@ describe('redirectToGenerator', () => {
           return Promise.resolve();
         }) as any,
       },
-      error500: {
+      notFound: {
+        path: '/error400',
+        props: { errorNumber: 400 },
+        loader: (() => import('../../react/test/pages/error/./ErrorMobx')) as any,
+      },
+      internalError: {
         path: '/error500',
         props: { errorNumber: 500 },
         loader: (() => import('../../react/test/pages/error/./ErrorMobx')) as any,
@@ -305,7 +308,7 @@ describe('redirectToGenerator', () => {
       expect(error.message).to.deep.eq('a is not defined');
 
       checkHistory(routerStore, history);
-      checkCurrent(routerStore, cloneWithParams({ route: customRoutes.error500 }));
+      checkCurrent(routerStore, cloneWithParams({ route: customRoutes.internalError }));
     }
 
     checkSpy();
@@ -325,7 +328,7 @@ describe('redirectToGenerator', () => {
 
     // Front does not throw an exception on buggy code, replace currentRoute with error500
     checkHistory(routerStore, history);
-    checkCurrent(routerStore, cloneWithParams({ route: customRoutes.error500 }));
+    checkCurrent(routerStore, cloneWithParams({ route: customRoutes.internalError }));
   });
 
   it('Before leave', async () => {
@@ -385,7 +388,12 @@ describe('redirectToGenerator', () => {
           return Promise.resolve();
         },
       },
-      error500: {
+      notFound: {
+        path: '/error400',
+        props: { errorNumber: 400 },
+        loader: (() => import('../../react/test/pages/error/./ErrorMobx')) as any,
+      },
+      internalError: {
         path: '/error500',
         props: { errorNumber: 500 },
         loader: (() => import('../../react/test/pages/error/./ErrorMobx')) as any,
@@ -464,7 +472,7 @@ describe('redirectToGenerator', () => {
       expect(error.message).to.deep.eq('a is not defined');
 
       checkHistory(routerStore, history);
-      checkCurrent(routerStore, cloneWithParams({ route: customRoutes.error500 }));
+      checkCurrent(routerStore, cloneWithParams({ route: customRoutes.internalError }));
     }
 
     await routerStore.redirectTo({ route: 'buggyCode', asClient: true });
@@ -478,7 +486,7 @@ describe('redirectToGenerator', () => {
       expect(error.message).to.deep.eq('a is not defined');
 
       checkHistory(routerStore, history);
-      checkCurrent(routerStore, cloneWithParams({ route: customRoutes.error500 }));
+      checkCurrent(routerStore, cloneWithParams({ route: customRoutes.internalError }));
     }
   });
 
@@ -628,7 +636,12 @@ describe('redirectToGenerator', () => {
           return Promise.resolve();
         }) as any,
       },
-      error500: {
+      notFound: {
+        path: '/error400',
+        props: { errorNumber: 400 },
+        loader: (() => import('../../react/test/pages/error/./ErrorMobx')) as any,
+      },
+      internalError: {
         path: '/error500',
         props: { errorNumber: 500 },
         loader: (() => import('../../react/test/pages/error/./ErrorMobx')) as any,

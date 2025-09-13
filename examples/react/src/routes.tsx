@@ -42,13 +42,13 @@ export const routes = createRouterConfig({
     loader: () => import('./pages/prevent'),
   },
   // this page is necessary
-  error404: {
+  notFound: {
     path: '/error404',
     props: { errorCode: 404 },
     loader: () => import('./pages/error'),
   },
   // this page is necessary
-  error500: {
+  internalError: {
     path: '/error500',
     props: { errorCode: 500 },
     loader: () => import('./pages/error'),

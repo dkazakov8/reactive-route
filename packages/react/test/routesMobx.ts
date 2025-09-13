@@ -52,12 +52,12 @@ export const routesMobx = createRouterConfig({
     },
     loader: (() => import('./pages/dynamic/DynamicMobx')) as any,
   },
-  error404: {
+  notFound: {
     path: '/error404',
     props: { errorNumber: 404 },
     loader: (() => import('./pages/error/ErrorMobx')) as any,
   },
-  error500: {
+  internalError: {
     path: '/error500',
     props: { errorNumber: 500 },
     loader: (() => import('./pages/error/ErrorMobx')) as any,

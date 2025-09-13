@@ -17,4 +17,6 @@ biome.json
 .github
 /docs
 tsconfig.json
-tsconfig.types.json
+tsconfig.solid.json
+tsconfig.types.react.json
+tsconfig.types.solid.json

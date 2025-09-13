@@ -24,7 +24,7 @@ export function getData<TRoutes extends Record<string, TypeRoute>>(
   customRoutes: TRoutes,
   lifecycleParams?: any
 ) {
-  let routes = customRoutes as any;
+  let routes = customRoutes;
   if (!routes && options.renderer === 'react') {
     if (options.reactivity === 'mobx') routes = routesMobx as any;
     if (options.reactivity === 'kr-observable') routes = routesKrObservable as any;
@@ -39,7 +39,6 @@ export function getData<TRoutes extends Record<string, TypeRoute>>(
   const routerStore = createRouterStore({
     routes,
     lifecycleParams,
-    routeError500: customRoutes.error500 as any,
     adapters,
   });
 

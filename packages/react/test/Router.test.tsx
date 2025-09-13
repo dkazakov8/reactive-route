@@ -147,7 +147,7 @@ describe('Router', () => {
       const container = render();
 
       await wrap(async () => {
-        await routerStore.redirectTo({ route: 'error404' });
+        await routerStore.redirectTo({ route: 'notFound' });
       });
 
       calls.renderTimes += 1;
@@ -158,7 +158,7 @@ describe('Router', () => {
       checkSpy();
 
       await wrap(async () => {
-        await routerStore.redirectTo({ route: 'error500' });
+        await routerStore.redirectTo({ route: 'internalError' });
       });
 
       expect(container.innerHTML).to.eq('Error 500');

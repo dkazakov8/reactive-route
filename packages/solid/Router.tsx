@@ -31,7 +31,6 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
         ...getInitialRoute({
           routes: props.routes,
           pathname: history.location.pathname,
-          fallback: 'error404',
         }),
       });
     });

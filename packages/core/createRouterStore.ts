@@ -11,10 +11,11 @@ import { history } from './utils/history';
 import { loadComponentToConfig } from './utils/loadComponentToConfig';
 import { replaceDynamicValues } from './utils/replaceDynamicValues';
 
-export function createRouterStore<TRoutes extends Record<string, TypeRoute>>({
+export function createRouterStore<
+  TRoutes extends Record<string | 'notFound' | 'internalError', TypeRoute>,
+>({
   adapters,
   routes,
-  routeError500,
   lifecycleParams,
 }: TypeCreateRouterStore<TRoutes>): InterfaceRouterStore<TRoutes> {
   const routerStore: InterfaceRouterStore<TRoutes> = adapters.makeObservable({
@@ -41,7 +42,7 @@ export function createRouterStore<TRoutes extends Record<string, TypeRoute>>({
   };
 
   routerStore.restoreFromURL = function restoreFromURL(params) {
-    return routerStore.redirectTo(getInitialRoute({ routes, ...params }));
+    return routerStore.redirectTo(getInitialRoute({ routes, pathname: params.pathname }));
   };
 
   routerStore.redirectTo = async function redirectTo<TRouteName extends keyof TRoutes>(
@@ -217,16 +218,16 @@ export function createRouterStore<TRoutes extends Record<string, TypeRoute>>({
 
       console.error(error);
 
-      await loadComponentToConfig({ route: routeError500 });
+      await loadComponentToConfig({ route: routes.internalError });
 
       adapters.batch(() => {
         adapters.replaceObject(routerStore.currentRoute, {
-          name: routeError500.name,
-          path: routeError500.path,
-          props: routes[routeError500.name].props,
+          name: routes.internalError.name,
+          path: routes.internalError.path,
+          props: routes[routes.internalError.name].props,
           query: {} as any,
           params: {} as any,
-          pageName: routes[routeError500.name].pageName,
+          pageName: routes[routes.internalError.name].pageName,
         });
 
         routerStore.isRedirecting = false;
