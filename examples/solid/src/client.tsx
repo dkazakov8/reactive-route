@@ -1,9 +1,10 @@
 import { hydrate, render } from 'solid-js/web';
 
-import './style.css';
+import '../../shared/style.css';
 
 import { enableObservable } from 'kr-observable/solidjs';
 
+import { unescapeAllStrings } from '../../shared/utils/unescapeAllStrings';
 import { App } from './components/App';
 import { StoreContext } from './components/StoreContext';
 import { getRouterStore } from './routerStore';
@@ -16,7 +17,7 @@ const routerStore = await getRouterStore();
 
 const contextValue = { routerStore };
 
-const initialData = (window as any).INITIAL_DATA as typeof contextValue;
+const initialData = unescapeAllStrings((window as any).INITIAL_DATA as any);
 
 async function renderSSR() {
   console.log('renderSSR');

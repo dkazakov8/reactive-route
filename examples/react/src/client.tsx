@@ -1,14 +1,15 @@
 import { createRoot, hydrateRoot } from 'react-dom/client';
 
-import './style.css';
+import '../../shared/style.css';
 
+import { unescapeAllStrings } from '../../shared/utils/unescapeAllStrings';
 import { App } from './components/App';
 import { StoreContext } from './components/StoreContext';
 import { getRouterStore } from './routerStore';
 
 const routerStore = await getRouterStore();
 
-const initialData = (window as any).INITIAL_DATA as any;
+const initialData = unescapeAllStrings((window as any).INITIAL_DATA as any);
 
 async function renderSSR() {
   console.log('renderSSR');

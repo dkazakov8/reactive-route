@@ -134,7 +134,7 @@ async function watch() {
   fs.rmSync(outdirPath, { recursive: true, force: true });
   fs.mkdirSync(outdirPath);
   fs.mkdirSync(publicPath);
-  fs.cpSync(path.resolve(__dirname, 'src/template.html'), templatePath, { force: true });
+  fs.cpSync(path.resolve(__dirname, '../shared/template.html'), templatePath, { force: true });
 
   const ctxClient = await context(configClient);
   const ctxServer = await context(configServer);

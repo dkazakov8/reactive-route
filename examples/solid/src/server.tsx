@@ -5,10 +5,10 @@ import { enableObservable } from 'kr-observable/solidjs';
 import { generateHydrationScript, renderToString } from 'solid-js/web';
 import express from 'ultimate-express';
 
+import { escapeAllStrings } from '../../shared/utils/escapeAllStrings';
 import { App } from './components/App';
 import { StoreContext } from './components/StoreContext';
 import { getRouterStore } from './routerStore';
-import { escapeAllStrings } from './utils/escapeAllStrings';
 
 const outdirPath = path.resolve(__dirname, '../dist');
 const publicPath = path.resolve(outdirPath, 'public');

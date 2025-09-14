@@ -1,0 +1,17 @@
+import preact from '@preact/preset-vite';
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  plugins: [preact()],
+  test: {
+    include: ['./test/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    globals: true,
+    environment: 'jsdom',
+    css: true,
+  },
+  resolve: {
+    // react-router-dom specifies "module" field in package.json for ESM entry
+    // if it's not mapped, it uses the "main" field which is CommonJS that redirects to CJS preact
+    mainFields: ['module'],
+  },
+});
