@@ -9,6 +9,8 @@ state management solutions. Currently, Reactive Route provides official implemen
 
 - React + MobX
 - React + Observable
+- Preact (no compat) + MobX
+- Preact (no compat) + Observable
 - Solid.js + Solid.js reactivity
 - Solid.js + MobX
 - Solid.js + Observable

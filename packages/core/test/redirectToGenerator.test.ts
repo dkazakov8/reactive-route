@@ -2,8 +2,7 @@ import _ from 'lodash';
 import queryString from 'query-string';
 import { describe, expect, it, vi } from 'vitest';
 
-import { routesMobx } from '../../react/test/routesMobx';
-import { getData } from '../../shared/helpers';
+import { createRouterWithCustomRoutes, getRoutes } from '../../shared/helpers';
 import { createRouterConfig } from '../createRouterConfig';
 import { InterfaceRouterStore } from '../types/InterfaceRouterStore';
 import { TypeRoute } from '../types/TypeRoute';
@@ -11,6 +10,8 @@ import { TypeRouteWithParams } from '../types/TypeRouteWithParams';
 import { constants } from '../utils/constants';
 import { getInitialRoute } from '../utils/getInitialRoute';
 import { replaceDynamicValues } from '../utils/replaceDynamicValues';
+
+const routes = getRoutes({ renderer: 'react', reactivity: 'mobx' });
 
 function checkHistory(routerStore: InterfaceRouterStore<any>, history: Array<TypeRouteWithParams>) {
   expect(routerStore.routesHistory).to.deep.eq(
@@ -79,9 +80,10 @@ function cloneWithParams<TRoute extends TypeRoute>(config: {
 
 describe('redirectToGenerator', () => {
   it('Creates', async () => {
-    const customRoutes = routesMobx;
-
-    const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes);
+    const routerStore = createRouterWithCustomRoutes(
+      { renderer: 'react', reactivity: 'mobx' },
+      routes
+    );
 
     expect(typeof routerStore.redirectTo).to.deep.eq('function');
     expect(routerStore.routesHistory).to.deep.eq([]);
@@ -89,31 +91,33 @@ describe('redirectToGenerator', () => {
   });
 
   it('Sets initial route', async () => {
-    const customRoutes = routesMobx;
-
-    const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes);
+    const routerStore = createRouterWithCustomRoutes(
+      { renderer: 'react', reactivity: 'mobx' },
+      routes
+    );
 
     const initialRoute = getInitialRoute({
-      routes: customRoutes,
-      pathname: customRoutes.staticRoute.path,
+      routes: routes,
+      pathname: routes.staticRoute.path,
     });
 
     const history: Array<TypeRouteWithParams> = [];
 
     await routerStore.redirectTo(initialRoute);
 
-    history.push(cloneWithParams({ route: customRoutes.staticRoute }));
+    history.push(cloneWithParams({ route: routes.staticRoute }));
 
     checkHistoryAndCurrent(routerStore, history);
   });
 
   it('Sets initial route not found', async () => {
-    const customRoutes = routesMobx;
-
-    const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes);
+    const routerStore = createRouterWithCustomRoutes(
+      { renderer: 'react', reactivity: 'mobx' },
+      routes
+    );
 
     const initialRoute = getInitialRoute({
-      routes: customRoutes,
+      routes: routes,
       pathname: '/testX/static',
     });
 
@@ -121,21 +125,22 @@ describe('redirectToGenerator', () => {
 
     await routerStore.redirectTo(initialRoute);
 
-    history.push(cloneWithParams({ route: customRoutes.notFound }));
+    history.push(cloneWithParams({ route: routes.notFound }));
 
     checkHistoryAndCurrent(routerStore, history);
   });
 
   it('Several redirect to same route', async () => {
-    const customRoutes = routesMobx;
-
-    const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes);
+    const routerStore = createRouterWithCustomRoutes(
+      { renderer: 'react', reactivity: 'mobx' },
+      routes
+    );
 
     const history: Array<TypeRouteWithParams> = [];
 
     await routerStore.redirectTo({ route: 'staticRoute' });
 
-    history.push(cloneWithParams({ route: customRoutes.staticRoute }));
+    history.push(cloneWithParams({ route: routes.staticRoute }));
 
     checkHistoryAndCurrent(routerStore, history);
 
@@ -146,21 +151,22 @@ describe('redirectToGenerator', () => {
   });
 
   it('Several redirects', async () => {
-    const customRoutes = routesMobx;
-
-    const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes);
+    const routerStore = createRouterWithCustomRoutes(
+      { renderer: 'react', reactivity: 'mobx' },
+      routes
+    );
 
     const history: Array<TypeRouteWithParams> = [];
 
     await routerStore.redirectTo({ route: 'staticRoute' });
 
-    history.push(cloneWithParams({ route: customRoutes.staticRoute }));
+    history.push(cloneWithParams({ route: routes.staticRoute }));
 
     checkHistoryAndCurrent(routerStore, history);
 
     await routerStore.redirectTo({ route: 'dynamicRoute', params: { static: 'asd' } });
 
-    history.push(cloneWithParams({ route: customRoutes.dynamicRoute, params: { static: 'asd' } }));
+    history.push(cloneWithParams({ route: routes.dynamicRoute, params: { static: 'asd' } }));
 
     checkHistoryAndCurrent(routerStore, history);
 
@@ -180,7 +186,7 @@ describe('redirectToGenerator', () => {
 
     await routerStore.redirectTo({ route: 'dynamicRoute', params: { static: 'foo' } });
 
-    history.push(cloneWithParams({ route: customRoutes.dynamicRoute, params: { static: 'foo' } }));
+    history.push(cloneWithParams({ route: routes.dynamicRoute, params: { static: 'foo' } }));
 
     checkHistoryAndCurrent(routerStore, history);
   });
@@ -249,7 +255,11 @@ describe('redirectToGenerator', () => {
       },
     });
 
-    const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes, ['']);
+    const routerStore = createRouterWithCustomRoutes(
+      { renderer: 'react', reactivity: 'mobx' },
+      customRoutes,
+      ['']
+    );
 
     const history: Array<TypeRouteWithParams> = [];
 
@@ -400,7 +410,11 @@ describe('redirectToGenerator', () => {
       },
     });
 
-    const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes, ['']);
+    const routerStore = createRouterWithCustomRoutes(
+      { renderer: 'react', reactivity: 'mobx' },
+      customRoutes,
+      ['']
+    );
 
     const history: Array<TypeRouteWithParams> = [];
 
@@ -491,9 +505,12 @@ describe('redirectToGenerator', () => {
   });
 
   it('Query', async () => {
-    const customRoutes = routesMobx;
+    const customRoutes = routes;
 
-    const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes);
+    const routerStore = createRouterWithCustomRoutes(
+      { renderer: 'react', reactivity: 'mobx' },
+      customRoutes
+    );
 
     const history: Array<TypeRouteWithParams> = [];
 
@@ -648,7 +665,11 @@ describe('redirectToGenerator', () => {
       },
     });
 
-    const routerStore = getData({ renderer: 'react', reactivity: 'mobx' }, customRoutes, ['']);
+    const routerStore = createRouterWithCustomRoutes(
+      { renderer: 'react', reactivity: 'mobx' },
+      customRoutes,
+      ['']
+    );
 
     const history: Array<TypeRouteWithParams> = [];
 

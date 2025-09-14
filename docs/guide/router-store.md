@@ -42,6 +42,15 @@ type TypeAdapters = {
 
 The router store provides several methods for navigation and state management:
 
+| Property | Type                                       | Description                  |
+|----------|--------------------------------------------|------------------------------|
+| `currentRoute` | `TypeCurrentRoute<typeof routes['route']>` | The current route data       |
+| `routesHistory` | `Array<string>`                            | The history of visited paths |
+| `isRedirecting` | `boolean`                                  | The indicator of redirecting |
+| `redirectTo` | `(config: TypeRedirectToParams): Promise<void>`                   | The navigation function      |
+| `restoreFromURL` | `(params: { pathname: string }): Promise<void>`                      | To restore from url          |
+| `restoreFromServer` | `(obj: InterfaceRouterStore): Promise<void>`                | To restore from object       |
+
 ### redirectTo
 
 Navigates to a specified route:
@@ -121,7 +130,10 @@ await routerStore.restoreFromServer({ routesHistory, currentRoute });
 ### currentRoute
 
 ```typescript
-const currentRoute = routerStore.currentRoute;
+import { TypeCurrentRoute } from 'reactive-route';
+
+const currentRoute = routerStore.currentRoute 
+  as TypeCurrentRoute<typeof routes.dynamic>;
 ```
 
 The current route object has the following properties:
@@ -135,136 +147,40 @@ The current route object has the following properties:
 | `props` | `Record<string, any>`                                 | The props for the component                                       |
 | `pageName` | `string`                                 | The name of the page, if exported from the page loader (optional) |
 
-## Using the Router Store
+Note that TS-typing is static and `currentRoute` is not necessarily this one. When redirecting finished,
+it will become a new route instance, so if you use `autorun` to track current params, check `currentRoute.name` first.
 
-### In React
+## isRedirecting
 
-In React applications, you can access the router store using the context:
+If you need to show loaders on redirects, you may use this parameter. For global loader:
 
 ```tsx
-import { useContext } from 'react';
-import { StoreContext } from './StoreContext';
-
-function NavigationButton() {
-  const { routerStore } = useContext(StoreContext);
-
-  const handleClick = () => {
-    routerStore.redirectTo({ route: 'about' });
-  };
-
-  return <button onClick={handleClick}>Go to About</button>;
+const GlobalHeader = () => {
+  const { router } = useContext(StoreContext);
+  
+  return router.isRedirecting ? <Loader /> : null;
 }
 ```
 
-### In Solid.js
-
-In Solid.js applications, you can access the router store using the context:
+Or for a local one:
 
 ```tsx
-import { useContext } from 'solid-js';
-import { StoreContext } from './StoreContext';
-
-function NavigationButton() {
-  const { routerStore } = useContext(StoreContext);
-
-  const handleClick = () => {
-    routerStore.redirectTo({ route: 'about' });
-  };
-
-  return <button onClick={handleClick}>Go to About</button>;
+const GlobalHeader = () => {
+  const { router } = useContext(StoreContext);
+  
+  return <Button isLoading={router.isRedirecting} />;
 }
 ```
 
-## Accessing Route Parameters
+## routesHistory
 
-You can access the parameters of the current route:
-
-```typescript
-const currentRoute = routerStore.getCurrentRoute();
-const userId = currentRoute.params.id;
-```
-
-## Accessing Query Parameters
-
-You can access the query parameters of the current route:
-
-```typescript
-const currentRoute = routerStore.getCurrentRoute();
-const searchQuery = currentRoute.query.q;
-```
-
-## Handling Navigation Events
-
-You can subscribe to navigation events using the state management system of your choice. For example, with MobX:
-
-```typescript
-import { reaction } from 'mobx';
-
-reaction(
-  () => routerStore.getCurrentRoute(),
-  (currentRoute) => {
-    console.log('Route changed:', currentRoute.name);
-  }
-);
-```
+This array includes all the visited paths and may be used for logging or to check from which route
+the user came to the current page.
 
 ## Server-Side Rendering
 
 For server-side rendering, you need to initialize the router store on both the server and the client:
 
-### Server
-
-```typescript
-// server.js
-import { getRouterStore } from './routerStore';
-import { StoreContext } from './StoreContext';
-
-async function renderApp(url) {
-  const routerStore = getRouterStore();
-
-  await routerStore.restoreFromURL({
-    pathname: url,
-    fallback: 'notFound',
-  });
-
-  // Render the app with the initialized router store
-  const appHtml = renderToString(
-    <StoreContext.Provider value={{ routerStore }}>
-      <App />
-    </StoreContext.Provider>
-  );
-
-  // Serialize the router store state for client-side hydration
-  const initialState = {
-    routerStore: routerStore.toJSON(),
-  };
-
-  return { appHtml, initialState };
-}
-```
-
-### Client
-
-```typescript
-// client.js
-import { getRouterStore } from './routerStore';
-import { StoreContext } from './StoreContext';
-
-async function hydrate() {
-  const initialState = window.__INITIAL_STATE__;
-  const routerStore = getRouterStore();
-
-  await routerStore.restoreFromServer(initialState.routerStore);
-
-  // Hydrate the app with the initialized router store
-  hydrateRoot(
-    document.getElementById('app'),
-    <StoreContext.Provider value={{ routerStore }}>
-      <App />
-    </StoreContext.Provider>
-  );
-}
-```
 
 ## Next Steps
 

@@ -27,9 +27,12 @@ pnpm add reactive-route
 import { createRouterConfig, createRouterStore } from 'reactive-route';
 import { Router } from 'reactive-route/react';
 import { Router } from 'reactive-route/solid';
+import { Router } from 'reactive-route/preact';
 import { adapters } from 'reactive-route/adapters/mobx';
+import { adapters } from 'reactive-route/adapters/mobx-preact';
 import { adapters } from 'reactive-route/adapters/solid';
 import { adapters } from 'reactive-route/adapters/kr-observable';
+import { adapters } from 'reactive-route/adapters/kr-observable-preact';
 ```
 
 ## Basic Setup

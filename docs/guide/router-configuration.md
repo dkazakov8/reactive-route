@@ -28,22 +28,10 @@ export const routes = createRouterConfig({
 
 Each route is defined as a key-value pair in the configuration object. The key is the route name, and the value is an object with the route configuration.
 
-### Basic Route Properties
-
-```typescript
-home: {
-  path: '/',                        // URL path
-  loader: () => import('./Home'),   // Component loader
-  props: { title: 'Home' },         // Props to pass to the component (optional)
-}
-```
-
-### Route Properties Reference
-
 | Property | Type                                                                                                           | Description                                                                                       |
 |----------|----------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
 | `path` | `string`                                                                                                       | The URL path for the route. Can include dynamic segments prefixed with `:`                        |
-| `loader` | `() => Promise<{ default, pageName, ...rest }>`                                                                | A function that returns a Promise resolving to the component (it should be in the default export) |
+| `loader` | `() => Promise<{ default, pageName, ...rest }>`                                                                | A function that returns a Promise resolving to the component (it should be in the **default** export) |
 | `props` | `Record<string, any>`                                                                                          | Static props to pass to the component (optional)                                                  |
 | `params` | `Record<string, (value: string) => boolean>`                                                                   | Validation functions for path parameters (required if route type is Dynamic)                             |
 | `query` | `Record<string, (value: string) => boolean>`                                                                   | Validation functions for query parameters (optional)                                              |
@@ -115,7 +103,7 @@ dashboard: {
     await api.loadUser();
     
     if (!isAuthenticated()) {
-      return { route: 'login' };
+      return { route: 'login', query: { returnTo: 'dashboard' } };
     }
     
     await api.loadDashboard();
@@ -124,7 +112,11 @@ dashboard: {
     const hasUnsavedChanges = await api.checkSavedForm();
     
     if (hasUnsavedChanges) {
-      throw Object.assign(new Error(''), { name: 'PREVENT_REDIRECT' });
+      const confirmed = window.confirm('You have unsaved changes. Are you sure you want to leave?');
+
+      if (!confirmed) {
+        throw Object.assign(new Error(''), { name: 'PREVENT_REDIRECT' });
+      }
     }
     
     if (nextRoute.name === 'user') {
@@ -136,6 +128,23 @@ dashboard: {
 
 Uncatched errors in `beforeEnter` or `beforeLeave` will lead to the rendering of "internalError" route,
 so be sure to handle errors here with `try-catch` or `Promise.catch()`.
+
+### Accessing Route Information
+
+The `config` parameter passed to the guards contains information about the current and next routes:
+
+```typescript
+beforeEnter(config) {
+  const { currentRoute, nextRoute } = config;
+  
+  console.log('Current route:', currentRoute?.name);
+  console.log('Next route:', nextRoute.name);
+  console.log('Next route params:', nextRoute.params);
+  console.log('Next route query:', nextRoute.query);
+  
+  return Promise.resolve();
+}
+```
 
 ## Next Steps
 

@@ -38,7 +38,7 @@ export default defineConfig({
           items: [
             { text: 'Router Configuration', link: '/guide/router-configuration' },
             { text: 'Router Store', link: '/guide/router-store' },
-            { text: 'Navigation Guards', link: '/guide/navigation-guards' },
+            { text: 'SSR', link: '/guide/ssr' },
           ]
         },
         {

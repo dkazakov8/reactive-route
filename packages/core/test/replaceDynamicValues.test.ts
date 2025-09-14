@@ -1,19 +1,21 @@
 import { describe, expect, it } from 'vitest';
 
-import { routesMobx } from '../../react/test/routesMobx';
+import { getRoutes } from '../../shared/helpers';
 import { replaceDynamicValues } from '../utils/replaceDynamicValues';
+
+const routes = getRoutes({ renderer: 'react', reactivity: 'mobx' });
 
 describe('replaceDynamicValues', () => {
   it('Dynamic params', () => {
     const pathname = replaceDynamicValues({
-      route: routesMobx.dynamicRoute,
+      route: routes.dynamicRoute,
       params: { static: 'dynamic' },
     });
 
     expect(pathname).to.be.eq('/test/dynamic');
 
     const pathname2 = replaceDynamicValues({
-      route: routesMobx.dynamicRoute3,
+      route: routes.dynamicRoute3,
       params: { ':static': 'dynamic' },
     });
 
@@ -22,7 +24,7 @@ describe('replaceDynamicValues', () => {
 
   it('Dynamic params multiple', () => {
     const pathname = replaceDynamicValues({
-      route: routesMobx.dynamicRouteMultiple,
+      route: routes.dynamicRouteMultiple,
       params: { param: 'dynamic', param2: 'dynamic2' },
     });
 
@@ -32,7 +34,7 @@ describe('replaceDynamicValues', () => {
   it('(error) No dynamic param value', () => {
     expect(() => {
       replaceDynamicValues({
-        route: routesMobx.dynamicRoute,
+        route: routes.dynamicRoute,
         params: {} as any,
       });
     }).to.throw(`replaceDynamicValues: no param ":static" passed for route dynamicRoute`);
@@ -41,7 +43,7 @@ describe('replaceDynamicValues', () => {
   it('(error) No dynamic param value multiple', () => {
     expect(() => {
       replaceDynamicValues({
-        route: routesMobx.dynamicRouteMultiple,
+        route: routes.dynamicRouteMultiple,
         params: { param: 'dynamic' } as any,
       });
     }).to.throw(`replaceDynamicValues: no param ":param2" passed for route dynamicRoute`);
@@ -49,7 +51,7 @@ describe('replaceDynamicValues', () => {
 
   it('Special symbols', () => {
     const pathname = replaceDynamicValues({
-      route: routesMobx.dynamicRoute,
+      route: routes.dynamicRoute,
       params: { static: 'шеллы' },
     });
 
