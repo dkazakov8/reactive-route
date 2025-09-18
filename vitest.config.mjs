@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    projects: ['packages/*'],
+    projects: ['packages/*/vitest.config.mjs', 'packages/*/vitest.ssr.config.mjs'],
     coverage: {
       clean: false,
       enabled: true,

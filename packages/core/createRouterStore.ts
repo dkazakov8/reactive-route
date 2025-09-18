@@ -1,6 +1,7 @@
 import queryString from 'query-string';
 
 import { InterfaceRouterStore, TypeCreateRouterStore } from './types/InterfaceRouterStore';
+import { TypeLifecycleConfig } from './types/TypeLifecycleConfig';
 import { TypeRedirectToParams } from './types/TypeRedirectToParams';
 import { TypeRoute } from './types/TypeRoute';
 import { constants } from './utils/constants';
@@ -48,9 +49,7 @@ export function createRouterStore<
   routerStore.redirectTo = async function redirectTo<TRouteName extends keyof TRoutes>(
     config: TypeRedirectToParams<TRoutes, TRouteName>
   ) {
-    const { route: routeName, noHistoryPush, asClient } = config;
-
-    const isClient = typeof asClient === 'boolean' ? asClient : constants.isClient;
+    const { route: routeName, noHistoryPush } = config;
 
     /**
      * Construct current route data
@@ -112,7 +111,7 @@ export function createRouterStore<
     if (currentUrl === nextUrl) return Promise.resolve();
 
     /**
-     * If pathname is the same, but query changed
+     * If pathname is the same, but query changed (no lifecycle)
      *
      */
 
@@ -145,37 +144,22 @@ export function createRouterStore<
        *
        */
 
-      await currentRoute?.beforeLeave?.(
-        {
-          nextUrl,
-          nextRoute,
-          nextQuery,
-          nextSearch,
-          nextPathname,
-          currentUrl,
-          currentQuery,
-          currentRoute,
-          currentSearch,
-          currentPathname,
-        },
-        ...(lifecycleParams || [])
-      );
+      const config: TypeLifecycleConfig = {
+        nextUrl,
+        nextRoute,
+        nextQuery,
+        nextSearch,
+        nextPathname,
+        currentUrl,
+        currentQuery,
+        currentRoute,
+        currentSearch,
+        currentPathname,
+      };
+
+      await currentRoute?.beforeLeave?.(config, ...(lifecycleParams || []));
       const redirectConfig: TypeRedirectToParams<TRoutes, keyof TRoutes> =
-        await nextRoute.beforeEnter?.(
-          {
-            nextUrl,
-            nextRoute,
-            nextQuery,
-            nextSearch,
-            nextPathname,
-            currentUrl,
-            currentQuery,
-            currentRoute,
-            currentSearch,
-            currentPathname,
-          },
-          ...(lifecycleParams || [])
-        );
+        await nextRoute.beforeEnter?.(config, ...(lifecycleParams || []));
 
       /**
        * Handle redirect returned from beforeEnter
@@ -183,7 +167,7 @@ export function createRouterStore<
        */
 
       if (typeof redirectConfig === 'object') {
-        if (isClient) return redirectTo({ ...redirectConfig, asClient });
+        if (constants.isClient) return redirectTo(redirectConfig);
 
         const redirectRoute = routes[redirectConfig.route];
         const redirectParams =

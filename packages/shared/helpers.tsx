@@ -1,6 +1,9 @@
 import { render as renderSolid } from '@solidjs/testing-library';
 import { render as renderPreact } from '@testing-library/preact/pure';
 import { render as renderReact } from '@testing-library/react/pure';
+import { renderToString as renderToStringPreact } from 'preact-render-to-string';
+import { renderToString as renderToStringReact } from 'react-dom/server';
+import { renderToString as renderToStringSolid } from 'solid-js/web';
 import { expect, vi } from 'vitest';
 
 import { adapters as adaptersKrObservable } from '../adapters/kr-observable';
@@ -112,6 +115,7 @@ function getAdapters(options: TypeOptions) {
   if (options.reactivity === 'kr-observable') {
     if (options.renderer === 'react') adapters = adaptersKrObservable;
     if (options.renderer === 'preact') adapters = adaptersKrObservablePreact;
+    if (options.renderer === 'solid') adapters = adaptersSolid;
   }
 
   return adapters;
@@ -138,10 +142,7 @@ export function prepareComponentWithSpy(options: TypeOptions) {
   const routes = getRoutes(options);
   const adapters = getAdapters(options);
 
-  const routerStore = createRouterStore({
-    routes,
-    adapters,
-  });
+  const routerStore = createRouterStore({ routes, adapters });
 
   const spy_render = vi.fn();
   const spy_beforeSetPageComponent = vi.fn();
@@ -194,7 +195,7 @@ export function prepareComponentWithSpy(options: TypeOptions) {
   }
 
   if (options.renderer === 'solid') {
-    App = () => {
+    App = function App2() {
       spy_render();
 
       return (
@@ -213,12 +214,20 @@ export function prepareComponentWithSpy(options: TypeOptions) {
   if (options.renderer === 'preact') render = () => renderPreact((<App />) as any).container;
   if (options.renderer === 'solid') render = () => renderSolid(() => (<App />) as any).container;
 
+  let renderToString!: () => string;
+  if (options.renderer === 'react') renderToString = () => renderToStringReact((<App />) as any);
+  if (options.renderer === 'preact') renderToString = () => renderToStringPreact((<App />) as any);
+  if (options.renderer === 'solid') {
+    renderToString = () => renderToStringSolid(App);
+  }
+
   return {
     App,
     routerStore,
     calls,
     checkSpy,
     render,
+    renderToString,
   };
 }
 

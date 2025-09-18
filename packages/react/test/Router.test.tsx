@@ -1,7 +1,6 @@
-import 'global-jsdom/register';
-
 import { describe, expect, it } from 'vitest';
 
+import { constants } from '../../core/utils/constants';
 import { prepareComponentWithSpy, TypeOptions } from '../../shared/helpers';
 
 const prepareParamsArray: Array<TypeOptions> = [
@@ -19,7 +18,8 @@ prepareParamsArray.forEach((prepareParams) => {
   async function wrap(cb: () => Promise<void>) {
     await cb();
   }
-  describe(`Router + [${prepareParams.reactivity}]`, () => {
+
+  describe.runIf(constants.isClient)(`Client tests Router + [${prepareParams.reactivity}]`, () => {
     it('Only beforeSetPageComponent called on first render', async () => {
       const { routerStore, checkSpy, calls, render } = prepareComponentWithSpy(prepareParams);
 
@@ -161,6 +161,34 @@ prepareParamsArray.forEach((prepareParams) => {
       });
 
       expect(container.innerHTML).to.eq('Error 500');
+
+      checkSpy();
+    });
+  });
+
+  describe.runIf(!constants.isClient)(`SSR tests Router + [${prepareParams.reactivity}]`, () => {
+    it('SSR', async () => {
+      const { routerStore, renderToString, checkSpy, calls } =
+        prepareComponentWithSpy(prepareParams);
+
+      await routerStore.redirectTo({ route: 'staticRoute' });
+
+      const html1 = renderToString();
+      expect(html1).to.eq('Static');
+
+      calls.renderTimes += 1;
+      calls.beforeSetPageComponent += 1;
+
+      checkSpy();
+
+      await routerStore.redirectTo({ route: 'dynamicRoute', params: { static: 'asd' } });
+
+      const html2 = renderToString();
+      expect(html2).to.eq('<div>Dynamic</div>');
+
+      calls.renderTimes += 1;
+      calls.beforeSetPageComponent += 2;
+      calls.beforeUpdatePageComponent += 1;
 
       checkSpy();
     });

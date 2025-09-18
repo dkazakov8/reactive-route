@@ -2,7 +2,19 @@ import { describe, expect, it } from 'vitest';
 
 import { constants } from '../utils/constants';
 
-describe('constants', () => {
+describe.runIf(constants.isClient)('Client tests', () => {
+  it('Correct constants', () => {
+    expect(constants).to.deep.eq({
+      dynamicSeparator: ':',
+      pathPartSeparator: '/',
+      isClient: true,
+      errorRedirect: 'REDIRECT',
+      errorPrevent: 'PREVENT_REDIRECT',
+    });
+  });
+});
+
+describe.runIf(!constants.isClient)('Client tests', () => {
   it('Correct constants', () => {
     expect(constants).to.deep.eq({
       dynamicSeparator: ':',

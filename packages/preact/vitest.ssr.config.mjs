@@ -4,9 +4,8 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   plugins: [preact({ devToolsEnabled: false, prefreshEnabled: false, reactAliasesEnabled: false })],
   test: {
-    name: 'preact',
+    name: 'preact-ssr',
     include: ['./test/*.{test,spec}.?(c|m)[jt]s?(x)'],
-    environment: 'jsdom',
   },
   resolve: {
     // react-router-dom specifies "module" field in package.json for ESM entry

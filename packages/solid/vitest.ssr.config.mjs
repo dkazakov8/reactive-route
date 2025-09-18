@@ -14,11 +14,9 @@ export default defineConfig({
       },
     }),
   ],
-  resolve: { conditions: ['browser'] },
   test: {
-    name: 'solid',
+    name: 'solid-ssr',
     include: ['./test/*.{test,spec}.?(c|m)[jt]s?(x)'],
-    environment: 'jsdom',
     server: { deps: { inline: [/solid-js/] } },
   },
 });

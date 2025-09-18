@@ -72,8 +72,6 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
         );
         config.loadedComponentName = currentRouteName;
         config.loadedComponentPage = componentConfig.pageName;
-        // @ts-ignore
-        // config[Symbol.for('$adm')]?.batch();
       });
     });
   }
