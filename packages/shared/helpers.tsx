@@ -6,25 +6,15 @@ import { renderToString as renderToStringReact } from 'react-dom/server';
 import { renderToString as renderToStringSolid } from 'solid-js/web';
 import { expect, vi } from 'vitest';
 
-import { adapters as adaptersKrObservable } from '../adapters/kr-observable';
-import { adapters as adaptersKrObservablePreact } from '../adapters/kr-observable-preact';
-import { adapters as adaptersMobx } from '../adapters/mobx';
-import { adapters as adaptersMobxPreact } from '../adapters/mobx-preact';
-import { adapters as adaptersSolid } from '../adapters/solid';
-import { createRouterConfig, createRouterStore, TypeAdapters, TypeRoute } from '../core';
+import { createRouterStore, TypeRoute } from '../core';
 import { Router as RouterPreact } from '../preact';
 import { Router as RouterReact } from '../react';
 import { Router as RouterSolid } from '../solid';
+import { createRoutes } from './createRoutes';
+import { getAdapters } from './getAdapters';
+import { TypeOptions } from './types';
 
-export type TypeOptions = {
-  renderer: 'react' | 'solid' | 'preact';
-  reactivity: 'mobx' | 'solid' | 'kr-observable';
-  ssrRender?: boolean;
-};
-
-export function getRoutes(options: TypeOptions, customRoutes?: ReturnType<typeof createRoutes>) {
-  if (customRoutes) return customRoutes;
-
+export function getRoutes(options: TypeOptions) {
   let routes: ReturnType<typeof createRoutes> = {} as any;
 
   if (options.renderer === 'react') {
@@ -57,6 +47,7 @@ export function getRoutes(options: TypeOptions, customRoutes?: ReturnType<typeof
       });
     }
   }
+
   if (options.renderer === 'preact') {
     if (options.reactivity === 'mobx') {
       routes = createRoutes({
@@ -87,6 +78,7 @@ export function getRoutes(options: TypeOptions, customRoutes?: ReturnType<typeof
       });
     }
   }
+
   if (options.renderer === 'solid') {
     routes = createRoutes({
       staticRoute: () => import('../solid/test/pages/static/Static'),
@@ -105,43 +97,17 @@ export function getRoutes(options: TypeOptions, customRoutes?: ReturnType<typeof
   return routes;
 }
 
-function getAdapters(options: TypeOptions) {
-  let adapters = {} as TypeAdapters;
-  if (options.reactivity === 'mobx') {
-    if (options.renderer === 'react') adapters = adaptersMobx;
-    if (options.renderer === 'preact') adapters = adaptersMobxPreact;
-  }
-  if (options.reactivity === 'solid') adapters = adaptersSolid;
-  if (options.reactivity === 'kr-observable') {
-    if (options.renderer === 'react') adapters = adaptersKrObservable;
-    if (options.renderer === 'preact') adapters = adaptersKrObservablePreact;
-    if (options.renderer === 'solid') adapters = adaptersSolid;
-  }
-
-  return adapters;
-}
-
 export function createRouterWithCustomRoutes<TRoutes extends Record<string, TypeRoute>>(
   options: TypeOptions,
-  customRoutes: TRoutes,
+  routes: TRoutes,
   lifecycleParams?: any
 ) {
-  const routes = getRoutes(options, customRoutes as any) as unknown as TRoutes;
-  const adapters = getAdapters(options);
-
-  const routerStore = createRouterStore({
-    routes,
-    lifecycleParams,
-    adapters,
-  });
-
-  return routerStore;
+  return createRouterStore({ routes, lifecycleParams, adapters: getAdapters(options) });
 }
 
 export function prepareComponentWithSpy(options: TypeOptions) {
   const routes = getRoutes(options);
   const adapters = getAdapters(options);
-
   const routerStore = createRouterStore({ routes, adapters });
 
   const spy_render = vi.fn();
@@ -195,7 +161,7 @@ export function prepareComponentWithSpy(options: TypeOptions) {
   }
 
   if (options.renderer === 'solid') {
-    App = function App2() {
+    App = () => {
       spy_render();
 
       return (
@@ -210,89 +176,20 @@ export function prepareComponentWithSpy(options: TypeOptions) {
   }
 
   let render!: () => HTMLElement | Element;
-  if (options.renderer === 'react') render = () => renderReact((<App />) as any).container;
-  if (options.renderer === 'preact') render = () => renderPreact((<App />) as any).container;
+  if (options.renderer === 'react') render = () => renderReact(<App />).container;
+  if (options.renderer === 'preact') render = () => renderPreact(<App />).container;
   if (options.renderer === 'solid') render = () => renderSolid(() => (<App />) as any).container;
 
   let renderToString!: () => string;
-  if (options.renderer === 'react') renderToString = () => renderToStringReact((<App />) as any);
-  if (options.renderer === 'preact') renderToString = () => renderToStringPreact((<App />) as any);
-  if (options.renderer === 'solid') {
-    renderToString = () => renderToStringSolid(App);
-  }
+  if (options.renderer === 'react') renderToString = () => renderToStringReact(<App />);
+  if (options.renderer === 'preact') renderToString = () => renderToStringPreact(<App />);
+  if (options.renderer === 'solid') renderToString = () => renderToStringSolid(App);
 
   return {
-    App,
     routerStore,
     calls,
     checkSpy,
     render,
     renderToString,
   };
-}
-
-export function createRoutes(imports: Record<string, any>) {
-  return createRouterConfig({
-    staticRoute: {
-      path: '/test/static',
-      query: {
-        q: (value) => value.length > 2,
-      },
-      loader: imports.staticRoute as any,
-    },
-    dynamicRoute: {
-      path: '/test/:static',
-      params: { static: (value) => value.length > 2 },
-      query: {
-        q: (value) => value.length > 2,
-        s: (value) => value.length > 2,
-      },
-      loader: imports.dynamicRoute as any,
-    },
-    dynamicRoute2: {
-      path: '/test3/:static',
-      params: { static: (value) => value.length > 2 },
-      loader: imports.dynamicRoute2 as any,
-    },
-    dynamicRoute3: {
-      path: '/test4/::static',
-      params: {
-        ':static': (value) => value.length > 2,
-      },
-      loader: imports.dynamicRoute3 as any,
-    },
-    noPageName: {
-      path: '/test/:foo',
-      params: { foo: (value) => value.length > 2 },
-      loader: imports.noPageName as any,
-    },
-    noPageName2: {
-      path: '/test/:foo/:bar',
-      params: { foo: (value) => value.length > 2, bar: (value) => value.length > 2 },
-      loader: imports.noPageName2 as any,
-    },
-    // @ts-ignore
-    dynamicRouteNoValidators: {
-      path: '/test2/:param',
-      loader: imports.dynamicRouteNoValidators as any,
-    },
-    dynamicRouteMultiple: {
-      path: '/test/:param/:param2',
-      params: {
-        param: (value) => value.length > 2,
-        param2: (value) => value.length > 2,
-      },
-      loader: imports.dynamicRouteMultiple as any,
-    },
-    notFound: {
-      path: '/error404',
-      props: { errorNumber: 404 },
-      loader: imports.notFound as any,
-    },
-    internalError: {
-      path: '/error500',
-      props: { errorNumber: 500 },
-      loader: imports.internalError as any,
-    },
-  });
 }

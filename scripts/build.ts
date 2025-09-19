@@ -94,6 +94,8 @@ void Promise.all([
   generateBuild('cjs', 'packages/adapters/mobx'),
   generateBuild('esm', 'packages/adapters/mobx-preact'),
   generateBuild('cjs', 'packages/adapters/mobx-preact'),
+  generateBuild('esm', 'packages/adapters/mobx-solid'),
+  generateBuild('cjs', 'packages/adapters/mobx-solid'),
   generateBuild('esm', 'packages/adapters/solid'),
   generateBuild('cjs', 'packages/adapters/solid'),
   generateBuild('esm', 'packages/adapters/kr-observable'),

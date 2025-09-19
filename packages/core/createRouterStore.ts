@@ -118,7 +118,10 @@ export function createRouterStore<
     if (currentPathname === nextPathname) {
       if (currentSearch !== nextSearch) {
         adapters.batch(() => {
-          adapters.replaceObject(routerStore.currentRoute.query, nextQuery || {});
+          adapters.replaceObject(routerStore.currentRoute, {
+            ...routerStore.currentRoute,
+            query: nextQuery || {},
+          });
           routerStore.routesHistory.push(nextUrl);
         });
 
@@ -209,8 +212,8 @@ export function createRouterStore<
           name: routes.internalError.name,
           path: routes.internalError.path,
           props: routes[routes.internalError.name].props,
-          query: {} as any,
-          params: {} as any,
+          query: adapters.makeObservable({}) as any,
+          params: adapters.makeObservable({}) as any,
           pageName: routes[routes.internalError.name].pageName,
         });
 
