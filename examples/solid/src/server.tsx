@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { enableObservable } from 'kr-observable/solidjs';
+import { Reaction } from 'mobx';
+import { enableExternalSource } from 'solid-js';
 import { generateHydrationScript, renderToString } from 'solid-js/web';
 import express from 'ultimate-express';
 
@@ -16,6 +18,25 @@ const templatePath = path.resolve(outdirPath, 'template.html');
 
 if (REACTIVITY_SYSTEM === 'kr-observable') {
   enableObservable(false);
+}
+
+if (REACTIVITY_SYSTEM === 'mobx') {
+  let id = 0;
+
+  enableExternalSource((fn, trigger) => {
+    const reaction = new Reaction(`mobx@${++id}`, trigger);
+
+    return {
+      track: (x) => {
+        let next;
+
+        reaction.track(() => (next = fn(x)));
+
+        return next;
+      },
+      dispose: () => reaction.dispose(),
+    };
+  });
 }
 
 const app = express();

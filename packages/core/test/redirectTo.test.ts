@@ -103,12 +103,12 @@ function createCounters() {
   return { spyOne, spyTwo, counter, checkSpy };
 }
 
-[allPossibleOptions[0]].forEach((options) => {
+allPossibleOptions.forEach((options) => {
   const routes = getRoutes(options);
 
   describe(`redirectTo [${options.renderer}+${options.reactivity}]`, () => {
     it('restoreFromURL: sets initial route', async () => {
-      const routerStore = createRouterWithCustomRoutes(options, routes);
+      const routerStore = await createRouterWithCustomRoutes(options, routes);
 
       await routerStore.restoreFromURL({ pathname: routes.staticRoute.path });
 
@@ -120,7 +120,7 @@ function createCounters() {
     });
 
     it('restoreFromURL: sets initial route not found', async () => {
-      const routerStore = createRouterWithCustomRoutes(options, routes);
+      const routerStore = await createRouterWithCustomRoutes(options, routes);
 
       await routerStore.restoreFromURL({ pathname: '/testX/static' });
 
@@ -145,7 +145,7 @@ function createCounters() {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -185,7 +185,7 @@ function createCounters() {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -225,7 +225,7 @@ function createCounters() {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -263,7 +263,7 @@ function createCounters() {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -303,7 +303,7 @@ function createCounters() {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -346,7 +346,7 @@ function createCounters() {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -371,7 +371,7 @@ function createCounters() {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -411,7 +411,7 @@ function createCounters() {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -455,7 +455,7 @@ function createCounters() {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -493,7 +493,7 @@ function createCounters() {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -553,7 +553,7 @@ function createCounters() {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -604,7 +604,7 @@ function createCounters() {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -622,7 +622,7 @@ function createCounters() {
     });
 
     it('query: no push to history if query is the same', async () => {
-      const routerStore = createRouterWithCustomRoutes(options, routes);
+      const routerStore = await createRouterWithCustomRoutes(options, routes);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -646,7 +646,7 @@ function createCounters() {
     });
 
     it('query: no push to history if query is the same (non existent param)', async () => {
-      const routerStore = createRouterWithCustomRoutes(options, routes);
+      const routerStore = await createRouterWithCustomRoutes(options, routes);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -663,7 +663,7 @@ function createCounters() {
     });
 
     it('query: push to history if query changed', async () => {
-      const routerStore = createRouterWithCustomRoutes(options, routes);
+      const routerStore = await createRouterWithCustomRoutes(options, routes);
 
       const history: Array<TypeRouteWithParams> = [];
 
@@ -719,7 +719,7 @@ function createCounters() {
           ...getDefaultRoutes(routes),
         });
 
-        const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+        const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
         const history: Array<TypeRouteWithParams> = [];
 
@@ -766,7 +766,7 @@ function createCounters() {
           ...getDefaultRoutes(routes),
         });
 
-        const routerStore = createRouterWithCustomRoutes(options, customRoutes, ['']);
+        const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
         const history: Array<TypeRouteWithParams> = [];
 

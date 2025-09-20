@@ -31,6 +31,7 @@ import { Router } from 'reactive-route/preact';
 import { adapters } from 'reactive-route/adapters/mobx';
 import { adapters } from 'reactive-route/adapters/mobx-preact';
 import { adapters } from 'reactive-route/adapters/solid';
+import { adapters } from 'reactive-route/adapters/mobx-solid';
 import { adapters } from 'reactive-route/adapters/kr-observable';
 import { adapters } from 'reactive-route/adapters/kr-observable-preact';
 ```

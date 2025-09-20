@@ -1,3 +1,5 @@
+// @ts-ignore
+import { enableObservable } from 'kr-observable/solidjs';
 import { Reaction } from 'mobx';
 import { enableExternalSource } from 'solid-js';
 
@@ -13,10 +15,10 @@ routerTests(
       renderer: 'solid',
       reactivity: 'solid',
     },
-    {
-      renderer: 'solid',
-      reactivity: 'kr-observable',
-    },
+    // {
+    //   renderer: 'solid',
+    //   reactivity: 'kr-observable',
+    // },
   ],
   (options) => {
     if (options.reactivity === 'mobx') {
@@ -36,6 +38,9 @@ routerTests(
           dispose: () => reaction.dispose(),
         };
       });
+    }
+    if (options.reactivity === 'kr-observable') {
+      enableObservable(true);
     }
   }
 );

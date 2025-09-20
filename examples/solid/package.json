@@ -6,16 +6,17 @@
   "scripts": {
     "dev-solid": "tsx build.ts solid",
     "dev-observable": "tsx build.ts kr-observable",
+    "dev-mobx": "tsx build.ts mobx",
     "dev-ssr-solid": "tsx build.ts solid ssr",
-    "dev-ssr-observable": "tsx build.ts kr-observable ssr"
+    "dev-ssr-observable": "tsx build.ts kr-observable ssr",
+    "dev-ssr-mobx": "tsx build.ts mobx ssr"
   },
   "dependencies": {
-    "reactive-route": "0.0.1-alpha.16",
+    "reactive-route": "0.0.1-alpha.21",
     "solid-js": "1.9.6",
     "ultimate-express": "2.0.9",
     "mobx": "6.13.7",
-    "mobx-react-lite": "4.1.0",
-    "kr-observable": "3.1.1"
+    "kr-observable": "3.1.4"
   },
   "devDependencies": {
     "dk-reload-server": "3.5.0",

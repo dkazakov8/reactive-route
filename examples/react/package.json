@@ -12,8 +12,8 @@
   "dependencies": {
     "mobx": "6.13.7",
     "mobx-react-lite": "4.1.0",
-    "kr-observable": "3.1.1",
-    "reactive-route": "0.0.1-alpha.16",
+    "kr-observable": "3.1.4",
+    "reactive-route": "0.0.1-alpha.21",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "ultimate-express": "2.0.9"

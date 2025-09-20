@@ -1,15 +1,6 @@
-import { render as renderSolid } from '@solidjs/testing-library';
-import { render as renderPreact } from '@testing-library/preact/pure';
-import { render as renderReact } from '@testing-library/react/pure';
-import { renderToString as renderToStringPreact } from 'preact-render-to-string';
-import { renderToString as renderToStringReact } from 'react-dom/server';
-import { renderToString as renderToStringSolid } from 'solid-js/web';
 import { expect, vi } from 'vitest';
 
 import { createRouterStore, TypeRoute } from '../core';
-import { Router as RouterPreact } from '../preact';
-import { Router as RouterReact } from '../react';
-import { Router as RouterSolid } from '../solid';
 import { createRoutes } from './createRoutes';
 import { getAdapters } from './getAdapters';
 import { TypeOptions } from './types';
@@ -97,17 +88,62 @@ export function getRoutes(options: TypeOptions) {
   return routes;
 }
 
-export function createRouterWithCustomRoutes<TRoutes extends Record<string, TypeRoute>>(
+export async function createRouterWithCustomRoutes<TRoutes extends Record<string, TypeRoute>>(
   options: TypeOptions,
   routes: TRoutes,
   lifecycleParams?: any
 ) {
-  return createRouterStore({ routes, lifecycleParams, adapters: getAdapters(options) });
+  const adapters = await getAdapters(options);
+
+  return createRouterStore({ routes, lifecycleParams, adapters });
 }
 
-export function prepareComponentWithSpy(options: TypeOptions) {
+async function getRouterComponent(options: TypeOptions) {
+  let Router: any;
+  if (options.renderer === 'react') Router = await import('../react').then((m) => m.Router);
+  if (options.renderer === 'preact') Router = await import('../preact').then((m) => m.Router);
+  if (options.renderer === 'solid') Router = await import('../solid').then((m) => m.Router);
+
+  return Router;
+}
+
+async function getRender(options: TypeOptions, App: any) {
+  let renderFunction: any;
+  if (options.renderer === 'react')
+    renderFunction = await import('@testing-library/react/pure').then((m) => m.render);
+  if (options.renderer === 'preact')
+    renderFunction = await import('@testing-library/preact/pure').then((m) => m.render);
+  if (options.renderer === 'solid')
+    renderFunction = await import('@solidjs/testing-library').then((m) => m.render);
+
+  let render!: () => HTMLElement | Element;
+  if (options.renderer === 'react') render = () => renderFunction(<App />).container;
+  if (options.renderer === 'preact') render = () => renderFunction(<App />).container;
+  if (options.renderer === 'solid') render = () => renderFunction(() => <App />).container;
+
+  return render;
+}
+
+async function getRenderToString(options: TypeOptions, App: any) {
+  let renderFunction: any;
+  if (options.renderer === 'react')
+    renderFunction = await import('react-dom/server').then((m) => m.renderToString);
+  if (options.renderer === 'preact')
+    renderFunction = await import('preact-render-to-string').then((m) => m.renderToString);
+  if (options.renderer === 'solid')
+    renderFunction = await import('solid-js/web').then((m) => m.renderToString);
+
+  let renderToString!: () => string;
+  if (options.renderer === 'react') renderToString = () => renderFunction(<App />);
+  if (options.renderer === 'preact') renderToString = () => renderFunction(<App />);
+  if (options.renderer === 'solid') renderToString = () => renderFunction(App);
+
+  return renderToString;
+}
+
+export async function prepareComponentWithSpy(options: TypeOptions) {
   const routes = getRoutes(options);
-  const adapters = getAdapters(options);
+  const adapters = await getAdapters(options);
   const routerStore = createRouterStore({ routes, adapters });
 
   const spy_render = vi.fn();
@@ -126,64 +162,23 @@ export function prepareComponentWithSpy(options: TypeOptions) {
     expect(spy_beforeUpdatePageComponent).toHaveBeenCalledTimes(calls.beforeUpdatePageComponent);
   }
 
-  let App: any;
+  const Router = await getRouterComponent(options);
 
-  if (options.renderer === 'react') {
-    // @ts-ignore
-    App = () => {
-      spy_render();
+  function App() {
+    spy_render();
 
-      return (
-        <RouterReact
-          routerStore={routerStore}
-          routes={routes}
-          beforeSetPageComponent={spy_beforeSetPageComponent}
-          beforeUpdatePageComponent={spy_beforeUpdatePageComponent}
-        />
-      );
-    };
+    return (
+      <Router
+        routerStore={routerStore}
+        routes={routes}
+        beforeSetPageComponent={spy_beforeSetPageComponent}
+        beforeUpdatePageComponent={spy_beforeUpdatePageComponent}
+      />
+    );
   }
 
-  if (options.renderer === 'preact') {
-    // @ts-ignore
-    App = () => {
-      spy_render();
-
-      return (
-        <RouterPreact
-          routerStore={routerStore}
-          routes={routes}
-          beforeSetPageComponent={spy_beforeSetPageComponent}
-          beforeUpdatePageComponent={spy_beforeUpdatePageComponent}
-        />
-      );
-    };
-  }
-
-  if (options.renderer === 'solid') {
-    App = () => {
-      spy_render();
-
-      return (
-        <RouterSolid
-          routerStore={routerStore}
-          routes={routes}
-          beforeSetPageComponent={spy_beforeSetPageComponent}
-          beforeUpdatePageComponent={spy_beforeUpdatePageComponent}
-        />
-      );
-    };
-  }
-
-  let render!: () => HTMLElement | Element;
-  if (options.renderer === 'react') render = () => renderReact(<App />).container;
-  if (options.renderer === 'preact') render = () => renderPreact(<App />).container;
-  if (options.renderer === 'solid') render = () => renderSolid(() => (<App />) as any).container;
-
-  let renderToString!: () => string;
-  if (options.renderer === 'react') renderToString = () => renderToStringReact(<App />);
-  if (options.renderer === 'preact') renderToString = () => renderToStringPreact(<App />);
-  if (options.renderer === 'solid') renderToString = () => renderToStringSolid(App);
+  const render = await getRender(options, App);
+  const renderToString = await getRenderToString(options, App);
 
   return {
     routerStore,

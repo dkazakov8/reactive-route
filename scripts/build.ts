@@ -75,7 +75,7 @@ function generateBuild(type: 'cjs' | 'esm', folderName: string) {
         'utf-8'
       );
 
-      if (type === 'esm') {
+      if (type === 'esm' && packageName !== 'adapters') {
         return genSizeBadges(outFile, packageName, fileName);
       }
     });
@@ -90,16 +90,18 @@ void Promise.all([
   generateBuild('cjs', 'packages/react'),
   generateBuild('esm', 'packages/preact'),
   generateBuild('cjs', 'packages/preact'),
-  generateBuild('esm', 'packages/adapters/mobx'),
-  generateBuild('cjs', 'packages/adapters/mobx'),
+  generateBuild('esm', 'packages/adapters/mobx-react'),
+  generateBuild('cjs', 'packages/adapters/mobx-react'),
   generateBuild('esm', 'packages/adapters/mobx-preact'),
   generateBuild('cjs', 'packages/adapters/mobx-preact'),
   generateBuild('esm', 'packages/adapters/mobx-solid'),
   generateBuild('cjs', 'packages/adapters/mobx-solid'),
   generateBuild('esm', 'packages/adapters/solid'),
   generateBuild('cjs', 'packages/adapters/solid'),
-  generateBuild('esm', 'packages/adapters/kr-observable'),
-  generateBuild('cjs', 'packages/adapters/kr-observable'),
+  generateBuild('esm', 'packages/adapters/kr-observable-react'),
+  generateBuild('cjs', 'packages/adapters/kr-observable-react'),
   generateBuild('esm', 'packages/adapters/kr-observable-preact'),
   generateBuild('cjs', 'packages/adapters/kr-observable-preact'),
+  generateBuild('esm', 'packages/adapters/kr-observable-solid'),
+  generateBuild('cjs', 'packages/adapters/kr-observable-solid'),
 ]);

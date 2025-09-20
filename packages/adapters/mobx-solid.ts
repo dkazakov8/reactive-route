@@ -15,4 +15,5 @@ export const adapters: TypeAdapters = {
     });
   },
   makeObservable: observable,
+  immediateSetComponent: true,
 };

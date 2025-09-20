@@ -3,6 +3,8 @@ import { hydrate, render } from 'solid-js/web';
 import '../../shared/style.css';
 
 import { enableObservable } from 'kr-observable/solidjs';
+import { Reaction } from 'mobx';
+import { enableExternalSource } from 'solid-js';
 
 import { unescapeAllStrings } from '../../shared/utils/unescapeAllStrings';
 import { App } from './components/App';
@@ -11,6 +13,25 @@ import { getRouterStore } from './routerStore';
 
 if (REACTIVITY_SYSTEM === 'kr-observable') {
   enableObservable(false);
+}
+
+if (REACTIVITY_SYSTEM === 'mobx') {
+  let id = 0;
+
+  enableExternalSource((fn, trigger) => {
+    const reaction = new Reaction(`mobx@${++id}`, trigger);
+
+    return {
+      track: (x) => {
+        let next;
+
+        reaction.track(() => (next = fn(x)));
+
+        return next;
+      },
+      dispose: () => reaction.dispose(),
+    };
+  });
 }
 
 const routerStore = await getRouterStore();

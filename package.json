@@ -2,7 +2,7 @@
   "name": "reactive-route",
   "author": "Dmitry Kazakov",
   "license": "MIT",
-  "version": "0.0.1-alpha.18",
+  "version": "0.0.1-alpha.21",
   "description": "Reactive Router for different frameworks",
   "repository": {
     "type": "git",
@@ -51,7 +51,7 @@
     "badge-maker": "5.0.2",
     "esbuild": "0.25.10",
     "husky": "9.1.7",
-    "kr-observable": "3.1.2",
+    "kr-observable": "3.1.4",
     "lint-staged": "16.1.6",
     "lodash": "4.17.21",
     "mobx": "6.13.7",
@@ -90,25 +90,35 @@
       "require": "./dist/cjs/solid/index.js",
       "import": "./dist/esm/solid/index.js"
     },
-    "./adapters/mobx": {
-      "types": "./dist/adapters/mobx.d.ts",
-      "require": "./dist/cjs/adapters/mobx/index.js",
-      "import": "./dist/esm/adapters/mobx/index.js"
+    "./adapters/mobx-react": {
+      "types": "./dist/adapters/mobx-react.d.ts",
+      "require": "./dist/cjs/adapters/mobx-react/index.js",
+      "import": "./dist/esm/adapters/mobx-react/index.js"
     },
     "./adapters/mobx-preact": {
       "types": "./dist/adapters/mobx-preact.d.ts",
       "require": "./dist/cjs/adapters/mobx-preact/index.js",
       "import": "./dist/esm/adapters/mobx-preact/index.js"
     },
+    "./adapters/mobx-solid": {
+      "types": "./dist/adapters/mobx-solid.d.ts",
+      "require": "./dist/cjs/adapters/mobx-solid/index.js",
+      "import": "./dist/esm/adapters/mobx-solid/index.js"
+    },
     "./adapters/solid": {
       "types": "./dist/adapters/solid.d.ts",
       "require": "./dist/cjs/adapters/solid/index.js",
       "import": "./dist/esm/adapters/solid/index.js"
     },
-    "./adapters/kr-observable": {
-      "types": "./dist/adapters/kr-observable.d.ts",
-      "require": "./dist/cjs/adapters/kr-observable/index.js",
-      "import": "./dist/esm/adapters/kr-observable/index.js"
+    "./adapters/kr-observable-react": {
+      "types": "./dist/adapters/kr-observable-react.d.ts",
+      "require": "./dist/cjs/adapters/kr-observable-react/index.js",
+      "import": "./dist/esm/adapters/kr-observable-react/index.js"
+    },
+    "./adapters/kr-observable-solid": {
+      "types": "./dist/adapters/kr-observable-solid.d.ts",
+      "require": "./dist/cjs/adapters/kr-observable-solid/index.js",
+      "import": "./dist/esm/adapters/kr-observable-solid/index.js"
     },
     "./adapters/kr-observable-preact": {
       "types": "./dist/adapters/kr-observable-preact.d.ts",

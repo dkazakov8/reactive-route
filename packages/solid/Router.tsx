@@ -80,6 +80,12 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
 
   redirectOnHistoryPop();
 
+  if (props.routerStore.adapters.immediateSetComponent) {
+    props.routerStore.adapters.batch(() => {
+      setLoadedComponent();
+    });
+  }
+
   props.routerStore.adapters.autorun(() => setLoadedComponent());
 
   return (

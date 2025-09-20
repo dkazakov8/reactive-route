@@ -21,7 +21,6 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/' },
-      { text: 'API', link: '/api/' },
       { text: 'Examples', link: '/examples/' },
     ],
     sidebar: {
@@ -45,38 +44,8 @@ export default defineConfig({
           text: 'Framework Integration',
           items: [
             { text: 'React', link: '/guide/react' },
+            { text: 'Preact', link: '/guide/preact' },
             { text: 'Solid.js', link: '/guide/solid' },
-          ]
-        },
-        {
-          text: 'State Management',
-          items: [
-            { text: 'MobX', link: '/guide/mobx' },
-            { text: 'kr-observable', link: '/guide/kr-observable' },
-            { text: 'Solid.js Reactivity', link: '/guide/solid-reactivity' },
-          ]
-        },
-      ],
-      '/api/': [
-        {
-          text: 'Core API',
-          items: [
-            { text: 'createRouterConfig', link: '/api/create-router-config' },
-            { text: 'createRouterStore', link: '/api/create-router-store' },
-            { text: 'Utility Functions', link: '/api/utility-functions' },
-          ]
-        },
-        {
-          text: 'React API',
-          items: [
-            { text: 'Router Component', link: '/api/react-router' },
-            { text: 'useStore Hook', link: '/api/react-use-store' },
-          ]
-        },
-        {
-          text: 'Solid.js API',
-          items: [
-            { text: 'Router Component', link: '/api/solid-router' },
           ]
         },
       ],

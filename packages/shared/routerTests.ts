@@ -17,7 +17,7 @@ export function routerTests(
 
     describe.runIf(constants.isClient)(`Client tests Router + [${options.reactivity}]`, () => {
       it('Only beforeSetPageComponent called on first render', async () => {
-        const { routerStore, checkSpy, calls, render } = prepareComponentWithSpy(options);
+        const { routerStore, checkSpy, calls, render } = await prepareComponentWithSpy(options);
 
         const container = render();
 
@@ -34,7 +34,7 @@ export function routerTests(
       });
 
       it('No rerender and lifecycle if only params changed (with page name)', async () => {
-        const { routerStore, render, checkSpy, calls } = prepareComponentWithSpy(options);
+        const { routerStore, render, checkSpy, calls } = await prepareComponentWithSpy(options);
 
         const container = render();
 
@@ -59,7 +59,7 @@ export function routerTests(
       });
 
       it('No rerender and lifecycle if only params changed (without page name)', async () => {
-        const { routerStore, render, checkSpy, calls } = prepareComponentWithSpy(options);
+        const { routerStore, render, checkSpy, calls } = await prepareComponentWithSpy(options);
 
         const container = render();
 
@@ -84,7 +84,7 @@ export function routerTests(
       });
 
       it('No rerender and lifecycle (same page name)', async () => {
-        const { routerStore, render, checkSpy, calls } = prepareComponentWithSpy(options);
+        const { routerStore, render, checkSpy, calls } = await prepareComponentWithSpy(options);
 
         const container = render();
 
@@ -109,7 +109,7 @@ export function routerTests(
       });
 
       it('Rerender and lifecycle (no page name)', async () => {
-        const { routerStore, render, checkSpy, calls } = prepareComponentWithSpy(options);
+        const { routerStore, render, checkSpy, calls } = await prepareComponentWithSpy(options);
 
         const container = render();
 
@@ -140,7 +140,7 @@ export function routerTests(
       });
 
       it('No rerender and lifecycle on props change', async () => {
-        const { routerStore, render, checkSpy, calls } = prepareComponentWithSpy(options);
+        const { routerStore, render, checkSpy, calls } = await prepareComponentWithSpy(options);
 
         const container = render();
 
@@ -167,7 +167,8 @@ export function routerTests(
 
     describe.runIf(!constants.isClient)(`SSR tests Router + [${options.reactivity}]`, () => {
       it('SSR', async () => {
-        const { routerStore, renderToString, checkSpy, calls } = prepareComponentWithSpy(options);
+        const { routerStore, renderToString, checkSpy, calls } =
+          await prepareComponentWithSpy(options);
 
         await routerStore.redirectTo({ route: 'staticRoute' });
 

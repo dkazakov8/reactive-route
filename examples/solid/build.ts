@@ -16,7 +16,7 @@ const outdirPath = path.resolve(__dirname, 'dist');
 const publicPath = path.resolve(outdirPath, 'public');
 const templatePath = path.resolve(outdirPath, 'template.html');
 
-const REACTIVITY_SYSTEM: 'mobx' | 'kr-observable' = process.argv[2] as any;
+const REACTIVITY_SYSTEM: 'solid' | 'kr-observable' | 'mobx' = process.argv[2] as any;
 const SSR_ENABLED = process.argv[3] === 'ssr';
 
 function generateSolidModifier(ssr: boolean) {

@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       kr-observable:
-        specifier: 3.1.1
-        version: 3.1.1
+        specifier: 3.1.4
+        version: 3.1.4
       mobx:
         specifier: 6.13.7
         version: 6.13.7
@@ -24,8 +24,8 @@ importers:
         specifier: 19.1.1
         version: 19.1.1(react@19.1.1)
       reactive-route:
-        specifier: 0.0.1-alpha.16
-        version: 0.0.1-alpha.16
+        specifier: 0.0.1-alpha.21
+        version: 0.0.1-alpha.21
       ultimate-express:
         specifier: 2.0.9
         version: 2.0.9
@@ -485,8 +485,8 @@ packages:
     resolution: {integrity: sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==}
     engines: {node: '>=0.12.0'}
 
-  kr-observable@3.1.1:
-    resolution: {integrity: sha512-EL2lFgS914V27ipmhEBHS8ZYEcg540ZDOKt8Xh4Am1YzR6+JNT4U9BhGg0bce+5kUd4jLSPYVPPMtvjiC/QKsQ==}
+  kr-observable@3.1.4:
+    resolution: {integrity: sha512-BkkPV+nsP4lXaoMy9vKEAHIId6XRlZ/X60KvpDQpF4vFkIhRY04miDXqRIIIs455SsUEHQOxP07FDwLZnQLXjw==}
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -583,8 +583,8 @@ packages:
     resolution: {integrity: sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ==}
     engines: {node: '>=0.10.0'}
 
-  reactive-route@0.0.1-alpha.16:
-    resolution: {integrity: sha512-5XBM6SEdXkgpWKPbDHNT4vCCGHivTakdO/hNiOWuD/oLocuTWROlOnBCvbbKp6TrFUCigJanaG70ZHVd2aFabA==}
+  reactive-route@0.0.1-alpha.21:
+    resolution: {integrity: sha512-LJumg64x+AFK3+zUetzAVoT/dAX9P3EulP8OLWc1BDwhynoD3Lae5R1WsUvF3zVN9bq142M/jznNWWdcQoJhfw==}
 
   readdirp@3.6.0:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
@@ -1070,7 +1070,7 @@ snapshots:
 
   is-number@7.0.0: {}
 
-  kr-observable@3.1.1: {}
+  kr-observable@3.1.4: {}
 
   math-intrinsics@1.1.0: {}
 
@@ -1139,7 +1139,7 @@ snapshots:
 
   react@19.1.1: {}
 
-  reactive-route@0.0.1-alpha.16:
+  reactive-route@0.0.1-alpha.21:
     dependencies:
       history: 5.3.0
       query-string: 7.1.3

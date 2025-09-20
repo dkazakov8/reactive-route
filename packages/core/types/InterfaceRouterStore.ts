@@ -8,6 +8,7 @@ export type TypeAdapters = {
   replaceObject: <TObj extends Record<string, any>>(obj: TObj, newObj: TObj) => void;
   makeObservable: <TObj extends Record<string, any>>(obj: TObj) => TObj;
   observer?: (comp: any) => any;
+  immediateSetComponent?: boolean;
 };
 
 export type TypeCreateRouterStore<
