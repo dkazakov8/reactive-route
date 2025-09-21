@@ -8,8 +8,6 @@ describe.runIf(constants.isClient)('Client constants', () => {
       dynamicSeparator: ':',
       pathPartSeparator: '/',
       isClient: true,
-      errorRedirect: 'REDIRECT',
-      errorPrevent: 'PREVENT_REDIRECT',
     });
   });
 });
@@ -20,8 +18,6 @@ describe.runIf(!constants.isClient)('SSR constants', () => {
       dynamicSeparator: ':',
       pathPartSeparator: '/',
       isClient: false,
-      errorRedirect: 'REDIRECT',
-      errorPrevent: 'PREVENT_REDIRECT',
     });
   });
 });

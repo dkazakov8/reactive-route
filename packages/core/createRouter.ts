@@ -1,5 +1,3 @@
-import queryString from 'query-string';
-
 import { InterfaceRouterStore, TypeCreateRouterStore } from './types/InterfaceRouterStore';
 import { TypeLifecycleConfig } from './types/TypeLifecycleConfig';
 import { TypeRedirectToParams } from './types/TypeRedirectToParams';
@@ -10,43 +8,48 @@ import { getInitialRoute } from './utils/getInitialRoute';
 import { getQueryValues } from './utils/getQueryValues';
 import { history } from './utils/history';
 import { loadComponentToConfig } from './utils/loadComponentToConfig';
+import { PreventError } from './utils/PreventError';
+import { queryString } from './utils/queryString';
+import { RedirectError } from './utils/RedirectError';
 import { replaceDynamicValues } from './utils/replaceDynamicValues';
 
-export function createRouterStore<
+export function createRouter<
   TRoutes extends Record<string | 'notFound' | 'internalError', TypeRoute>,
 >({
   adapters,
   routes,
   lifecycleParams,
 }: TypeCreateRouterStore<TRoutes>): InterfaceRouterStore<TRoutes> {
-  const routerStore: InterfaceRouterStore<TRoutes> = adapters.makeObservable({
+  const router: InterfaceRouterStore<TRoutes> = adapters.makeObservable({
     routesHistory: [],
     currentRoute: {} as any,
     isRedirecting: false,
     redirectTo: undefined as any,
     restoreFromURL: undefined as any,
     restoreFromServer: undefined as any,
-    adapters,
+    get adapters() {
+      return adapters;
+    },
   });
 
-  routerStore.restoreFromServer = function restoreFromServer(obj) {
+  router.restoreFromServer = function restoreFromServer(obj) {
     adapters.batch(() => {
-      routerStore.routesHistory.push(...(obj.routesHistory || []));
-      Object.assign(routerStore.currentRoute, obj.currentRoute);
+      router.routesHistory.push(...(obj.routesHistory || []));
+      Object.assign(router.currentRoute, obj.currentRoute);
     });
 
     const preloadedRouteName = Object.keys(routes).find(
-      (routeName) => routerStore.currentRoute.name === routeName
+      (routeName) => router.currentRoute.name === routeName
     ) as keyof typeof routes;
 
     return loadComponentToConfig({ route: routes[preloadedRouteName] });
   };
 
-  routerStore.restoreFromURL = function restoreFromURL(params) {
-    return routerStore.redirectTo(getInitialRoute({ routes, pathname: params.pathname }));
+  router.restoreFromURL = function restoreFromURL(params) {
+    return router.redirectTo(getInitialRoute({ routes, pathname: params.pathname }));
   };
 
-  routerStore.redirectTo = async function redirectTo<TRouteName extends keyof TRoutes>(
+  router.redirectTo = async function redirectTo<TRouteName extends keyof TRoutes>(
     config: TypeRedirectToParams<TRoutes, TRouteName>
   ) {
     const { route: routeName, noHistoryPush } = config;
@@ -62,18 +65,15 @@ export function createRouterStore<
     let currentSearch: undefined | string;
     let currentQuery: Partial<Record<keyof TRoutes[TRouteName]['query'], string>> | undefined;
 
-    if (routerStore.currentRoute?.name) {
-      currentRoute = routes[routerStore.currentRoute.name];
+    if (router.currentRoute?.name) {
+      currentRoute = routes[router.currentRoute.name];
       currentPathname = replaceDynamicValues({
         route: currentRoute,
-        params: routerStore.currentRoute.params,
+        params: router.currentRoute.params,
       });
-      currentUrl = queryString.stringifyUrl({
-        url: currentPathname,
-        query: routerStore.currentRoute.query,
-      });
-      currentQuery = routerStore.currentRoute.query;
-      currentSearch = queryString.stringify(routerStore.currentRoute.query);
+      currentQuery = router.currentRoute.query;
+      currentSearch = queryString.stringify(router.currentRoute.query as any);
+      currentUrl = `${currentPathname}${currentSearch ? `?${currentSearch}` : ''}`;
     }
 
     /**
@@ -93,13 +93,13 @@ export function createRouterStore<
     if ('query' in config && config.query) {
       const clearedQuery = getQueryValues({
         route: nextRoute,
-        pathname: `${nextPathname}?${queryString.stringify(config.query)}`,
+        pathname: `${nextPathname}?${queryString.stringify(config.query as any)}`,
       });
 
       if (Object.keys(clearedQuery).length > 0) {
         nextQuery = clearedQuery;
         nextSearch = queryString.stringify(clearedQuery);
-        nextUrl = queryString.stringifyUrl({ url: nextPathname, query: clearedQuery });
+        nextUrl = `${nextPathname}?${nextSearch}`;
       }
     }
 
@@ -118,11 +118,11 @@ export function createRouterStore<
     if (currentPathname === nextPathname) {
       if (currentSearch !== nextSearch) {
         adapters.batch(() => {
-          adapters.replaceObject(routerStore.currentRoute, {
-            ...routerStore.currentRoute,
+          adapters.replaceObject(router.currentRoute, {
+            ...router.currentRoute,
             query: nextQuery || {},
           });
-          routerStore.routesHistory.push(nextUrl);
+          router.routesHistory.push(nextUrl);
         });
 
         if (history && !noHistoryPush) {
@@ -138,7 +138,7 @@ export function createRouterStore<
     }
 
     adapters.batch(() => {
-      routerStore.isRedirecting = true;
+      router.isRedirecting = true;
     });
 
     try {
@@ -158,6 +158,34 @@ export function createRouterStore<
         currentRoute,
         currentSearch,
         currentPathname,
+        redirect: (redirectConfig: TypeRedirectToParams<TRoutes, keyof TRoutes>) => {
+          if (constants.isClient) return redirectConfig;
+
+          const redirectRoute = routes[redirectConfig.route];
+          const redirectParams =
+            'params' in redirectConfig && redirectConfig.params ? redirectConfig.params : undefined;
+
+          let redirectUrl = replaceDynamicValues({
+            params: redirectParams,
+            route: redirectRoute,
+          });
+
+          if ('query' in redirectConfig && redirectConfig.query) {
+            const clearedQuery = getQueryValues({
+              route: nextRoute,
+              pathname: `${nextPathname}?${queryString.stringify(redirectConfig.query as any)}`,
+            });
+
+            if (Object.keys(clearedQuery).length > 0) {
+              redirectUrl = `${redirectUrl}?${queryString.stringify(clearedQuery)}`;
+            }
+          }
+
+          throw new RedirectError(redirectUrl);
+        },
+        preventRedirect: () => {
+          throw new PreventError(`Redirect to ${nextUrl} was prevented`);
+        },
       };
 
       await currentRoute?.beforeLeave?.(config, ...(lifecycleParams || []));
@@ -169,37 +197,15 @@ export function createRouterStore<
        *
        */
 
-      if (typeof redirectConfig === 'object') {
-        if (constants.isClient) return redirectTo(redirectConfig);
-
-        const redirectRoute = routes[redirectConfig.route];
-        const redirectParams =
-          'params' in redirectConfig && redirectConfig.params ? redirectConfig.params : undefined;
-
-        let redirectUrl = replaceDynamicValues({
-          params: redirectParams,
-          route: redirectRoute,
-        });
-
-        if ('query' in redirectConfig && redirectConfig.query) {
-          const clearedQuery = getQueryValues({
-            route: nextRoute,
-            pathname: `${nextPathname}?${queryString.stringify(redirectConfig.query)}`,
-          });
-
-          if (Object.keys(clearedQuery).length > 0) {
-            redirectUrl = queryString.stringifyUrl({ url: redirectUrl, query: clearedQuery });
-          }
-        }
-
-        throw Object.assign(new Error(redirectUrl), { name: constants.errorRedirect });
-      }
+      if (redirectConfig) return redirectTo(redirectConfig);
 
       await loadComponentToConfig({ route: routes[nextRoute.name] });
     } catch (error: any) {
-      if (error?.name === constants.errorPrevent) return Promise.resolve();
+      if (error instanceof PreventError) {
+        return Promise.resolve();
+      }
 
-      if (error?.name === constants.errorRedirect) {
+      if (error instanceof RedirectError) {
         throw error;
       }
 
@@ -208,7 +214,7 @@ export function createRouterStore<
       await loadComponentToConfig({ route: routes.internalError });
 
       adapters.batch(() => {
-        adapters.replaceObject(routerStore.currentRoute, {
+        adapters.replaceObject(router.currentRoute, {
           name: routes.internalError.name,
           path: routes.internalError.path,
           props: routes[routes.internalError.name].props,
@@ -217,14 +223,14 @@ export function createRouterStore<
           pageName: routes[routes.internalError.name].pageName,
         });
 
-        routerStore.isRedirecting = false;
+        router.isRedirecting = false;
       });
 
       return Promise.resolve();
     }
 
     adapters.batch(() => {
-      adapters.replaceObject(routerStore.currentRoute, {
+      adapters.replaceObject(router.currentRoute, {
         name: nextRoute.name,
         path: nextRoute.path,
         props: routes[nextRoute.name].props,
@@ -233,25 +239,25 @@ export function createRouterStore<
         pageName: routes[nextRoute.name].pageName,
       });
 
-      const lastUrl = routerStore.routesHistory[routerStore.routesHistory.length - 1];
+      const lastUrl = router.routesHistory[router.routesHistory.length - 1];
 
       if (lastUrl !== nextUrl) {
-        routerStore.routesHistory.push(nextUrl);
+        router.routesHistory.push(nextUrl);
       }
 
       if (history && !noHistoryPush) {
         history.push({
           hash: history.location.hash,
-          search: 'query' in config ? `?${queryString.stringify(config.query!)}` : '',
+          search: 'query' in config ? `?${queryString.stringify(config.query! as any)}` : '',
           pathname: nextPathname,
         });
       }
 
-      routerStore.isRedirecting = false;
+      router.isRedirecting = false;
     });
 
     return Promise.resolve();
   };
 
-  return routerStore!;
+  return router!;
 }

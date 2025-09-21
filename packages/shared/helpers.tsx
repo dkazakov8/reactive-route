@@ -1,16 +1,16 @@
 import { expect, vi } from 'vitest';
 
-import { createRouterStore, TypeRoute } from '../core';
-import { createRoutes } from './createRoutes';
+import { createRouter, TypeRoute } from '../core';
+import { createTestRoutes } from './createTestRoutes';
 import { getAdapters } from './getAdapters';
 import { TypeOptions } from './types';
 
 export function getRoutes(options: TypeOptions) {
-  let routes: ReturnType<typeof createRoutes> = {} as any;
+  let routes: ReturnType<typeof createTestRoutes> = {} as any;
 
   if (options.renderer === 'react') {
     if (options.reactivity === 'mobx') {
-      routes = createRoutes({
+      routes = createTestRoutes({
         staticRoute: () => import('../react/test/pages/static/StaticMobx'),
         dynamicRoute: () => import('../react/test/pages/dynamic/DynamicMobx'),
         dynamicRoute2: () => import('../react/test/pages/dynamic/DynamicMobx'),
@@ -24,7 +24,7 @@ export function getRoutes(options: TypeOptions) {
       });
     }
     if (options.reactivity === 'kr-observable') {
-      routes = createRoutes({
+      routes = createTestRoutes({
         staticRoute: () => import('../react/test/pages/static/StaticKrObservable'),
         dynamicRoute: () => import('../react/test/pages/dynamic/DynamicKrObservable'),
         dynamicRoute2: () => import('../react/test/pages/dynamic/DynamicKrObservable'),
@@ -41,7 +41,7 @@ export function getRoutes(options: TypeOptions) {
 
   if (options.renderer === 'preact') {
     if (options.reactivity === 'mobx') {
-      routes = createRoutes({
+      routes = createTestRoutes({
         staticRoute: () => import('../preact/test/pages/static/StaticMobx'),
         dynamicRoute: () => import('../preact/test/pages/dynamic/DynamicMobx'),
         dynamicRoute2: () => import('../preact/test/pages/dynamic/DynamicMobx'),
@@ -55,7 +55,7 @@ export function getRoutes(options: TypeOptions) {
       });
     }
     if (options.reactivity === 'kr-observable') {
-      routes = createRoutes({
+      routes = createTestRoutes({
         staticRoute: () => import('../preact/test/pages/static/StaticKrObservable'),
         dynamicRoute: () => import('../preact/test/pages/dynamic/DynamicKrObservable'),
         dynamicRoute2: () => import('../preact/test/pages/dynamic/DynamicKrObservable'),
@@ -71,7 +71,7 @@ export function getRoutes(options: TypeOptions) {
   }
 
   if (options.renderer === 'solid') {
-    routes = createRoutes({
+    routes = createTestRoutes({
       staticRoute: () => import('../solid/test/pages/static/Static'),
       dynamicRoute: () => import('../solid/test/pages/dynamic/Dynamic'),
       dynamicRoute2: () => import('../solid/test/pages/dynamic/Dynamic'),
@@ -95,7 +95,7 @@ export async function createRouterWithCustomRoutes<TRoutes extends Record<string
 ) {
   const adapters = await getAdapters(options);
 
-  return createRouterStore({ routes, lifecycleParams, adapters });
+  return createRouter({ routes, lifecycleParams, adapters });
 }
 
 async function getRouterComponent(options: TypeOptions) {
@@ -144,7 +144,7 @@ async function getRenderToString(options: TypeOptions, App: any) {
 export async function prepareComponentWithSpy(options: TypeOptions) {
   const routes = getRoutes(options);
   const adapters = await getAdapters(options);
-  const routerStore = createRouterStore({ routes, adapters });
+  const router = createRouter({ routes, adapters });
 
   const spy_render = vi.fn();
   const spy_beforeSetPageComponent = vi.fn();
@@ -169,7 +169,7 @@ export async function prepareComponentWithSpy(options: TypeOptions) {
 
     return (
       <Router
-        routerStore={routerStore}
+        router={router}
         routes={routes}
         beforeSetPageComponent={spy_beforeSetPageComponent}
         beforeUpdatePageComponent={spy_beforeUpdatePageComponent}
@@ -181,7 +181,7 @@ export async function prepareComponentWithSpy(options: TypeOptions) {
   const renderToString = await getRenderToString(options, App);
 
   return {
-    routerStore,
+    router,
     calls,
     checkSpy,
     render,

@@ -10,4 +10,7 @@ export type TypeLifecycleConfig = {
   currentRoute?: any;
   currentSearch?: string;
   currentPathname?: string;
+
+  redirect: (params: any) => void;
+  preventRedirect: () => void;
 };

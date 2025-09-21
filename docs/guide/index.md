@@ -1,5 +1,12 @@
 # What is Reactive Route?
 
+![coverage](https://github.com/dkazakov8/reactive-route/blob/master/assets/coverage.svg)
+[![npm](https://img.shields.io/npm/v/reactive-route)](https://www.npmjs.com/package/reactive-route)
+![size-core](https://github.com/dkazakov8/reactive-route/blob/master/assets/core.svg)
+![size-react](https://github.com/dkazakov8/reactive-route/blob/master/assets/react.svg)
+![size-preact](https://github.com/dkazakov8/reactive-route/blob/master/assets/preact.svg)
+![size-solid](https://github.com/dkazakov8/reactive-route/blob/master/assets/solid.svg)
+
 Reactive Route is a lightweight, flexible, and reactive router for JavaScript applications.
 
 ### Framework and State Management Agnostic
@@ -15,65 +22,9 @@ state management solutions. Currently, Reactive Route provides official implemen
 - Solid.js + MobX
 - Solid.js + Observable
 
-### Config-based Routing
-
-Routes are defined using a simple, declarative configuration object:
-
-```typescript
-const routes = createRouterConfig({
-  home: {
-    path: '/',
-    loader: () => import('./pages/home'),
-  },
-  user: {
-    path: '/user/:id',
-    params: {
-      id: (value) => /^\d+$/.test(value),
-    },
-    query: {
-      phone: (value) => value.length > 0 && value.length < 10,
-    },
-    loader: () => import('./pages/user'),
-  },
-  notFound: {
-    path: '/not-found',
-    props: { errorCode: 404 },
-    loader: () => import('./pages/error'),
-  },
-  internalError: {
-    path: '/internal-error',
-    props: { errorCode: 500 },
-    loader: () => import('./pages/error'),
-  },
-});
-```
-
 ### Type Safety
 
 Built with TypeScript, Reactive Route provides excellent type safety and developer experience. The router configuration and all APIs are fully typed.
-
-### Navigation Guards
-
-Powerful navigation guards allow you to control the navigation flow:
-
-```typescript
-const routes = createRouterConfig({
-  protected: {
-    path: '/protected',
-    loader: () => import('./pages/protected'),
-    async beforeEnter() {
-      if (!isAuthenticated()) {
-        return { route: 'login' };
-      }
-    },
-    async beforeLeave({ nextRoute }) {
-      if (nextRoute.name === 'user') {
-        throw Object.assign(new Error(''), { name: 'PREVENT_REDIRECT' });
-      }
-    },
-  },
-});
-```
 
 ### Server-Side Rendering
 

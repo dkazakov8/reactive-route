@@ -5,7 +5,7 @@ import { routes } from '../routes';
 import { StoreContext } from './StoreContext';
 
 export const Router = () => {
-  const { routerStore } = useContext(StoreContext);
+  const { router } = useContext(StoreContext);
 
-  return <RouterSolid routes={routes} routerStore={routerStore} />;
+  return <RouterSolid routes={routes} router={router} />;
 };

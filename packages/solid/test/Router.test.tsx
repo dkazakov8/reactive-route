@@ -15,10 +15,10 @@ routerTests(
       renderer: 'solid',
       reactivity: 'solid',
     },
-    // {
-    //   renderer: 'solid',
-    //   reactivity: 'kr-observable',
-    // },
+    {
+      renderer: 'solid',
+      reactivity: 'kr-observable',
+    },
   ],
   (options) => {
     if (options.reactivity === 'mobx') {
@@ -39,8 +39,9 @@ routerTests(
         };
       });
     }
+
     if (options.reactivity === 'kr-observable') {
-      enableObservable(true);
+      enableObservable();
     }
   }
 );

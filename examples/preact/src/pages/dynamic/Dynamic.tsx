@@ -3,16 +3,16 @@ import { useContext } from 'preact/hooks';
 import { StoreContext } from '../../components/StoreContext';
 
 export default function Dynamic() {
-  const { routerStore } = useContext(StoreContext);
+  const { router } = useContext(StoreContext);
 
   return (
     <>
-      <div>Dynamic {JSON.stringify(routerStore.currentRoute.params)}</div>
+      <div>Dynamic {JSON.stringify(router.currentRoute.params)}</div>
       <button
         type={'button'}
         style={{ marginTop: 20 }}
         onClick={() => {
-          void routerStore.redirectTo({
+          void router.redirectTo({
             route: 'dynamic',
             params: { foo: String(Math.random()).slice(2) },
           });

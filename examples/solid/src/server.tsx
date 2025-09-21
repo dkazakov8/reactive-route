@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { enableObservable } from 'kr-observable/solidjs';
 import { Reaction } from 'mobx';
+import { RedirectError } from 'reactive-route';
 import { enableExternalSource } from 'solid-js';
 import { generateHydrationScript, renderToString } from 'solid-js/web';
 import express from 'ultimate-express';
@@ -10,7 +11,7 @@ import express from 'ultimate-express';
 import { escapeAllStrings } from '../../shared/utils/escapeAllStrings';
 import { App } from './components/App';
 import { StoreContext } from './components/StoreContext';
-import { getRouterStore } from './routerStore';
+import { getRouter } from './router';
 
 const outdirPath = path.resolve(__dirname, '../dist');
 const publicPath = path.resolve(outdirPath, 'public');
@@ -52,14 +53,14 @@ app.get('*', async (req, res) => {
     return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- INITIAL_DATA -->', '{}'));
   }
 
-  const routerStore = await getRouterStore();
+  const router = await getRouter();
 
-  const contextValue = { routerStore };
+  const contextValue = { router };
 
   try {
-    await contextValue.routerStore.restoreFromURL({ pathname: req.originalUrl });
+    await contextValue.router.restoreFromURL({ pathname: req.originalUrl });
   } catch (error: any) {
-    if (error.name === 'REDIRECT') {
+    if (error instanceof RedirectError) {
       console.log('redirect', error.message);
 
       return res.redirect(error.message);

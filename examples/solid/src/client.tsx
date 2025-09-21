@@ -9,7 +9,7 @@ import { enableExternalSource } from 'solid-js';
 import { unescapeAllStrings } from '../../shared/utils/unescapeAllStrings';
 import { App } from './components/App';
 import { StoreContext } from './components/StoreContext';
-import { getRouterStore } from './routerStore';
+import { getRouter } from './router';
 
 if (REACTIVITY_SYSTEM === 'kr-observable') {
   enableObservable(false);
@@ -34,16 +34,16 @@ if (REACTIVITY_SYSTEM === 'mobx') {
   });
 }
 
-const routerStore = await getRouterStore();
+const router = await getRouter();
 
-const contextValue = { routerStore };
+const contextValue = { router };
 
 const initialData = unescapeAllStrings((window as any).INITIAL_DATA as any);
 
 async function renderSSR() {
   console.log('renderSSR');
 
-  await contextValue.routerStore.restoreFromServer(initialData.routerStore);
+  await contextValue.router.restoreFromServer(initialData.router);
 
   function AppToRender() {
     return (
@@ -59,7 +59,7 @@ async function renderSSR() {
 async function renderCSR() {
   console.log('renderCSR');
 
-  await contextValue.routerStore.restoreFromURL({ pathname: location.pathname + location.search });
+  await contextValue.router.restoreFromURL({ pathname: location.pathname + location.search });
 
   render(
     () => (

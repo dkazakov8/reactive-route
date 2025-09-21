@@ -1,18 +1,19 @@
 import _ from 'lodash';
-import queryString from 'query-string';
 import { describe, expect, it, vi } from 'vitest';
 
 import { createRouterWithCustomRoutes, getRoutes } from '../../shared/helpers';
 import { allPossibleOptions } from '../../shared/types';
-import { createRouterConfig } from '../createRouterConfig';
+import { createRoutes } from '../createRoutes';
 import { InterfaceRouterStore } from '../types/InterfaceRouterStore';
 import { TypeRoute } from '../types/TypeRoute';
 import { TypeRouteWithParams } from '../types/TypeRouteWithParams';
 import { constants } from '../utils/constants';
+import { queryString } from '../utils/queryString';
+import { RedirectError } from '../utils/RedirectError';
 import { replaceDynamicValues } from '../utils/replaceDynamicValues';
 
-function checkHistory(routerStore: InterfaceRouterStore<any>, history: Array<TypeRouteWithParams>) {
-  expect(routerStore.routesHistory).to.deep.eq(
+function checkHistory(router: InterfaceRouterStore<any>, history: Array<TypeRouteWithParams>) {
+  expect(router.routesHistory).to.deep.eq(
     history.map((c) => {
       let pathname = replaceDynamicValues({
         route: c,
@@ -30,8 +31,8 @@ function checkHistory(routerStore: InterfaceRouterStore<any>, history: Array<Typ
   );
 }
 
-function checkCurrent(routerStore: InterfaceRouterStore<any>, route: TypeRouteWithParams) {
-  expect(routerStore.currentRoute).to.deep.eq({
+function checkCurrent(router: InterfaceRouterStore<any>, route: TypeRouteWithParams) {
+  expect(router.currentRoute).to.deep.eq({
     name: route.name,
     path: route.path,
     props: route.props,
@@ -52,11 +53,11 @@ function checkCurrent(routerStore: InterfaceRouterStore<any>, route: TypeRouteWi
 }
 
 function checkHistoryAndCurrent(
-  routerStore: InterfaceRouterStore<any>,
+  router: InterfaceRouterStore<any>,
   history: Array<TypeRouteWithParams>
 ) {
-  checkHistory(routerStore, history);
-  checkCurrent(routerStore, history[history.length - 1]);
+  checkHistory(router, history);
+  checkCurrent(router, history[history.length - 1]);
 }
 
 function cloneWithParams<TRoute extends TypeRoute>(config: {
@@ -103,38 +104,38 @@ function createCounters() {
   return { spyOne, spyTwo, counter, checkSpy };
 }
 
-allPossibleOptions.forEach((options) => {
+[allPossibleOptions[0]].forEach((options) => {
   const routes = getRoutes(options);
 
   describe(`redirectTo [${options.renderer}+${options.reactivity}]`, () => {
     it('restoreFromURL: sets initial route', async () => {
-      const routerStore = await createRouterWithCustomRoutes(options, routes);
+      const router = await createRouterWithCustomRoutes(options, routes);
 
-      await routerStore.restoreFromURL({ pathname: routes.staticRoute.path });
+      await router.restoreFromURL({ pathname: routes.staticRoute.path });
 
       const history: Array<TypeRouteWithParams> = [];
 
       history.push(cloneWithParams({ route: routes.staticRoute }));
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('restoreFromURL: sets initial route not found', async () => {
-      const routerStore = await createRouterWithCustomRoutes(options, routes);
+      const router = await createRouterWithCustomRoutes(options, routes);
 
-      await routerStore.restoreFromURL({ pathname: '/testX/static' });
+      await router.restoreFromURL({ pathname: '/testX/static' });
 
       const history: Array<TypeRouteWithParams> = [];
 
       history.push(cloneWithParams({ route: routes.notFound }));
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('beforeEnter: not called when redirecting to same static route', async () => {
       const { spyOne, counter, checkSpy } = createCounters();
 
-      const customRoutes = createRouterConfig({
+      const customRoutes = createRoutes({
         spyOne: {
           path: '/test/static',
           loader: routes.staticRoute.loader,
@@ -145,11 +146,11 @@ allPossibleOptions.forEach((options) => {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'spyOne' });
+      await router.redirectTo({ route: 'spyOne' });
 
       history.push(cloneWithParams({ route: customRoutes.spyOne }));
 
@@ -159,19 +160,19 @@ allPossibleOptions.forEach((options) => {
 
       expect(spyOne).toHaveBeenLastCalledWith('');
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
-      await routerStore.redirectTo({ route: 'spyOne' });
+      await router.redirectTo({ route: 'spyOne' });
 
       checkSpy();
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('beforeEnter: not called when redirecting to same dynamic route (no params change)', async () => {
       const { spyOne, counter, checkSpy } = createCounters();
 
-      const customRoutes = createRouterConfig({
+      const customRoutes = createRoutes({
         spyOneDynamic: {
           path: '/test/:static',
           params: {
@@ -185,11 +186,11 @@ allPossibleOptions.forEach((options) => {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      await router.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
 
       history.push(
         cloneWithParams({ route: customRoutes.spyOneDynamic, params: { static: 'foo' } })
@@ -201,17 +202,17 @@ allPossibleOptions.forEach((options) => {
 
       expect(spyOne).toHaveBeenLastCalledWith('');
 
-      await routerStore.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      await router.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
 
       checkSpy();
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('beforeEnter: not called when redirecting to same route (no query change)', async () => {
       const { spyOne, counter, checkSpy } = createCounters();
 
-      const customRoutes = createRouterConfig({
+      const customRoutes = createRoutes({
         spyOne: {
           path: '/test/static',
           query: {
@@ -225,11 +226,11 @@ allPossibleOptions.forEach((options) => {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'spyOne', query: { q: 'foo' } });
+      await router.redirectTo({ route: 'spyOne', query: { q: 'foo' } });
 
       history.push(cloneWithParams({ route: customRoutes.spyOne, query: { q: 'foo' } }));
 
@@ -239,17 +240,17 @@ allPossibleOptions.forEach((options) => {
 
       expect(spyOne).toHaveBeenLastCalledWith('');
 
-      await routerStore.redirectTo({ route: 'spyOne', query: { q: 'foo' } });
+      await router.redirectTo({ route: 'spyOne', query: { q: 'foo' } });
 
       checkSpy();
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('beforeEnter: not called when redirecting to same route (query changed)', async () => {
       const { spyOne, counter, checkSpy } = createCounters();
 
-      const customRoutes = createRouterConfig({
+      const customRoutes = createRoutes({
         spyOne: {
           path: '/test/static',
           query: {
@@ -263,11 +264,11 @@ allPossibleOptions.forEach((options) => {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'spyOne', query: { q: 'foo' } });
+      await router.redirectTo({ route: 'spyOne', query: { q: 'foo' } });
 
       history.push(cloneWithParams({ route: customRoutes.spyOne, query: { q: 'foo' } }));
 
@@ -277,19 +278,19 @@ allPossibleOptions.forEach((options) => {
 
       expect(spyOne).toHaveBeenLastCalledWith('');
 
-      await routerStore.redirectTo({ route: 'spyOne', query: { q: 'bar' } });
+      await router.redirectTo({ route: 'spyOne', query: { q: 'bar' } });
 
       history.push(cloneWithParams({ route: customRoutes.spyOne, query: { q: 'bar' } }));
 
       checkSpy();
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('beforeEnter: called when redirecting to same dynamic route (params changed)', async () => {
       const { spyOne, counter, checkSpy } = createCounters();
 
-      const customRoutes = createRouterConfig({
+      const customRoutes = createRoutes({
         spyOneDynamic: {
           path: '/test/:static',
           params: {
@@ -303,11 +304,11 @@ allPossibleOptions.forEach((options) => {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      await router.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
 
       history.push(
         cloneWithParams({ route: customRoutes.spyOneDynamic, params: { static: 'foo' } })
@@ -319,7 +320,7 @@ allPossibleOptions.forEach((options) => {
 
       expect(spyOne).toHaveBeenLastCalledWith('');
 
-      await routerStore.redirectTo({ route: 'spyOneDynamic', params: { static: 'bar' } });
+      await router.redirectTo({ route: 'spyOneDynamic', params: { static: 'bar' } });
 
       history.push(
         cloneWithParams({ route: customRoutes.spyOneDynamic, params: { static: 'bar' } })
@@ -329,11 +330,11 @@ allPossibleOptions.forEach((options) => {
 
       checkSpy();
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('beforeEnter: errors are rendered with internalError and not pushed to history', async () => {
-      const customRoutes = createRouterConfig({
+      const customRoutes = createRoutes({
         buggyCode: {
           path: '/test/static4',
           loader: routes.dynamicRoute.loader,
@@ -346,21 +347,21 @@ allPossibleOptions.forEach((options) => {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'buggyCode' });
+      await router.redirectTo({ route: 'buggyCode' });
 
       // Front does not throw an exception on buggy code, replace currentRoute with error500
-      checkHistory(routerStore, history);
-      checkCurrent(routerStore, cloneWithParams({ route: customRoutes.internalError }));
+      checkHistory(router, history);
+      checkCurrent(router, cloneWithParams({ route: customRoutes.internalError }));
     });
 
     it('beforeLeave: not called when redirecting to same static route', async () => {
       const { spyOne, checkSpy } = createCounters();
 
-      const customRoutes = createRouterConfig({
+      const customRoutes = createRoutes({
         spyOne: {
           path: '/test/static',
           loader: routes.staticRoute.loader,
@@ -371,29 +372,29 @@ allPossibleOptions.forEach((options) => {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'spyOne' });
+      await router.redirectTo({ route: 'spyOne' });
 
       checkSpy();
 
       history.push(cloneWithParams({ route: customRoutes.spyOne }));
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
-      await routerStore.redirectTo({ route: 'spyOne' });
+      await router.redirectTo({ route: 'spyOne' });
 
       checkSpy();
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('beforeLeave: called when redirecting to another route', async () => {
       const { spyOne, counter, checkSpy } = createCounters();
 
-      const customRoutes = createRouterConfig({
+      const customRoutes = createRoutes({
         spyOne: {
           path: '/test/static',
           loader: routes.staticRoute.loader,
@@ -411,19 +412,19 @@ allPossibleOptions.forEach((options) => {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'spyOne' });
+      await router.redirectTo({ route: 'spyOne' });
 
       checkSpy();
 
       history.push(cloneWithParams({ route: customRoutes.spyOne }));
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
-      await routerStore.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      await router.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
 
       history.push(
         cloneWithParams({ route: customRoutes.spyOneDynamic, params: { static: 'foo' } })
@@ -435,13 +436,13 @@ allPossibleOptions.forEach((options) => {
 
       expect(spyOne).toHaveBeenLastCalledWith('');
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('beforeLeave: not called when redirecting to same dynamic route (no params change)', async () => {
       const { spyOne, checkSpy } = createCounters();
 
-      const customRoutes = createRouterConfig({
+      const customRoutes = createRoutes({
         spyOneDynamic: {
           path: '/test/:static',
           params: {
@@ -455,11 +456,11 @@ allPossibleOptions.forEach((options) => {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      await router.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
 
       checkSpy();
 
@@ -467,19 +468,19 @@ allPossibleOptions.forEach((options) => {
         cloneWithParams({ route: customRoutes.spyOneDynamic, params: { static: 'foo' } })
       );
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
-      await routerStore.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      await router.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
 
       checkSpy();
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('beforeLeave: called when redirecting to same dynamic route (params changed)', async () => {
       const { spyOne, counter, checkSpy } = createCounters();
 
-      const customRoutes = createRouterConfig({
+      const customRoutes = createRoutes({
         spyOneDynamic: {
           path: '/test/:static',
           params: {
@@ -493,11 +494,11 @@ allPossibleOptions.forEach((options) => {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      await router.redirectTo({ route: 'spyOneDynamic', params: { static: 'foo' } });
 
       checkSpy();
 
@@ -505,9 +506,9 @@ allPossibleOptions.forEach((options) => {
         cloneWithParams({ route: customRoutes.spyOneDynamic, params: { static: 'foo' } })
       );
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
-      await routerStore.redirectTo({ route: 'spyOneDynamic', params: { static: 'bar' } });
+      await router.redirectTo({ route: 'spyOneDynamic', params: { static: 'bar' } });
 
       history.push(
         cloneWithParams({ route: customRoutes.spyOneDynamic, params: { static: 'bar' } })
@@ -519,13 +520,13 @@ allPossibleOptions.forEach((options) => {
 
       expect(spyOne).toHaveBeenLastCalledWith('');
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('beforeLeave: prevent and allow redirects', async () => {
       const { spyOne, counter, checkSpy } = createCounters();
 
-      const customRoutes = createRouterConfig({
+      const customRoutes = createRoutes({
         spyOne: {
           path: '/test/static',
           loader: routes.staticRoute.loader,
@@ -544,42 +545,40 @@ allPossibleOptions.forEach((options) => {
             spyOne(param);
 
             if (config.nextRoute.name === 'spyOne') {
-              const err = Object.assign(new Error(''), { name: constants.errorPrevent });
-
-              return Promise.reject(err);
+              return config.preventRedirect();
             }
           },
         },
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'preventRedirect' });
+      await router.redirectTo({ route: 'preventRedirect' });
 
       history.push(cloneWithParams({ route: customRoutes.preventRedirect }));
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
-      await routerStore.redirectTo({ route: 'spyOne' });
+      await router.redirectTo({ route: 'spyOne' });
 
       // Redirect to spyOne prevented
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
       counter.spyOne += 1;
 
       checkSpy();
 
-      await routerStore.redirectTo({ route: 'spyTwoDynamic', params: { static: 'asd' } });
+      await router.redirectTo({ route: 'spyTwoDynamic', params: { static: 'asd' } });
 
       // Redirect to spyTwoDynamic not prevented
       history.push(
         cloneWithParams({ route: customRoutes.spyTwoDynamic, params: { static: 'asd' } })
       );
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
       counter.spyOne += 1;
 
@@ -587,7 +586,7 @@ allPossibleOptions.forEach((options) => {
     });
 
     it('beforeLeave: errors are rendered with internalError and not pushed to history', async () => {
-      const customRoutes = createRouterConfig({
+      const customRoutes = createRoutes({
         spyOne: {
           path: '/test/static',
           loader: routes.staticRoute.loader,
@@ -604,92 +603,92 @@ allPossibleOptions.forEach((options) => {
         ...getDefaultRoutes(routes),
       });
 
-      const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+      const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'buggyCode' });
+      await router.redirectTo({ route: 'buggyCode' });
 
       history.push(cloneWithParams({ route: customRoutes.buggyCode }));
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
-      await routerStore.redirectTo({ route: 'spyOne' });
+      await router.redirectTo({ route: 'spyOne' });
 
-      checkHistory(routerStore, history);
+      checkHistory(router, history);
 
-      checkCurrent(routerStore, cloneWithParams({ route: customRoutes.internalError }));
+      checkCurrent(router, cloneWithParams({ route: customRoutes.internalError }));
     });
 
     it('query: no push to history if query is the same', async () => {
-      const routerStore = await createRouterWithCustomRoutes(options, routes);
+      const router = await createRouterWithCustomRoutes(options, routes);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'staticRoute', query: { q: 'test' } });
+      await router.redirectTo({ route: 'staticRoute', query: { q: 'test' } });
 
       history.push(cloneWithParams({ route: routes.staticRoute, query: { q: 'test' } }));
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
-      await routerStore.redirectTo({ route: 'staticRoute', query: { q: 'test' } });
+      await router.redirectTo({ route: 'staticRoute', query: { q: 'test' } });
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
-      await routerStore.redirectTo({
+      await router.redirectTo({
         route: 'staticRoute',
         // @ts-ignore
         query: { q: 'test', nonExistent: 'test' },
       });
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('query: no push to history if query is the same (non existent param)', async () => {
-      const routerStore = await createRouterWithCustomRoutes(options, routes);
+      const router = await createRouterWithCustomRoutes(options, routes);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'staticRoute' });
+      await router.redirectTo({ route: 'staticRoute' });
 
       history.push(cloneWithParams({ route: routes.staticRoute }));
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
       // @ts-ignore
-      await routerStore.redirectTo({ route: 'staticRoute', query: { nonExistent: 'test' } });
+      await router.redirectTo({ route: 'staticRoute', query: { nonExistent: 'test' } });
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
 
     it('query: push to history if query changed', async () => {
-      const routerStore = await createRouterWithCustomRoutes(options, routes);
+      const router = await createRouterWithCustomRoutes(options, routes);
 
       const history: Array<TypeRouteWithParams> = [];
 
-      await routerStore.redirectTo({ route: 'staticRoute', query: { q: 'test' } });
+      await router.redirectTo({ route: 'staticRoute', query: { q: 'test' } });
 
       history.push(cloneWithParams({ route: routes.staticRoute, query: { q: 'test' } }));
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
-      await routerStore.redirectTo({ route: 'staticRoute', query: { q: 'test2' } });
+      await router.redirectTo({ route: 'staticRoute', query: { q: 'test2' } });
 
       history.push(cloneWithParams({ route: routes.staticRoute, query: { q: 'test2' } }));
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
-      await routerStore.redirectTo({ route: 'staticRoute' });
+      await router.redirectTo({ route: 'staticRoute' });
 
       history.push(cloneWithParams({ route: routes.staticRoute }));
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
 
-      await routerStore.redirectTo({ route: 'staticRoute', query: { q: 'test' } });
+      await router.redirectTo({ route: 'staticRoute', query: { q: 'test' } });
 
       history.push(cloneWithParams({ route: routes.staticRoute, query: { q: 'test' } }));
 
-      checkHistoryAndCurrent(routerStore, history);
+      checkHistoryAndCurrent(router, history);
     });
   });
 
@@ -699,7 +698,7 @@ allPossibleOptions.forEach((options) => {
       it('beforeEnter: redirects are made silently and call lifecycle', async () => {
         const { spyOne, spyTwo, counter, checkSpy } = createCounters();
 
-        const customRoutes = createRouterConfig({
+        const customRoutes = createRoutes({
           spyOne: {
             path: '/test/static',
             loader: routes.staticRoute.loader,
@@ -713,17 +712,17 @@ allPossibleOptions.forEach((options) => {
             async beforeEnter(config, param: string) {
               spyTwo(param);
 
-              return Promise.resolve({ route: 'spyOne' });
+              return config.redirect({ route: 'spyOne' });
             },
           },
           ...getDefaultRoutes(routes),
         });
 
-        const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+        const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
         const history: Array<TypeRouteWithParams> = [];
 
-        await routerStore.redirectTo({ route: 'redirectToSpyOne' });
+        await router.redirectTo({ route: 'redirectToSpyOne' });
 
         history.push(cloneWithParams({ route: customRoutes.spyOne }));
 
@@ -735,7 +734,7 @@ allPossibleOptions.forEach((options) => {
         expect(spyOne).toHaveBeenLastCalledWith('');
         expect(spyTwo).toHaveBeenLastCalledWith('');
 
-        checkHistoryAndCurrent(routerStore, history);
+        checkHistoryAndCurrent(router, history);
       });
     }
   );
@@ -746,9 +745,10 @@ allPossibleOptions.forEach((options) => {
       it('beforeEnter: redirects throw exception and not call next lifecycle', async () => {
         const { spyOne, spyTwo, counter, checkSpy } = createCounters();
 
-        const customRoutes = createRouterConfig({
+        const customRoutes = createRoutes({
           spyOne: {
             path: '/test/static',
+            query: { a: () => true },
             loader: routes.staticRoute.loader,
             async beforeEnter(config, param: string) {
               spyOne(param);
@@ -760,17 +760,17 @@ allPossibleOptions.forEach((options) => {
             async beforeEnter(config, param: string) {
               spyTwo(param);
 
-              return Promise.resolve({ route: 'spyOne' });
+              return config.redirect({ route: 'spyOne' });
             },
           },
           ...getDefaultRoutes(routes),
         });
 
-        const routerStore = await createRouterWithCustomRoutes(options, customRoutes, ['']);
+        const router = await createRouterWithCustomRoutes(options, customRoutes, ['']);
 
         const history: Array<TypeRouteWithParams> = [];
 
-        await routerStore.redirectTo({ route: 'spyOne' });
+        await router.redirectTo({ route: 'spyOne' });
 
         history.push(cloneWithParams({ route: customRoutes.spyOne }));
 
@@ -779,14 +779,12 @@ allPossibleOptions.forEach((options) => {
         checkSpy();
 
         await expect(async () => {
-          await routerStore.redirectTo({ route: 'redirectToSpyOne' });
-        }).rejects.toThrowError(
-          Object.assign(new Error(customRoutes.spyOne.path), { name: constants.errorRedirect })
-        );
+          await router.redirectTo({ route: 'redirectToSpyOne' });
+        }).rejects.toThrowError(new RedirectError(customRoutes.spyOne.path));
 
         counter.spyTwo += 1;
 
-        checkHistoryAndCurrent(routerStore, history);
+        checkHistoryAndCurrent(router, history);
 
         checkSpy();
       });

@@ -3,16 +3,16 @@ import { useContext } from 'solid-js';
 import { StoreContext } from '../../components/StoreContext';
 
 const Dynamic = () => {
-  const { routerStore } = useContext(StoreContext);
+  const { router } = useContext(StoreContext);
 
   return (
     <>
-      <div>Dynamic {JSON.stringify(routerStore.currentRoute.params)}</div>
+      <div>Dynamic {JSON.stringify(router.currentRoute.params)}</div>
       <button
         type={'button'}
         style={{ 'margin-top': '20px' }}
         onClick={() => {
-          void routerStore.redirectTo({
+          void router.redirectTo({
             route: 'dynamic',
             params: { foo: String(Math.random()).slice(2) },
           });

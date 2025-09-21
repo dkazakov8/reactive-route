@@ -1,5 +1,5 @@
-export { createRouterConfig } from './createRouterConfig';
-export { createRouterStore } from './createRouterStore';
+export { createRouter } from './createRouter';
+export { createRoutes } from './createRoutes';
 export type { InterfaceRouterStore, TypeAdapters } from './types/InterfaceRouterStore';
 export type { TypeCurrentRoute } from './types/TypeCurrentRoute';
 export type { TypePropsRouter } from './types/TypePropsRouter';
@@ -10,4 +10,5 @@ export { findRouteByPathname } from './utils/findRouteByPathname';
 export { getInitialRoute } from './utils/getInitialRoute';
 export { history } from './utils/history';
 export { loadComponentToConfig } from './utils/loadComponentToConfig';
+export { RedirectError } from './utils/RedirectError';
 export { replaceDynamicValues } from './utils/replaceDynamicValues';

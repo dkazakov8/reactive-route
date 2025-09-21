@@ -24,29 +24,30 @@ pnpm add reactive-route
 ### Modules map
 
 ```typescript
-import { createRouterConfig, createRouterStore } from 'reactive-route';
+import { createRoutes, createRouter } from 'reactive-route';
 import { Router } from 'reactive-route/react';
 import { Router } from 'reactive-route/solid';
 import { Router } from 'reactive-route/preact';
-import { adapters } from 'reactive-route/adapters/mobx';
+import { adapters } from 'reactive-route/adapters/mobx-react';
 import { adapters } from 'reactive-route/adapters/mobx-preact';
-import { adapters } from 'reactive-route/adapters/solid';
 import { adapters } from 'reactive-route/adapters/mobx-solid';
-import { adapters } from 'reactive-route/adapters/kr-observable';
+import { adapters } from 'reactive-route/adapters/solid';
+import { adapters } from 'reactive-route/adapters/kr-observable-react';
 import { adapters } from 'reactive-route/adapters/kr-observable-preact';
+import { adapters } from 'reactive-route/adapters/kr-observable-solid';
 ```
 
 ## Basic Setup
 
 ### 1. Define Your Routes
 
-First, define your routes using the `createRouterConfig` function:
+First, define your routes using the `createRoutes` function:
 
 ```typescript
 // routes.ts
-import { createRouterConfig } from 'reactive-route';
+import { createRoutes } from 'reactive-route';
 
-export const routes = createRouterConfig({
+export const routes = createRoutes({
   home: {
     path: '/',
     loader: () => import('./pages/home'),
@@ -78,22 +79,22 @@ Pages "notFound" and "internalError" are required for error handling in the libr
 
 ### 2. Create a Router Store
 
-Next, create a router store using the `createRouterStore` function and your routes configuration:
+Next, create a router store using the `createRouter` function and your routes configuration:
 
 ```typescript
-// routerStore.ts
-import { createRouterStore } from 'reactive-route';
+// router.ts
+import { createRouter } from 'reactive-route';
 import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
 import { routes } from './routes';
 
 //  If you prefer Context and SSR
 export function getRouter() {
-  return createRouterStore({ routes, adapters });
+  return createRouter({ routes, adapters });
 }
 
 //  If you prefer singletons
-export const router = createRouterStore({ routes, adapters })
+export const router = createRouter({ routes, adapters })
 ```
 
 The recommended way is to use Context to pass it to UI components to avoid circular dependencies,
@@ -103,7 +104,7 @@ multiple instances and add the possibility of SSR.
 // StoreContext.tsx
 import { createContext } from '{ui-library}';
 
-import { getRouter } from './routerStore';
+import { getRouter } from './router';
 
 export const StoreContext = createContext(
   undefined as unknown as { router: ReturnType<typeof getRouter> }
@@ -125,7 +126,7 @@ import { StoreContext } from './StoreContext';
 export function Router() {
   const { router } = useContext(StoreContext);
 
-  return <RouterLib routes={routes} routerStore={router} />;
+  return <RouterLib routes={routes} router={router} />;
 }
 ```
 
@@ -134,7 +135,7 @@ export function Router() {
 ```tsx
 // entry.tsx
 import { StoreContext } from './StoreContext';
-import { getRouterStore } from './routerStore';
+import { getRouterStore } from './router';
 import { Router } from './components/Router';
 
 const router = getRouterStore();

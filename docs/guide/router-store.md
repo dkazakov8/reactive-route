@@ -1,29 +1,29 @@
 # Router Store
 
-The router store is the central piece that manages the state of the router and provides methods for navigation. It's created using the `createRouterStore` function.
+The router store is the central piece that manages the state of the router and provides methods for navigation. It's created using the `createRouter` function.
 
 ## Creating a Router Store
 
 ```typescript
-import { createRouterStore } from 'reactive-route';
-import { adapters } from 'reactive-route/adapters/{reactive-system}';
+import {createRouter} from 'reactive-route';
+import {adapters} from 'reactive-route/adapters/{reactive-system}';
 
-import { routes } from './routes';
+import {routes} from './routes';
 
 //  If you prefer Context and SSR
 export function getRouter() {
-  return createRouterStore({ routes, adapters });
+    return createRouter({routes, adapters});
 }
 
 //  If you prefer singletons
-export const router = createRouterStore({ routes, adapters })
+export const router = createRouter({routes, adapters})
 ```
 
-The `createRouterStore` function accepts an object with the following properties:
+The `createRouter` function accepts an object with the following properties:
 
 | Property | Type                  | Description |
 |----------|-----------------------|-------------|
-| `routes` | `ReturnType<typeof createRouterConfig>` | The router configuration |
+| `routes` | `ReturnType<typeof createRoutes>` | The router configuration |
 | `adapters` | `TypeAdapters`              | Adapters for the state management system |
 
 You may pass your own adapters if they satisfy the model
@@ -56,7 +56,7 @@ The router store provides several methods for navigation and state management:
 Navigates to a specified route:
 
 ```typescript
-await routerStore.redirectTo({
+await router.redirectTo({
   route: 'about',
   // with dynamic parameters
   params: { id: '123' },
@@ -71,7 +71,7 @@ await routerStore.redirectTo({
 This function is fully TypeScript-typed, and TypeScript hints will be shown for autocomplete.
 
 ```typescript
-const routes = createRouterConfig({
+const routes = createRoutes({
   static: {
     path: '/static',
     loader: () => import('./pages/static'),
@@ -109,12 +109,12 @@ Initializes the basic route from the current URL:
 
 ```typescript
 // Client-side
-await routerStore.restoreFromURL({
+await router.restoreFromURL({
   pathname: location.pathname + location.search,
 });
 
 // Server-side
-await routerStore.restoreFromURL({
+await router.restoreFromURL({
   pathname: req.originalUrl,
 });
 ```
@@ -124,7 +124,7 @@ await routerStore.restoreFromURL({
 Initializes the basic route from an object, for example SSR-prepared data:
 
 ```typescript
-await routerStore.restoreFromServer({ routesHistory, currentRoute });
+await router.restoreFromServer({ routesHistory, currentRoute });
 ```
 
 ### currentRoute
@@ -132,7 +132,7 @@ await routerStore.restoreFromServer({ routesHistory, currentRoute });
 ```typescript
 import { TypeCurrentRoute } from 'reactive-route';
 
-const currentRoute = routerStore.currentRoute 
+const currentRoute = router.currentRoute 
   as TypeCurrentRoute<typeof routes.dynamic>;
 ```
 

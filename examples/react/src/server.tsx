@@ -2,12 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { renderToString } from 'react-dom/server';
+import { RedirectError } from 'reactive-route';
 import express from 'ultimate-express';
 
 import { escapeAllStrings } from '../../shared/utils/escapeAllStrings';
 import { App } from './components/App';
 import { StoreContext } from './components/StoreContext';
-import { getRouterStore } from './routerStore';
+import { getRouter } from './router';
 
 const outdirPath = path.resolve(__dirname, '../dist');
 const publicPath = path.resolve(outdirPath, 'public');
@@ -26,18 +27,18 @@ app.get('*', async (req, res) => {
     return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- INITIAL_DATA -->', '{}'));
   }
 
-  const routerStore = await getRouterStore();
+  const router = await getRouter();
 
   const reactApp = (
-    <StoreContext.Provider value={{ routerStore }}>
+    <StoreContext.Provider value={{ router }}>
       <App />
     </StoreContext.Provider>
   );
 
   try {
-    await routerStore.restoreFromURL({ pathname: req.originalUrl });
+    await router.restoreFromURL({ pathname: req.originalUrl });
   } catch (error: any) {
-    if (error.name === 'REDIRECT') {
+    if (error instanceof RedirectError) {
       console.log('redirect', error.message);
 
       return res.redirect(error.message);
@@ -49,7 +50,7 @@ app.get('*', async (req, res) => {
   }
 
   const htmlMarkup = renderToString(reactApp);
-  const storeJS = JSON.parse(JSON.stringify({ routerStore }));
+  const storeJS = JSON.parse(JSON.stringify({ router }));
 
   res.send(
     template

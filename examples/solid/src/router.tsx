@@ -1,8 +1,8 @@
-import { createRouterStore } from 'reactive-route';
+import { createRouter } from 'reactive-route';
 
 import { routes } from './routes';
 
-export async function getRouterStore() {
+export async function getRouter() {
   let adapters: any;
 
   if (REACTIVITY_SYSTEM === 'solid') {
@@ -17,5 +17,5 @@ export async function getRouterStore() {
     adapters = await import('reactive-route/adapters/mobx-solid').then((m) => m.adapters);
   }
 
-  return createRouterStore({ routes, adapters });
+  return createRouter({ routes, adapters });
 }

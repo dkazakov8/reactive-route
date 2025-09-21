@@ -1,7 +1,7 @@
 import { TypeRouteRaw } from './types/TypeRouteRaw';
 import { addNames } from './utils/addNames';
 
-export function createRouterConfig<
+export function createRoutes<
   TConfig extends { [Key in keyof TConfig | 'notFound' | 'internalError']: TypeRouteRaw },
 >(
   config: TConfig

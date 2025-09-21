@@ -17,6 +17,6 @@ export default defineConfig({
   test: {
     name: 'solid-ssr',
     include: ['./test/*.{test,spec}.?(c|m)[jt]s?(x)'],
-    server: { deps: { inline: [/solid-js/] } },
+    server: { deps: { inline: [/solid-js/, /kr-observable/] } },
   },
 });

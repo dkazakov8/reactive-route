@@ -35,7 +35,7 @@ export default defineConfig({
         {
           text: 'Core Concepts',
           items: [
-            { text: 'Router Configuration', link: '/guide/router-configuration' },
+            { text: 'Routes Configuration', link: '/guide/routes-configuration' },
             { text: 'Router Store', link: '/guide/router-store' },
             { text: 'SSR', link: '/guide/ssr' },
           ]

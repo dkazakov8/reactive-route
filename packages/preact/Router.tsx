@@ -11,13 +11,13 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
       if (params.action !== 'POP') return;
 
       const previousRoutePathname =
-        props.routerStore.routesHistory[props.routerStore.routesHistory.length - 2];
+        props.router.routesHistory[props.router.routesHistory.length - 2];
 
       if (previousRoutePathname === params.location.pathname) {
-        props.routerStore.adapters.batch(() => props.routerStore.routesHistory.pop());
+        props.router.adapters.batch(() => props.router.routesHistory.pop());
       }
 
-      void props.routerStore.redirectTo({
+      void props.router.redirectTo({
         noHistoryPush: true,
         ...getInitialRoute({
           routes: props.routes,
@@ -32,7 +32,7 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
     loadedComponentPage?: string;
     currentProps: Record<string, any>;
   }>(() =>
-    props.routerStore.adapters.makeObservable({
+    props.router.adapters.makeObservable({
       loadedComponentName: undefined,
       loadedComponentPage: undefined,
       currentProps: {},
@@ -41,7 +41,7 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
 
   const setLoadedComponent = useCallback(() => {
     const { loadedComponentName, loadedComponentPage } = config;
-    const { currentRoute, isRedirecting } = props.routerStore;
+    const { currentRoute, isRedirecting } = props.router;
 
     const componentConfig = props.routes[currentRoute.name];
 
@@ -50,7 +50,7 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
     else if (loadedComponentName === currentRoute.name) preventRedirect = true;
     else if (loadedComponentPage != null && currentRoute.name != null) {
       if (loadedComponentPage === currentRoute.pageName) {
-        props.routerStore.adapters.batch(() => {
+        props.router.adapters.batch(() => {
           config.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
         });
         preventRedirect = true;
@@ -59,7 +59,7 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
 
     if (preventRedirect) return;
 
-    props.routerStore.adapters.batch(() => {
+    props.router.adapters.batch(() => {
       if (loadedComponentName) props.beforeUpdatePageComponent?.();
 
       props.beforeSetPageComponent?.(componentConfig);
@@ -71,14 +71,14 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
   }, []);
 
   useState(() => {
-    props.routerStore.adapters.batch(() => {
+    props.router.adapters.batch(() => {
       props.beforeMount?.();
 
       redirectOnHistoryPop();
 
       setLoadedComponent();
 
-      disposerRef.current = props.routerStore.adapters.autorun(setLoadedComponent);
+      disposerRef.current = props.router.adapters.autorun(setLoadedComponent);
     });
   });
 
@@ -99,9 +99,7 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
 
 export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
   const [Component] = useState(() =>
-    props.routerStore.adapters.observer
-      ? props.routerStore.adapters.observer(RouterInner)
-      : RouterInner
+    props.router.adapters.observer ? props.router.adapters.observer(RouterInner) : RouterInner
   );
 
   return (<Component {...props} />) as any;

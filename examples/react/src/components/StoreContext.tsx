@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 
-import { getRouterStore } from '../routerStore';
+import { getRouter } from '../router';
 
 export const StoreContext = createContext(
-  undefined as unknown as { routerStore: Awaited<ReturnType<typeof getRouterStore>> }
+  undefined as unknown as { router: Awaited<ReturnType<typeof getRouter>> }
 );

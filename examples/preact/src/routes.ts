@@ -1,9 +1,12 @@
-import { createRouterConfig } from 'reactive-route';
+import { createRoutes } from 'reactive-route';
 
-export const routes = createRouterConfig({
+export const routes = createRoutes({
   home: {
     path: '/',
     loader: () => import('./pages/home'),
+    async beforeEnter(config) {
+      return config.redirect({ route: 'static' });
+    },
   },
   static: {
     path: '/static',
@@ -27,12 +30,12 @@ export const routes = createRouterConfig({
     path: '/prevent',
     async beforeEnter(config) {
       if (config.currentRoute?.name === 'dynamic') {
-        return Promise.resolve({ route: 'static' });
+        return config.redirect({ route: 'static' });
       }
     },
     async beforeLeave(config) {
       if (config.nextRoute.name === 'query') {
-        throw Object.assign(new Error(''), { name: 'PREVENT_REDIRECT' });
+        return config.preventRedirect();
       }
     },
     loader: () => import('./pages/prevent'),

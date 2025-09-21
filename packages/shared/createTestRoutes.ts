@@ -1,7 +1,7 @@
-import { createRouterConfig } from '../core';
+import { createRoutes } from '../core';
 
-export function createRoutes(imports: Record<string, any>) {
-  return createRouterConfig({
+export function createTestRoutes(imports: Record<string, any>) {
+  return createRoutes({
     staticRoute: {
       path: '/test/static',
       query: {

@@ -3,16 +3,16 @@ import { useContext } from 'solid-js';
 import { StoreContext } from '../../components/StoreContext';
 
 const Query = () => {
-  const { routerStore } = useContext(StoreContext);
+  const { router } = useContext(StoreContext);
 
   return (
     <>
-      <div>Query {JSON.stringify(routerStore.currentRoute.query)}</div>
+      <div>Query {JSON.stringify(router.currentRoute.query)}</div>
       <button
         type={'button'}
         style={{ 'margin-top': '20px' }}
         onClick={() => {
-          void routerStore.redirectTo({
+          void router.redirectTo({
             route: 'query',
             query: { foo: String(Math.random()).slice(2) },
           });

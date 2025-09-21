@@ -1,6 +1,6 @@
-import { createRouterConfig } from '../../core/createRouterConfig.js';
+import { createRoutes } from '../../core/createRoutes';
 
-export const routes = createRouterConfig({
+export const routes = createRoutes({
   staticRoute: {
     path: '/test/static',
     query: {

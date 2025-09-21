@@ -52,12 +52,17 @@ enableExternalSource((fn, trigger) => {
 The relevant imports are as follows
 
 ```typescript
-import { Router } from 'reactive-route/react';
-import { adapters } from 'reactive-route/adapters/kr-observable-react';
+import { Router } from 'reactive-route/solid';
+import { adapters } from 'reactive-route/adapters/kr-observable-solid';
 ```
 
 You should ensure that package `kr-observable` is installed.
 
-Be sure to wrap your components which read observable router parameters into `observer` (if you use
-Observable this is presumably already done).
+Be sure to enable integration in your entry file
+
+```typescript
+import { enableObservable } from 'kr-observable/solidjs';
+
+enableObservable();
+```
 

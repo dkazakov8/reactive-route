@@ -7,7 +7,7 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
     loadedComponentName?: keyof TRoutes;
     loadedComponentPage?: string;
     currentProps: Record<string, any>;
-  } = props.routerStore.adapters.makeObservable({
+  } = props.router.adapters.makeObservable({
     loadedComponentName: undefined,
     loadedComponentPage: undefined,
     currentProps: {},
@@ -20,13 +20,13 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
       if (params.action !== 'POP') return;
 
       const previousRoutePathname =
-        props.routerStore.routesHistory[props.routerStore.routesHistory.length - 2];
+        props.router.routesHistory[props.router.routesHistory.length - 2];
 
       if (previousRoutePathname === params.location.pathname) {
-        props.routerStore.routesHistory.pop();
+        props.router.routesHistory.pop();
       }
 
-      void props.routerStore.redirectTo({
+      void props.router.redirectTo({
         noHistoryPush: true,
         ...getInitialRoute({
           routes: props.routes,
@@ -37,18 +37,18 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
   }
 
   function setLoadedComponent() {
-    const currentRouteName = props.routerStore.currentRoute.name;
-    const currentRoutePage = props.routerStore.currentRoute.pageName;
+    const currentRouteName = props.router.currentRoute.name;
+    const currentRoutePage = props.router.currentRoute.pageName;
 
     const componentConfig = props.routes[currentRouteName];
 
     let preventRedirect = false;
-    if (props.routerStore.isRedirecting) preventRedirect = true;
+    if (props.router.isRedirecting) preventRedirect = true;
     else if (config.loadedComponentName === currentRouteName) {
       preventRedirect = true;
     } else if (config.loadedComponentPage != null && currentRouteName != null) {
       if (config.loadedComponentPage === currentRoutePage) {
-        props.routerStore.adapters.replaceObject(
+        props.router.adapters.replaceObject(
           config.currentProps,
           'props' in componentConfig ? componentConfig.props! : {}
         );
@@ -58,15 +58,15 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
 
     if (preventRedirect) return;
 
-    props.routerStore.adapters.batch(() => {
+    props.router.adapters.batch(() => {
       if (config.loadedComponentName) {
         props.beforeUpdatePageComponent?.();
       }
 
       props.beforeSetPageComponent?.(componentConfig);
 
-      props.routerStore.adapters.batch(() => {
-        props.routerStore.adapters.replaceObject(
+      props.router.adapters.batch(() => {
+        props.router.adapters.replaceObject(
           config.currentProps,
           'props' in componentConfig ? componentConfig.props! : {}
         );
@@ -80,13 +80,13 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
 
   redirectOnHistoryPop();
 
-  if (props.routerStore.adapters.immediateSetComponent) {
-    props.routerStore.adapters.batch(() => {
+  if (props.router.adapters.immediateSetComponent) {
+    props.router.adapters.batch(() => {
       setLoadedComponent();
     });
   }
 
-  props.routerStore.adapters.autorun(() => setLoadedComponent());
+  props.router.adapters.autorun(() => setLoadedComponent());
 
   return (
     // @ts-ignore

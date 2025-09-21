@@ -19,6 +19,6 @@ export default defineConfig({
     name: 'solid',
     include: ['./test/*.{test,spec}.?(c|m)[jt]s?(x)'],
     environment: 'jsdom',
-    server: { deps: { inline: [/solid-js/] } },
+    server: { deps: { inline: [/solid-js/, /kr-observable/] } },
   },
 });

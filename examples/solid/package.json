@@ -12,7 +12,7 @@
     "dev-ssr-mobx": "tsx build.ts mobx ssr"
   },
   "dependencies": {
-    "reactive-route": "0.0.1-alpha.21",
+    "reactive-route": "0.0.1-alpha.22",
     "solid-js": "1.9.6",
     "ultimate-express": "2.0.9",
     "mobx": "6.13.7",

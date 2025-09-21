@@ -6,7 +6,7 @@ For server-side rendering, you need to initialize the router store on both the s
 
 ```tsx
 // server.tsx
-import { getRouter } from './routerStore';
+import { getRouter } from './router';
 import { StoreContext } from './StoreContext';
 
 express()
@@ -22,7 +22,7 @@ express()
     );
 
     try {
-      await routerStore.restoreFromURL({ pathname: req.originalUrl });
+      await router.restoreFromURL({ pathname: req.originalUrl });
     } catch (error: any) {
       if (error.name === 'REDIRECT') {
         console.log('redirect', error.message);
@@ -50,7 +50,7 @@ express()
 
 ```tsx
 // client.js
-import { getRouter } from './routerStore';
+import { getRouter } from './router';
 import { StoreContext } from './StoreContext';
 
 async function hydrate() {
