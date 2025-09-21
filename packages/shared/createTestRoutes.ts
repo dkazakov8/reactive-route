@@ -53,6 +53,11 @@ export function createTestRoutes(imports: Record<string, any>) {
       },
       loader: imports.dynamicRouteMultiple as any,
     },
+    staticRouteAutorun: {
+      path: '/test/static/autorun',
+      loader: imports.staticRouteAutorun as any,
+      props: {},
+    },
     notFound: {
       path: '/error404',
       props: { errorNumber: 404 },

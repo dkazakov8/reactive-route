@@ -1,7 +1,5 @@
 export const pageName = __dirname.split('/').pop();
 
-function Dynamic() {
+export default function Dynamic() {
   return <div>Dynamic</div>;
 }
-
-export default Dynamic;

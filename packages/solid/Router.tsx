@@ -13,6 +13,8 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
     currentProps: {},
   });
 
+  let currentProps = {};
+
   function redirectOnHistoryPop() {
     if (!history) return;
 
@@ -49,6 +51,7 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
           config.currentProps,
           'props' in componentConfig ? componentConfig.props! : {}
         );
+        currentProps = 'props' in componentConfig ? componentConfig.props! : {};
         preventRedirect = true;
       }
     }
@@ -67,6 +70,7 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
           config.currentProps,
           'props' in componentConfig ? componentConfig.props! : {}
         );
+        currentProps = 'props' in componentConfig ? componentConfig.props! : {};
         config.loadedComponentName = currentRouteName;
         config.loadedComponentPage = componentConfig.pageName;
       });
@@ -91,7 +95,12 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
       {/* @ts-ignore */}
       <Dynamic
         component={(props.routes[config.loadedComponentName!]?.component || undefined) as any}
-        {...config.currentProps}
+        {...Object.keys(config.currentProps).reduce((acc, key) => {
+          // @ts-ignore
+          acc[key] = currentProps[key];
+          return acc;
+        }, {} as any)}
+        router={props.router}
       />
     </Show>
   );

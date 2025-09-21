@@ -89,7 +89,8 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
 
   const LoadedComponent = props.routes[config.loadedComponentName]?.component || null;
 
-  if (LoadedComponent) return (<LoadedComponent {...config.currentProps} />) as any;
+  if (LoadedComponent)
+    return (<LoadedComponent {...config.currentProps} router={props.router} />) as any;
 
   return null;
 }

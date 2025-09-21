@@ -19,6 +19,7 @@ export function getRoutes(options: TypeOptions) {
         dynamicRouteMultiple: () => import('../react/test/pages/dynamic/DynamicMobx'),
         noPageName: () => import('../react/test/pages/noPageName/NoPageNameMobx'),
         noPageName2: () => import('../react/test/pages/noPageName/NoPageNameMobx'),
+        staticRouteAutorun: () => import('../react/test/pages/staticAutorun/StaticAutorunMobx'),
         notFound: () => import('../react/test/pages/error/ErrorMobx'),
         internalError: () => import('../react/test/pages/error/ErrorMobx'),
       });
@@ -33,6 +34,8 @@ export function getRoutes(options: TypeOptions) {
         dynamicRouteMultiple: () => import('../react/test/pages/dynamic/DynamicKrObservable'),
         noPageName: () => import('../react/test/pages/noPageName/NoPageNameKrObservable'),
         noPageName2: () => import('../react/test/pages/noPageName/NoPageNameKrObservable'),
+        staticRouteAutorun: () =>
+          import('../react/test/pages/staticAutorun/StaticAutorunKrObservable'),
         notFound: () => import('../react/test/pages/error/ErrorKrObservable'),
         internalError: () => import('../react/test/pages/error/ErrorKrObservable'),
       });
@@ -50,6 +53,7 @@ export function getRoutes(options: TypeOptions) {
         dynamicRouteMultiple: () => import('../preact/test/pages/dynamic/DynamicMobx'),
         noPageName: () => import('../preact/test/pages/noPageName/NoPageNameMobx'),
         noPageName2: () => import('../preact/test/pages/noPageName/NoPageNameMobx'),
+        staticRouteAutorun: () => import('../preact/test/pages/staticAutorun/StaticAutorunMobx'),
         notFound: () => import('../preact/test/pages/error/ErrorMobx'),
         internalError: () => import('../preact/test/pages/error/ErrorMobx'),
       });
@@ -64,6 +68,8 @@ export function getRoutes(options: TypeOptions) {
         dynamicRouteMultiple: () => import('../preact/test/pages/dynamic/DynamicKrObservable'),
         noPageName: () => import('../preact/test/pages/noPageName/NoPageNameKrObservable'),
         noPageName2: () => import('../preact/test/pages/noPageName/NoPageNameKrObservable'),
+        staticRouteAutorun: () =>
+          import('../preact/test/pages/staticAutorun/StaticAutorunKrObservable'),
         notFound: () => import('../preact/test/pages/error/ErrorKrObservable'),
         internalError: () => import('../preact/test/pages/error/ErrorKrObservable'),
       });
@@ -80,6 +86,7 @@ export function getRoutes(options: TypeOptions) {
       dynamicRouteMultiple: () => import('../solid/test/pages/dynamic/Dynamic'),
       noPageName: () => import('../solid/test/pages/noPageName/NoPageName'),
       noPageName2: () => import('../solid/test/pages/noPageName/NoPageName'),
+      staticRouteAutorun: () => import('../solid/test/pages/staticAutorun/StaticAutorun'),
       notFound: () => import('../solid/test/pages/error/Error'),
       internalError: () => import('../solid/test/pages/error/Error'),
     });
@@ -142,31 +149,42 @@ async function getRenderToString(options: TypeOptions, App: any) {
 }
 
 export async function prepareComponentWithSpy(options: TypeOptions) {
-  const routes = getRoutes(options);
-  const adapters = await getAdapters(options);
-  const router = createRouter({ routes, adapters });
-
-  const spy_render = vi.fn();
+  const spy_pageRender = vi.fn();
+  const spy_pageAutorun = vi.fn();
   const spy_beforeSetPageComponent = vi.fn();
   const spy_beforeUpdatePageComponent = vi.fn();
 
+  const routes = getRoutes(options);
+
+  routes.staticRouteAutorun.props = {
+    renderSpy: spy_pageRender,
+    autorunSpy: spy_pageAutorun,
+  };
+
+  const adapters = await getAdapters(options);
+  const router = createRouter({ routes, adapters });
+
   const calls = {
-    renderTimes: 0,
+    pageRender: 0,
+    pageAutorun: 0,
     beforeSetPageComponent: 0,
     beforeUpdatePageComponent: 0,
   };
 
   function checkSpy() {
-    expect(spy_render).toHaveBeenCalledTimes(calls.renderTimes);
-    expect(spy_beforeSetPageComponent).toHaveBeenCalledTimes(calls.beforeSetPageComponent);
-    expect(spy_beforeUpdatePageComponent).toHaveBeenCalledTimes(calls.beforeUpdatePageComponent);
+    expect(spy_pageRender, 'spy_pageRender').toHaveBeenCalledTimes(calls.pageRender);
+    expect(spy_pageAutorun, 'spy_pageAutorun').toHaveBeenCalledTimes(calls.pageAutorun);
+    expect(spy_beforeSetPageComponent, 'spy_beforeSetPageComponent').toHaveBeenCalledTimes(
+      calls.beforeSetPageComponent
+    );
+    expect(spy_beforeUpdatePageComponent, 'spy_beforeUpdatePageComponent').toHaveBeenCalledTimes(
+      calls.beforeUpdatePageComponent
+    );
   }
 
   const Router = await getRouterComponent(options);
 
   function App() {
-    spy_render();
-
     return (
       <Router
         router={router}
@@ -186,5 +204,7 @@ export async function prepareComponentWithSpy(options: TypeOptions) {
     checkSpy,
     render,
     renderToString,
+    spy_pageRender,
+    spy_pageAutorun,
   };
 }
