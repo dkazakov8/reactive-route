@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
-import { getInitialRoute, history, TypePropsRouter, TypeRoute } from 'reactive-route';
+import { history, TypePropsRouter, TypeRoute } from 'reactive-route';
 
 function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
   const disposerRef = useRef<() => void>(null);
@@ -17,12 +17,9 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
         props.router.adapters.batch(() => props.router.routesHistory.pop());
       }
 
-      void props.router.redirectTo({
+      void props.router.restoreFromURL({
+        pathname: history.location.pathname,
         noHistoryPush: true,
-        ...getInitialRoute({
-          routes: props.routes,
-          pathname: history.location.pathname,
-        }),
       });
     });
   }, []);

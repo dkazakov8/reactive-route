@@ -1,4 +1,4 @@
-import { getInitialRoute, history, TypePropsRouter, TypeRoute } from 'reactive-route';
+import { history, TypePropsRouter, TypeRoute } from 'reactive-route';
 import { Show } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 
@@ -26,12 +26,9 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
         props.router.routesHistory.pop();
       }
 
-      void props.router.redirectTo({
+      void props.router.restoreFromURL({
+        pathname: history.location.pathname,
         noHistoryPush: true,
-        ...getInitialRoute({
-          routes: props.routes,
-          pathname: history.location.pathname,
-        }),
       });
     });
   }

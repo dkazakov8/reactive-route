@@ -63,8 +63,8 @@ user: {
 }
 ```
 
-Validation function is required and if it's not satisfied, the user will be redirected to "notFound" route.
-So, if the page is rendered, be sure that all the params are validated and present in `router.currentRoute`
+A validation function is required, and if it's not satisfied, the user will be redirected to the "notFound" route.
+If the page is rendered, you can be sure that all the params are validated and present in `router.currentRoute`.
 
 ### Routes with Query Parameters
 
@@ -80,18 +80,18 @@ search: {
 }
 ```
 
-Validation function is required and if it's not satisfied, the parameter will be inaccessible from the
-store. It means that all the query parameters are optional and may be `undefined` in `router.currentRoute`
+A validation function is required, and if it's not satisfied, the parameter will be inaccessible from the
+store. This means that all query parameters are optional and may be `undefined` in `router.currentRoute`.
 
 ## Navigation Guards
 
-Navigation guards allow you to control the navigation flow in your application. Both are async functions
+Navigation guards allow you to control the navigation flow in your application. Both `beforeEnter` and `beforeLeave` are async functions.
 
 The `beforeEnter` hook is called before entering a route. It can be used to redirect to another route, 
-to perform authentication checks and to load some data.
+perform authentication checks, and load data.
 
 The `beforeLeave` hook is called before leaving a route. It can be used to prevent navigation or 
-to show a confirmation dialog.
+show a confirmation dialog.
 
 ```typescript
 dashboard: {
@@ -124,17 +124,17 @@ dashboard: {
 }
 ```
 
-Be sure to always use `return` with `config.redirect` and `config.preventRedirect()`.
+Always remember to use `return` with `config.redirect` and `config.preventRedirect` to ensure proper flow control.
 
-Uncatched errors in `beforeEnter` or `beforeLeave` will lead to the rendering of "internalError" route,
-so be sure to handle errors here with `try-catch` or `Promise.catch()`.
+Uncaught errors in `beforeEnter` or `beforeLeave` will lead to the rendering of the "internalError" route,
+so it's important to handle errors properly using `try-catch` blocks or `Promise.catch()` methods.
 
-Note that these guards are called on dynamic parameters change, but not called on query change.
-This behavior may become configurable in the next versions.
+Note that these guards are called on dynamic parameter changes, but not called on query changes.
+This behavior may become configurable in future versions.
 
 ### Accessing Route Information
 
-The `config` is an object with parameters as follows
+The `config` is an object with parameters as follows:
 
 ```typescript
 type TypeLifecycleConfig = {
@@ -155,9 +155,13 @@ type TypeLifecycleConfig = {
 };
 ```
 
-### Accessing Custom Parameters in lifecycle
+Be careful with `config.redirect` function. It accepts the same route data as `router.redirectTo`,
+but is not typed. So, if you refactor your routes, TS errors will not be shown here which may lead to
+incorrect redirects.
 
-Both `beforeEnter` and `beforeLeave` support passing of custom parameters. They are passed in
+### Accessing Custom Parameters in Lifecycle Hooks
+
+Both `beforeEnter` and `beforeLeave` support passing custom parameters. These parameters are passed through
 `createRouter({ lifecycleParams })` as will be described in the next section of the documentation.
 
 ```typescript
@@ -181,6 +185,6 @@ const routes = createRoutes({
 createRouter({ routes, lifecycleParams: [new UserStore(), new UIStore()] })
 ```
 
-This makes little sense for CSR-only projects with singletones, because you may just import `userStore`
-and `uiStore` directly. But for SSR projects, it's a powerful helper, because you can't use singletones
-there and each store should be created on every request.
+This approach may not be necessary for CSR-only projects with singletons, as you can simply import `userStore`
+and `uiStore` directly. However, for SSR projects, it's a powerful helper because you can't use singletons
+in that context, and each store needs to be created for every request.

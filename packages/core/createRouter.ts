@@ -1,7 +1,8 @@
-import { InterfaceRouterStore, TypeCreateRouterStore } from './types/InterfaceRouterStore';
+import { TypeAdapters } from './types/TypeAdapters';
 import { TypeLifecycleConfig } from './types/TypeLifecycleConfig';
-import { TypeRedirectToParams } from './types/TypeRedirectToParams';
+import { TypeRedirectParams } from './types/TypeRedirectParams';
 import { TypeRoute } from './types/TypeRoute';
+import { TypeRouter } from './types/TypeRouter';
 import { constants } from './utils/constants';
 import { getDynamicValues } from './utils/getDynamicValues';
 import { getInitialRoute } from './utils/getInitialRoute';
@@ -16,11 +17,15 @@ import { replaceDynamicValues } from './utils/replaceDynamicValues';
 export function createRouter<
   TRoutes extends Record<string | 'notFound' | 'internalError', TypeRoute>,
 >({
-  adapters,
   routes,
+  adapters,
   lifecycleParams,
-}: TypeCreateRouterStore<TRoutes>): InterfaceRouterStore<TRoutes> {
-  const router: InterfaceRouterStore<TRoutes> = adapters.makeObservable({
+}: {
+  routes: TRoutes;
+  adapters: TypeAdapters;
+  lifecycleParams?: Array<any>;
+}): TypeRouter<TRoutes> {
+  const router: TypeRouter<TRoutes> = adapters.makeObservable({
     routesHistory: [],
     currentRoute: {} as any,
     isRedirecting: false,
@@ -46,11 +51,11 @@ export function createRouter<
   };
 
   router.restoreFromURL = function restoreFromURL(params) {
-    return router.redirectTo(getInitialRoute({ routes, pathname: params.pathname }));
+    return router.redirectTo(getInitialRoute({ routes, ...params }));
   };
 
   router.redirectTo = async function redirectTo<TRouteName extends keyof TRoutes>(
-    config: TypeRedirectToParams<TRoutes, TRouteName>
+    config: TypeRedirectParams<TRoutes, TRouteName>
   ) {
     const { route: routeName, noHistoryPush } = config;
 
@@ -158,7 +163,7 @@ export function createRouter<
         currentRoute,
         currentSearch,
         currentPathname,
-        redirect: (redirectConfig: TypeRedirectToParams<TRoutes, keyof TRoutes>) => {
+        redirect: (redirectConfig: TypeRedirectParams<TRoutes, keyof TRoutes>) => {
           if (constants.isClient) return redirectConfig;
 
           const redirectRoute = routes[redirectConfig.route];
@@ -189,7 +194,7 @@ export function createRouter<
       };
 
       await currentRoute?.beforeLeave?.(config, ...(lifecycleParams || []));
-      const redirectConfig: TypeRedirectToParams<TRoutes, keyof TRoutes> =
+      const redirectConfig: TypeRedirectParams<TRoutes, keyof TRoutes> =
         await nextRoute.beforeEnter?.(config, ...(lifecycleParams || []));
 
       /**

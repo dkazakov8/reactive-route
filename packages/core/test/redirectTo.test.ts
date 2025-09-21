@@ -1,22 +1,24 @@
 import _ from 'lodash';
+import { createRoutes, RedirectError, TypeRouter } from 'reactive-route';
 import { describe, expect, it, vi } from 'vitest';
 
 import { createRouterWithCustomRoutes, getRoutes } from '../../shared/helpers';
 import { allPossibleOptions } from '../../shared/types';
-import { createRoutes } from '../createRoutes';
-import { InterfaceRouterStore } from '../types/InterfaceRouterStore';
 import { TypeRoute } from '../types/TypeRoute';
-import { TypeRouteWithParams } from '../types/TypeRouteWithParams';
 import { constants } from '../utils/constants';
 import { queryString } from '../utils/queryString';
-import { RedirectError } from '../utils/RedirectError';
 import { replaceDynamicValues } from '../utils/replaceDynamicValues';
 
-function checkHistory(router: InterfaceRouterStore<any>, history: Array<TypeRouteWithParams>) {
+type TypeRouteWithParams = Omit<TypeRoute, 'params'> & {
+  params: Record<string, string>;
+  query: Record<string, string>;
+};
+
+function checkHistory(router: TypeRouter<any>, history: Array<TypeRouteWithParams>) {
   expect(router.routesHistory).to.deep.eq(
     history.map((c) => {
       let pathname = replaceDynamicValues({
-        route: c,
+        route: c as any,
         params: c.params,
       });
 
@@ -31,7 +33,7 @@ function checkHistory(router: InterfaceRouterStore<any>, history: Array<TypeRout
   );
 }
 
-function checkCurrent(router: InterfaceRouterStore<any>, route: TypeRouteWithParams) {
+function checkCurrent(router: TypeRouter<any>, route: TypeRouteWithParams) {
   expect(router.currentRoute).to.deep.eq({
     name: route.name,
     path: route.path,
@@ -52,10 +54,7 @@ function checkCurrent(router: InterfaceRouterStore<any>, route: TypeRouteWithPar
   }
 }
 
-function checkHistoryAndCurrent(
-  router: InterfaceRouterStore<any>,
-  history: Array<TypeRouteWithParams>
-) {
+function checkHistoryAndCurrent(router: TypeRouter<any>, history: Array<TypeRouteWithParams>) {
   checkHistory(router, history);
   checkCurrent(router, history[history.length - 1]);
 }

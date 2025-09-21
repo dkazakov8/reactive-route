@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { getInitialRoute, history, TypePropsRouter, TypeRoute } from 'reactive-route';
+import { history, TypePropsRouter, TypeRoute } from 'reactive-route';
 
 function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
   const disposerRef = useRef<() => void>(null);
@@ -17,12 +17,9 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
         props.router.adapters.batch(() => props.router.routesHistory.pop());
       }
 
-      void props.router.redirectTo({
+      void props.router.restoreFromURL({
+        pathname: history.location.pathname,
         noHistoryPush: true,
-        ...getInitialRoute({
-          routes: props.routes,
-          pathname: history.location.pathname,
-        }),
       });
     });
   }, []);
@@ -52,8 +49,6 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
       if (loadedComponentPage === currentRoute.pageName) {
         props.router.adapters.batch(() => {
           config.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
-          // @ts-ignore
-          // config[Symbol.for('$adm')]?.batch();
         });
         preventRedirect = true;
       }
@@ -69,9 +64,6 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
       config.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
       config.loadedComponentName = currentRoute.name;
       config.loadedComponentPage = componentConfig.pageName;
-
-      // @ts-ignore
-      // config[Symbol.for('$adm')]?.batch();
     });
   }, []);
 

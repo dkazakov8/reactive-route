@@ -1,0 +1,16 @@
+import { TypeAdapters } from './TypeAdapters';
+import { TypeCurrentRoute } from './TypeCurrentRoute';
+import { TypeRedirectParams } from './TypeRedirectParams';
+import { TypeRoute } from './TypeRoute';
+
+export type TypeRouter<TRoutes extends Record<string | 'notFound' | 'internalError', TypeRoute>> = {
+  adapters: TypeAdapters;
+  currentRoute: TypeCurrentRoute<TRoutes[keyof TRoutes]>;
+  routesHistory: Array<string>;
+  isRedirecting: boolean;
+  redirectTo<TRouteName extends keyof TRoutes>(
+    config: TypeRedirectParams<TRoutes, TRouteName>
+  ): Promise<void>;
+  restoreFromURL(params: { pathname: string; noHistoryPush?: boolean }): Promise<void>;
+  restoreFromServer(obj: TypeRouter<TRoutes>): Promise<void>;
+};
