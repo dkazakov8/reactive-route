@@ -1,33 +1,22 @@
-# Preact Integration
+# Preact Example
 
-## Mobx
+To use it follow these steps:
 
-The relevant imports are as follows
-
-```typescript
-import { Router } from 'reactive-route/preact';
-import { adapters } from 'reactive-route/adapters/mobx-preact';
+```shell
+git clone https://github.com/dkazakov8/reactive-route.git
+cd ./reactive-route/examples/preact
+pnpm install
 ```
 
-You should ensure that packages `mobx`, `mobx-react-lite` are installed.
+This example is configured to use `pnpm` by default, but you may choose your own package manager
+by editing `packageManager` field in `package.json`.
 
-If you use `mobx-react` instead of `mobx-react-lite` you may create an alias in your bundler or
-pass your own adapters with similar implementation but `observer` taken from `mobx-react`.
+Next, choose the mode and reactivity system to start:
 
-Be sure to wrap your components which read observable router parameters into `observer` (if you use
-MobX this is presumably already done).
+- `pnpm run dev-mobx` - CSR (Client rendering only) for MobX
+- `pnpm run dev-observable` - CSR (Client rendering only) for Observable
+- `pnpm run dev-ssr-mobx` - SSR for MobX
+- `pnpm run dev-ssr-observable` - SSR for Observable
 
-## Observable
-
-The relevant imports are as follows
-
-```typescript
-import { Router } from 'reactive-route/preact';
-import { adapters } from 'reactive-route/adapters/kr-observable-preact';
-```
-
-You should ensure that package `kr-observable` is installed.
-
-Be sure to wrap your components which read observable router parameters into `observer` (if you use
-Observable this is presumably already done).
-
+Note, that wrapping of components in `observer` is made by the ESBuild bundler in this example.
+In your own projects, remember to follow the relevant [Framework Integration](/guide/preact).

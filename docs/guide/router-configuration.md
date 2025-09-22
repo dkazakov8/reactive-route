@@ -21,10 +21,10 @@ export const router = createRouter({routes, adapters})
 
 The `createRouter` function accepts an object with the following properties:
 
-| Property | Type                  | Description |
-|----------|-----------------------|-------------|
-| `routes` | `ReturnType<typeof createRoutes>` | The router configuration |
-| `adapters` | `TypeAdapters`              | Adapters for the state management system |
+| Property   | Type                              | Description                              |
+|------------|-----------------------------------|------------------------------------------|
+| `routes`   | `ReturnType<typeof createRoutes>` | The routes configuration                 |
+| `adapters` | `TypeAdapters`                    | Adapters for the state management system |
 
 You may pass your own adapters if they satisfy the model
 
@@ -139,14 +139,14 @@ const currentRoute = router.currentRoute
 
 The current route object has the following properties:
 
-| Property | Type                                                  | Description                                                       |
-|----------|-------------------------------------------------------|-------------------------------------------------------------------|
-| `name` | `string (keyof typeof routes)`                        | The name of the route                                             |
-| `path` | `string (typeof routes[keyof typeof routes]['path'])` | The path of the route                                             |
-| `params` | `Record<string, string>`                              | The parameters of the route                                       |
-| `query` | `Record<string, string>`                              | The query parameters of the route                                 |
-| `props` | `Record<string, any>`                                 | The props for the component                                       |
-| `pageName` | `string`                                 | The name of the page, if exported from the page loader (optional) |
+| Property   | Type                                                  | Description                                                       |
+|------------|-------------------------------------------------------|-------------------------------------------------------------------|
+| `name`     | `string (keyof typeof routes)`                        | The name of the route                                             |
+| `path`     | `string (typeof routes[keyof typeof routes]['path'])` | The path of the route                                             |
+| `params`   | `Record<string, string>`                              | The parameters of the route                                       |
+| `query`    | `Record<string, string>`                              | The query parameters of the route                                 |
+| `props`    | `Record<string, any>`                                 | The props for the component                                       |
+| `pageName` | `string`                                              | The name of the page, if exported from the page loader (optional) |
 
 Note that TS-typing is static and `currentRoute` is not necessarily this one. When redirecting finished,
 it will become a new route instance, so if you use `autorun` to track current params, check `currentRoute.name` first.

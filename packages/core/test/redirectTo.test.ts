@@ -103,7 +103,7 @@ function createCounters() {
   return { spyOne, spyTwo, counter, checkSpy };
 }
 
-[allPossibleOptions[0]].forEach((options) => {
+allPossibleOptions.forEach((options) => {
   const routes = getRoutes(options);
 
   describe(`redirectTo [${options.renderer}+${options.reactivity}]`, () => {
@@ -735,6 +735,47 @@ function createCounters() {
 
         checkHistoryAndCurrent(router, history);
       });
+
+      it('beforeEnter: multiple redirects are not registered in history', async () => {
+        const customRoutes = createRoutes({
+          one: {
+            path: '/1',
+            loader: routes.dynamicRoute.loader,
+          },
+          two: {
+            path: '/2',
+            loader: routes.dynamicRoute.loader,
+            async beforeEnter(config) {
+              return config.redirect({ route: 'one' });
+            },
+          },
+          three: {
+            path: '/3',
+            loader: routes.dynamicRoute.loader,
+            async beforeEnter(config) {
+              return config.redirect({ route: 'two' });
+            },
+          },
+          four: {
+            path: '/4',
+            loader: routes.dynamicRoute.loader,
+            async beforeEnter(config) {
+              return config.redirect({ route: 'three' });
+            },
+          },
+          ...getDefaultRoutes(routes),
+        });
+
+        const router = await createRouterWithCustomRoutes(options, customRoutes);
+
+        const history: Array<TypeRouteWithParams> = [];
+
+        await router.redirectTo({ route: 'four' });
+
+        history.push(cloneWithParams({ route: customRoutes.one }));
+
+        checkHistoryAndCurrent(router, history);
+      });
     }
   );
 
@@ -786,6 +827,65 @@ function createCounters() {
         checkHistoryAndCurrent(router, history);
 
         checkSpy();
+      });
+
+      it('beforeEnter: multiple redirects are not registered in history', async () => {
+        const customRoutes = createRoutes({
+          one: {
+            path: '/1',
+            loader: routes.dynamicRoute.loader,
+          },
+          two: {
+            path: '/2',
+            loader: routes.dynamicRoute.loader,
+            async beforeEnter(config) {
+              return config.redirect({ route: 'one' });
+            },
+          },
+          three: {
+            path: '/3',
+            loader: routes.dynamicRoute.loader,
+            async beforeEnter(config) {
+              return config.redirect({ route: 'two' });
+            },
+          },
+          four: {
+            path: '/4',
+            loader: routes.dynamicRoute.loader,
+            async beforeEnter(config) {
+              return config.redirect({ route: 'three' });
+            },
+          },
+          ...getDefaultRoutes(routes),
+        });
+
+        const router = await createRouterWithCustomRoutes(options, customRoutes);
+
+        const history: Array<TypeRouteWithParams> = [];
+
+        const redirectToThree = new RedirectError(customRoutes.three.path);
+
+        await expect(async () => {
+          await router.restoreFromURL({ pathname: customRoutes.four.path });
+        }).rejects.toThrowError(redirectToThree);
+
+        const redirectToTwo = new RedirectError(customRoutes.two.path);
+
+        await expect(async () => {
+          await router.restoreFromURL({ pathname: redirectToThree.message });
+        }).rejects.toThrowError(redirectToTwo);
+
+        const redirectToOne = new RedirectError(customRoutes.one.path);
+
+        await expect(async () => {
+          await router.restoreFromURL({ pathname: redirectToTwo.message });
+        }).rejects.toThrowError(redirectToOne);
+
+        await router.restoreFromURL({ pathname: redirectToOne.message });
+
+        history.push(cloneWithParams({ route: customRoutes.one }));
+
+        checkHistoryAndCurrent(router, history);
       });
     }
   );

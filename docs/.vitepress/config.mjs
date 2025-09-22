@@ -21,7 +21,7 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/' },
-      { text: 'Examples', link: '/examples/' },
+      { text: 'Examples', link: '/examples/react' },
     ],
     sidebar: {
       '/guide/': [
@@ -37,7 +37,9 @@ export default defineConfig({
           items: [
             { text: 'Routes Configuration', link: '/guide/routes-configuration' },
             { text: 'Router Configuration', link: '/guide/router-configuration' },
+            { text: 'Router Component', link: '/guide/router-component' },
             { text: 'SSR', link: '/guide/ssr' },
+            { text: 'Advanced', link: '/guide/advanced' },
           ]
         },
         {
