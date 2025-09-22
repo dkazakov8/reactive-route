@@ -151,37 +151,3 @@ render(
   </StoreContext.Provider>
 );
 ```
-
-## Navigation
-
-### Programmatic Navigation
-
-You can navigate programmatically using the router store:
-
-```tsx
-import { useContext } from '{ui-library}';
-import { StoreContext } from './StoreContext';
-
-function NavigationButton() {
-  const { router } = useContext(StoreContext);
-
-  const handleClick = () => {
-    router.redirectTo({ 
-      route: 'about', 
-      params: { id: 'foo' }, 
-      query: { foo: 'bar' } 
-    });
-  };
-
-  return <button onClick={handleClick}>Go to About</button>;
-}
-```
-
-## Next Steps
-
-Now that you have a basic understanding of how to set up and use Reactive Route, you can explore more advanced features:
-
-- [Router Configuration](/guide/router-configuration) - Learn more about configuring routes
-- [Router Store](/guide/router-store) - Explore the router store API
-- [Navigation Guards](/guide/navigation-guards) - Control navigation with guards
-- [Framework Integration](/guide/react) - Detailed guides for React and Solid.js

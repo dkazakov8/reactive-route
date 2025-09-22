@@ -36,7 +36,7 @@ export default defineConfig({
           text: 'Core Concepts',
           items: [
             { text: 'Routes Configuration', link: '/guide/routes-configuration' },
-            { text: 'Router Store', link: '/guide/router-store' },
+            { text: 'Router Configuration', link: '/guide/router-configuration' },
             { text: 'SSR', link: '/guide/ssr' },
           ]
         },
@@ -53,7 +53,8 @@ export default defineConfig({
         {
           text: 'Examples',
           items: [
-            { text: 'React with MobX', link: '/examples/react-mobx' },
+            { text: 'React', link: '/examples/react' },
+            { text: 'Preact', link: '/examples/preact' },
             { text: 'Solid.js', link: '/examples/solid' },
           ]
         },

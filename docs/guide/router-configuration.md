@@ -1,14 +1,14 @@
-# Router Store
+# Router Configuration
 
-The router store is the central piece that manages the state of the router and provides methods for navigation. It's created using the `createRouter` function.
+The router is the central piece that manages the state of the router and provides methods for navigation. It's created using the `createRouter` function.
 
 ## Creating a Router Store
 
 ```typescript
-import {createRouter} from 'reactive-route';
-import {adapters} from 'reactive-route/adapters/{reactive-system}';
+import { createRouter } from 'reactive-route';
+import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
-import {routes} from './routes';
+import { routes } from './routes';
 
 //  If you prefer Context and SSR
 export function getRouter() {
@@ -38,18 +38,18 @@ type TypeAdapters = {
 };
 ```
 
-## Router Store API
+## Router API
 
 The router store provides several methods for navigation and state management:
 
-| Property | Type                                       | Description                  |
-|----------|--------------------------------------------|------------------------------|
-| `currentRoute` | `TypeCurrentRoute<typeof routes['route']>` | The current route data       |
-| `routesHistory` | `Array<string>`                            | The history of visited paths |
-| `isRedirecting` | `boolean`                                  | The indicator of redirecting |
-| `redirectTo` | `(config: TypeRedirectToParams): Promise<void>`                   | The navigation function      |
-| `restoreFromURL` | `(params: { pathname: string }): Promise<void>`                      | To restore from url          |
-| `restoreFromServer` | `(obj: InterfaceRouterStore): Promise<void>`                | To restore from object       |
+| Property            | Type                                            | Description                  |
+|---------------------|-------------------------------------------------|------------------------------|
+| `currentRoute`      | `TypeCurrentRoute<typeof routes['routeKey']>`   | The current route data       |
+| `routesHistory`     | `Array<string>`                                 | The history of visited paths |
+| `isRedirecting`     | `boolean`                                       | The indicator of redirecting |
+| `redirectTo`        | `(config: TypeRedirectToParams): Promise<void>` | The navigation function      |
+| `restoreFromURL`    | `(params: { pathname: string }): Promise<void>` | To restore from url          |
+| `restoreFromServer` | `(obj: TypeRouter): Promise<void>`              | To restore from object       |
 
 ### redirectTo
 
@@ -62,8 +62,7 @@ await router.redirectTo({
   params: { id: '123' },
   // with query parameters
   query: { q: 's' },
-  // if you want to replace history state instead of pushing,
-  // the user will not be able to come back
+  // if you want to replace history state instead of pushing
   noHistoryPush: true,
 });
 ```
@@ -86,6 +85,8 @@ const routes = createRoutes({
     },
     loader: () => import('./pages/dynamic'),
   },
+  
+  // other routes
 });
 
 // Good
@@ -176,12 +177,3 @@ const GlobalHeader = () => {
 
 This array includes all the visited paths and may be used for logging or to check from which route
 the user came to the current page.
-
-## Server-Side Rendering
-
-For server-side rendering, you need to initialize the router store on both the server and the client:
-
-
-## Next Steps
-
-Now that you understand how to use the router store, you can learn about [Navigation Guards](/guide/navigation-guards) to control the navigation flow in your application.

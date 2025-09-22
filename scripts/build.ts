@@ -12,8 +12,6 @@ import * as esbuild from 'esbuild';
 
 import { genSizeBadges } from './genSizeBadges';
 
-const pkg = JSON.parse(fs.readFileSync(path.resolve('./package.json'), 'utf8'));
-
 function generateBuild(type: 'cjs' | 'esm', folderName: string) {
   const packageName = folderName.split('/')[1]!;
   const fileName = folderName.split('/')[2];
@@ -37,7 +35,7 @@ function generateBuild(type: 'cjs' | 'esm', folderName: string) {
       write: true,
       minify: false,
       treeShaking: true,
-      external: Object.keys(pkg.peerDependencies || {}).concat(['reactive-route']),
+      external: ['reactive-route'],
       format: type,
       entryPoints: [path.resolve(process.cwd(), folderName)],
       outfile: outFile,

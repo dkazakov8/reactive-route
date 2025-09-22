@@ -16,6 +16,7 @@ biome.json
 /.husky
 .github
 /docs
+/tmp
 tsconfig.json
 tsconfig.solid.json
 tsconfig.types.react.json

@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import { pluginCompress } from '@espcom/esbuild-plugin-compress';
 import { makeBadge } from 'badge-maker';
 import * as esbuild from 'esbuild';
 import { BuildResult } from 'esbuild';
@@ -17,7 +18,9 @@ function bytesForHuman(bytes: number, decimals = 2) {
 }
 
 function afterBuild(result: BuildResult, packageName: string, fileName?: string) {
-  const size = bytesForHuman(result.metafile!.outputs['index.js'].bytes);
+  const sizeBr = fs.statSync(path.resolve(process.cwd(), `tmp/${packageName}/index.js.br`)).size;
+
+  const size = bytesForHuman(sizeBr);
 
   const fullName = packageName + (fileName ? `-${fileName}` : '');
   const assetsPath = path.resolve(process.cwd(), 'assets');
@@ -43,7 +46,7 @@ function afterBuild(result: BuildResult, packageName: string, fileName?: string)
   }
 
   const svg = makeBadge({
-    label: `${fullName} size${fullName === 'core' ? ' + deps' : ''}`,
+    label: `${fullName} br${fullName === 'core' ? ' + deps' : ''}`,
     message: size,
     color: 'blue',
   });
@@ -60,8 +63,19 @@ export async function genSizeBadges(outFolder: string, packageName: string, file
     sourcemap: false,
     target: 'es2022',
     packages: packageName === 'core' ? 'bundle' : 'external',
+    external: ['reactive-route'],
     entryPoints: [outFolder],
+    outdir: path.resolve(process.cwd(), `tmp/${packageName}`),
     format: 'esm',
+    plugins: [
+      pluginCompress({
+        gzip: false,
+        brotli: true,
+        zstd: false,
+        level: 'max',
+        extensions: ['.js'],
+      }),
+    ],
   });
 
   afterBuild(result, packageName, fileName);
