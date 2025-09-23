@@ -8,9 +8,12 @@ export type TypeRouter<TRoutes extends Record<string | 'notFound' | 'internalErr
   currentRoute: TypeCurrentRoute<TRoutes[keyof TRoutes]>;
   routesHistory: Array<string>;
   isRedirecting: boolean;
-  redirectTo<TRouteName extends keyof TRoutes>(
+  redirect<TRouteName extends keyof TRoutes>(
     config: TypeRedirectParams<TRoutes, TRouteName>
   ): Promise<void>;
   restoreFromURL(params: { pathname: string; noHistoryPush?: boolean }): Promise<void>;
-  restoreFromServer(obj: TypeRouter<TRoutes>): Promise<void>;
+  restoreFromServer(obj: {
+    routesHistory: Array<string>;
+    currentRoute: TypeCurrentRoute<TRoutes[keyof TRoutes]>;
+  }): Promise<void>;
 };

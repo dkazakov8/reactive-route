@@ -4,7 +4,7 @@ The router is the central piece that manages the state of the router and provide
 
 ## Creating a Router Store
 
-```typescript
+```typescript [router.ts]
 import { createRouter } from 'reactive-route';
 import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
@@ -12,19 +12,20 @@ import { routes } from './routes';
 
 //  If you prefer Context and SSR
 export function getRouter() {
-    return createRouter({routes, adapters});
+    return createRouter({ routes, adapters });
 }
 
 //  If you prefer singletons
-export const router = createRouter({routes, adapters})
+export const router = createRouter({ routes, adapters })
 ```
 
 The `createRouter` function accepts an object with the following properties:
 
-| Property   | Type                              | Description                              |
-|------------|-----------------------------------|------------------------------------------|
-| `routes`   | `ReturnType<typeof createRoutes>` | The routes configuration                 |
-| `adapters` | `TypeAdapters`                    | Adapters for the state management system |
+| Property          | Type                              | Description                                                |
+|-------------------|-----------------------------------|------------------------------------------------------------|
+| `routes`          | `ReturnType<typeof createRoutes>` | The routes configuration                                   |
+| `adapters`        | `TypeAdapters`                    | Adapters for the state management system                   |
+| `lifecycleParams` | `Array<any>`                      | Built-in DI for `beforeEnter` and `beforeLeave` (optional) |
 
 You may pass your own adapters if they satisfy the model
 
@@ -47,16 +48,16 @@ The router store provides several methods for navigation and state management:
 | `currentRoute`      | `TypeCurrentRoute<typeof routes['routeKey']>`   | The current route data       |
 | `routesHistory`     | `Array<string>`                                 | The history of visited paths |
 | `isRedirecting`     | `boolean`                                       | The indicator of redirecting |
-| `redirectTo`        | `(config: TypeRedirectToParams): Promise<void>` | The navigation function      |
+| `redirect`        | `(config: TypeRedirectToParams): Promise<void>` | The navigation function      |
 | `restoreFromURL`    | `(params: { pathname: string }): Promise<void>` | To restore from url          |
 | `restoreFromServer` | `(obj: TypeRouter): Promise<void>`              | To restore from object       |
 
-### redirectTo
+### redirect
 
 Navigates to a specified route:
 
 ```typescript
-await router.redirectTo({
+await router.redirect({
   route: 'about',
   // with dynamic parameters
   params: { id: '123' },
@@ -90,18 +91,18 @@ const routes = createRoutes({
 });
 
 // Good
-redirectTo({ route: 'static' })
-redirectTo({ route: 'dynamic', params: { foo: 'bar' } })
-redirectTo({ route: 'dynamic', params: { foo: 'bar' }, query: { q: 's' } })
+redirect({ route: 'static' })
+redirect({ route: 'dynamic', params: { foo: 'bar' } })
+redirect({ route: 'dynamic', params: { foo: 'bar' }, query: { q: 's' } })
 
 // TS errors
-redirectTo({ });
-redirectTo({ route: 'nonExisting' });
-redirectTo({ route: 'static', params: {} });
-redirectTo({ route: 'dynamic' });
-redirectTo({ route: 'dynamic', params: {} });
-redirectTo({ route: 'dynamic', params: { a: 'b' } });
-redirectTo({ route: 'dynamic', params: { foo: 'bar' }, query: { some: 'value' } });
+redirect({ });
+redirect({ route: 'nonExisting' });
+redirect({ route: 'static', params: {} });
+redirect({ route: 'dynamic' });
+redirect({ route: 'dynamic', params: {} });
+redirect({ route: 'dynamic', params: { a: 'b' } });
+redirect({ route: 'dynamic', params: { foo: 'bar' }, query: { some: 'value' } });
 ```
 
 ### restoreFromURL
@@ -116,6 +117,7 @@ await router.restoreFromURL({
 
 // Server-side
 await router.restoreFromURL({
+  // use your framework's way to get the full path + search
   pathname: req.originalUrl,
 });
 ```
@@ -146,7 +148,7 @@ The current route object has the following properties:
 | `params`   | `Record<string, string>`                              | The parameters of the route                                       |
 | `query`    | `Record<string, string>`                              | The query parameters of the route                                 |
 | `props`    | `Record<string, any>`                                 | The props for the component                                       |
-| `pageName` | `string`                                              | The name of the page, if exported from the page loader (optional) |
+| `pageId` | `string`                                              | The name of the page, if exported from the page loader (optional) |
 
 Note that TS-typing is static and `currentRoute` is not necessarily this one. When redirecting finished,
 it will become a new route instance, so if you use `autorun` to track current params, check `currentRoute.name` first.

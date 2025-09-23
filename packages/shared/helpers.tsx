@@ -1,6 +1,6 @@
-import { createRouter, TypeRoute } from 'reactive-route';
 import { expect, vi } from 'vitest';
 
+import { createRouter, TypeRoute } from '../core';
 import { createTestRoutes } from './createTestRoutes';
 import { getAdapters } from './getAdapters';
 import { TypeOptions } from './types';

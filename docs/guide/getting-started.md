@@ -43,8 +43,7 @@ import { adapters } from 'reactive-route/adapters/kr-observable-solid';
 
 First, define your routes using the `createRoutes` function:
 
-```typescript
-// routes.ts
+```typescript [routes.ts]
 import { createRoutes } from 'reactive-route';
 
 export const routes = createRoutes({
@@ -81,8 +80,7 @@ Pages "notFound" and "internalError" are required for error handling in the libr
 
 Next, create a router store using the `createRouter` function and your routes configuration:
 
-```typescript
-// router.ts
+```typescript [router.ts]
 import { createRouter } from 'reactive-route';
 import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
@@ -100,8 +98,7 @@ export const router = createRouter({ routes, adapters })
 The recommended way is to use Context to pass it to UI components to avoid circular dependencies,
 multiple instances and add the possibility of SSR.
 
-```typescript
-// StoreContext.tsx
+```typescript [StoreContext.tsx]
 import { createContext } from '{ui-library}';
 
 import { getRouter } from './router';
@@ -115,8 +112,7 @@ export const StoreContext = createContext(
 
 Create a custom Router component that uses the context to access the router store:
 
-```tsx
-// components/Router.tsx
+```tsx [components/Router.tsx]
 import { useContext } from '{ui-library}';
 import { Router as RouterLib } from 'reactive-route/{ui-library}';
 
@@ -132,8 +128,7 @@ export function Router() {
 
 ### 4. Initialize the router and render
 
-```tsx
-// entry.tsx
+```tsx [client.tsx]
 import { StoreContext } from './StoreContext';
 import { getRouterStore } from './router';
 import { Router } from './components/Router';

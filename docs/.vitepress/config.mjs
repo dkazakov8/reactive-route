@@ -17,7 +17,7 @@ export default defineConfig({
     ],
   },
   themeConfig: {
-    logo: '/logo.svg',
+    logo: '/file.svg',
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/' },
@@ -61,6 +61,9 @@ export default defineConfig({
           ]
         },
       ],
+    },
+    search: {
+      provider: 'local'
     },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/dkazakov8/reactive-route' }

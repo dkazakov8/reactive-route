@@ -46,7 +46,7 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
     if (isRedirecting) preventRedirect = true;
     else if (loadedComponentName === currentRoute.name) preventRedirect = true;
     else if (loadedComponentPage != null && currentRoute.name != null) {
-      if (loadedComponentPage === currentRoute.pageName) {
+      if (loadedComponentPage === currentRoute.pageId) {
         props.router.adapters.batch(() => {
           config.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
         });
@@ -63,7 +63,7 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
 
       config.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
       config.loadedComponentName = currentRoute.name;
-      config.loadedComponentPage = componentConfig.pageName;
+      config.loadedComponentPage = componentConfig.pageId;
     });
   }, []);
 

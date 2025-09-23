@@ -3,3 +3,6 @@ ignoredBuiltDependencies:
 
 onlyBuiltDependencies:
   - '@mongodb-js/zstd'
+
+packages:
+  - 'examples/*'

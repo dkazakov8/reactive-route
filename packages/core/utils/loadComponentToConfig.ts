@@ -3,15 +3,12 @@ import { TypeRoute } from '../types/TypeRoute';
 export function loadComponentToConfig(params: { route: TypeRoute }): Promise<void> {
   const { route } = params;
 
-  if (!route.component && route.loader) {
-    const loadingFn = route.loader;
-
-    return loadingFn().then((module: { default: any; pageName?: string }) => {
-      const { default: component, pageName, ...rest } = module;
+  if (!route.component) {
+    return route.loader().then((module: { default: any }) => {
+      const { default: component, ...rest } = module;
 
       route.component = component;
       route.otherExports = rest;
-      route.pageName = pageName;
     });
   }
 

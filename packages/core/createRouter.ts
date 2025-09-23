@@ -29,7 +29,7 @@ export function createRouter<
     routesHistory: [],
     currentRoute: {} as any,
     isRedirecting: false,
-    redirectTo: undefined as any,
+    redirect: undefined as any,
     restoreFromURL: undefined as any,
     restoreFromServer: undefined as any,
     get adapters() {
@@ -51,10 +51,10 @@ export function createRouter<
   };
 
   router.restoreFromURL = function restoreFromURL(params) {
-    return router.redirectTo(getInitialRoute({ routes, ...params }));
+    return router.redirect(getInitialRoute({ routes, ...params }));
   };
 
-  router.redirectTo = async function redirectTo<TRouteName extends keyof TRoutes>(
+  router.redirect = async function redirect<TRouteName extends keyof TRoutes>(
     config: TypeRedirectParams<TRoutes, TRouteName>
   ) {
     const { route: routeName, noHistoryPush } = config;
@@ -202,7 +202,7 @@ export function createRouter<
        *
        */
 
-      if (redirectConfig) return redirectTo(redirectConfig);
+      if (redirectConfig) return redirect(redirectConfig);
 
       await loadComponentToConfig({ route: routes[nextRoute.name] });
     } catch (error: any) {
@@ -225,7 +225,7 @@ export function createRouter<
           props: routes[routes.internalError.name].props,
           query: adapters.makeObservable({}) as any,
           params: adapters.makeObservable({}) as any,
-          pageName: routes[routes.internalError.name].pageName,
+          pageId: routes[routes.internalError.name].pageId,
         });
 
         router.isRedirecting = false;
@@ -241,7 +241,7 @@ export function createRouter<
         props: routes[nextRoute.name].props,
         query: getQueryValues({ route: nextRoute, pathname: nextUrl }),
         params: getDynamicValues({ route: nextRoute, pathname: nextUrl }),
-        pageName: routes[nextRoute.name].pageName,
+        pageId: routes[nextRoute.name].pageId,
       });
 
       const lastUrl = router.routesHistory[router.routesHistory.length - 1];

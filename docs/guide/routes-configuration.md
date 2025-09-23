@@ -4,7 +4,7 @@ The router configuration is the heart of Reactive Route. It defines all the rout
 
 Use the `createRoutes` function to create a router configuration:
 
-```typescript
+```typescript [routes.ts]
 import { createRoutes } from 'reactive-route';
 
 export const routes = createRoutes({
@@ -29,10 +29,11 @@ Each route is defined as a key-value pair in the configuration object. The key i
 | Property      | Type                                             | Description                                                                                           |
 |---------------|--------------------------------------------------|-------------------------------------------------------------------------------------------------------|
 | `path`        | `string`                                         | The URL path for the route. Can include dynamic segments prefixed with `:`                            |
-| `loader`      | `() => Promise<{ default, pageName, ...rest }>`  | A function that returns a Promise resolving to the component (it should be in the **default** export) |
+| `loader`      | `() => Promise<{ default, pageId, ...rest }>`    | A function that returns a Promise resolving to the component (it should be in the **default** export) |
 | `props`       | `Record<string, any>`                            | Static props to pass to the component (optional)                                                      |
 | `params`      | `Record<string, (value: string) => boolean>`     | Validation functions for path parameters (required if route type is Dynamic)                          |
 | `query`       | `Record<string, (value: string) => boolean>`     | Validation functions for query parameters (optional)                                                  |
+| `pageId`      | `string`                                         | An optimization for nested routes to avoid page's rerender (optional)                                 |
 | `beforeEnter` | `(config: TypeLifecycleConfig) => Promise<void>` | Hook called before entering the route (optional)                                                      |
 | `beforeLeave` | `(config: TypeLifecycleConfig) => Promise<void>` | Hook called before leaving the route (optional)                                                       |
 
@@ -129,7 +130,7 @@ Always remember to use `return` with `config.redirect` and `config.preventRedire
 Uncaught errors in `beforeEnter` or `beforeLeave` will lead to the rendering of the "internalError" route,
 so it's important to handle errors properly using `try-catch` blocks or `Promise.catch()` methods.
 
-Note that these guards are called on dynamic parameter changes, but not called on query changes.
+Note that `beforeEnter` is called on dynamic parameter changes, but not called on query changes.
 This behavior may become configurable in future versions.
 
 ### Accessing Route Information
@@ -155,7 +156,7 @@ type TypeLifecycleConfig = {
 };
 ```
 
-Be careful with `config.redirect` function. It accepts the same route data as `router.redirectTo`,
+Be careful with `config.redirect` function. It accepts the same route data as `router.redirect`,
 but is not typed. So, if you refactor your routes, TS errors will not be shown here which may lead to
 incorrect redirects.
 
@@ -169,7 +170,7 @@ const routes = createRoutes({
   dashboard: {
     path: '/dashboard',
     loader: () => import('./pages/protected'),
-    async beforeEnter(config, userStore, uiStore) {
+    async beforeEnter(config, userStore: UserStore, uiStore: UIStore) {
       if (!userStore.isAuthenticated()) {
         return config.redirect({ route: 'login' });
       }

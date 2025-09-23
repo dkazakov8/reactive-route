@@ -8,7 +8,7 @@ export function createRoutes<
 ): {
   [Key in keyof TConfig]: TConfig[Key] & {
     name: Key;
-    pageName?: string;
+    pageId?: string;
     component?: any;
     otherExports?: Record<string, any>;
   };

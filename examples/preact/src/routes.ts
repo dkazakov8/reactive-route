@@ -22,7 +22,7 @@ export const routes = createRoutes({
   query: {
     path: '/query',
     query: {
-      foo: (value: string) => value.length > 0,
+      foo: (value: string) => value.length > 2,
     },
     loader: () => import('./pages/query'),
   },

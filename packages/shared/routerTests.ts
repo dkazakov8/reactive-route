@@ -18,7 +18,7 @@ export function routerTests(
 
         const container = render();
 
-        await router.redirectTo({ route: 'staticRouteAutorun' });
+        await router.redirect({ route: 'staticRouteAutorun' });
 
         calls.pageRender += 1;
         calls.pageAutorun += 1;
@@ -30,7 +30,7 @@ export function routerTests(
 
         checkSpy();
 
-        await router.redirectTo({ route: 'staticRoute' });
+        await router.redirect({ route: 'staticRoute' });
 
         calls.pageAutorun += 1;
         calls.beforeSetPageComponent += 1;
@@ -48,7 +48,7 @@ export function routerTests(
 
         const container = render();
 
-        await router.redirectTo({ route: 'staticRoute' });
+        await router.redirect({ route: 'staticRoute' });
 
         calls.beforeSetPageComponent += 1;
 
@@ -67,7 +67,7 @@ export function routerTests(
             path: '/test/static',
             query: {},
             params: {},
-            pageName: 'static',
+            pageId: 'static',
           },
           isRedirecting: false,
         } as any);
@@ -86,7 +86,7 @@ export function routerTests(
 
         const container = render();
 
-        await router.redirectTo({ route: 'dynamicRoute', params: { static: 'asd' } });
+        await router.redirect({ route: 'dynamicRoute', params: { static: 'asd' } });
 
         calls.beforeSetPageComponent += 1;
 
@@ -94,7 +94,7 @@ export function routerTests(
 
         checkSpy();
 
-        await router.redirectTo({ route: 'dynamicRoute', params: { static: 'dsa' } });
+        await router.redirect({ route: 'dynamicRoute', params: { static: 'dsa' } });
 
         expect(container.innerHTML).to.eq('<div>Dynamic</div>');
 
@@ -106,7 +106,7 @@ export function routerTests(
 
         const container = render();
 
-        await router.redirectTo({ route: 'noPageName', params: { foo: 'foo' } });
+        await router.redirect({ route: 'noPageName', params: { foo: 'foo' } });
 
         calls.beforeSetPageComponent += 1;
 
@@ -114,7 +114,7 @@ export function routerTests(
 
         checkSpy();
 
-        await router.redirectTo({ route: 'noPageName', params: { foo: 'bar' } });
+        await router.redirect({ route: 'noPageName', params: { foo: 'bar' } });
 
         expect(container.innerHTML).to.eq('<div>No page name</div>');
 
@@ -126,7 +126,7 @@ export function routerTests(
 
         const container = render();
 
-        await router.redirectTo({ route: 'dynamicRoute', params: { static: 'asd' } });
+        await router.redirect({ route: 'dynamicRoute', params: { static: 'asd' } });
 
         calls.beforeSetPageComponent += 1;
 
@@ -134,7 +134,7 @@ export function routerTests(
 
         checkSpy();
 
-        await router.redirectTo({ route: 'dynamicRoute2', params: { static: 'dsa' } });
+        await router.redirect({ route: 'dynamicRoute2', params: { static: 'dsa' } });
 
         expect(container.innerHTML).to.eq('<div>Dynamic</div>');
 
@@ -146,7 +146,7 @@ export function routerTests(
 
         const container = render();
 
-        await router.redirectTo({ route: 'noPageName', params: { foo: 'bar' } });
+        await router.redirect({ route: 'noPageName', params: { foo: 'bar' } });
 
         calls.beforeSetPageComponent += 1;
 
@@ -154,7 +154,7 @@ export function routerTests(
 
         checkSpy();
 
-        await router.redirectTo({ route: 'noPageName2', params: { foo: 'foo', bar: 'bar' } });
+        await router.redirect({ route: 'noPageName2', params: { foo: 'foo', bar: 'bar' } });
 
         calls.beforeSetPageComponent += 1;
         calls.beforeUpdatePageComponent += 1;
@@ -169,7 +169,7 @@ export function routerTests(
 
         const container = render();
 
-        await router.redirectTo({ route: 'notFound' });
+        await router.redirect({ route: 'notFound' });
 
         calls.beforeSetPageComponent += 1;
 
@@ -177,7 +177,7 @@ export function routerTests(
 
         checkSpy();
 
-        await router.redirectTo({ route: 'internalError' });
+        await router.redirect({ route: 'internalError' });
 
         expect(container.innerHTML).to.eq('Error 500');
 
@@ -189,7 +189,7 @@ export function routerTests(
       it('SSR', async () => {
         const { router, renderToString, checkSpy, calls } = await prepareComponentWithSpy(options);
 
-        await router.redirectTo({ route: 'staticRoute' });
+        await router.redirect({ route: 'staticRoute' });
 
         const html1 = renderToString();
 

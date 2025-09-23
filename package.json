@@ -2,7 +2,7 @@
   "name": "reactive-route",
   "author": "Dmitry Kazakov",
   "license": "MIT",
-  "version": "0.0.1-alpha.22",
+  "version": "0.0.1-alpha.23",
   "description": "Reactive Router for different frameworks",
   "repository": {
     "type": "git",
@@ -63,7 +63,7 @@
     "solid-js": "1.9.9",
     "tsx": "4.20.5",
     "typescript": "5.9.2",
-    "vitepress": "1.6.4",
+    "vitepress": "2.0.0-alpha.12",
     "vitepress-plugin-group-icons": "1.6.3",
     "vitest": "3.2.4",
     "xml-splitter": "1.2.1"

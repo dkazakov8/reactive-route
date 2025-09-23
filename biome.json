@@ -43,7 +43,7 @@
         "useKeyWithClickEvents": "off",
         "useAriaPropsSupportedByRole": "off",
         "noStaticElementInteractions": "off",
-        "useButtonType": "error"
+        "useButtonType": "off"
       },
       "performance": {
         "noDynamicNamespaceImportAccess": "off"

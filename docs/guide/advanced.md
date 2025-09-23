@@ -4,7 +4,7 @@
 
 This library fully supports unlimited redirects in SPA / SSR.
 
-```typescript
+```typescript [routes.ts]
 const routes = createRoutes({
   one: {
     path: '/1',
@@ -40,58 +40,92 @@ In this case if user goes to `/4` he will be redirected to `/3` then `/2` then `
 Browser's history and `router.routesHistory` will only have `['/1']`. 
 Also, chunks for pages four, three, two will not be loaded if you configured async chunks in your Bundler.
 
-## Mobx
+## Watch and react to params / query changes
 
-The relevant imports are as follows
+`router.currentRoute` is an observable, so you can use it inside autorun / reaction / effect of your stack.
 
-```typescript
-import { Router } from 'reactive-route/solid';
-import { adapters } from 'reactive-route/adapters/mobx-solid';
+```tsx
+import { TypeCurrentRoute } from 'reactive-route';
+import { routes } from 'routes';
+
+function MyComponent() {
+  const { router } = useContext(StoreContext);
+  
+  const currentRoute = router.currentRoute as TypeCurrentRoute<typeof routes.tabs>;
+
+  // React + MobX way
+  useEffect(() => {
+    const disposer = autorun(() => {
+      // Always check the name. Because after redirecting the currentRoute 
+      // will change, but this reaction is still alive, and the next route 
+      // may not have params and query at all!
+      if (currentRoute.name !== 'tabs') return;
+      
+      console.log(currentRoute.params.tab, currentRoute.query.foo);
+    })
+
+    return () => disposer();
+  }, []);
+  
+  if (router.currentRoute.name !== 'tabs') return null;
+
+  if (router.currentRoute.params.tab === 'dashboard') {
+    return <Dashboard />
+  }
+
+  if (router.currentRoute.params.tab === 'table') {
+    return <Table />
+  }
+
+  return <ModeNotFound />;
+}
 ```
 
-You should ensure that package `mobx` is installed.
+## Prevent rerendering if pageId is the same
 
-Actually Solid.js has no native integration with MobX. So if you use MobX with Solid.js you probably
-use something like this:
+To Do
 
-```typescript
-import { Reaction } from 'mobx';
-import { enableExternalSource } from 'solid-js';
+## Modular exports
 
-let id = 0;
+All the exports from your pages are written to the route config. You may read them in 
+`beforeSetPageComponent` prop of the `Router`. For example, when you use code-splitting and SSR 
+it's a good practice to extend some global RootStore or IoC container with page's stores:
 
-enableExternalSource((fn, trigger) => {
-  const reaction = new Reaction(`mobx@${++id}`, trigger);
+```tsx [pages/Home.tsx]
+export const homeStore = {
+  foo: 'bar'
+}
 
-  return {
-    track: (x) => {
-      let next;
-      reaction.track(() => (next = fn(x)));
-      return next;
-    },
-    dispose: () => reaction.dispose(),
-  };
-});
+export default function Home() {
+  const { modularStores } = useContext(StoreContext);
+
+  return `Home ${modularStores.homeStore.foo}`;
+}
 ```
 
-... or has better alternatives. Anyway, something like this should be included in your entry file.
+```tsx [components/Router.tsx]
+export function Router() {
+  const { router, modularStores } = useContext(StoreContext);
 
-## Observable
-
-The relevant imports are as follows
-
-```typescript
-import { Router } from 'reactive-route/solid';
-import { adapters } from 'reactive-route/adapters/kr-observable-solid';
+  return (
+    <RouterLib
+      routes={routes}
+      router={router}
+      beforeSetPageComponent={(route) => {
+        if (route.otherExports?.homeStore) {
+          modularStores.homeStore = route.otherExports.homeStore;
+        }
+      }}
+      beforeUpdatePageComponent={() => {
+        if (modularStores.homeStore) {
+          modularStores.homeStore.destroy();
+          modularStores.homeStore = null;
+        }
+      }}
+    />
+  );
+}
 ```
 
-You should ensure that package `kr-observable` is installed.
-
-Be sure to enable integration in your entry file
-
-```typescript
-import { enableObservable } from 'kr-observable/solidjs';
-
-enableObservable();
-```
-
+This way on hydration server can serialize `modularStores.homeStore` and the client can easily
+hydrate it on the first render. This mechanism can also be used in other useful scenarios.

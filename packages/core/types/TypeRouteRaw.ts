@@ -4,6 +4,7 @@ import { TypeValidator } from './TypeValidator';
 export type TypeRouteRaw = {
   path: string;
   loader: () => Promise<{ default: any }>;
+  pageId?: string;
   props?: Record<string, any>;
   query?: Record<string, TypeValidator>;
   params?: Record<string, TypeValidator>;

@@ -1,4 +1,4 @@
-import { createRoutes } from 'reactive-route';
+import { createRoutes } from '../core';
 
 export function createTestRoutes(imports: Record<string, any>) {
   return createRoutes({
@@ -7,6 +7,7 @@ export function createTestRoutes(imports: Record<string, any>) {
       query: {
         q: (value) => value.length > 2,
       },
+      pageId: 'static',
       loader: imports.staticRoute as any,
     },
     dynamicRoute: {
@@ -16,11 +17,13 @@ export function createTestRoutes(imports: Record<string, any>) {
         q: (value) => value.length > 2,
         s: (value) => value.length > 2,
       },
+      pageId: 'dynamic',
       loader: imports.dynamicRoute as any,
     },
     dynamicRoute2: {
       path: '/test3/:static',
       params: { static: (value) => value.length > 2 },
+      pageId: 'dynamic',
       loader: imports.dynamicRoute2 as any,
     },
     dynamicRoute3: {
@@ -28,6 +31,7 @@ export function createTestRoutes(imports: Record<string, any>) {
       params: {
         ':static': (value) => value.length > 2,
       },
+      pageId: 'dynamic',
       loader: imports.dynamicRoute3 as any,
     },
     noPageName: {
@@ -43,6 +47,7 @@ export function createTestRoutes(imports: Record<string, any>) {
     // @ts-ignore
     dynamicRouteNoValidators: {
       path: '/test2/:param',
+      pageId: 'dynamic',
       loader: imports.dynamicRouteNoValidators as any,
     },
     dynamicRouteMultiple: {
@@ -51,6 +56,7 @@ export function createTestRoutes(imports: Record<string, any>) {
         param: (value) => value.length > 2,
         param2: (value) => value.length > 2,
       },
+      pageId: 'dynamic',
       loader: imports.dynamicRouteMultiple as any,
     },
     staticRouteAutorun: {
@@ -61,11 +67,13 @@ export function createTestRoutes(imports: Record<string, any>) {
     notFound: {
       path: '/error404',
       props: { errorNumber: 404 },
+      pageId: 'error',
       loader: imports.notFound as any,
     },
     internalError: {
       path: '/error500',
       props: { errorNumber: 500 },
+      pageId: 'error',
       loader: imports.internalError as any,
     },
   });

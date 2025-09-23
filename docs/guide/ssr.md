@@ -6,8 +6,7 @@ for example, from `lodash`. These utilities are not included in `reactive-route`
 
 ### Server
 
-```tsx
-// server.tsx
+```tsx [server.tsx]
 import { getRouter } from './router';
 import { StoreContext } from './StoreContext';
 import { RedirectError } from 'reactive-route';
@@ -38,20 +37,22 @@ express()
         <App />
       </StoreContext.Provider>
     );
+    
+    // A very simple method of serialization, but sufficient for react-route
     const storeJS = JSON.parse(JSON.stringify({ router }));
+    const initialData = JSON.stringify(escapeAllStrings(storeJS));
 
     res.send(
       template
         .replace(`<!-- HTML -->`, htmlMarkup)
-        .replace('<!-- INITIAL_DATA -->', JSON.stringify(escapeAllStrings(storeJS)))
+        .replace('<!-- INITIAL_DATA -->', initialData)
     );
   })
 ```
 
 ### Client
 
-```tsx
-// client.js
+```tsx [client.tsx]
 import { getRouter } from './router';
 import { StoreContext } from './StoreContext';
 

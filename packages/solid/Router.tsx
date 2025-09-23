@@ -37,7 +37,7 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
 
   function setLoadedComponent() {
     const currentRouteName = props.router.currentRoute.name;
-    const currentRoutePage = props.router.currentRoute.pageName;
+    const currentRoutePage = props.router.currentRoute.pageId;
 
     const componentConfig = props.routes[currentRouteName];
 
@@ -72,7 +72,7 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
         );
         currentProps = 'props' in componentConfig ? componentConfig.props! : {};
         config.loadedComponentName = currentRouteName;
-        config.loadedComponentPage = componentConfig.pageName;
+        config.loadedComponentPage = componentConfig.pageId;
       });
     });
   }

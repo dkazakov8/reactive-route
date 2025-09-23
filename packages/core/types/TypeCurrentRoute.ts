@@ -6,5 +6,5 @@ export type TypeCurrentRoute<TRoute extends TypeRoute> = {
   props: TRoute['props'];
   query: Partial<Record<keyof TRoute['query'], string>>;
   params: Record<keyof TRoute['params'], string>;
-  pageName: TRoute['pageName'];
+  pageId: TRoute['pageId'];
 };

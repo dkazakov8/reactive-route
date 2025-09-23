@@ -22,12 +22,22 @@ state management solutions. Currently, Reactive Route provides official implemen
 - Solid.js + MobX
 - Solid.js + Observable
 
-### Type Safety
+### Key Advantages
 
-Built with TypeScript, Reactive Route provides excellent type safety and developer experience. The router configuration and all APIs are fully typed.
+Reactive Route offers several advantages that make it a powerful choice for routing in modern web applications:
 
-### Server-Side Rendering
+- **Lifecycle Hooks**: Built-in `beforeEnter` and `beforeLeave` hooks allow you to control navigation flow, perform authentication checks, load data, and handle unsaved changes.
 
-Full support for server-side rendering in both React and Solid.js, making it suitable for modern web applications that require SSR.
+- **Dynamic Component Loading**: Supports dynamically loaded components through async imports (e.g., `() => import('./pages/Home')`), enabling code splitting and improving application performance.
+
+- **Modular Data Integration**: Supports dynamically loaded modular stores and other data for pages, making state management more organized and efficient.
+
+- **Server-Side Rendering**: Full SSR support for all the supported frameworks, ensuring optimal performance and SEO benefits.
+
+- **Parameter Validation**: Ensures that every dynamic parameter from the URL has a validator, preventing invalid routes and improving application robustness.
+
+- **TypeScript Integration**: Comprehensive TypeScript support for routes, dynamic parameters, and search queries, providing excellent developer experience and type safety.
+
+- **Separation of Concerns**: Functions as a centralized separate layer, eliminating the need for markup like `<Route path="..." />` inside components and keeping your component tree clean.
 
 In the following sections, we'll explore how to install and use Reactive Route in your applications.
