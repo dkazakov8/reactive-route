@@ -4,10 +4,10 @@ The router configuration is the heart of Reactive Route. It defines all the rout
 
 Use the `createRoutes` function to create a router configuration:
 
-```typescript [routes.ts]
+```typescript
 import { createRoutes } from 'reactive-route';
 
-export const routes = createRoutes({
+const routes = createRoutes({
   // Your route definitions go here.
 
   // These routes are required

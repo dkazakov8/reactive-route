@@ -8,11 +8,13 @@ The router is the central piece that manages the state of the router and provide
 import { createRouter } from 'reactive-route';
 import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
-import { routes } from './routes';
+const routes = createRoutes({ 
+  // ...your config 
+});
 
 //  If you prefer Context and SSR
 export function getRouter() {
-    return createRouter({ routes, adapters });
+  return createRouter({ routes, adapters });
 }
 
 //  If you prefer singletons
@@ -48,9 +50,11 @@ The router store provides several methods for navigation and state management:
 | `currentRoute`      | `TypeCurrentRoute<typeof routes['routeKey']>`   | The current route data       |
 | `routesHistory`     | `Array<string>`                                 | The history of visited paths |
 | `isRedirecting`     | `boolean`                                       | The indicator of redirecting |
-| `redirect`        | `(config: TypeRedirectToParams): Promise<void>` | The navigation function      |
+| `redirect`          | `(config: TypeRedirectToParams): Promise<void>` | The navigation function      |
 | `restoreFromURL`    | `(params: { pathname: string }): Promise<void>` | To restore from url          |
 | `restoreFromServer` | `(obj: TypeRouter): Promise<void>`              | To restore from object       |
+| `routes`            | `ReturnType<typeof createRoutes>`               | Routes configuration         |
+| `lifecycleParams`   | `Array<any>`                                    | Custom lifecycle parameters  |
 
 ### redirect
 
@@ -136,7 +140,7 @@ await router.restoreFromServer({ routesHistory, currentRoute });
 import { TypeCurrentRoute } from 'reactive-route';
 
 const currentRoute = router.currentRoute 
-  as TypeCurrentRoute<typeof routes.dynamic>;
+  as TypeCurrentRoute<typeof router.routes.dynamic>;
 ```
 
 The current route object has the following properties:
@@ -150,7 +154,7 @@ The current route object has the following properties:
 | `props`    | `Record<string, any>`                                 | The props for the component                                       |
 | `pageId` | `string`                                              | The name of the page, if exported from the page loader (optional) |
 
-Note that TS-typing is static and `currentRoute` is not necessarily this one. When redirecting finished,
+Note that TS-typing is static and `currentRoute` is not necessarily this one. When redirecting is finished,
 it will become a new route instance, so if you use `autorun` to track current params, check `currentRoute.name` first.
 
 ## isRedirecting

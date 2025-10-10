@@ -1,8 +1,12 @@
 import preact from '@preact/preset-vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [preact({ devToolsEnabled: false, prefreshEnabled: false, reactAliasesEnabled: false })],
+  plugins: [
+    tsconfigPaths(),
+    preact({ devToolsEnabled: false, prefreshEnabled: false, reactAliasesEnabled: false }),
+  ],
   test: {
     name: 'preact',
     include: ['./test/*.{test,spec}.?(c|m)[jt]s?(x)'],

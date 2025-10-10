@@ -1,6 +1,6 @@
 import { expect, vi } from 'vitest';
 
-import { createRouter, TypeRoute } from '../core';
+import { createRouter } from '../core';
 import { createTestRoutes } from './createTestRoutes';
 import { getAdapters } from './getAdapters';
 import { TypeOptions } from './types';
@@ -95,16 +95,6 @@ export function getRoutes(options: TypeOptions) {
   return routes;
 }
 
-export async function createRouterWithCustomRoutes<TRoutes extends Record<string, TypeRoute>>(
-  options: TypeOptions,
-  routes: TRoutes,
-  lifecycleParams?: any
-) {
-  const adapters = await getAdapters(options);
-
-  return createRouter({ routes, lifecycleParams, adapters });
-}
-
 async function getRouterComponent(options: TypeOptions) {
   let Router: any;
   if (options.renderer === 'react') Router = await import('../react').then((m) => m.Router);
@@ -154,15 +144,13 @@ export async function prepareComponentWithSpy(options: TypeOptions) {
   const spy_beforeSetPageComponent = vi.fn();
   const spy_beforeUpdatePageComponent = vi.fn();
 
-  const routes = getRoutes(options);
+  const adapters = await getAdapters(options);
+  const router = createRouter({ routes: getRoutes(options), adapters });
 
-  routes.staticRouteAutorun.props = {
+  router.routes.staticRouteAutorun.props = {
     renderSpy: spy_pageRender,
     autorunSpy: spy_pageAutorun,
   };
-
-  const adapters = await getAdapters(options);
-  const router = createRouter({ routes, adapters });
 
   const calls = {
     pageRender: 0,
@@ -188,7 +176,6 @@ export async function prepareComponentWithSpy(options: TypeOptions) {
     return (
       <Router
         router={router}
-        routes={routes}
         beforeSetPageComponent={spy_beforeSetPageComponent}
         beforeUpdatePageComponent={spy_beforeUpdatePageComponent}
       />

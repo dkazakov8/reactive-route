@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: "Reactive Route"
-  text: "Config-based routing for different frameworks"
-  tagline: A lightweight, flexible, and reactive router for React and Solid.js
+  text: "Framework-agnostic reactive routing"
+  tagline: A lightweight, flexible, and reactive router for React, Preact and Solid.js
   actions:
     - theme: brand
       text: Get Started
@@ -15,15 +15,15 @@ hero:
 
 features:
   - title: Framework Agnostic
-    details: Core routing logic is framework-agnostic, with specific implementations for React and Solid.js.
+    details: Core routing logic is framework-agnostic, with adapters for React, Preact and Solid.js
   - title: State Management Integration
-    details: Seamlessly integrates with MobX, kr-observable, and Solid.js reactivity systems.
+    details: Seamlessly integrates with MobX, Observable, and Solid.js reactivity systems
   - title: Type Safety
-    details: Built with TypeScript for type safety and better developer experience.
+    details: Built with TypeScript for type safety and better developer experience
   - title: Config-based
-    details: Define your routes in a simple, declarative configuration object.
+    details: Define your routes in a simple, declarative configuration object
   - title: Navigation Guards
-    details: Powerful beforeEnter and beforeLeave hooks for controlling navigation.
+    details: Powerful async beforeEnter and beforeLeave route lifecycle with DI
   - title: SSR Support
-    details: Full support for server-side rendering in both React and Solid.js.
+    details: Full support for server-side rendering in any supported framework
 ---

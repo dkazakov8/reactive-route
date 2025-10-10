@@ -21,3 +21,4 @@ tsconfig.json
 tsconfig.solid.json
 tsconfig.types.react.json
 tsconfig.types.solid.json
+pnpm-workspace.yaml

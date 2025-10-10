@@ -13,9 +13,9 @@ by editing `packageManager` field in `package.json`.
 
 Next, choose the mode and reactivity system to start:
 
-- `pnpm run dev-solid` - CSR (Client rendering only) for Solid.js reactivity
-- `pnpm run dev-mobx` - CSR (Client rendering only) for MobX
-- `pnpm run dev-observable` - CSR (Client rendering only) for Observable
-- `pnpm run dev-ssr-solid` - SSR for Solid.js reactivity
-- `pnpm run dev-ssr-mobx` - SSR for MobX
-- `pnpm run dev-ssr-observable` - SSR for Observable
+- `pnpm run solid` - CSR (Client rendering only) for Solid.js reactivity
+- `pnpm run mobx` - CSR (Client rendering only) for MobX
+- `pnpm run observable` - CSR (Client rendering only) for Observable
+- `pnpm run ssr-solid` - SSR for Solid.js reactivity
+- `pnpm run ssr-mobx` - SSR for MobX
+- `pnpm run ssr-observable` - SSR for Observable

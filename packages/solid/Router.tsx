@@ -39,7 +39,7 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
     const currentRouteName = props.router.currentRoute.name;
     const currentRoutePage = props.router.currentRoute.pageId;
 
-    const componentConfig = props.routes[currentRouteName];
+    const componentConfig = props.router.routes[currentRouteName];
 
     let preventRedirect = false;
     if (props.router.isRedirecting) preventRedirect = true;
@@ -94,7 +94,9 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
     <Show when={config.loadedComponentName}>
       {/* @ts-ignore */}
       <Dynamic
-        component={(props.routes[config.loadedComponentName!]?.component || undefined) as any}
+        component={
+          (props.router.routes[config.loadedComponentName!]?.component || undefined) as any
+        }
         {...Object.keys(config.currentProps).reduce((acc, key) => {
           // @ts-ignore
           acc[key] = currentProps[key];

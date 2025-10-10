@@ -8,13 +8,12 @@ The router is the central piece that manages the state of the router and provide
 import { useContext } from '{ui-library}';
 import { Router as RouterLib } from 'reactive-route/{ui-library}';
 
-import { routes } from '../routes';
 import { StoreContext } from './StoreContext';
 
 export function Router() {
   const { router } = useContext(StoreContext);
 
-  return <RouterLib routes={routes} router={router} />;
+  return <RouterLib router={router} />;
 }
 ```
 
@@ -22,7 +21,6 @@ The `Router` accepts these props:
 
 | Property                    | Type                                   | Description                                                                                                      |
 |-----------------------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------|
-| `routes`                    | `ReturnType<typeof createRoutes>`      | The routes configuration                                                                                         |
 | `router`                    | `ReturnType<typeof createRouter>`      | The router configuration                                                                                         |
 | `beforeMount`               | `() => void`                           | This function is called once on Router Component initiation, before any rendering (optional)                     |
 | `beforeUpdatePageComponent` | `() => void`                           | This function is called when page component is changed, before `beforeSetPageComponent` and rendering (optional) |
@@ -43,7 +41,7 @@ export function Router() {
       routes={routes}
       router={router}
       beforeMount={() => {
-        // RouterLib just mounted
+        // Router just mounted
       }}
       beforeUpdatePageComponent={() => {
         // some new page will be rendered soon (not called on first render!)

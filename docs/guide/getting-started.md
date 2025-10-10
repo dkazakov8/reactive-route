@@ -39,14 +39,16 @@ import { adapters } from 'reactive-route/adapters/kr-observable-solid';
 
 ## Basic Setup
 
-### 1. Define Your Routes
+### 1. Create a Router Store and Define Your Routes
 
-First, define your routes using the `createRoutes` function:
+First, create a router store using the `createRouter` function and 
+your routes configuration using the `createRoutes` function:
 
-```typescript [routes.ts]
-import { createRoutes } from 'reactive-route';
+```typescript [router.ts]
+import { createRoutes, createRouter } from 'reactive-route';
+import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
-export const routes = createRoutes({
+const routes = createRoutes({
   home: {
     path: '/',
     loader: () => import('./pages/home'),
@@ -72,19 +74,6 @@ export const routes = createRoutes({
     loader: () => import('./pages/error'),
   },
 });
-```
-
-Pages "notFound" and "internalError" are required for error handling in the library.
-
-### 2. Create a Router Store
-
-Next, create a router store using the `createRouter` function and your routes configuration:
-
-```typescript [router.ts]
-import { createRouter } from 'reactive-route';
-import { adapters } from 'reactive-route/adapters/{reactive-system}';
-
-import { routes } from './routes';
 
 //  If you prefer Context and SSR
 export function getRouter() {
@@ -94,6 +83,8 @@ export function getRouter() {
 //  If you prefer singletons
 export const router = createRouter({ routes, adapters })
 ```
+
+Pages `notFound` and `internalError` are required for error handling in the library.
 
 The recommended way is to use Context to pass it to UI components to avoid circular dependencies,
 multiple instances and add the possibility of SSR.
@@ -108,7 +99,7 @@ export const StoreContext = createContext(
 );
 ```
 
-### 3. Set Up the Router Component
+### 2. Set Up the Router Component
 
 Create a custom Router component that uses the context to access the router store:
 
@@ -116,17 +107,16 @@ Create a custom Router component that uses the context to access the router stor
 import { useContext } from '{ui-library}';
 import { Router as RouterLib } from 'reactive-route/{ui-library}';
 
-import { routes } from '../routes';
 import { StoreContext } from './StoreContext';
 
 export function Router() {
   const { router } = useContext(StoreContext);
 
-  return <RouterLib routes={routes} router={router} />;
+  return <RouterLib router={router} />;
 }
 ```
 
-### 4. Initialize the router and render
+### 3. Initialize the router and render
 
 ```tsx [client.tsx]
 import { StoreContext } from './StoreContext';
@@ -139,6 +129,7 @@ await router.restoreFromURL({
   pathname: location.pathname + location.search,
 });
 
+// the implementation is dependent on the UI library
 render(
   element,
   <StoreContext.Provider value={{ router }}>

@@ -16,16 +16,12 @@ import { replaceDynamicValues } from './utils/replaceDynamicValues';
 
 export function createRouter<
   TRoutes extends Record<string | 'notFound' | 'internalError', TypeRoute>,
->({
-  routes,
-  adapters,
-  lifecycleParams,
-}: {
+>(config: {
   routes: TRoutes;
   adapters: TypeAdapters;
   lifecycleParams?: Array<any>;
 }): TypeRouter<TRoutes> {
-  const router: TypeRouter<TRoutes> = adapters.makeObservable({
+  const router: TypeRouter<TRoutes> = config.adapters.makeObservable({
     routesHistory: [],
     currentRoute: {} as any,
     isRedirecting: false,
@@ -33,25 +29,31 @@ export function createRouter<
     restoreFromURL: undefined as any,
     restoreFromServer: undefined as any,
     get adapters() {
-      return adapters;
+      return config.adapters;
+    },
+    get routes() {
+      return config.routes;
+    },
+    get lifecycleParams() {
+      return config.lifecycleParams;
     },
   });
 
   router.restoreFromServer = function restoreFromServer(obj) {
-    adapters.batch(() => {
+    router.adapters.batch(() => {
       router.routesHistory.push(...(obj.routesHistory || []));
       Object.assign(router.currentRoute, obj.currentRoute);
     });
 
-    const preloadedRouteName = Object.keys(routes).find(
+    const preloadedRouteName = Object.keys(router.routes).find(
       (routeName) => router.currentRoute.name === routeName
-    ) as keyof typeof routes;
+    ) as keyof typeof router.routes;
 
-    return loadComponentToConfig({ route: routes[preloadedRouteName] });
+    return loadComponentToConfig({ route: router.routes[preloadedRouteName] });
   };
 
   router.restoreFromURL = function restoreFromURL(params) {
-    return router.redirect(getInitialRoute({ routes, ...params }));
+    return router.redirect(getInitialRoute({ routes: router.routes, ...params }));
   };
 
   router.redirect = async function redirect<TRouteName extends keyof TRoutes>(
@@ -71,7 +73,7 @@ export function createRouter<
     let currentQuery: Partial<Record<keyof TRoutes[TRouteName]['query'], string>> | undefined;
 
     if (router.currentRoute?.name) {
-      currentRoute = routes[router.currentRoute.name];
+      currentRoute = router.routes[router.currentRoute.name];
       currentPathname = replaceDynamicValues({
         route: currentRoute,
         params: router.currentRoute.params,
@@ -86,7 +88,7 @@ export function createRouter<
      *
      */
 
-    const nextRoute = routes[routeName];
+    const nextRoute = router.routes[routeName];
     const nextPathname = replaceDynamicValues({
       route: nextRoute,
       params: 'params' in config ? config.params : undefined,
@@ -122,8 +124,8 @@ export function createRouter<
 
     if (currentPathname === nextPathname) {
       if (currentSearch !== nextSearch) {
-        adapters.batch(() => {
-          adapters.replaceObject(router.currentRoute, {
+        router.adapters.batch(() => {
+          router.adapters.replaceObject(router.currentRoute, {
             ...router.currentRoute,
             query: nextQuery || {},
           });
@@ -142,7 +144,7 @@ export function createRouter<
       return Promise.resolve();
     }
 
-    adapters.batch(() => {
+    router.adapters.batch(() => {
       router.isRedirecting = true;
     });
 
@@ -166,7 +168,7 @@ export function createRouter<
         redirect: (redirectConfig: TypeRedirectParams<TRoutes, keyof TRoutes>) => {
           if (constants.isClient) return redirectConfig;
 
-          const redirectRoute = routes[redirectConfig.route];
+          const redirectRoute = router.routes[redirectConfig.route];
           const redirectParams =
             'params' in redirectConfig && redirectConfig.params ? redirectConfig.params : undefined;
 
@@ -193,9 +195,9 @@ export function createRouter<
         },
       };
 
-      await currentRoute?.beforeLeave?.(config, ...(lifecycleParams || []));
+      await currentRoute?.beforeLeave?.(config, ...(router.lifecycleParams || []));
       const redirectConfig: TypeRedirectParams<TRoutes, keyof TRoutes> =
-        await nextRoute.beforeEnter?.(config, ...(lifecycleParams || []));
+        await nextRoute.beforeEnter?.(config, ...(router.lifecycleParams || []));
 
       /**
        * Handle redirect returned from beforeEnter
@@ -204,7 +206,7 @@ export function createRouter<
 
       if (redirectConfig) return redirect(redirectConfig);
 
-      await loadComponentToConfig({ route: routes[nextRoute.name] });
+      await loadComponentToConfig({ route: router.routes[nextRoute.name] });
     } catch (error: any) {
       if (error instanceof PreventError) {
         return Promise.resolve();
@@ -216,16 +218,16 @@ export function createRouter<
 
       console.error(error);
 
-      await loadComponentToConfig({ route: routes.internalError });
+      await loadComponentToConfig({ route: router.routes.internalError });
 
-      adapters.batch(() => {
-        adapters.replaceObject(router.currentRoute, {
-          name: routes.internalError.name,
-          path: routes.internalError.path,
-          props: routes[routes.internalError.name].props,
-          query: adapters.makeObservable({}) as any,
-          params: adapters.makeObservable({}) as any,
-          pageId: routes[routes.internalError.name].pageId,
+      router.adapters.batch(() => {
+        router.adapters.replaceObject(router.currentRoute, {
+          name: router.routes.internalError.name,
+          path: router.routes.internalError.path,
+          props: router.routes[router.routes.internalError.name].props,
+          query: router.adapters.makeObservable({}) as any,
+          params: router.adapters.makeObservable({}) as any,
+          pageId: router.routes[router.routes.internalError.name].pageId,
         });
 
         router.isRedirecting = false;
@@ -234,14 +236,14 @@ export function createRouter<
       return Promise.resolve();
     }
 
-    adapters.batch(() => {
-      adapters.replaceObject(router.currentRoute, {
+    router.adapters.batch(() => {
+      router.adapters.replaceObject(router.currentRoute, {
         name: nextRoute.name,
         path: nextRoute.path,
-        props: routes[nextRoute.name].props,
+        props: router.routes[nextRoute.name].props,
         query: getQueryValues({ route: nextRoute, pathname: nextUrl }),
         params: getDynamicValues({ route: nextRoute, pathname: nextUrl }),
-        pageId: routes[nextRoute.name].pageId,
+        pageId: router.routes[nextRoute.name].pageId,
       });
 
       const lastUrl = router.routesHistory[router.routesHistory.length - 1];
@@ -264,5 +266,5 @@ export function createRouter<
     return Promise.resolve();
   };
 
-  return router!;
+  return router;
 }

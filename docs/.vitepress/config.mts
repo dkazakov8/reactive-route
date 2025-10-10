@@ -1,7 +1,6 @@
 import { defineConfig } from 'vitepress';
 import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons'
 
-
 export default defineConfig({
   title: 'Reactive Route',
   description: 'Config-based routing for different frameworks',
@@ -20,8 +19,8 @@ export default defineConfig({
     logo: '/file.svg',
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Guide', link: '/guide/' },
-      { text: 'Examples', link: '/examples/react' },
+      { text: 'Guide', link: '/guide/', activeMatch: '/guide/' },
+      { text: 'Examples', link: '/examples/react', activeMatch: '/examples/' },
     ],
     sidebar: {
       '/guide/': [

@@ -29,12 +29,6 @@ app.get('*', async (req, res) => {
 
   const router = await getRouter();
 
-  const reactApp = (
-    <StoreContext.Provider value={{ router }}>
-      <App />
-    </StoreContext.Provider>
-  );
-
   try {
     await router.restoreFromURL({ pathname: req.originalUrl });
   } catch (error: any) {
@@ -49,7 +43,11 @@ app.get('*', async (req, res) => {
     return res.status(500).send('Unexpected error');
   }
 
-  const htmlMarkup = renderToString(reactApp);
+  const htmlMarkup = renderToString(
+    <StoreContext.Provider value={{ router }}>
+      <App />
+    </StoreContext.Provider>
+  );
   const storeJS = JSON.parse(JSON.stringify({ router }));
 
   res.send(

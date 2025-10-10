@@ -40,7 +40,7 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
     const { loadedComponentName, loadedComponentPage } = config;
     const { currentRoute, isRedirecting } = props.router;
 
-    const componentConfig = props.routes[currentRoute.name];
+    const componentConfig = props.router.routes[currentRoute.name];
 
     let preventRedirect = false;
     if (isRedirecting) preventRedirect = true;
@@ -87,7 +87,7 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
 
   if (!config.loadedComponentName) return null;
 
-  const LoadedComponent = props.routes[config.loadedComponentName]?.component || null;
+  const LoadedComponent = props.router.routes[config.loadedComponentName]?.component || null;
 
   if (LoadedComponent)
     return (<LoadedComponent {...config.currentProps} router={props.router} />) as any;

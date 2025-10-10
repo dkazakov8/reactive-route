@@ -2,7 +2,7 @@
   "name": "reactive-route",
   "author": "Dmitry Kazakov",
   "license": "MIT",
-  "version": "0.0.1-alpha.23",
+  "version": "0.0.1-alpha.25",
   "description": "Reactive Router for different frameworks",
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
     "check-types": "tsc --project tsconfig.json&&tsc --project tsconfig.solid.json",
     "check-types-example": "tsc --project examples/react/tsconfig.json",
     "prepare": "husky",
+    "upgrade-examples": "pnpm upgrade -r reactive-route@latest",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
@@ -47,6 +48,7 @@
     "@types/lodash": "4.17.16",
     "@types/node": "22.14.1",
     "@vitest/coverage-istanbul": "3.2.4",
+    "vite-tsconfig-paths": "5.1.4",
     "@preact/preset-vite": "2.10.2",
     "badge-maker": "5.0.2",
     "esbuild": "0.25.10",
