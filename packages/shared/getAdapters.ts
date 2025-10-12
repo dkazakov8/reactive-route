@@ -13,6 +13,8 @@ export async function getAdapters(options: TypeOptions) {
   }
   if (options.reactivity === 'solid')
     adapters = await import('../adapters/solid').then((m) => m.adapters);
+  if (options.reactivity === 'vue')
+    adapters = await import('../adapters/vue').then((m) => m.adapters);
   if (options.reactivity === 'kr-observable') {
     if (options.renderer === 'react')
       adapters = await import('../adapters/kr-observable-react').then((m) => m.adapters);

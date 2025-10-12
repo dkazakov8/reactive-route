@@ -12,16 +12,7 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "reactive-route": ["packages/core/index.ts"],
-      "reactive-route/react": ["packages/react/index.ts"],
-      "reactive-route/solid": ["packages/solid/index.ts"],
-      "reactive-route/adapters/mobx-react": ["packages/adapters/mobx-react.ts"],
-      "reactive-route/adapters/mobx-preact": ["packages/adapters/mobx-preact.ts"],
-      "reactive-route/adapters/mobx-solid": ["packages/adapters/mobx-solid.ts"],
-      "reactive-route/adapters/solid": ["packages/adapters/solid.ts"],
-      "reactive-route/adapters/kr-observable-react": ["packages/adapters/kr-observable-react.ts"],
-      "reactive-route/adapters/kr-observable-solid": ["packages/adapters/kr-observable-solid.ts"],
-      "reactive-route/adapters/kr-observable-preact": ["packages/adapters/kr-observable-preact.ts"]
+      "reactive-route": ["packages/core/index.ts"]
     }
   },
   "types": ["vite/client", "@testing-library/jest-dom"]

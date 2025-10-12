@@ -10,7 +10,7 @@
 // import { Router } from 'lib/solid';
 
 import { createRouter, createRoutes } from 'reactive-route';
-import { adapters as adapters1 } from 'reactive-route/adapters/kr-observable-preact';
+// import { adapters as adapters1 } from 'reactive-route/adapters/kr-observable-preact';
 import { describe, expect, it } from 'vitest';
 
 describe('tsNode16', () => {

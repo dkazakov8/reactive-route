@@ -26,6 +26,10 @@ export type TypeOptions =
   | {
       renderer: 'solid';
       reactivity: 'mobx';
+    }
+  | {
+      renderer: 'vue';
+      reactivity: 'vue';
     };
 
 export const allPossibleOptions: Array<TypeOptions> = [
@@ -56,5 +60,9 @@ export const allPossibleOptions: Array<TypeOptions> = [
   {
     renderer: 'solid',
     reactivity: 'mobx',
+  },
+  {
+    renderer: 'vue',
+    reactivity: 'vue',
   },
 ];

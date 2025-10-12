@@ -17,7 +17,7 @@ export default defineConfig({
       exclude: ['packages/*/test/*', 'packages/shared'],
     },
     onConsoleLog(log) {
-      if (log.includes('a is not defined')) {
+      if (log.includes('a is not defined') || log.includes('warn')) {
         return false;
       }
 

@@ -92,6 +92,22 @@ export function getRoutes(options: TypeOptions) {
     });
   }
 
+  if (options.renderer === 'vue') {
+    routes = createTestRoutes({
+      staticRoute: () => import('../vue/test/pages/static'),
+      dynamicRoute: () => import('../vue/test/pages/dynamic'),
+      dynamicRoute2: () => import('../vue/test/pages/dynamic'),
+      dynamicRoute3: () => import('../vue/test/pages/dynamic'),
+      dynamicRouteNoValidators: () => import('../vue/test/pages/dynamic'),
+      dynamicRouteMultiple: () => import('../vue/test/pages/dynamic'),
+      noPageName: () => import('../vue/test/pages/noPageName'),
+      noPageName2: () => import('../vue/test/pages/noPageName'),
+      staticRouteAutorun: () => import('../vue/test/pages/staticAutorun'),
+      notFound: () => import('../vue/test/pages/error'),
+      internalError: () => import('../vue/test/pages/error'),
+    });
+  }
+
   return routes;
 }
 
@@ -100,11 +116,12 @@ async function getRouterComponent(options: TypeOptions) {
   if (options.renderer === 'react') Router = await import('../react').then((m) => m.Router);
   if (options.renderer === 'preact') Router = await import('../preact').then((m) => m.Router);
   if (options.renderer === 'solid') Router = await import('../solid').then((m) => m.Router);
+  if (options.renderer === 'vue') Router = await import('../vue').then((m) => m.Router);
 
   return Router;
 }
 
-async function getRender(options: TypeOptions, App: any) {
+async function getRender(options: TypeOptions, App: any, props?: any) {
   let renderFunction: any;
   if (options.renderer === 'react')
     renderFunction = await import('@testing-library/react/pure').then((m) => m.render);
@@ -112,16 +129,31 @@ async function getRender(options: TypeOptions, App: any) {
     renderFunction = await import('@testing-library/preact/pure').then((m) => m.render);
   if (options.renderer === 'solid')
     renderFunction = await import('@solidjs/testing-library').then((m) => m.render);
+  if (options.renderer === 'vue')
+    renderFunction = await import('@testing-library/vue').then((m) => m.render);
 
-  let render!: () => HTMLElement | Element;
+  let render!: () => { innerHTML: string };
   if (options.renderer === 'react') render = () => renderFunction(<App />).container;
   if (options.renderer === 'preact') render = () => renderFunction(<App />).container;
   if (options.renderer === 'solid') render = () => renderFunction(() => <App />).container;
+  if (options.renderer === 'vue') {
+    const ren = await import('@testing-library/vue').then((m) => m.render);
+
+    render = () => {
+      const res = ren(App, { props: props });
+
+      return {
+        get innerHTML() {
+          return res.html();
+        },
+      };
+    };
+  }
 
   return render;
 }
 
-async function getRenderToString(options: TypeOptions, App: any) {
+async function getRenderToString(options: TypeOptions, App: any, props?: any) {
   let renderFunction: any;
   if (options.renderer === 'react')
     renderFunction = await import('react-dom/server').then((m) => m.renderToString);
@@ -129,11 +161,19 @@ async function getRenderToString(options: TypeOptions, App: any) {
     renderFunction = await import('preact-render-to-string').then((m) => m.renderToString);
   if (options.renderer === 'solid')
     renderFunction = await import('solid-js/web').then((m) => m.renderToString);
+  if (options.renderer === 'vue')
+    renderFunction = await import('vue/server-renderer').then((m) => m.renderToString);
 
-  let renderToString!: () => string;
-  if (options.renderer === 'react') renderToString = () => renderFunction(<App />);
-  if (options.renderer === 'preact') renderToString = () => renderFunction(<App />);
-  if (options.renderer === 'solid') renderToString = () => renderFunction(App);
+  let renderToString!: () => Promise<string>;
+  if (options.renderer === 'react') renderToString = () => Promise.resolve(renderFunction(<App />));
+  if (options.renderer === 'preact')
+    renderToString = () => Promise.resolve(renderFunction(<App />));
+  if (options.renderer === 'solid') renderToString = () => Promise.resolve(renderFunction(App));
+  if (options.renderer === 'vue') {
+    const createSSRApp = await import('vue').then((m) => m.createSSRApp);
+
+    renderToString = () => renderFunction(createSSRApp(App, props));
+  }
 
   return renderToString;
 }
@@ -172,18 +212,32 @@ export async function prepareComponentWithSpy(options: TypeOptions) {
 
   const Router = await getRouterComponent(options);
 
-  function App() {
-    return (
-      <Router
-        router={router}
-        beforeSetPageComponent={spy_beforeSetPageComponent}
-        beforeUpdatePageComponent={spy_beforeUpdatePageComponent}
-      />
-    );
+  let App: any;
+
+  if (options.renderer === 'vue') {
+    App = Router;
+  } else {
+    App = function App() {
+      return (
+        <Router
+          router={router}
+          beforeSetPageComponent={spy_beforeSetPageComponent}
+          beforeUpdatePageComponent={spy_beforeUpdatePageComponent}
+        />
+      );
+    };
   }
 
-  const render = await getRender(options, App);
-  const renderToString = await getRenderToString(options, App);
+  const render = await getRender(options, App, {
+    router,
+    beforeSetPageComponent: spy_beforeSetPageComponent,
+    beforeUpdatePageComponent: spy_beforeUpdatePageComponent,
+  });
+  const renderToString = await getRenderToString(options, App, {
+    router,
+    beforeSetPageComponent: spy_beforeSetPageComponent,
+    beforeUpdatePageComponent: spy_beforeUpdatePageComponent,
+  });
 
   return {
     router,

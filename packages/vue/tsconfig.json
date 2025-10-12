@@ -3,6 +3,7 @@
   "include": ["."],
   "exclude": [],
   "compilerOptions": {
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
   }
 }

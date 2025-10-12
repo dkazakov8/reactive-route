@@ -1,14 +1,14 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.5/schema.json",
   "vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
   "files": {
     "ignoreUnknown": false,
     "includes": [
-      "packages/*.{ts,tsx,js,mjs}",
-      "packages/**/*.{ts,tsx,js,mjs}",
-      "scripts/**/*.{ts,tsx,js,mjs}",
-      "examples/**/*.{ts,tsx}",
-      "./*.{mjs,json}"
+      "packages/*.{ts,tsx,js,mjs,mts}",
+      "packages/**/*.{ts,tsx,js,mjs,mts}",
+      "scripts/**/*.{ts,tsx,js,mjs,mts}",
+      "examples/**/*.{ts,tsx,mts}",
+      "./*.{ts,tsx,js,mjs,mts}"
     ]
   },
   "formatter": {
