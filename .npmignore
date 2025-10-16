@@ -5,6 +5,7 @@ pnpm-lock.yaml
 .editorconfig
 .gitignore
 .npmrc
+.junie
 biome.json
 /lint-staged.config.js
 /vitest.config.mjs

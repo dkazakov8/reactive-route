@@ -5,6 +5,7 @@ export default defineConfig({
   title: 'Reactive Route',
   description: 'Config-based routing for different frameworks',
   base: '/',
+  head: [['link', { rel: 'icon', href: '/file.svg' }]],
   markdown: {
     config(md) {
       md.use(groupIconMdPlugin)
