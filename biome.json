@@ -4,6 +4,7 @@
   "files": {
     "ignoreUnknown": false,
     "includes": [
+      "e2e/*.{ts,tsx,js,mjs,mts}",
       "packages/*.{ts,tsx,js,mjs,mts}",
       "packages/**/*.{ts,tsx,js,mjs,mts}",
       "scripts/**/*.{ts,tsx,js,mjs,mts}",
@@ -31,7 +32,15 @@
       "quoteStyle": "single",
       "attributePosition": "auto"
     },
-    "globals": ["describe", "it", "beforeEach", "afterEach", "SSR_ENABLED", "REACTIVITY_SYSTEM"]
+    "globals": [
+      "describe",
+      "it",
+      "beforeEach",
+      "afterEach",
+      "SSR_ENABLED",
+      "REACTIVITY_SYSTEM",
+      "PORT"
+    ]
   },
   "linter": {
     "enabled": true,

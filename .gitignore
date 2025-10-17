@@ -1,5 +1,6 @@
 .nyc_output
 dist
+dist_*
 *.log
 .idea/
 .DS_Store
@@ -12,3 +13,4 @@ node_modules
 npm-debug.*
 docs/.vitepress/cache
 tmp
+test-results

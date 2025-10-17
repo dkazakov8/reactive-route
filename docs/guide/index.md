@@ -21,6 +21,7 @@ state management solutions. Currently, Reactive Route provides official implemen
 - Solid.js + Solid.js reactivity
 - Solid.js + MobX
 - Solid.js + Observable
+- Vue + Vue reactivity (package in development)
 
 ### Key Advantages
 

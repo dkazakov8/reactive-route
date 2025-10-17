@@ -13,16 +13,21 @@ import { pluginWebpackAnalyzer } from '@espcom/esbuild-plugin-webpack-analyzer';
 import { runManual } from 'dk-reload-server';
 import { BuildOptions, context } from 'esbuild';
 
+const REACTIVITY_SYSTEM: 'mobx' | 'kr-observable' = process.argv[2] as any;
+const SSR_ENABLED = process.argv[3] === 'ssr';
+const PORT = Number(process.argv[4] || '8000');
+const IS_E2E = process.argv[5] === 'test';
+
 const __dirname = import.meta.dirname;
-const outdirPath = path.resolve(__dirname, 'dist');
+const outdirPath = path.resolve(__dirname, `dist_${PORT}`);
 const publicPath = path.resolve(outdirPath, 'public');
 const templatePath = path.resolve(outdirPath, 'template.html');
 
-const REACTIVITY_SYSTEM: 'mobx' | 'kr-observable' = process.argv[2] as any;
-const SSR_ENABLED = process.argv[3] === 'ssr';
+const watchPort = PORT + 100;
+const analyzerPort = PORT + 101;
 
 async function watch() {
-  const { sendReloadSignal } = runManual({ port: 8001 });
+  const { sendReloadSignal } = runManual({ port: watchPort });
 
   const activeProcesses = new Set<'server' | 'client'>();
 
@@ -40,6 +45,7 @@ async function watch() {
     target: 'node22',
     define: {
       'process.env.NODE_ENV': JSON.stringify('development'),
+      PORT: JSON.stringify(PORT),
       PATH_SEP: JSON.stringify(path.sep),
       SSR_ENABLED: JSON.stringify(SSR_ENABLED),
       REACTIVITY_SYSTEM: JSON.stringify(REACTIVITY_SYSTEM),
@@ -119,16 +125,17 @@ async function watch() {
           replace: '<!-- HOT_RELOAD --><!-- /HOT_RELOAD -->',
           as: (filePath) =>
             /client([^.]+)?\.js$/.test(filePath)
-              ? `<script src="http://localhost:8001"></script>`
+              ? `<script src="http://localhost:${watchPort}"></script>`
               : undefined,
         },
       ]),
-      pluginWebpackAnalyzer({
-        port: 8002,
-        open: false,
-        extensions: ['.js', '.cjs', '.mjs', '.ts', '.tsx', '.json'],
-      }),
-    ],
+      !IS_E2E &&
+        pluginWebpackAnalyzer({
+          port: analyzerPort,
+          open: false,
+          extensions: ['.js', '.cjs', '.mjs', '.ts', '.tsx', '.json'],
+        }),
+    ].filter(Boolean),
   };
 
   fs.rmSync(outdirPath, { recursive: true, force: true });
@@ -140,9 +147,12 @@ async function watch() {
   const ctxServer = await context(configServer);
 
   await Promise.all([ctxClient.rebuild(), ctxServer.rebuild()]);
-  await Promise.all([ctxClient.watch(), ctxServer.watch()]);
 
-  const serverProcess = spawn('node', ['--watch', './dist/server.js'], {
+  if (IS_E2E) {
+    await Promise.all([ctxClient.watch(), ctxServer.watch()]);
+  }
+
+  const serverProcess = spawn('node', ['--watch', `./dist_${PORT}/server.js`], {
     stdio: ['pipe', 'pipe', 'pipe'],
   });
 

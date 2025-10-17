@@ -10,7 +10,7 @@ import { App } from './components/App';
 import { StoreContext } from './components/StoreContext';
 import { getRouterStore } from './router';
 
-const outdirPath = path.resolve(__dirname, '../dist');
+const outdirPath = path.resolve(__dirname, `../dist_${PORT}`);
 const publicPath = path.resolve(outdirPath, 'public');
 const templatePath = path.resolve(outdirPath, 'template.html');
 
@@ -57,6 +57,6 @@ app.get('*', async (req, res) => {
   );
 });
 
-app.listen(8000, () => {
-  console.log(`started on`, `http://localhost:8000`);
+app.listen(PORT, () => {
+  console.log(`started on`, `http://localhost:${PORT}`);
 });
