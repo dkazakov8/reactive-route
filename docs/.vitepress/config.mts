@@ -4,7 +4,7 @@ import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-i
 export default defineConfig({
   title: 'Reactive Route',
   description: 'Config-based routing for different frameworks',
-  base: '/',
+  base: '/reactive-route/',
   head: [['link', { rel: 'icon', href: '/file.svg' }]],
   markdown: {
     config(md) {
