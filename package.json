@@ -11,11 +11,6 @@
   "scripts": {
     "upd": "rm -rf ./node_modules&&pnpm i --prefer-offline",
     "build": "rm -rf ./dist&&node --import tsx ./scripts/build.ts&&tsc -b ./tsconfig.types.react.json&&tsc -b ./tsconfig.types.solid.json",
-    "test": "vitest run&&node --import tsx ./scripts/genCoverageBadge.ts",
-    "test-watch": "vitest --coverage=false",
-    "e2e": "playwright test",
-    "e2e:ui": "playwright test --ui",
-    "e2e:install": "playwright install --with-deps",
     "npm-publish": "pnpm run build&&pnpm run test&&npm publish --access public",
     "analyze:js": "biome check --no-errors-on-unmatched .",
     "format:js": "biome check --no-errors-on-unmatched --write",
@@ -24,9 +19,14 @@
     "prepare": "husky",
     "upgrade-examples": "pnpm upgrade -r reactive-route@latest",
     "upgrade-lib": "bash -c 'pnpm upgrade -r $@' bash",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "test": "vitest run&&node --import tsx ./scripts/genCoverageBadge.ts",
+    "test-watch": "vitest --coverage=false",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:install": "playwright install --with-deps",
+    "docs:dev": "vitepress dev vitepress",
+    "docs:build": "vitepress build vitepress --outDir docs",
+    "docs:preview": "vitepress preview vitepress"
   },
   "lint-staged": {
     "(*.js|*.ts|*.tsx|*.mjs)": [

@@ -5,10 +5,10 @@
     "ignoreUnknown": false,
     "includes": [
       "e2e/*.{ts,tsx,js,mjs,mts}",
-      "packages/*.{ts,tsx,js,mjs,mts}",
       "packages/**/*.{ts,tsx,js,mjs,mts}",
       "scripts/**/*.{ts,tsx,js,mjs,mts}",
       "examples/**/*.{ts,tsx,mts}",
+      "vitepress/**/*.{ts,tsx,mts}",
       "./*.{ts,tsx,js,mjs,mts}"
     ]
   },

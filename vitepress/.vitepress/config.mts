@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitepress';
-import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons'
+import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons';
 
 export default defineConfig({
   title: 'Reactive Route',
@@ -8,13 +8,11 @@ export default defineConfig({
   head: [['link', { rel: 'icon', href: '/file.svg' }]],
   markdown: {
     config(md) {
-      md.use(groupIconMdPlugin)
+      md.use(groupIconMdPlugin);
     },
   },
   vite: {
-    plugins: [
-      groupIconVitePlugin()
-    ],
+    plugins: [groupIconVitePlugin()],
   },
   themeConfig: {
     logo: '/file.svg',
@@ -30,7 +28,7 @@ export default defineConfig({
           items: [
             { text: 'What is Reactive Route?', link: '/guide/' },
             { text: 'Getting Started', link: '/guide/getting-started' },
-          ]
+          ],
         },
         {
           text: 'Core Concepts',
@@ -40,7 +38,7 @@ export default defineConfig({
             { text: 'Router Component', link: '/guide/router-component' },
             { text: 'SSR', link: '/guide/ssr' },
             { text: 'Advanced', link: '/guide/advanced' },
-          ]
+          ],
         },
         {
           text: 'Framework Integration',
@@ -48,7 +46,7 @@ export default defineConfig({
             { text: 'React', link: '/guide/react' },
             { text: 'Preact', link: '/guide/preact' },
             { text: 'Solid.js', link: '/guide/solid' },
-          ]
+          ],
         },
       ],
       '/examples/': [
@@ -58,19 +56,17 @@ export default defineConfig({
             { text: 'React', link: '/examples/react' },
             { text: 'Preact', link: '/examples/preact' },
             { text: 'Solid.js', link: '/examples/solid' },
-          ]
+          ],
         },
       ],
     },
     search: {
-      provider: 'local'
+      provider: 'local',
     },
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/dkazakov8/reactive-route' }
-    ],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/dkazakov8/reactive-route' }],
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2023-present Dmitry Kazakov'
-    }
-  }
+      copyright: 'Copyright © 2023-present Dmitry Kazakov',
+    },
+  },
 });

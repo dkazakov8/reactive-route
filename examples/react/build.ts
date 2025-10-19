@@ -148,7 +148,7 @@ async function watch() {
 
   await Promise.all([ctxClient.rebuild(), ctxServer.rebuild()]);
 
-  if (IS_E2E) {
+  if (!IS_E2E) {
     await Promise.all([ctxClient.watch(), ctxServer.watch()]);
   }
 

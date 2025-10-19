@@ -1,21 +1,29 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const csrVariants: Array<{ name: string; scriptName: string }> = [
+  { name: '[React+Mobx]', scriptName: './examples/react mobx' },
+  { name: '[React+Observable]', scriptName: './examples/react observable' },
+  { name: '[Preact+Mobx]', scriptName: './examples/preact mobx' },
+  { name: '[Preact+Observable]', scriptName: './examples/preact observable' },
+  { name: '[Solid+Mobx]', scriptName: './examples/solid mobx' },
+  { name: '[Solid+Observable]', scriptName: './examples/solid observable' },
+  { name: '[Solid+Solid]', scriptName: './examples/solid solid' },
+];
+
+const ssrVariants: Array<{ name: string; scriptName: string }> = [
+  { name: '[React+Mobx+SSR]', scriptName: './examples/react ssr-mobx' },
+  { name: '[React+Observable+SSR]', scriptName: './examples/react ssr-observable' },
+  { name: '[Preact+Mobx+SSR]', scriptName: './examples/preact ssr-mobx' },
+  { name: '[Preact+Observable+SSR]', scriptName: './examples/preact ssr-observable' },
+  { name: '[Solid+Mobx+SSR]', scriptName: './examples/solid ssr-mobx' },
+  { name: '[Solid+Observable+SSR]', scriptName: './examples/solid ssr-observable' },
+  { name: '[Solid+Solid+SSR]', scriptName: './examples/solid ssr-solid' },
+];
+
 const variants: Array<{ name: string; port: number; scriptName: string }> = [
-  { name: '[React+Mobx]', port: 0, scriptName: './examples/react mobx' },
-  { name: '[React+Mobx+SSR]', port: 0, scriptName: './examples/react ssr-mobx' },
-  { name: '[React+Observable]', port: 0, scriptName: './examples/react observable' },
-  { name: '[React+Observable+SSR]', port: 0, scriptName: './examples/react ssr-observable' },
-  { name: '[Preact+Mobx]', port: 0, scriptName: './examples/preact mobx' },
-  { name: '[Preact+Mobx+SSR]', port: 0, scriptName: './examples/preact ssr-mobx' },
-  { name: '[Preact+Observable]', port: 0, scriptName: './examples/preact observable' },
-  { name: '[Preact+Observable+SSR]', port: 0, scriptName: './examples/preact ssr-observable' },
-  { name: '[Solid+Mobx]', port: 0, scriptName: './examples/solid mobx' },
-  { name: '[Solid+Mobx+SSR]', port: 0, scriptName: './examples/solid ssr-mobx' },
-  { name: '[Solid+Observable]', port: 0, scriptName: './examples/solid observable' },
-  { name: '[Solid+Observable+SSR]', port: 0, scriptName: './examples/solid ssr-observable' },
-  { name: '[Solid+Solid]', port: 0, scriptName: './examples/solid solid' },
-  { name: '[Solid+Solid+SSR]', port: 0, scriptName: './examples/solid ssr-solid' },
-].map((variant, i) => ({ ...variant, port: 8000 + i * 2 }));
+  ...csrVariants,
+  ...ssrVariants,
+].map((variant, i) => ({ ...variant, port: 8002 + i * 2 }));
 
 export default defineConfig({
   testDir: './e2e',

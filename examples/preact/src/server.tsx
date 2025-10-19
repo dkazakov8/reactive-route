@@ -43,6 +43,14 @@ app.get('*', async (req, res) => {
     return res.status(500).send('Unexpected error');
   }
 
+  const clearedUrl = router.routesHistory[router.routesHistory.length - 1]!;
+
+  if (req.originalUrl !== clearedUrl) {
+    console.log('redirect', clearedUrl);
+
+    return res.redirect(clearedUrl);
+  }
+
   const htmlMarkup = renderToString(
     <StoreContext.Provider value={{ router }}>
       <App />
