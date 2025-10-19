@@ -8,6 +8,7 @@ const csrVariants: Array<{ name: string; scriptName: string }> = [
   { name: '[Solid+Mobx]', scriptName: './examples/solid mobx' },
   { name: '[Solid+Observable]', scriptName: './examples/solid observable' },
   { name: '[Solid+Solid]', scriptName: './examples/solid solid' },
+  { name: '[Vue+Vue]', scriptName: './examples/vue vue' },
 ];
 
 const ssrVariants: Array<{ name: string; scriptName: string }> = [
@@ -18,6 +19,7 @@ const ssrVariants: Array<{ name: string; scriptName: string }> = [
   { name: '[Solid+Mobx+SSR]', scriptName: './examples/solid ssr-mobx' },
   { name: '[Solid+Observable+SSR]', scriptName: './examples/solid ssr-observable' },
   { name: '[Solid+Solid+SSR]', scriptName: './examples/solid ssr-solid' },
+  { name: '[Vue+Vue+SSR]', scriptName: './examples/vue ssr-vue' },
 ];
 
 const variants: Array<{ name: string; port: number; scriptName: string }> = [

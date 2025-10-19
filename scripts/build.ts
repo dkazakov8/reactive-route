@@ -88,6 +88,8 @@ void Promise.all([
   generateBuild('cjs', 'packages/react'),
   generateBuild('esm', 'packages/preact'),
   generateBuild('cjs', 'packages/preact'),
+  generateBuild('esm', 'packages/vue'),
+  generateBuild('cjs', 'packages/vue'),
   generateBuild('esm', 'packages/adapters/mobx-react'),
   generateBuild('cjs', 'packages/adapters/mobx-react'),
   generateBuild('esm', 'packages/adapters/mobx-preact'),
@@ -102,4 +104,6 @@ void Promise.all([
   generateBuild('cjs', 'packages/adapters/kr-observable-preact'),
   generateBuild('esm', 'packages/adapters/kr-observable-solid'),
   generateBuild('cjs', 'packages/adapters/kr-observable-solid'),
+  generateBuild('esm', 'packages/adapters/vue'),
+  generateBuild('cjs', 'packages/adapters/vue'),
 ]);

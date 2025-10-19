@@ -2,7 +2,7 @@
   "name": "reactive-route",
   "author": "Dmitry Kazakov",
   "license": "MIT",
-  "version": "0.0.1-alpha.26",
+  "version": "0.0.1-alpha.27",
   "description": "Reactive Router for different frameworks",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
     "analyze:js": "biome check --no-errors-on-unmatched .",
     "format:js": "biome check --no-errors-on-unmatched --write",
     "check-types": "tsc --project tsconfig.json&&tsc --project tsconfig.solid.json",
-    "check-types-example": "tsc --project examples/react/tsconfig.json",
+    "check-types-example": "tsc --project examples/react/tsconfig.json&&tsc --project examples/preact/tsconfig.json&&tsc --project examples/solid/tsconfig.json&&tsc --project examples/vue/tsconfig.json",
     "prepare": "husky",
     "upgrade-examples": "pnpm upgrade -r reactive-route@latest",
     "upgrade-lib": "bash -c 'pnpm upgrade -r $@' bash",
@@ -106,6 +106,16 @@
       "types": "./dist/solid/index.d.ts",
       "require": "./dist/cjs/solid/index.js",
       "import": "./dist/esm/solid/index.js"
+    },
+    "./vue": {
+      "types": "./dist/vue/index.d.ts",
+      "require": "./dist/cjs/vue/index.js",
+      "import": "./dist/esm/vue/index.js"
+    },
+    "./adapters/vue": {
+      "types": "./dist/adapters/vue.d.ts",
+      "require": "./dist/cjs/adapters/vue/index.js",
+      "import": "./dist/esm/adapters/vue/index.js"
     },
     "./adapters/mobx-react": {
       "types": "./dist/adapters/mobx-react.d.ts",

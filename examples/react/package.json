@@ -15,7 +15,7 @@
     "mobx-react-lite": "4.1.0",
     "react": "19.1.1",
     "react-dom": "19.1.1",
-    "reactive-route": "0.0.1-alpha.26",
+    "reactive-route": "0.0.1-alpha.27",
     "ultimate-express": "2.0.9"
   },
   "devDependencies": {
