@@ -19,7 +19,7 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
 
       void props.router.restoreFromURL({
         pathname: history.location.pathname,
-        noHistoryPush: true,
+        replace: true,
       });
     });
   }, []);

@@ -32,19 +32,16 @@ export function routerTests(
 
         await router.redirect({ route: 'staticRoute' });
 
-        if (options.reactivity !== 'vue') {
-          calls.pageAutorun += 1;
-        }
+        calls.pageAutorun += 1;
         calls.beforeSetPageComponent += 1;
         calls.beforeUpdatePageComponent += 1;
 
         expect(container.innerHTML).to.eq('Static');
 
-        // expect(spy_pageAutorun).toHaveBeenLastCalledWith('staticRoute');
+        expect(spy_pageAutorun).toHaveBeenLastCalledWith('staticRoute');
 
         checkSpy();
       });
-
       it('Only beforeSetPageComponent called on first render', async () => {
         const { router, checkSpy, calls, render } = await prepareComponentWithSpy(options);
 

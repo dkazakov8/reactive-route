@@ -8,7 +8,8 @@ import ts from '@babel/preset-typescript';
 import { pluginReplace } from '@espcom/esbuild-plugin-replace';
 // @ts-expect-error no types
 import solid from 'babel-preset-solid';
-import * as esbuild from 'esbuild';
+import esbuild, { Plugin } from 'esbuild';
+import pluginVue from 'unplugin-vue';
 
 import { genSizeBadges } from './genSizeBadges';
 
@@ -25,6 +26,38 @@ function generateBuild(type: 'cjs' | 'esm', folderName: string) {
 
   const outFile = path.resolve(outFolder, `index.js`);
 
+  const plugins: Array<Plugin> = [];
+
+  if (packageName === 'solid') {
+    plugins.push(
+      pluginReplace([
+        {
+          filter: /\.tsx?$/,
+          replace: /.*/gs,
+          replacer(onLoadArgs) {
+            return async (source) => {
+              const result = await transformAsync(source, {
+                presets: [[solid], [ts]],
+                filename: parse(onLoadArgs.path).base,
+                sourceMaps: 'inline',
+              });
+
+              if (result?.code == null) {
+                throw new Error('No result was provided from Babel');
+              }
+
+              return result.code;
+            };
+          },
+        },
+      ])
+    );
+  }
+
+  if (packageName === 'vue') {
+    plugins.push(pluginVue.esbuild({ include: [/\.vue$/] }));
+  }
+
   return esbuild
     .build({
       bundle: true,
@@ -39,32 +72,7 @@ function generateBuild(type: 'cjs' | 'esm', folderName: string) {
       format: type,
       entryPoints: [path.resolve(process.cwd(), folderName)],
       outfile: outFile,
-      plugins:
-        packageName === 'solid'
-          ? [
-              pluginReplace([
-                {
-                  filter: /\.tsx?$/,
-                  replace: /.*/gs,
-                  replacer(onLoadArgs) {
-                    return async (source) => {
-                      const result = await transformAsync(source, {
-                        presets: [[solid], [ts]],
-                        filename: parse(onLoadArgs.path).base,
-                        sourceMaps: 'inline',
-                      });
-
-                      if (result?.code == null) {
-                        throw new Error('No result was provided from Babel');
-                      }
-
-                      return result.code;
-                    };
-                  },
-                },
-              ]),
-            ]
-          : undefined,
+      plugins,
     })
     .then(() => {
       fs.writeFileSync(

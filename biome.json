@@ -4,12 +4,12 @@
   "files": {
     "ignoreUnknown": false,
     "includes": [
-      "e2e/*.{ts,tsx,js,mjs,mts}",
-      "packages/**/*.{ts,tsx,js,mjs,mts}",
-      "scripts/**/*.{ts,tsx,js,mjs,mts}",
-      "examples/**/*.{ts,tsx,mts}",
-      "vitepress/**/*.{ts,tsx,mts}",
-      "./*.{ts,tsx,js,mjs,mts}"
+      "e2e/*.{ts,tsx,js,mjs,mts,vue}",
+      "packages/**/*.{ts,tsx,js,mjs,mts,vue}",
+      "scripts/**/*.{ts,tsx,js,mjs,mts,vue}",
+      "examples/**/*.{ts,tsx,mts,vue}",
+      "vitepress/**/*.{ts,tsx,mts,vue}",
+      "./*.{ts,tsx,js,mjs,mts,vue}"
     ]
   },
   "formatter": {

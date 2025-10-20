@@ -12,7 +12,7 @@ export type TypeRouter<TRoutes extends Record<string | 'notFound' | 'internalErr
   redirect<TRouteName extends keyof TRoutes>(
     config: TypeRedirectParams<TRoutes, TRouteName>
   ): Promise<void>;
-  restoreFromURL(params: { pathname: string; noHistoryPush?: boolean }): Promise<void>;
+  restoreFromURL(params: { pathname: string; replace?: boolean }): Promise<void>;
   restoreFromServer(obj: {
     routesHistory: Array<string>;
     currentRoute: TypeCurrentRoute<TRoutes[keyof TRoutes]>;

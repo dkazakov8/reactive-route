@@ -30,7 +30,7 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
 
       void props.router.restoreFromURL({
         pathname: history.location.pathname,
-        noHistoryPush: true,
+        replace: true,
       });
     });
   }

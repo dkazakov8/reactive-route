@@ -68,7 +68,7 @@ await router.redirect({
   // with query parameters
   query: { q: 's' },
   // if you want to replace history state instead of pushing
-  noHistoryPush: true,
+  replace: true,
 });
 ```
 

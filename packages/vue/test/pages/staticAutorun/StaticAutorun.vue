@@ -12,6 +12,6 @@ const props = defineProps<{
 props.renderSpy();
 
 props.router.adapters.autorun(() => {
-  props.autorunSpy(props.router.currentRoute.name as any);
+  props.autorunSpy(props.router.currentRoute.name);
 });
 </script>

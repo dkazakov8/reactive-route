@@ -59,7 +59,7 @@ export function createRouter<
   router.redirect = async function redirect<TRouteName extends keyof TRoutes>(
     config: TypeRedirectParams<TRoutes, TRouteName>
   ) {
-    const { route: routeName, noHistoryPush } = config;
+    const { route: routeName, replace } = config;
 
     /**
      * Construct current route data
@@ -132,7 +132,7 @@ export function createRouter<
           router.routesHistory.push(nextUrl);
         });
 
-        if (history && !noHistoryPush) {
+        if (history && !replace) {
           history.push({
             hash: history.location.hash,
             search: nextSearch,
@@ -252,7 +252,7 @@ export function createRouter<
         router.routesHistory.push(nextUrl);
       }
 
-      if (history && !noHistoryPush) {
+      if (history && !replace) {
         history.push({
           hash: history.location.hash,
           search: 'query' in config ? `?${queryString.stringify(config.query! as any)}` : '',
