@@ -6,9 +6,9 @@ import express from 'ultimate-express';
 import { createSSRApp, h } from 'vue';
 import { renderToString } from 'vue/server-renderer';
 
-import { escapeAllStrings } from '../../shared/utils/escapeAllStrings';
 import App from './components/App.vue';
 import { getRouter } from './router';
+import { escapeAllStrings } from './utils/escapeAllStrings';
 
 const outdirPath = path.resolve(__dirname, `../dist_${PORT}`);
 const publicPath = path.resolve(outdirPath, 'public');

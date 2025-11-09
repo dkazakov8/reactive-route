@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
+import http from 'node:http';
 import path, { parse } from 'node:path';
 
 import { transformAsync } from '@babel/core';
@@ -8,8 +9,45 @@ import { pluginInjectPreload } from '@espcom/esbuild-plugin-inject-preload';
 import { modifierDirname, modifierFilename, pluginReplace } from '@espcom/esbuild-plugin-replace';
 import { pluginWebpackAnalyzer } from '@espcom/esbuild-plugin-webpack-analyzer';
 import solid from 'babel-preset-solid';
-import { runManual } from 'dk-reload-server';
 import { BuildOptions, context } from 'esbuild';
+import ws, { WebSocketServer } from 'ws';
+
+function runReloadServer(params: { port: number }) {
+  const requestListener: http.RequestListener = (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/javascript' });
+    res.end(`
+(function refresh() {
+  let attempt = 0;
+  const maxAttempts = 5;
+  const socketUrl = window.location.origin.replace(/(^http(s?):\\/\\/)(.*:)(.*)/,${`'ws$2://$3${params.port}`}');
+
+  function websocketWaiter() {
+    if (attempt > maxAttempts) return console.warn('[PAGE-RELOAD] has stopped due to reconnection issues');
+  
+    const socket = new WebSocket(socketUrl);
+
+    socket.onopen = () => { attempt = 0; }
+    socket.onmessage = (msg) => { if (msg.data === 'reload') { socket.close(); window.location.reload(); } };
+    socket.onclose = () => { setTimeout(websocketWaiter, 1000); attempt++; };
+  }
+
+  window.addEventListener('load', websocketWaiter);
+})();
+`);
+  };
+
+  const wsServer = new WebSocketServer({
+    server: http.createServer(requestListener).listen(params.port),
+  });
+
+  return {
+    sendReloadSignal: () => {
+      wsServer.clients.forEach((client) => {
+        if (client.readyState === ws.OPEN) client.send('reload');
+      });
+    },
+  };
+}
 
 const REACTIVITY_SYSTEM: 'solid' | 'kr-observable' | 'mobx' = process.argv[2] as any;
 const SSR_ENABLED = process.argv[3] === 'ssr';
@@ -24,7 +62,7 @@ const templatePath = path.resolve(outdirPath, 'template.html');
 const watchPort = PORT + 100;
 const analyzerPort = PORT + 101;
 
-function generateSolidModifier(ssr: boolean) {
+function generateSolidModifier(ssr: boolean): Parameters<typeof pluginReplace>[0][number] {
   return {
     filter: /\.tsx?$/,
     replace: /.*/gs,
@@ -47,7 +85,7 @@ function generateSolidModifier(ssr: boolean) {
 }
 
 async function watch() {
-  const { sendReloadSignal } = runManual({ port: watchPort });
+  const { sendReloadSignal } = runReloadServer({ port: watchPort });
 
   const activeProcesses = new Set<'server' | 'client'>();
 
@@ -156,7 +194,7 @@ async function watch() {
   fs.rmSync(outdirPath, { recursive: true, force: true });
   fs.mkdirSync(outdirPath);
   fs.mkdirSync(publicPath);
-  fs.cpSync(path.resolve(__dirname, '../shared/template.html'), templatePath, { force: true });
+  fs.cpSync(path.resolve(__dirname, './src/template.html'), templatePath, { force: true });
 
   const ctxClient = await context(configClient);
   const ctxServer = await context(configServer);

@@ -1,15 +1,15 @@
 import { hydrate, render } from 'solid-js/web';
 
-import '../../shared/style.css';
+import './style.css';
 
 import { enableObservable } from 'kr-observable/solidjs';
 import { Reaction } from 'mobx';
 import { enableExternalSource } from 'solid-js';
 
-import { unescapeAllStrings } from '../../shared/utils/unescapeAllStrings';
 import { App } from './components/App';
 import { StoreContext } from './components/StoreContext';
 import { getRouter } from './router';
+import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
 if (REACTIVITY_SYSTEM === 'kr-observable') {
   enableObservable(false);

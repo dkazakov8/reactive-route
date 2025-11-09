@@ -1,5 +1,5 @@
 {
-  "include": ["scripts", "packages", "e2e", "./vitepress", "./*.mjs", "./*.ts"],
+  "include": ["scripts", "packages", "e2e", "./vitepress", "*.mjs", "./*.ts"],
   "exclude": ["packages/solid"],
   "compilerOptions": {
     "jsx": "react-jsx",

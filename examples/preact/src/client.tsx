@@ -1,11 +1,11 @@
 import { hydrate, render } from 'preact';
 
-import '../../shared/style.css';
+import './style.css';
 
-import { unescapeAllStrings } from '../../shared/utils/unescapeAllStrings';
 import { App } from './components/App';
 import { StoreContext } from './components/StoreContext';
 import { getRouterStore } from './router';
+import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
 const router = await getRouterStore();
 

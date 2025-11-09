@@ -1,10 +1,10 @@
 import { createApp, createSSRApp } from 'vue';
 
-import '../../shared/style.css';
+import './style.css';
 
-import { unescapeAllStrings } from '../../shared/utils/unescapeAllStrings';
 import App from './components/App.vue';
 import { getRouter } from './router';
+import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
 const router = await getRouter();
 

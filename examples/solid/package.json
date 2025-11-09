@@ -12,22 +12,23 @@
     "ssr-mobx": "tsx build.ts mobx ssr"
   },
   "dependencies": {
-    "kr-observable": "3.1.9",
+    "kr-observable": "3.1.12",
     "mobx": "6.15.0",
     "reactive-route": "0.0.1-alpha.29",
-    "solid-js": "1.9.9",
-    "ultimate-express": "2.0.9"
+    "solid-js": "1.9.10",
+    "ultimate-express": "2.0.12"
   },
   "devDependencies": {
     "@babel/core": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
-    "@espcom/esbuild-plugin-inject-preload": "1.0.0",
+    "@espcom/esbuild-plugin-inject-preload": "1.0.1",
     "@espcom/esbuild-plugin-replace": "1.3.2",
-    "@espcom/esbuild-plugin-webpack-analyzer": "1.1.0",
+    "@espcom/esbuild-plugin-webpack-analyzer": "1.1.1",
+    "@types/ws": "8.18.1",
     "babel-preset-solid": "1.9.6",
-    "dk-reload-server": "3.5.1",
     "esbuild": "0.25.11",
     "tsx": "4.20.6",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "ws": "8.18.3"
   }
 }

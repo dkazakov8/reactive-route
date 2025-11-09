@@ -5,10 +5,10 @@ import { renderToString } from 'preact-render-to-string';
 import { RedirectError } from 'reactive-route';
 import express from 'ultimate-express';
 
-import { escapeAllStrings } from '../../shared/utils/escapeAllStrings';
 import { App } from './components/App';
 import { StoreContext } from './components/StoreContext';
 import { getRouterStore } from './router';
+import { escapeAllStrings } from './utils/escapeAllStrings';
 
 const outdirPath = path.resolve(__dirname, `../dist_${PORT}`);
 const publicPath = path.resolve(outdirPath, 'public');
