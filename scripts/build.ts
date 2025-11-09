@@ -13,18 +13,19 @@ import pluginVue from 'unplugin-vue';
 
 import { genSizeBadges } from './genSizeBadges';
 
-function generateBuild(type: 'cjs' | 'esm', folderName: string) {
+async function generateBuild(type: 'cjs' | 'esm', folderName: string) {
   const packageName = folderName.split('/')[1]!;
   const fileName = folderName.split('/')[2];
-  let outFolder = path.resolve(
-    process.cwd(),
-    packageName === 'core' ? `./dist/${type}` : `./dist/${type}/${packageName}`
-  );
-  if (fileName) {
-    outFolder = path.resolve(outFolder, fileName);
-  }
 
-  const outFile = path.resolve(outFolder, `index.js`);
+  const outFolder = path.resolve(
+    process.cwd(),
+    packageName === 'core' ? `./dist` : `./dist/${packageName}`
+  );
+
+  const outFile = path.resolve(
+    outFolder,
+    `${fileName || 'index'}.${type === 'esm' ? 'mjs' : 'cjs'}`
+  );
 
   const plugins: Array<Plugin> = [];
 
@@ -58,33 +59,27 @@ function generateBuild(type: 'cjs' | 'esm', folderName: string) {
     plugins.push(pluginVue.esbuild({ include: [/\.vue$/] }));
   }
 
-  return esbuild
-    .build({
-      bundle: true,
-      metafile: true,
-      sourcemap: false,
-      target: 'es2022',
-      packages: 'external',
-      write: true,
-      minify: false,
-      treeShaking: true,
-      external: ['reactive-route'],
-      format: type,
-      entryPoints: [path.resolve(process.cwd(), folderName)],
-      outfile: outFile,
-      plugins,
-    })
-    .then(() => {
-      fs.writeFileSync(
-        path.resolve(outFolder, 'package.json'),
-        type === 'esm' ? '{"type": "module"}' : '{"type": "commonjs"}',
-        'utf-8'
-      );
+  await esbuild.build({
+    bundle: true,
+    metafile: true,
+    sourcemap: false,
+    target: 'es2022',
+    packages: 'external',
+    write: true,
+    minify: false,
+    treeShaking: true,
+    external: ['reactive-route'],
+    format: type,
+    entryPoints: [path.resolve(process.cwd(), folderName)],
+    outfile: outFile,
+    plugins,
+  });
 
-      if (type === 'esm' && packageName !== 'adapters') {
-        return genSizeBadges(outFile, packageName, fileName);
-      }
-    });
+  if (type === 'esm' && packageName !== 'adapters') {
+    await genSizeBadges(outFile, packageName, fileName);
+  }
+
+  return { packageName, fileName };
 }
 
 void Promise.all([
@@ -114,4 +109,49 @@ void Promise.all([
   generateBuild('cjs', 'packages/adapters/kr-observable-solid'),
   generateBuild('esm', 'packages/adapters/vue'),
   generateBuild('cjs', 'packages/adapters/vue'),
-]);
+]).then((genData) => {
+  const globalPkg = JSON.parse(fs.readFileSync(path.resolve('./package.json'), 'utf8'));
+
+  const exports: Record<string, { types: string; require: string; import: string }> = {};
+
+  genData.forEach(({ packageName, fileName }) => {
+    if (packageName === 'core') {
+      exports[`.`] = {
+        types: `./${packageName}/${fileName || 'index'}.d.ts`,
+        require: `./${fileName || 'index'}.cjs`,
+        import: `./${fileName || 'index'}.mjs`,
+      };
+
+      return;
+    }
+
+    exports[`./${packageName}${fileName ? `/${fileName}` : ''}`] = {
+      types: `./${packageName}/${fileName || 'index'}.d.ts`,
+      require: `./${packageName}/${fileName || 'index'}.cjs`,
+      import: `./${packageName}/${fileName || 'index'}.mjs`,
+    };
+  });
+
+  const releasePkg = {
+    name: globalPkg.name,
+    author: globalPkg.author,
+    license: globalPkg.license,
+    version: globalPkg.version,
+    description: globalPkg.description,
+    repository: globalPkg.repository,
+    dependencies: globalPkg.dependencies,
+    engines: globalPkg.engines,
+    exports: exports,
+    main: exports[`.`].require,
+    module: exports[`.`].import,
+    types: exports[`.`].types,
+  };
+
+  fs.writeFileSync(
+    path.resolve('./dist/package.json'),
+    `${JSON.stringify(releasePkg, null, 2)}\n`,
+    'utf8'
+  );
+
+  fs.copyFileSync(path.resolve('./.npmignore'), path.resolve('./dist/.npmignore'));
+});

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-export default function teardown() {
+export default function globalAfter() {
   fs.readdirSync(path.resolve('examples')).map((project) =>
     fs
       .readdirSync(path.resolve('examples', project))

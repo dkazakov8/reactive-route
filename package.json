@@ -2,7 +2,7 @@
   "name": "reactive-route",
   "author": "Dmitry Kazakov",
   "license": "MIT",
-  "version": "0.0.1-alpha.29",
+  "version": "0.0.1-alpha.30",
   "description": "Reactive Router for different frameworks",
   "repository": {
     "type": "git",
@@ -11,18 +11,18 @@
   "scripts": {
     "upd": "rm -rf ./node_modules&&pnpm i --prefer-offline",
     "build": "rm -rf ./dist&&node --import tsx ./scripts/build.ts&&tsc -b ./tsconfig.types.react.json&&tsc -b ./tsconfig.types.solid.json",
-    "npm-publish": "pnpm run build&&pnpm run test&&npm publish --access public",
+    "npm-publish": "pnpm run build&&cd ./dist&&npm publish --access public --tag alpha&&cd ../",
     "analyze:js": "biome check --no-errors-on-unmatched .",
     "format:js": "biome check --no-errors-on-unmatched --write",
     "check-types": "tsc --project tsconfig.json&&tsc --project tsconfig.solid.json",
     "check-types-example": "tsc --project examples/react/tsconfig.json&&tsc --project examples/preact/tsconfig.json&&tsc --project examples/solid/tsconfig.json&&tsc --project examples/vue/tsconfig.json",
     "prepare": "husky",
     "upgrade-examples": "pnpm upgrade -r reactive-route@latest",
-    "upgrade-lib": "bash -c 'pnpm upgrade -r $@' bash",
+    "up": "bash -c 'pnpm upgrade -r $@' bash",
     "test": "vitest run&&node --import tsx ./scripts/genCoverageBadge.ts",
     "test-watch": "vitest --coverage=false",
     "test-vue": "vitest --config ./vitest.vue.config.mjs --coverage=false",
-    "e2e": "playwright test",
+    "e2e": "playwright test --config ./e2e/runner.ts",
     "docs:dev": "vitepress dev vitepress",
     "docs:build": "vitepress build vitepress --outDir docs"
   },
@@ -81,80 +81,10 @@
     "vitepress": "2.0.0-alpha.12",
     "vitepress-plugin-group-icons": "1.6.4",
     "vitest": "3.2.4",
-    "vue": "3.5.22",
+    "vue": "3.5.24",
     "xml-splitter": "1.2.1"
   },
   "engines": {
     "node": ">=22"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/core/index.d.ts",
-      "require": "./dist/cjs/index.js",
-      "import": "./dist/esm/index.js"
-    },
-    "./react": {
-      "types": "./dist/react/index.d.ts",
-      "require": "./dist/cjs/react/index.js",
-      "import": "./dist/esm/react/index.js"
-    },
-    "./preact": {
-      "types": "./dist/preact/index.d.ts",
-      "require": "./dist/cjs/preact/index.js",
-      "import": "./dist/esm/preact/index.js"
-    },
-    "./solid": {
-      "types": "./dist/solid/index.d.ts",
-      "require": "./dist/cjs/solid/index.js",
-      "import": "./dist/esm/solid/index.js"
-    },
-    "./vue": {
-      "types": "./dist/vue/index.d.ts",
-      "require": "./dist/cjs/vue/index.js",
-      "import": "./dist/esm/vue/index.js"
-    },
-    "./adapters/vue": {
-      "types": "./dist/adapters/vue.d.ts",
-      "require": "./dist/cjs/adapters/vue/index.js",
-      "import": "./dist/esm/adapters/vue/index.js"
-    },
-    "./adapters/mobx-react": {
-      "types": "./dist/adapters/mobx-react.d.ts",
-      "require": "./dist/cjs/adapters/mobx-react/index.js",
-      "import": "./dist/esm/adapters/mobx-react/index.js"
-    },
-    "./adapters/mobx-preact": {
-      "types": "./dist/adapters/mobx-preact.d.ts",
-      "require": "./dist/cjs/adapters/mobx-preact/index.js",
-      "import": "./dist/esm/adapters/mobx-preact/index.js"
-    },
-    "./adapters/mobx-solid": {
-      "types": "./dist/adapters/mobx-solid.d.ts",
-      "require": "./dist/cjs/adapters/mobx-solid/index.js",
-      "import": "./dist/esm/adapters/mobx-solid/index.js"
-    },
-    "./adapters/solid": {
-      "types": "./dist/adapters/solid.d.ts",
-      "require": "./dist/cjs/adapters/solid/index.js",
-      "import": "./dist/esm/adapters/solid/index.js"
-    },
-    "./adapters/kr-observable-react": {
-      "types": "./dist/adapters/kr-observable-react.d.ts",
-      "require": "./dist/cjs/adapters/kr-observable-react/index.js",
-      "import": "./dist/esm/adapters/kr-observable-react/index.js"
-    },
-    "./adapters/kr-observable-solid": {
-      "types": "./dist/adapters/kr-observable-solid.d.ts",
-      "require": "./dist/cjs/adapters/kr-observable-solid/index.js",
-      "import": "./dist/esm/adapters/kr-observable-solid/index.js"
-    },
-    "./adapters/kr-observable-preact": {
-      "types": "./dist/adapters/kr-observable-preact.d.ts",
-      "require": "./dist/cjs/adapters/kr-observable-preact/index.js",
-      "import": "./dist/esm/adapters/kr-observable-preact/index.js"
-    }
-  },
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/core/index.d.ts"
+  }
 }

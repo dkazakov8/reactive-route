@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { history, TypePropsRouter, TypeRoute } from 'reactive-route';
-import { computed, markRaw, onBeforeUnmount, reactive, ref, toRaw } from 'vue';
+import { computed, markRaw, onBeforeUnmount, ref, toRaw } from 'vue';
 
 defineOptions({ name: 'ReactiveRouteRouter' });
 

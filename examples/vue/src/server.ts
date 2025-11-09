@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { RedirectError } from 'reactive-route';
 import express from 'ultimate-express';
-import { createSSRApp, h } from 'vue';
+import { createSSRApp } from 'vue';
 import { renderToString } from 'vue/server-renderer';
 
 import App from './components/App.vue';
