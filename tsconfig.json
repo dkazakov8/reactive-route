@@ -1,5 +1,5 @@
 {
-  "include": ["scripts", "packages", "e2e", "./vitepress", "*.mjs", "./*.ts"],
+  "include": ["scripts", "packages", "e2e", "./vitepress", "*.mjs"],
   "exclude": ["packages/solid"],
   "compilerOptions": {
     "jsx": "react-jsx",
@@ -10,6 +10,9 @@
     "noEmit": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
     "baseUrl": ".",
     "paths": {
       "reactive-route": ["packages/core/index.ts"]

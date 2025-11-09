@@ -13,14 +13,25 @@ import pluginVue from 'unplugin-vue';
 
 import { genSizeBadges } from './genSizeBadges';
 
+async function solidTransform(source: string, p: string) {
+  const result = await transformAsync(source, {
+    presets: [[solid], [ts]],
+    filename: parse(p).base,
+    sourceMaps: false,
+  });
+
+  if (result?.code == null) {
+    throw new Error('No result was provided from Babel');
+  }
+
+  return result.code;
+}
+
 async function generateBuild(type: 'cjs' | 'esm', folderName: string) {
   const packageName = folderName.split('/')[1]!;
   const fileName = folderName.split('/')[2];
 
-  const outFolder = path.resolve(
-    process.cwd(),
-    packageName === 'core' ? `./dist` : `./dist/${packageName}`
-  );
+  const outFolder = path.resolve(packageName === 'core' ? `./dist` : `./dist/${packageName}`);
 
   const outFile = path.resolve(
     outFolder,
@@ -35,21 +46,7 @@ async function generateBuild(type: 'cjs' | 'esm', folderName: string) {
         {
           filter: /\.tsx?$/,
           replace: /.*/gs,
-          replacer(onLoadArgs) {
-            return async (source) => {
-              const result = await transformAsync(source, {
-                presets: [[solid], [ts]],
-                filename: parse(onLoadArgs.path).base,
-                sourceMaps: 'inline',
-              });
-
-              if (result?.code == null) {
-                throw new Error('No result was provided from Babel');
-              }
-
-              return result.code;
-            };
-          },
+          replacer: (onLoadArgs) => (source) => solidTransform(source, onLoadArgs.path),
         },
       ])
     );
@@ -153,5 +150,5 @@ void Promise.all([
     'utf8'
   );
 
-  fs.copyFileSync(path.resolve('./.npmignore'), path.resolve('./dist/.npmignore'));
+  fs.writeFileSync(path.resolve('./dist/.npmignore'), `*.tsbuildinfo\n`, 'utf8');
 });
