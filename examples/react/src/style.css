@@ -1,0 +1,356 @@
+.topnav {
+  background-color: #333;
+  overflow: hidden;
+  display: none;
+}
+
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.topnav a.active {
+  background-color: #04aa6d;
+  color: white;
+}
+
+/* Common styles for all pages */
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
+  text-align: center;
+}
+
+h1 {
+  padding-bottom: 10px;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+.route-info {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 20px 0;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+  text-align: left;
+}
+
+code {
+  background-color: #f8f9fa;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.route-description {
+  padding: 15px;
+  border-radius: 5px;
+  margin: 20px 0;
+}
+
+.navigation {
+  margin-top: 30px;
+}
+
+.nav-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+  background-color: #2980b9;
+}
+
+/* Static page specific styles */
+.static-page h1 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+}
+
+.static-page h2 {
+  color: #3498db;
+}
+
+.static-page .route-description {
+  background-color: #e8f4fc;
+}
+
+/* Dynamic page specific styles */
+.dynamic-page h1 {
+  color: #2c3e50;
+  border-bottom: 2px solid #e74c3c;
+}
+
+.dynamic-page h2 {
+  color: #e74c3c;
+}
+
+.dynamic-page code {
+  color: #e74c3c;
+}
+
+.dynamic-page .route-description {
+  background-color: #fdedec;
+}
+
+.dynamic-page .actions {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 20px 0;
+}
+
+.dynamic-page .action-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dynamic-page .action-button:hover {
+  background-color: #c0392b;
+}
+
+.dynamic-page .note {
+  font-style: italic;
+  margin-top: 10px;
+  color: #7f8c8d;
+}
+
+/* Query page specific styles */
+.query-page h1 {
+  color: #2c3e50;
+  border-bottom: 2px solid #9b59b6;
+}
+
+.query-page h2 {
+  color: #9b59b6;
+}
+
+.query-page .current-query {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 20px 0;
+  border-left: 4px solid #9b59b6;
+}
+
+.query-page code {
+  color: #9b59b6;
+}
+
+.query-page .route-description {
+  background-color: #f5eef8;
+}
+
+.query-page .actions {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 20px 0;
+}
+
+.query-page .action-button {
+  background-color: #9b59b6;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.query-page .action-button:hover {
+  background-color: #8e44ad;
+}
+
+.query-page .note {
+  font-style: italic;
+  margin-top: 10px;
+  color: #7f8c8d;
+}
+
+/* Prevent page specific styles */
+.prevent-page h1 {
+  color: #2c3e50;
+  border-bottom: 2px solid #f39c12;
+}
+
+.prevent-page h2 {
+  color: #f39c12;
+}
+
+.prevent-page h3 {
+  color: #d35400;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.prevent-page code {
+  color: #f39c12;
+}
+
+.prevent-page .route-description {
+  background-color: #fef9e7;
+}
+
+.prevent-page .navigation-rules {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 20px 0;
+}
+
+.prevent-page .rule {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.prevent-page .rule-icon {
+  font-size: 24px;
+  margin-right: 15px;
+}
+
+.prevent-page .rule-text {
+  flex: 1;
+}
+
+.prevent-page .nav-button-blocked {
+  background-color: #e74c3c;
+}
+
+.prevent-page .nav-button-blocked:hover {
+  background-color: #c0392b;
+}
+
+/* Error page specific styles */
+.error-page .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 40px 0;
+}
+
+.error-page .error-code {
+  font-size: 120px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.error-page .error-code-404 {
+  color: #3498db;
+}
+
+.error-page .error-code-500 {
+  color: #e74c3c;
+}
+
+.error-page h1 {
+  color: #2c3e50;
+  margin-top: 0;
+}
+
+.error-page h2.error-404 {
+  color: #3498db;
+}
+
+.error-page h2.error-500 {
+  color: #e74c3c;
+}
+
+.error-page .route-description-404 {
+  background-color: #ebf5fb;
+}
+
+.error-page .route-description-500 {
+  background-color: #fdedec;
+}
+
+/* Home page specific styles */
+.home-page h1 {
+  color: #2c3e50;
+  border-bottom: 2px solid #2ecc71;
+}
+
+.home-page h2 {
+  color: #2ecc71;
+}
+
+.home-page .redirect-notice {
+  display: flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 20px 0;
+  border-left: 4px solid #2ecc71;
+}
+
+.home-page .redirect-icon {
+  font-size: 32px;
+  margin-right: 15px;
+}
+
+.home-page .redirect-message {
+  flex: 1;
+}
+
+.home-page .redirect-message p {
+  margin: 5px 0;
+}
+
+.home-page code {
+  color: #2ecc71;
+}
+
+.home-page .route-description {
+  background-color: #eafaf1;
+}
+
+.home-page .nav-button {
+  background-color: #2ecc71;
+}
+
+.home-page .nav-button:hover {
+  background-color: #27ae60;
+}

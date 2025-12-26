@@ -1,0 +1,4 @@
+pnpm exec lint-staged
+pnpm run analyze
+pnpm run docs:build
+git add docs

@@ -1,0 +1,23 @@
+{
+  "name": "example",
+  "author": "Dmitry Kazakov",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "vue": "tsx build.ts vue csr",
+    "ssr-vue": "tsx build.ts vue ssr"
+  },
+  "dependencies": {
+    "reactive-route": "0.0.1-beta.0",
+    "ultimate-express": "2.0.12",
+    "vue": "3.5.26"
+  },
+  "devDependencies": {
+    "@espcom/esbuild-plugin-inject-preload": "1.0.1",
+    "@espcom/esbuild-plugin-webpack-analyzer": "1.1.1",
+    "esbuild": "0.27.2",
+    "tsx": "4.21.0",
+    "typescript": "5.9.2",
+    "unplugin-vue": "7.1.0"
+  }
+}

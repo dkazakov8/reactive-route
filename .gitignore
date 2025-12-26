@@ -1,0 +1,16 @@
+/dist
+dist_*
+*.log
+.idea/
+.DS_Store
+Thumbs.db
+*.DS_Store
+.idea
+.junie
+.vscode
+node_modules
+npm-debug.*
+docs/.vitepress/cache
+tmp
+test-results
+vitepress/.vitepress/cache

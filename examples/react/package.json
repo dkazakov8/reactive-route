@@ -1,0 +1,29 @@
+{
+  "name": "example",
+  "author": "Dmitry Kazakov",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "mobx": "tsx build.ts mobx csr",
+    "observable": "tsx build.ts kr-observable csr",
+    "ssr-mobx": "tsx build.ts mobx ssr",
+    "ssr-observable": "tsx build.ts kr-observable ssr"
+  },
+  "dependencies": {
+    "kr-observable": "3.1.12",
+    "mobx": "6.15.0",
+    "mobx-react-lite": "4.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "reactive-route": "0.0.1-beta.0",
+    "ultimate-express": "2.0.12"
+  },
+  "devDependencies": {
+    "@espcom/esbuild-plugin-inject-preload": "1.0.1",
+    "@espcom/esbuild-plugin-replace": "1.3.2",
+    "@espcom/esbuild-plugin-webpack-analyzer": "1.1.1",
+    "esbuild": "0.27.2",
+    "tsx": "4.21.0",
+    "typescript": "5.9.2"
+  }
+}
