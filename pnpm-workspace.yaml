@@ -1,0 +1,5 @@
+ignoredBuiltDependencies:
+  - esbuild
+
+packages:
+  - 'examples/*'

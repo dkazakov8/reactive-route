@@ -1,0 +1,12 @@
+export { createRouter } from './createRouter';
+export { createRoutes } from './createRoutes';
+export type { TypeAdapters } from './types/TypeAdapters';
+export type { TypeCurrentRoute } from './types/TypeCurrentRoute';
+export type { TypePropsRouter } from './types/TypePropsRouter';
+export type { TypeRedirectParams } from './types/TypeRedirectParams';
+export type { TypeRoute } from './types/TypeRoute';
+export type { TypeRouter } from './types/TypeRouter';
+export { loadComponentToConfig } from './utils/loadComponentToConfig';
+export { RedirectError } from './utils/RedirectError';
+export { replaceDynamicValues } from './utils/replaceDynamicValues';
+export { routerSetLoadedComponent } from './utils/routerSetLoadedComponent';

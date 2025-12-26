@@ -1,0 +1,22 @@
+{
+  "include": ["scripts", "packages", "e2e", "./vitepress", "*.mjs"],
+  "exclude": ["packages/solid"],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "outDir": "dist",
+    "module": "commonjs",
+    "target": "ES2022",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "baseUrl": ".",
+    "paths": {
+      "reactive-route": ["packages/core/index.ts"]
+    }
+  },
+  "types": ["vite/client", "@testing-library/jest-dom", "vitest/globals"]
+}

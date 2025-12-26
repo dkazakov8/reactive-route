@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["packages/solid"],
+  "exclude": ["packages/**/test", "packages/shared"],
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
+  }
+}
