@@ -4,8 +4,6 @@ import { TypeRedirectParams } from './TypeRedirectParams';
 import { TypeRoute } from './TypeRoute';
 
 export type TypeRouter<TRoutes extends Record<string | 'notFound' | 'internalError', TypeRoute>> = {
-  routes: TRoutes;
-  adapters: TypeAdapters;
   currentRoute: {
     [TRouteName in keyof TRoutes | 'notFound' | 'internalError']:
       | TypeCurrentRoute<TRoutes[TRouteName]>
@@ -21,6 +19,6 @@ export type TypeRouter<TRoutes extends Record<string | 'notFound' | 'internalErr
       [TRouteName in keyof TRoutes]: TypeCurrentRoute<TRoutes[TRouteName]> | undefined;
     };
   }): Promise<void>;
-  lifecycleParams?: Array<any>;
   destroy(): void;
+  getConfig(): { adapters: TypeAdapters; routes: TRoutes; lifecycleParams?: Array<any> };
 };

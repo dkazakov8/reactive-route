@@ -3,11 +3,13 @@ import { onCleanup, Show } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 
 export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
+  const { adapters, routes } = props.router.getConfig();
+
   const config: {
     loadedComponentName?: keyof TRoutes;
     loadedComponentPage?: string;
     currentProps: Record<string, any>;
-  } = props.router.adapters.makeObservable({
+  } = adapters.makeObservable({
     loadedComponentName: undefined,
     loadedComponentPage: undefined,
     currentProps: {},
@@ -15,13 +17,13 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
 
   props.beforeMount?.();
 
-  if (props.router.adapters.immediateSetComponent) {
-    props.router.adapters.batch(() => {
+  if (adapters.immediateSetComponent) {
+    adapters.batch(() => {
       routerSetLoadedComponent(props, config);
     });
   }
 
-  const disposer = props.router.adapters.autorun(() => routerSetLoadedComponent(props, config));
+  const disposer = adapters.autorun(() => routerSetLoadedComponent(props, config));
 
   onCleanup(() => {
     if (typeof disposer === 'function') disposer();
@@ -32,7 +34,7 @@ export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePro
     <Show when={config.loadedComponentName}>
       {/* @ts-ignore */}
       <Dynamic
-        component={props.router.routes[config.loadedComponentName!].component}
+        component={routes[config.loadedComponentName!].component}
         {...config.currentProps}
         router={props.router}
       />

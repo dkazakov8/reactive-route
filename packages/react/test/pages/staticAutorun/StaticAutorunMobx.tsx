@@ -9,13 +9,14 @@ const StaticAutorun = observer(
     router: TypeRouter<any>;
   }) => {
     const { router } = props;
+    const { adapters } = router.getConfig();
 
     const currentRoute = router.currentRoute.staticRouteAutorun!;
 
     props.spy_pageRender();
 
     useState(() => {
-      router.adapters.autorun(() => {
+      adapters.autorun(() => {
         props.spy_pageAutorun(currentRoute.name);
       });
     });

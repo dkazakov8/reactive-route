@@ -90,23 +90,23 @@ function createCounters() {
 }
 
 allPossibleOptions.forEach((options) => {
-  const routes = getRoutes(options);
+  const routesDefault = getRoutes(options);
 
   describe(`redirect [${options.renderer}+${options.reactivity}]`, () => {
     it('restoreFromURL: sets initial route', async () => {
-      const router = createRouter({ routes, adapters: await getAdapters(options) });
+      const router = createRouter({ routes: routesDefault, adapters: await getAdapters(options) });
 
-      const url = await router.restoreFromURL({ pathname: routes.staticRoute.path });
+      const url = await router.restoreFromURL({ pathname: routesDefault.staticRoute.path });
 
-      checkCurrent(router, cloneWithParams({ route: routes.staticRoute }), url);
+      checkCurrent(router, cloneWithParams({ route: routesDefault.staticRoute }), url);
     });
 
     it('restoreFromURL: sets initial route not found', async () => {
-      const router = createRouter({ routes, adapters: await getAdapters(options) });
+      const router = createRouter({ routes: routesDefault, adapters: await getAdapters(options) });
 
       const url = await router.restoreFromURL({ pathname: '/testX/static' });
 
-      checkCurrent(router, cloneWithParams({ route: routes.notFound }), url);
+      checkCurrent(router, cloneWithParams({ route: routesDefault.notFound }), url);
     });
 
     it('beforeEnter: not called when redirecting to same static route', async () => {
@@ -116,17 +116,18 @@ allPossibleOptions.forEach((options) => {
         routes: createRoutes({
           spyOne: {
             path: '/test/static',
-            loader: routes.staticRoute.loader,
-            pageId: routes.staticRoute.pageId,
+            loader: routesDefault.staticRoute.loader,
+            pageId: routesDefault.staticRoute.pageId,
             async beforeEnter(config, param: string) {
               spyOne(param);
             },
           },
-          ...getDefaultRoutes(routes),
+          ...getDefaultRoutes(routesDefault),
         }),
         lifecycleParams: [''],
         adapters: await getAdapters(options),
       });
+      const { routes } = router.getConfig();
 
       let url = await router.redirect({ route: 'spyOne' });
 
@@ -136,13 +137,13 @@ allPossibleOptions.forEach((options) => {
 
       expect(spyOne).toHaveBeenLastCalledWith('');
 
-      checkCurrent(router, cloneWithParams({ route: router.routes.spyOne }), url);
+      checkCurrent(router, cloneWithParams({ route: routes.spyOne }), url);
 
       url = await router.redirect({ route: 'spyOne' });
 
       checkSpy();
 
-      checkCurrent(router, cloneWithParams({ route: router.routes.spyOne }), url);
+      checkCurrent(router, cloneWithParams({ route: routes.spyOne }), url);
     });
 
     it('beforeEnter: not called when redirecting to same dynamic route (no params change)', async () => {
@@ -155,17 +156,18 @@ allPossibleOptions.forEach((options) => {
             params: {
               static: (value) => value.length > 2,
             },
-            loader: routes.dynamicRoute.loader,
-            pageId: routes.dynamicRoute.pageId,
+            loader: routesDefault.dynamicRoute.loader,
+            pageId: routesDefault.dynamicRoute.pageId,
             async beforeEnter(config, param: string) {
               spyOne(param);
             },
           },
-          ...getDefaultRoutes(routes),
+          ...getDefaultRoutes(routesDefault),
         }),
         lifecycleParams: [''],
         adapters: await getAdapters(options),
       });
+      const { routes } = router.getConfig();
 
       let url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'foo' } });
 
@@ -177,7 +179,7 @@ allPossibleOptions.forEach((options) => {
 
       checkCurrent(
         router,
-        cloneWithParams({ route: router.routes.spyOneDynamic, params: { static: 'foo' } }),
+        cloneWithParams({ route: routes.spyOneDynamic, params: { static: 'foo' } }),
         url
       );
 
@@ -187,7 +189,7 @@ allPossibleOptions.forEach((options) => {
 
       checkCurrent(
         router,
-        cloneWithParams({ route: router.routes.spyOneDynamic, params: { static: 'foo' } }),
+        cloneWithParams({ route: routes.spyOneDynamic, params: { static: 'foo' } }),
         url
       );
     });
@@ -202,17 +204,18 @@ allPossibleOptions.forEach((options) => {
             query: {
               q: (value) => value.length > 2,
             },
-            loader: routes.staticRoute.loader,
-            pageId: routes.staticRoute.pageId,
+            loader: routesDefault.staticRoute.loader,
+            pageId: routesDefault.staticRoute.pageId,
             async beforeEnter(config, param: string) {
               spyOne(param);
             },
           },
-          ...getDefaultRoutes(routes),
+          ...getDefaultRoutes(routesDefault),
         }),
         lifecycleParams: [''],
         adapters: await getAdapters(options),
       });
+      const { routes } = router.getConfig();
 
       let url = await router.redirect({ route: 'spyOne', query: { q: 'foo' } });
 
@@ -222,21 +225,13 @@ allPossibleOptions.forEach((options) => {
 
       expect(spyOne).toHaveBeenLastCalledWith('');
 
-      checkCurrent(
-        router,
-        cloneWithParams({ route: router.routes.spyOne, query: { q: 'foo' } }),
-        url
-      );
+      checkCurrent(router, cloneWithParams({ route: routes.spyOne, query: { q: 'foo' } }), url);
 
       url = await router.redirect({ route: 'spyOne', query: { q: 'foo' } });
 
       checkSpy();
 
-      checkCurrent(
-        router,
-        cloneWithParams({ route: router.routes.spyOne, query: { q: 'foo' } }),
-        url
-      );
+      checkCurrent(router, cloneWithParams({ route: routes.spyOne, query: { q: 'foo' } }), url);
     });
 
     it('beforeEnter: not called when redirecting to same route (query changed)', async () => {
@@ -249,17 +244,18 @@ allPossibleOptions.forEach((options) => {
             query: {
               q: (value) => value.length > 2,
             },
-            loader: routes.staticRoute.loader,
-            pageId: routes.staticRoute.pageId,
+            loader: routesDefault.staticRoute.loader,
+            pageId: routesDefault.staticRoute.pageId,
             async beforeEnter(config, param: string) {
               spyOne(param);
             },
           },
-          ...getDefaultRoutes(routes),
+          ...getDefaultRoutes(routesDefault),
         }),
         lifecycleParams: [''],
         adapters: await getAdapters(options),
       });
+      const { routes } = router.getConfig();
 
       let url = await router.redirect({ route: 'spyOne', query: { q: 'foo' } });
 
@@ -269,21 +265,13 @@ allPossibleOptions.forEach((options) => {
 
       expect(spyOne).toHaveBeenLastCalledWith('');
 
-      checkCurrent(
-        router,
-        cloneWithParams({ route: router.routes.spyOne, query: { q: 'foo' } }),
-        url
-      );
+      checkCurrent(router, cloneWithParams({ route: routes.spyOne, query: { q: 'foo' } }), url);
 
       url = await router.redirect({ route: 'spyOne', query: { q: 'bar' } });
 
       checkSpy();
 
-      checkCurrent(
-        router,
-        cloneWithParams({ route: router.routes.spyOne, query: { q: 'bar' } }),
-        url
-      );
+      checkCurrent(router, cloneWithParams({ route: routes.spyOne, query: { q: 'bar' } }), url);
     });
 
     it('beforeEnter: called when redirecting to same dynamic route (params changed)', async () => {
@@ -296,17 +284,18 @@ allPossibleOptions.forEach((options) => {
             params: {
               static: (value) => value.length > 2,
             },
-            loader: routes.dynamicRoute.loader,
-            pageId: routes.dynamicRoute.pageId,
+            loader: routesDefault.dynamicRoute.loader,
+            pageId: routesDefault.dynamicRoute.pageId,
             async beforeEnter(config, param: string) {
               spyOne(param);
             },
           },
-          ...getDefaultRoutes(routes),
+          ...getDefaultRoutes(routesDefault),
         }),
         lifecycleParams: [''],
         adapters: await getAdapters(options),
       });
+      const { routes } = router.getConfig();
 
       let url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'foo' } });
 
@@ -318,7 +307,7 @@ allPossibleOptions.forEach((options) => {
 
       checkCurrent(
         router,
-        cloneWithParams({ route: router.routes.spyOneDynamic, params: { static: 'foo' } }),
+        cloneWithParams({ route: routes.spyOneDynamic, params: { static: 'foo' } }),
         url
       );
 
@@ -330,7 +319,7 @@ allPossibleOptions.forEach((options) => {
 
       checkCurrent(
         router,
-        cloneWithParams({ route: router.routes.spyOneDynamic, params: { static: 'bar' } }),
+        cloneWithParams({ route: routes.spyOneDynamic, params: { static: 'bar' } }),
         url
       );
     });
@@ -340,24 +329,25 @@ allPossibleOptions.forEach((options) => {
         routes: createRoutes({
           buggyCode: {
             path: '/test/static4',
-            loader: routes.dynamicRoute.loader,
-            pageId: routes.dynamicRoute.pageId,
+            loader: routesDefault.dynamicRoute.loader,
+            pageId: routesDefault.dynamicRoute.pageId,
             async beforeEnter() {
               // @ts-ignore
               // biome-ignore lint/correctness/noUndeclaredVariables: false
               a;
             },
           },
-          ...getDefaultRoutes(routes),
+          ...getDefaultRoutes(routesDefault),
         }),
         lifecycleParams: [''],
         adapters: await getAdapters(options),
       });
+      const { routes } = router.getConfig();
 
       // TODO: check url
       await router.redirect({ route: 'buggyCode' });
 
-      checkCurrent(router, cloneWithParams({ route: router.routes.internalError }));
+      checkCurrent(router, cloneWithParams({ route: routes.internalError }));
     });
 
     it('beforeLeave: not called when redirecting to same static route', async () => {
@@ -367,29 +357,30 @@ allPossibleOptions.forEach((options) => {
         routes: createRoutes({
           spyOne: {
             path: '/test/static',
-            loader: routes.staticRoute.loader,
-            pageId: routes.staticRoute.pageId,
+            loader: routesDefault.staticRoute.loader,
+            pageId: routesDefault.staticRoute.pageId,
             async beforeLeave(config, param: string) {
               spyOne(param);
             },
           },
-          ...getDefaultRoutes(routes),
+          ...getDefaultRoutes(routesDefault),
         }),
         lifecycleParams: [''],
         adapters: await getAdapters(options),
       });
+      const { routes } = router.getConfig();
 
       let url = await router.redirect({ route: 'spyOne' });
 
       checkSpy();
 
-      checkCurrent(router, cloneWithParams({ route: router.routes.spyOne }), url);
+      checkCurrent(router, cloneWithParams({ route: routes.spyOne }), url);
 
       url = await router.redirect({ route: 'spyOne' });
 
       checkSpy();
 
-      checkCurrent(router, cloneWithParams({ route: router.routes.spyOne }), url);
+      checkCurrent(router, cloneWithParams({ route: routes.spyOne }), url);
     });
 
     it('beforeLeave: called when redirecting to another route', async () => {
@@ -399,8 +390,8 @@ allPossibleOptions.forEach((options) => {
         routes: createRoutes({
           spyOne: {
             path: '/test/static',
-            loader: routes.staticRoute.loader,
-            pageId: routes.staticRoute.pageId,
+            loader: routesDefault.staticRoute.loader,
+            pageId: routesDefault.staticRoute.pageId,
             async beforeLeave(config, param: string) {
               spyOne(param);
             },
@@ -410,20 +401,21 @@ allPossibleOptions.forEach((options) => {
             params: {
               static: (value) => value.length > 2,
             },
-            loader: routes.dynamicRoute.loader,
-            pageId: routes.dynamicRoute.pageId,
+            loader: routesDefault.dynamicRoute.loader,
+            pageId: routesDefault.dynamicRoute.pageId,
           },
-          ...getDefaultRoutes(routes),
+          ...getDefaultRoutes(routesDefault),
         }),
         lifecycleParams: [''],
         adapters: await getAdapters(options),
       });
+      const { routes } = router.getConfig();
 
       let url = await router.redirect({ route: 'spyOne' });
 
       checkSpy();
 
-      checkCurrent(router, cloneWithParams({ route: router.routes.spyOne }), url);
+      checkCurrent(router, cloneWithParams({ route: routes.spyOne }), url);
 
       url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'foo' } });
 
@@ -435,7 +427,7 @@ allPossibleOptions.forEach((options) => {
 
       checkCurrent(
         router,
-        cloneWithParams({ route: router.routes.spyOneDynamic, params: { static: 'foo' } }),
+        cloneWithParams({ route: routes.spyOneDynamic, params: { static: 'foo' } }),
         url
       );
     });
@@ -450,17 +442,18 @@ allPossibleOptions.forEach((options) => {
             params: {
               static: (value) => value.length > 2,
             },
-            loader: routes.dynamicRoute.loader,
-            pageId: routes.dynamicRoute.pageId,
+            loader: routesDefault.dynamicRoute.loader,
+            pageId: routesDefault.dynamicRoute.pageId,
             async beforeLeave(config, param: string) {
               spyOne(param);
             },
           },
-          ...getDefaultRoutes(routes),
+          ...getDefaultRoutes(routesDefault),
         }),
         lifecycleParams: [''],
         adapters: await getAdapters(options),
       });
+      const { routes } = router.getConfig();
 
       let url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'foo' } });
 
@@ -468,7 +461,7 @@ allPossibleOptions.forEach((options) => {
 
       checkCurrent(
         router,
-        cloneWithParams({ route: router.routes.spyOneDynamic, params: { static: 'foo' } }),
+        cloneWithParams({ route: routes.spyOneDynamic, params: { static: 'foo' } }),
         url
       );
 
@@ -478,7 +471,7 @@ allPossibleOptions.forEach((options) => {
 
       checkCurrent(
         router,
-        cloneWithParams({ route: router.routes.spyOneDynamic, params: { static: 'foo' } }),
+        cloneWithParams({ route: routes.spyOneDynamic, params: { static: 'foo' } }),
         url
       );
     });
@@ -493,17 +486,18 @@ allPossibleOptions.forEach((options) => {
             params: {
               static: (value) => value.length > 2,
             },
-            loader: routes.dynamicRoute.loader,
-            pageId: routes.dynamicRoute.pageId,
+            loader: routesDefault.dynamicRoute.loader,
+            pageId: routesDefault.dynamicRoute.pageId,
             async beforeLeave(config, param: string) {
               spyOne(param);
             },
           },
-          ...getDefaultRoutes(routes),
+          ...getDefaultRoutes(routesDefault),
         }),
         lifecycleParams: [''],
         adapters: await getAdapters(options),
       });
+      const { routes } = router.getConfig();
 
       let url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'foo' } });
 
@@ -511,7 +505,7 @@ allPossibleOptions.forEach((options) => {
 
       checkCurrent(
         router,
-        cloneWithParams({ route: router.routes.spyOneDynamic, params: { static: 'foo' } }),
+        cloneWithParams({ route: routes.spyOneDynamic, params: { static: 'foo' } }),
         url
       );
 
@@ -525,7 +519,7 @@ allPossibleOptions.forEach((options) => {
 
       checkCurrent(
         router,
-        cloneWithParams({ route: router.routes.spyOneDynamic, params: { static: 'bar' } }),
+        cloneWithParams({ route: routes.spyOneDynamic, params: { static: 'bar' } }),
         url
       );
     });
@@ -537,21 +531,21 @@ allPossibleOptions.forEach((options) => {
         routes: createRoutes({
           spyOne: {
             path: '/test/static',
-            loader: routes.staticRoute.loader,
-            pageId: routes.staticRoute.pageId,
+            loader: routesDefault.staticRoute.loader,
+            pageId: routesDefault.staticRoute.pageId,
           },
           spyTwoDynamic: {
             path: '/test/:static',
             params: {
               static: (value) => value.length > 2,
             },
-            loader: routes.dynamicRoute.loader,
-            pageId: routes.dynamicRoute.pageId,
+            loader: routesDefault.dynamicRoute.loader,
+            pageId: routesDefault.dynamicRoute.pageId,
           },
           preventRedirect: {
             path: '/test/prevent-redirect',
-            loader: routes.dynamicRoute.loader,
-            pageId: routes.dynamicRoute.pageId,
+            loader: routesDefault.dynamicRoute.loader,
+            pageId: routesDefault.dynamicRoute.pageId,
             async beforeLeave(config, param: string) {
               spyOne(param);
 
@@ -560,20 +554,21 @@ allPossibleOptions.forEach((options) => {
               }
             },
           },
-          ...getDefaultRoutes(routes),
+          ...getDefaultRoutes(routesDefault),
         }),
         lifecycleParams: [''],
         adapters: await getAdapters(options),
       });
+      const { routes } = router.getConfig();
 
       let url = await router.redirect({ route: 'preventRedirect' });
 
-      checkCurrent(router, cloneWithParams({ route: router.routes.preventRedirect }), url);
+      checkCurrent(router, cloneWithParams({ route: routes.preventRedirect }), url);
 
       url = await router.redirect({ route: 'spyOne' });
 
       // Redirect to spyOne prevented
-      checkCurrent(router, cloneWithParams({ route: router.routes.preventRedirect }), url);
+      checkCurrent(router, cloneWithParams({ route: routes.preventRedirect }), url);
 
       counter.spyOne += 1;
 
@@ -584,7 +579,7 @@ allPossibleOptions.forEach((options) => {
       // Redirect to spyTwoDynamic not prevented
       checkCurrent(
         router,
-        cloneWithParams({ route: router.routes.spyTwoDynamic, params: { static: 'asd' } }),
+        cloneWithParams({ route: routes.spyTwoDynamic, params: { static: 'asd' } }),
         url
       );
 
@@ -598,43 +593,44 @@ allPossibleOptions.forEach((options) => {
         routes: createRoutes({
           spyOne: {
             path: '/test/static',
-            loader: routes.staticRoute.loader,
-            pageId: routes.staticRoute.pageId,
+            loader: routesDefault.staticRoute.loader,
+            pageId: routesDefault.staticRoute.pageId,
           },
           buggyCode: {
             path: '/test/buggy-code',
-            loader: routes.dynamicRoute.loader,
-            pageId: routes.dynamicRoute.pageId,
+            loader: routesDefault.dynamicRoute.loader,
+            pageId: routesDefault.dynamicRoute.pageId,
             async beforeLeave() {
               // @ts-ignore
               // biome-ignore lint/correctness/noUndeclaredVariables: false
               a;
             },
           },
-          ...getDefaultRoutes(routes),
+          ...getDefaultRoutes(routesDefault),
         }),
         lifecycleParams: [''],
         adapters: await getAdapters(options),
       });
+      const { routes } = router.getConfig();
 
       let url = await router.redirect({ route: 'buggyCode' });
 
-      checkCurrent(router, cloneWithParams({ route: router.routes.buggyCode }), url);
+      checkCurrent(router, cloneWithParams({ route: routes.buggyCode }), url);
 
       // TODO: check url
       url = await router.redirect({ route: 'spyOne' });
 
-      checkCurrent(router, cloneWithParams({ route: router.routes.internalError }));
+      checkCurrent(router, cloneWithParams({ route: routes.internalError }));
     });
 
     it('query: no push to history if query is the same', async () => {
-      const router = createRouter({ routes, adapters: await getAdapters(options) });
+      const router = createRouter({ routes: routesDefault, adapters: await getAdapters(options) });
 
       let url = await router.redirect({ route: 'staticRoute', query: { q: 'test' } });
 
       checkCurrent(
         router,
-        cloneWithParams({ route: routes.staticRoute, query: { q: 'test' } }),
+        cloneWithParams({ route: routesDefault.staticRoute, query: { q: 'test' } }),
         url
       );
 
@@ -642,7 +638,7 @@ allPossibleOptions.forEach((options) => {
 
       checkCurrent(
         router,
-        cloneWithParams({ route: routes.staticRoute, query: { q: 'test' } }),
+        cloneWithParams({ route: routesDefault.staticRoute, query: { q: 'test' } }),
         url
       );
 
@@ -655,33 +651,33 @@ allPossibleOptions.forEach((options) => {
 
       checkCurrent(
         router,
-        cloneWithParams({ route: routes.staticRoute, query: { q: 'test' } }),
+        cloneWithParams({ route: routesDefault.staticRoute, query: { q: 'test' } }),
         url
       );
     });
 
     it('query: no push to history if query is the same (non existent param)', async () => {
-      const router = createRouter({ routes, adapters: await getAdapters(options) });
+      const router = createRouter({ routes: routesDefault, adapters: await getAdapters(options) });
 
       let url = await router.redirect({ route: 'staticRoute' });
 
-      checkCurrent(router, cloneWithParams({ route: routes.staticRoute }), url);
+      checkCurrent(router, cloneWithParams({ route: routesDefault.staticRoute }), url);
 
       // url is cleared of nonExistent
       // @ts-ignore
       url = await router.redirect({ route: 'staticRoute', query: { nonExistent: 'test' } });
 
-      checkCurrent(router, cloneWithParams({ route: routes.staticRoute }), url);
+      checkCurrent(router, cloneWithParams({ route: routesDefault.staticRoute }), url);
     });
 
     it('query: push to history if query changed', async () => {
-      const router = createRouter({ routes, adapters: await getAdapters(options) });
+      const router = createRouter({ routes: routesDefault, adapters: await getAdapters(options) });
 
       let url = await router.redirect({ route: 'staticRoute', query: { q: 'test' } });
 
       checkCurrent(
         router,
-        cloneWithParams({ route: routes.staticRoute, query: { q: 'test' } }),
+        cloneWithParams({ route: routesDefault.staticRoute, query: { q: 'test' } }),
         url
       );
 
@@ -689,19 +685,19 @@ allPossibleOptions.forEach((options) => {
 
       checkCurrent(
         router,
-        cloneWithParams({ route: routes.staticRoute, query: { q: 'test2' } }),
+        cloneWithParams({ route: routesDefault.staticRoute, query: { q: 'test2' } }),
         url
       );
 
       url = await router.redirect({ route: 'staticRoute' });
 
-      checkCurrent(router, cloneWithParams({ route: routes.staticRoute }), url);
+      checkCurrent(router, cloneWithParams({ route: routesDefault.staticRoute }), url);
 
       url = await router.redirect({ route: 'staticRoute', query: { q: 'test' } });
 
       checkCurrent(
         router,
-        cloneWithParams({ route: routes.staticRoute, query: { q: 'test' } }),
+        cloneWithParams({ route: routesDefault.staticRoute, query: { q: 'test' } }),
         url
       );
     });
@@ -717,27 +713,28 @@ allPossibleOptions.forEach((options) => {
           routes: createRoutes({
             spyOne: {
               path: '/test/static',
-              loader: routes.staticRoute.loader,
-              pageId: routes.staticRoute.pageId,
+              loader: routesDefault.staticRoute.loader,
+              pageId: routesDefault.staticRoute.pageId,
               async beforeEnter(config, param: string) {
                 spyOne(param);
               },
             },
             redirectSpyOne: {
               path: '/test/static3',
-              loader: routes.dynamicRoute.loader,
-              pageId: routes.dynamicRoute.pageId,
+              loader: routesDefault.dynamicRoute.loader,
+              pageId: routesDefault.dynamicRoute.pageId,
               async beforeEnter(config, param: string) {
                 spyTwo(param);
 
                 return config.redirect({ route: 'spyOne' });
               },
             },
-            ...getDefaultRoutes(routes),
+            ...getDefaultRoutes(routesDefault),
           }),
           lifecycleParams: [''],
           adapters: await getAdapters(options),
         });
+        const { routes } = router.getConfig();
 
         const url = await router.redirect({ route: 'redirectSpyOne' });
 
@@ -749,7 +746,7 @@ allPossibleOptions.forEach((options) => {
         expect(spyOne).toHaveBeenLastCalledWith('');
         expect(spyTwo).toHaveBeenLastCalledWith('');
 
-        checkCurrent(router, cloneWithParams({ route: router.routes.spyOne }), url);
+        checkCurrent(router, cloneWithParams({ route: routes.spyOne }), url);
       });
 
       it('beforeEnter: multiple redirects are not registered in history', async () => {
@@ -757,42 +754,43 @@ allPossibleOptions.forEach((options) => {
           routes: createRoutes({
             one: {
               path: '/1',
-              loader: routes.dynamicRoute.loader,
-              pageId: routes.dynamicRoute.pageId,
+              loader: routesDefault.dynamicRoute.loader,
+              pageId: routesDefault.dynamicRoute.pageId,
             },
             two: {
               path: '/2',
-              loader: routes.dynamicRoute.loader,
-              pageId: routes.dynamicRoute.pageId,
+              loader: routesDefault.dynamicRoute.loader,
+              pageId: routesDefault.dynamicRoute.pageId,
               async beforeEnter(config) {
                 return config.redirect({ route: 'one' });
               },
             },
             three: {
               path: '/3',
-              loader: routes.dynamicRoute.loader,
-              pageId: routes.dynamicRoute.pageId,
+              loader: routesDefault.dynamicRoute.loader,
+              pageId: routesDefault.dynamicRoute.pageId,
               async beforeEnter(config) {
                 return config.redirect({ route: 'two' });
               },
             },
             four: {
               path: '/4',
-              loader: routes.dynamicRoute.loader,
-              pageId: routes.dynamicRoute.pageId,
+              loader: routesDefault.dynamicRoute.loader,
+              pageId: routesDefault.dynamicRoute.pageId,
               async beforeEnter(config) {
                 return config.redirect({ route: 'three' });
               },
             },
-            ...getDefaultRoutes(routes),
+            ...getDefaultRoutes(routesDefault),
           }),
           lifecycleParams: [''],
           adapters: await getAdapters(options),
         });
+        const { routes } = router.getConfig();
 
         const url = await router.redirect({ route: 'four' });
 
-        checkCurrent(router, cloneWithParams({ route: router.routes.one }), url);
+        checkCurrent(router, cloneWithParams({ route: routes.one }), url);
       });
     }
   );
@@ -808,27 +806,28 @@ allPossibleOptions.forEach((options) => {
             spyOne: {
               path: '/test/static',
               query: { a: () => true },
-              loader: routes.staticRoute.loader,
-              pageId: routes.staticRoute.pageId,
+              loader: routesDefault.staticRoute.loader,
+              pageId: routesDefault.staticRoute.pageId,
               async beforeEnter(config, param: string) {
                 spyOne(param);
               },
             },
             redirectSpyOne: {
               path: '/test/static3',
-              loader: routes.dynamicRoute.loader,
-              pageId: routes.dynamicRoute.pageId,
+              loader: routesDefault.dynamicRoute.loader,
+              pageId: routesDefault.dynamicRoute.pageId,
               async beforeEnter(config, param: string) {
                 spyTwo(param);
 
                 return config.redirect({ route: 'spyOne' });
               },
             },
-            ...getDefaultRoutes(routes),
+            ...getDefaultRoutes(routesDefault),
           }),
           lifecycleParams: [''],
           adapters: await getAdapters(options),
         });
+        const { routes } = router.getConfig();
 
         const url = await router.redirect({ route: 'spyOne' });
 
@@ -838,11 +837,11 @@ allPossibleOptions.forEach((options) => {
 
         await expect(async () => {
           await router.redirect({ route: 'redirectSpyOne' });
-        }).rejects.toThrowError(new RedirectError(router.routes.spyOne.path));
+        }).rejects.toThrowError(new RedirectError(routes.spyOne.path));
 
         counter.spyTwo += 1;
 
-        checkCurrent(router, cloneWithParams({ route: router.routes.spyOne }), url);
+        checkCurrent(router, cloneWithParams({ route: routes.spyOne }), url);
 
         checkSpy();
       });
@@ -852,52 +851,53 @@ allPossibleOptions.forEach((options) => {
           routes: createRoutes({
             one: {
               path: '/1',
-              loader: routes.dynamicRoute.loader,
-              pageId: routes.dynamicRoute.pageId,
+              loader: routesDefault.dynamicRoute.loader,
+              pageId: routesDefault.dynamicRoute.pageId,
             },
             two: {
               path: '/2',
-              loader: routes.dynamicRoute.loader,
-              pageId: routes.dynamicRoute.pageId,
+              loader: routesDefault.dynamicRoute.loader,
+              pageId: routesDefault.dynamicRoute.pageId,
               async beforeEnter(config) {
                 return config.redirect({ route: 'one' });
               },
             },
             three: {
               path: '/3',
-              loader: routes.dynamicRoute.loader,
-              pageId: routes.dynamicRoute.pageId,
+              loader: routesDefault.dynamicRoute.loader,
+              pageId: routesDefault.dynamicRoute.pageId,
               async beforeEnter(config) {
                 return config.redirect({ route: 'two' });
               },
             },
             four: {
               path: '/4',
-              loader: routes.dynamicRoute.loader,
-              pageId: routes.dynamicRoute.pageId,
+              loader: routesDefault.dynamicRoute.loader,
+              pageId: routesDefault.dynamicRoute.pageId,
               async beforeEnter(config) {
                 return config.redirect({ route: 'three' });
               },
             },
-            ...getDefaultRoutes(routes),
+            ...getDefaultRoutes(routesDefault),
           }),
           lifecycleParams: [''],
           adapters: await getAdapters(options),
         });
+        const { routes } = router.getConfig();
 
-        const redirectThree = new RedirectError(router.routes.three.path);
+        const redirectThree = new RedirectError(routes.three.path);
 
         await expect(async () => {
-          await router.restoreFromURL({ pathname: router.routes.four.path });
+          await router.restoreFromURL({ pathname: routes.four.path });
         }).rejects.toThrowError(redirectThree);
 
-        const redirectTwo = new RedirectError(router.routes.two.path);
+        const redirectTwo = new RedirectError(routes.two.path);
 
         await expect(async () => {
           await router.restoreFromURL({ pathname: redirectThree.message });
         }).rejects.toThrowError(redirectTwo);
 
-        const redirectOne = new RedirectError(router.routes.one.path);
+        const redirectOne = new RedirectError(routes.one.path);
 
         await expect(async () => {
           await router.restoreFromURL({ pathname: redirectTwo.message });
@@ -905,7 +905,7 @@ allPossibleOptions.forEach((options) => {
 
         const url = await router.restoreFromURL({ pathname: redirectOne.message });
 
-        checkCurrent(router, cloneWithParams({ route: router.routes.one }), url);
+        checkCurrent(router, cloneWithParams({ route: routes.one }), url);
       });
     }
   );

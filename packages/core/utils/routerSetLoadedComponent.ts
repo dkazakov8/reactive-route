@@ -8,23 +8,23 @@ export function routerSetLoadedComponent(
     currentProps: Record<string, any>;
   }
 ) {
+  const { adapters, routes } = props.router.getConfig();
+
   const activeRoute = Object.values(props.router.currentRoute).find(
     (currentRoute) => currentRoute?.isActive
   );
 
-  //if (!activeRoute) return;
-
   const currentRouteName = activeRoute?.name;
   const currentRoutePage = activeRoute?.pageId;
 
-  const componentConfig = props.router.routes[currentRouteName];
+  const componentConfig = routes[currentRouteName];
 
   let preventRedirect = false;
   if (props.router.isRedirecting) preventRedirect = true;
   else if (config.loadedComponentName === currentRouteName) preventRedirect = true;
   else if (config.loadedComponentPage != null && currentRouteName != null) {
     if (config.loadedComponentPage === currentRoutePage) {
-      props.router.adapters.batch(() => {
+      adapters.batch(() => {
         config.currentProps = 'props' in componentConfig ? componentConfig.props || {} : {};
       });
       preventRedirect = true;
@@ -33,7 +33,7 @@ export function routerSetLoadedComponent(
 
   if (preventRedirect) return;
 
-  props.router.adapters.batch(() => {
+  adapters.batch(() => {
     if (config.loadedComponentName) props.beforeUpdatePageComponent?.();
 
     props.beforeSetPageComponent?.(componentConfig);

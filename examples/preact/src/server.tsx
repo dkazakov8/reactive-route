@@ -31,21 +31,11 @@ app.get('*', async (req, res) => {
   try {
     const clearedUrl = await router.restoreFromURL({ pathname: req.originalUrl });
 
-    // this step is not necessary, just if you want to disallow users to see an invalid query in url
-    // in any case, the invalid query will not be present in store, whether you redirect to clearedUrl or not
-    if (req.originalUrl !== clearedUrl) {
-      console.log('originalUrl and clearedUrl mismatch, redirect to', clearedUrl);
-
-      return res.redirect(clearedUrl);
-    }
+    if (req.originalUrl !== clearedUrl) return res.redirect(clearedUrl);
   } catch (error: any) {
     if (error instanceof RedirectError) {
-      console.log('redirect', error.message);
-
       return res.redirect(error.message);
     }
-
-    console.error(error);
 
     return res.status(500).send('Unexpected error');
   }

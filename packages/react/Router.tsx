@@ -3,13 +3,14 @@ import { routerSetLoadedComponent, TypePropsRouter, TypeRoute } from 'reactive-r
 
 function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
   const disposerRef = useRef<() => void>(null);
+  const [{ routes, adapters }] = useState(() => props.router.getConfig());
 
   const [config] = useState<{
     loadedComponentName?: keyof TRoutes;
     loadedComponentPage?: string;
     currentProps: Record<string, any>;
   }>(() =>
-    props.router.adapters.makeObservable({
+    adapters.makeObservable({
       loadedComponentName: undefined,
       loadedComponentPage: undefined,
       currentProps: {},
@@ -17,14 +18,12 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
   );
 
   useState(() => {
-    props.router.adapters.batch(() => {
+    adapters.batch(() => {
       props.beforeMount?.();
 
       routerSetLoadedComponent(props, config);
 
-      disposerRef.current = props.router.adapters.autorun(() =>
-        routerSetLoadedComponent(props, config)
-      );
+      disposerRef.current = adapters.autorun(() => routerSetLoadedComponent(props, config));
     });
   });
 
@@ -36,13 +35,13 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
 
   if (!config.loadedComponentName) return null;
 
-  const LoadedComponent = props.router.routes[config.loadedComponentName].component;
+  const LoadedComponent = routes[config.loadedComponentName].component;
 
   return <LoadedComponent {...config.currentProps} router={props.router} />;
 }
 
 export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
-  const [Component] = useState(() => props.router.adapters.observer!(RouterInner));
+  const [Component] = useState(() => props.router.getConfig().adapters.observer!(RouterInner));
 
   return <Component {...props} />;
 }

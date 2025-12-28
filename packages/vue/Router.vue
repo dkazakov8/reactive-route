@@ -6,23 +6,25 @@ defineOptions({ name: 'ReactiveRouteRouter' });
 
 const props = defineProps<TypePropsRouter<Record<string, TypeRoute>>>();
 
+const { adapters, routes } = props.router.getConfig();
+
 const disposerRef = ref<null | (() => void)>(null);
 
 const config: {
   loadedComponentName?: string;
   loadedComponentPage?: string;
   currentProps: Record<string, any>;
-} = props.router.adapters.makeObservable({
+} = adapters.makeObservable({
   loadedComponentName: undefined,
   loadedComponentPage: undefined,
   currentProps: {},
 });
 
-if (props.router.adapters.immediateSetComponent) {
+if (adapters.immediateSetComponent) {
   routerSetLoadedComponent(props, config);
 }
 
-const disposer = props.router.adapters.autorun(() => routerSetLoadedComponent(props, config));
+const disposer = adapters.autorun(() => routerSetLoadedComponent(props, config));
 
 props.beforeMount?.();
 
@@ -34,7 +36,7 @@ onBeforeUnmount(() => {
 });
 
 const LoadedComponent = computed(() => {
-  const comp = props.router.routes[config.loadedComponentName as any]?.component;
+  const comp = routes[config.loadedComponentName as any]?.component;
 
   return comp ? markRaw(toRaw(comp)) : null;
 });
