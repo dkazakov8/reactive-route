@@ -1,9 +1,4 @@
-import { TypeRoute } from '../types/TypeRoute';
-import { clearDynamic, isDynamic } from './dynamic';
-
-function completeStaticMatch(pathname: string, path: string) {
-  return !path.includes(':') && (pathname === path || pathname === `${path}/`);
-}
+import { TypeRoute } from '../types';
 
 export function findRouteByPathname<TRoutes extends Record<string, TypeRoute>>({
   pathname,
@@ -27,7 +22,8 @@ export function findRouteByPathname<TRoutes extends Record<string, TypeRoute>>({
     const route = routes[routeName];
 
     // return static match instantly
-    if (completeStaticMatch(pathname, route.path)) return route;
+    if (!route.path.includes(':') && (pathname === route.path || pathname === `${route.path}/`))
+      return route;
 
     // if dynamic has been already found, no need to search for another
     if (dynamicRouteMatch) continue;
@@ -45,9 +41,9 @@ export function findRouteByPathname<TRoutes extends Record<string, TypeRoute>>({
     const someParamInvalid = routePathnameArray.some((paramName, i) => {
       const paramFromUrl = pathnameArray[i];
 
-      if (!isDynamic(paramName)) return paramName !== paramFromUrl;
+      if (paramName[0] !== ':') return paramName !== paramFromUrl;
 
-      const validator = route.params?.[clearDynamic(paramName)];
+      const validator = route.params?.[paramName.slice(1)];
 
       if (typeof validator !== 'function') {
         throw new Error(`findRoute: missing validator for param "${paramName}"`);

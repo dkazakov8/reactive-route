@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { constants } from '../core/utils/constants';
+import { isClient } from '../core/utils/isClient';
 import { prepareRouterTest } from './prepareRouterTest';
 import { TypeOptions } from './types';
 
@@ -8,7 +8,7 @@ export async function routerTests(
   optionsArray: Array<TypeOptions>,
   before?: (options: TypeOptions) => void
 ) {
-  describe.runIf(constants.isClient).each(optionsArray)(
+  describe.runIf(isClient).each(optionsArray)(
     `Client tests Router [$renderer + $reactivity]`,
     (options) => {
       before?.(options);
@@ -318,7 +318,7 @@ export async function routerTests(
     }
   );
 
-  describe.runIf(!constants.isClient).each(optionsArray)(
+  describe.runIf(!isClient).each(optionsArray)(
     `SSR tests Router [$renderer + $reactivity]`,
     (options) => {
       it('SSR', async () => {

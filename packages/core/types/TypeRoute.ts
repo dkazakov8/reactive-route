@@ -1,7 +1,0 @@
-import { TypeRouteRaw } from './TypeRouteRaw';
-
-export type TypeRoute = TypeRouteRaw & {
-  name: string;
-  component?: any;
-  otherExports?: Record<string, any>;
-};

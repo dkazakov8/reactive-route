@@ -1,4 +1,4 @@
-import { TypeRoute } from '../types/TypeRoute';
+import { TypeRoute } from '../types';
 
 export function loadComponentToConfig(params: { route: TypeRoute }): Promise<void> {
   const { route } = params;

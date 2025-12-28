@@ -1,12 +1,7 @@
-function removeHash(input: string) {
-  const hashStart = input.indexOf('#');
-
-  return hashStart === -1 ? input : input.slice(0, hashStart);
-}
-
 export const queryString = {
   extract(input: string) {
-    const inputNoHash = removeHash(input);
+    const hashStart = input.indexOf('#');
+    const inputNoHash = hashStart === -1 ? input : input.slice(0, hashStart);
 
     const queryStart = inputNoHash.indexOf('?');
 

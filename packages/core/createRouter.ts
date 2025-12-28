@@ -1,13 +1,15 @@
-import { TypeAdapters } from './types/TypeAdapters';
-import { TypeCurrentRoute } from './types/TypeCurrentRoute';
-import { TypeLifecycleConfig } from './types/TypeLifecycleConfig';
-import { TypeRedirectParams } from './types/TypeRedirectParams';
-import { TypeRoute } from './types/TypeRoute';
-import { TypeRouter } from './types/TypeRouter';
-import { constants } from './utils/constants';
+import {
+  TypeAdapters,
+  TypeCurrentRoute,
+  TypeLifecycleConfig,
+  TypeRedirectParams,
+  TypeRoute,
+  TypeRouter,
+} from './types';
 import { getDynamicValues } from './utils/getDynamicValues';
 import { getInitialRoute } from './utils/getInitialRoute';
 import { getQueryValues } from './utils/getQueryValues';
+import { isClient } from './utils/isClient';
 import { loadComponentToConfig } from './utils/loadComponentToConfig';
 import { PreventError } from './utils/PreventError';
 import { queryString } from './utils/queryString';
@@ -24,9 +26,10 @@ export function createRouter<
   const { adapters, routes, lifecycleParams } = routerConfig;
 
   function popHandler() {
-    const currentUrl = `${location.pathname}${location.search}`;
-
-    void router.restoreFromURL({ pathname: currentUrl, replace: true });
+    void router.restoreFromURL({
+      pathname: `${location.pathname}${location.search}`,
+      replace: true,
+    });
   }
 
   const router: TypeRouter<TRoutes> = adapters.makeObservable({
@@ -34,7 +37,7 @@ export function createRouter<
     currentRoute: {},
     isRedirecting: false,
     destroy() {
-      if (constants.isClient) {
+      if (isClient) {
         window.removeEventListener('popstate', popHandler);
       }
     },
@@ -77,7 +80,7 @@ export function createRouter<
 
       if (activeRoute) {
         currentRoute = routes[activeRoute.name];
-        currentPathname = replaceDynamicValues({ route: currentRoute, params: activeRoute.params });
+        currentPathname = replaceDynamicValues({ route: activeRoute, params: activeRoute.params });
         currentQuery = activeRoute.query;
         currentSearch = queryString.stringify(activeRoute.query as any);
         currentUrl = `${currentPathname}${currentSearch ? `?${currentSearch}` : ''}`;
@@ -125,13 +128,10 @@ export function createRouter<
       if (currentPathname === nextPathname) {
         if (currentSearch !== nextSearch) {
           adapters.batch(() => {
-            adapters.replaceObject(this.currentRoute[routeName]!, {
-              ...this.currentRoute[routeName],
-              query: nextQuery || {},
-            });
+            adapters.replaceObject(this.currentRoute[routeName]!.query, nextQuery || {});
           });
 
-          if (constants.isClient) {
+          if (isClient) {
             window.history[replace ? 'replaceState' : 'pushState'](null, '', nextUrl);
           }
         }
@@ -161,7 +161,7 @@ export function createRouter<
           currentSearch,
           currentPathname,
           redirect: (redirectConfig: TypeRedirectParams<TRoutes, keyof TRoutes>) => {
-            if (constants.isClient) return redirectConfig;
+            if (isClient) return redirectConfig;
 
             const redirectRoute = routes[redirectConfig.route];
             const redirectParams =
@@ -264,7 +264,7 @@ export function createRouter<
           if (r && r.name !== routeName) r.isActive = false;
         });
 
-        if (constants.isClient) {
+        if (isClient) {
           window.history[replace ? 'replaceState' : 'pushState'](null, '', nextUrl);
         }
 
@@ -281,7 +281,7 @@ export function createRouter<
   router.restoreFromURL = router.restoreFromURL.bind(router);
   router.restoreFromServer = router.restoreFromServer.bind(router);
 
-  if (constants.isClient) {
+  if (isClient) {
     window.addEventListener('popstate', popHandler);
   }
 

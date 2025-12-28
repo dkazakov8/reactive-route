@@ -1,8 +1,4 @@
-import { TypeCurrentRoute } from '../types/TypeCurrentRoute';
-import { TypeRoute } from '../types/TypeRoute';
-import { clearDynamic, isDynamic } from './dynamic';
-
-const re = new RegExp(`[^/]+`, 'g');
+import { TypeCurrentRoute, TypeRoute } from '../types';
 
 export function replaceDynamicValues<TRouteItem extends TypeRoute | TypeCurrentRoute<TypeRoute>>({
   route,
@@ -11,10 +7,10 @@ export function replaceDynamicValues<TRouteItem extends TypeRoute | TypeCurrentR
   route: TRouteItem;
   params?: Record<keyof TRouteItem['params'], string>;
 }): string {
-  return route.path.replace(re, (paramName) => {
-    if (!isDynamic(paramName)) return paramName;
+  return route.path.replace(/[^/]+/g, (paramName) => {
+    if (paramName[0] !== ':') return paramName;
 
-    const value = params[clearDynamic(paramName) as keyof TRouteItem['params']];
+    const value = params[paramName.slice(1) as keyof TRouteItem['params']];
 
     if (!value) {
       throw new Error(

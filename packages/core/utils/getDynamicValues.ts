@@ -1,5 +1,4 @@
-import { TypeRoute } from '../types/TypeRoute';
-import { clearDynamic, isDynamic } from './dynamic';
+import { TypeRoute } from '../types';
 
 export function getDynamicValues<TRoute extends TypeRoute>(params: {
   route: TRoute;
@@ -21,7 +20,7 @@ export function getDynamicValues<TRoute extends TypeRoute>(params: {
     const paramName = routePathnameArray[i];
 
     // @ts-ignore
-    if (isDynamic(paramName)) dynamicParams[clearDynamic(paramName)] = pathnameArray[i];
+    if (paramName[0] === ':') dynamicParams[paramName.slice(1)] = pathnameArray[i];
   }
 
   return dynamicParams;

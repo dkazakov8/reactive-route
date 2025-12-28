@@ -1,5 +1,4 @@
-import { TypeRoute } from '../types/TypeRoute';
-import { getTypedEntries } from './getTypedEntries';
+import { TypeRoute } from '../types';
 import { queryString } from './queryString';
 
 export function getQueryValues<TRoute extends TypeRoute>(params: {
@@ -16,11 +15,11 @@ export function getQueryValues<TRoute extends TypeRoute>(params: {
 
   const query: Record<keyof TRoute['query'], string> = queryString.parse(qs) as any;
 
-  getTypedEntries(query).forEach(([key, value]) => {
-    const validator = route.query![key as any];
+  Object.entries(query).forEach(([key, value]) => {
+    const validator = route.query![key];
 
-    if (typeof validator !== 'function' || !validator(value)) {
-      delete query[key];
+    if (typeof validator !== 'function' || !validator(value as string)) {
+      delete query[key as keyof TRoute['query']];
     }
   });
 

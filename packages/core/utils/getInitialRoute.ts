@@ -1,5 +1,4 @@
-import { TypeRedirectParams } from '../types/TypeRedirectParams';
-import { TypeRoute } from '../types/TypeRoute';
+import { TypeRedirectParams, TypeRoute } from '../types';
 import { findRouteByPathname } from './findRouteByPathname';
 import { getDynamicValues } from './getDynamicValues';
 import { getQueryValues } from './getQueryValues';
@@ -11,14 +10,14 @@ export function getInitialRoute<
   pathname: string;
   replace?: boolean;
 }): TypeRedirectParams<TRoutes, keyof TRoutes> {
-  const route =
-    findRouteByPathname({ pathname: params.pathname, routes: params.routes }) ||
-    params.routes.notFound;
+  const { routes, pathname, replace } = params;
+
+  const route = findRouteByPathname({ pathname, routes }) || params.routes.notFound;
 
   return {
     route: route.name as keyof TRoutes,
-    query: getQueryValues({ route, pathname: params.pathname }),
-    params: getDynamicValues({ route, pathname: params.pathname }),
-    replace: params.replace,
+    query: getQueryValues({ route, pathname }),
+    params: getDynamicValues({ route, pathname }),
+    replace,
   } as any;
 }

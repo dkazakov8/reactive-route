@@ -1,4 +1,4 @@
-import { TypePropsRouter } from '../types/TypePropsRouter';
+import { TypePropsRouter } from '../types';
 
 export function routerSetLoadedComponent(
   props: TypePropsRouter<any>,
