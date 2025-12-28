@@ -7,15 +7,43 @@ export type TypeAdapters = {
   immediateSetComponent?: boolean;
 };
 
+// This is passed in the createRoutes function
+export type TypeRouteRaw = {
+  path: string;
+  loader: () => Promise<{ default: any }>;
+  props?: Record<string, any>;
+  query?: Record<string, TypeValidator>;
+  params?: Record<string, TypeValidator>;
+  beforeEnter?: (config: TypeLifecycleConfig, ...args: Array<any>) => Promise<any>;
+  beforeLeave?: (config: TypeLifecycleConfig, ...args: Array<any>) => Promise<any> | null;
+
+  pageId?: string;
+};
+
+// This is returned from in the createRoutes function
+// Just to ensure that "name", "component" and "otherExports" are not passed manually
+export type TypeRoute = TypeRouteRaw & {
+  name: string;
+  component?: any;
+  otherExports?: Record<string, any>;
+};
+
+// This is stored in a reactive store and made from TypeRoute + data from URL
 export type TypeCurrentRoute<TRoute extends TypeRoute> = {
   name: TRoute['name'];
   path: TRoute['path'];
   props: TRoute['props'];
   query: Partial<Record<keyof TRoute['query'], string>>;
   params: Record<keyof TRoute['params'], string>;
-  pageId: TRoute['pageId'];
+  url: string;
+  pathname: string;
+  search?: string;
   isActive: boolean;
+
+  pageId: TRoute['pageId'];
 };
+
+export type TypeDefaultRoutes = Record<'notFound' | 'internalError' | string, TypeRoute>;
 
 export type TypeLifecycleConfig = {
   nextUrl: string;
@@ -34,7 +62,7 @@ export type TypeLifecycleConfig = {
   preventRedirect: () => void;
 };
 
-export type TypePropsRouter<TRoutes extends Record<string, TypeRoute>> = {
+export type TypePropsRouter<TRoutes extends TypeDefaultRoutes> = {
   router: TypeRouter<TRoutes>;
   beforeMount?: () => void;
   beforeSetPageComponent?: (componentConfig: TRoutes[keyof TRoutes]) => void;
@@ -42,7 +70,7 @@ export type TypePropsRouter<TRoutes extends Record<string, TypeRoute>> = {
 };
 
 export type TypeRedirectParams<
-  TRoutes extends Record<string, TypeRoute>,
+  TRoutes extends TypeDefaultRoutes,
   TRouteName extends keyof TRoutes,
 > = TRoutes[TRouteName]['params'] extends Record<string, TypeValidator>
   ? TRoutes[TRouteName]['query'] extends Record<string, TypeValidator>
@@ -63,46 +91,22 @@ export type TypeRedirectParams<
         query?: Partial<Record<keyof TRoutes[TRouteName]['query'], string>>;
         replace?: boolean;
       }
-    : {
-        route: TRouteName;
-        replace?: boolean;
-      };
+    : { route: TRouteName; replace?: boolean };
 
-export type TypeRoute = TypeRouteRaw & {
-  name: string;
-  component?: any;
-  otherExports?: Record<string, any>;
-};
-
-export type TypeRouter<TRoutes extends Record<string | 'notFound' | 'internalError', TypeRoute>> = {
+export type TypeRouter<TRoutes extends TypeDefaultRoutes> = {
   currentRoute: {
     [TRouteName in keyof TRoutes | 'notFound' | 'internalError']:
       | TypeCurrentRoute<TRoutes[TRouteName]>
       | undefined;
   };
   isRedirecting: boolean;
+  destroy(): void;
+  getConfig(): { adapters: TypeAdapters; routes: TRoutes; lifecycleParams?: Array<any> };
   redirect<TRouteName extends keyof TRoutes>(
     config: TypeRedirectParams<TRoutes, TRouteName>
   ): Promise<string>;
   restoreFromURL(params: { pathname: string; replace?: boolean }): Promise<string>;
-  restoreFromServer(obj: {
-    currentRoute: {
-      [TRouteName in keyof TRoutes]: TypeCurrentRoute<TRoutes[TRouteName]> | undefined;
-    };
-  }): Promise<void>;
-  destroy(): void;
-  getConfig(): { adapters: TypeAdapters; routes: TRoutes; lifecycleParams?: Array<any> };
-};
-
-export type TypeRouteRaw = {
-  path: string;
-  loader: () => Promise<{ default: any }>;
-  pageId?: string;
-  props?: Record<string, any>;
-  query?: Record<string, TypeValidator>;
-  params?: Record<string, TypeValidator>;
-  beforeEnter?: (config: TypeLifecycleConfig, ...args: Array<any>) => Promise<any>;
-  beforeLeave?: (config: TypeLifecycleConfig, ...args: Array<any>) => Promise<any> | null;
+  restoreFromServer(obj: { currentRoute: TypeRouter<TRoutes>['currentRoute'] }): Promise<void>;
 };
 
 export type TypeValidator = (param: string) => boolean;

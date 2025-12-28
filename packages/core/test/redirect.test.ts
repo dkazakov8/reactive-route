@@ -799,10 +799,11 @@ allPossibleOptions.forEach((options) => {
       const router = createRouter({
         routes: createRoutes({
           spyOne: {
-            path: '/test/static',
+            path: '/test/:dynamic',
+            params: { dynamic: (v) => true },
             query: { a: () => true },
             loader: routesDefault.staticRoute.loader,
-            pageId: routesDefault.staticRoute.pageId,
+            pageId: routesDefault.dynamicRoute.pageId,
             async beforeEnter(config, param: string) {
               spyOne(param);
             },
@@ -814,7 +815,11 @@ allPossibleOptions.forEach((options) => {
             async beforeEnter(config, param: string) {
               spyTwo(param);
 
-              return config.redirect({ route: 'spyOne' });
+              return config.redirect({
+                route: 'spyOne',
+                params: { dynamic: 'bar' },
+                query: { a: 'test' },
+              });
             },
           },
           ...getDefaultRoutes(routesDefault),
@@ -824,19 +829,29 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getConfig();
 
-      const url = await router.redirect({ route: 'spyOne' });
+      const url = await router.redirect({ route: 'spyOne', params: { dynamic: 'foo' } });
 
       counter.spyOne += 1;
+
+      checkCurrent(
+        router,
+        cloneWithParams({ route: routes.spyOne, params: { dynamic: 'foo' } }),
+        url
+      );
 
       checkSpy();
 
       await expect(async () => {
         await router.redirect({ route: 'redirectSpyOne' });
-      }).rejects.toThrowError(new RedirectError(routes.spyOne.path));
+      }).rejects.toThrowError(new RedirectError('/test/bar?a=test'));
 
       counter.spyTwo += 1;
 
-      checkCurrent(router, cloneWithParams({ route: routes.spyOne }), url);
+      checkCurrent(
+        router,
+        cloneWithParams({ route: routes.spyOne, params: { dynamic: 'foo' } }),
+        url
+      );
 
       checkSpy();
     });

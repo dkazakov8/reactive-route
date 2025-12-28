@@ -1,6 +1,7 @@
 import {
   TypeAdapters,
   TypeCurrentRoute,
+  TypeDefaultRoutes,
   TypeLifecycleConfig,
   TypeRedirectParams,
   TypeRoute,
@@ -16,9 +17,7 @@ import { queryString } from './utils/queryString';
 import { RedirectError } from './utils/RedirectError';
 import { replaceDynamicValues } from './utils/replaceDynamicValues';
 
-export function createRouter<
-  TRoutes extends Record<string | 'notFound' | 'internalError', TypeRoute>,
->(routerConfig: {
+export function createRouter<TRoutes extends TypeDefaultRoutes>(routerConfig: {
   routes: TRoutes;
   adapters: TypeAdapters;
   lifecycleParams?: Array<any>;
@@ -30,6 +29,43 @@ export function createRouter<
       pathname: `${location.pathname}${location.search}`,
       replace: true,
     });
+  }
+
+  function constructRouteData(
+    routeName: keyof TRoutes | undefined,
+    data: { paramsRaw?: Record<string, any>; queryRaw?: Record<string, any> }
+  ) {
+    if (!routeName) {
+      return {
+        url: undefined,
+        route: undefined,
+        query: undefined,
+        search: undefined,
+        pathname: undefined,
+      };
+    }
+
+    const route = routes[routeName];
+    const pathname = replaceDynamicValues({ route, params: data.paramsRaw as any });
+
+    let query: Partial<Record<keyof TRoutes[keyof TRoutes]['query'], string>> | undefined;
+    let url = pathname;
+    let search: undefined | string;
+
+    if (data.queryRaw) {
+      const clearedQuery = getQueryValues({
+        route,
+        pathname: `${pathname}?${queryString.stringify(data.queryRaw)}`,
+      });
+
+      if (Object.keys(clearedQuery).length > 0) {
+        query = clearedQuery;
+        search = queryString.stringify(clearedQuery);
+        url = `${pathname}?${search}`;
+      }
+    }
+
+    return { route, pathname, query, url, search };
   }
 
   const router: TypeRouter<TRoutes> = adapters.makeObservable({
@@ -63,55 +99,31 @@ export function createRouter<
     async redirect(config) {
       const { route: routeName, replace } = config;
 
-      /**
-       * Construct current route data
-       *
-       */
-
-      let currentRoute: undefined | TRoutes[keyof TRoutes];
-      let currentPathname: undefined | string;
-      let currentUrl: undefined | string;
-      let currentSearch: undefined | string;
-      let currentQuery: Partial<Record<keyof TRoutes[keyof TRoutes]['query'], string>> | undefined;
-
-      const activeRoute: TypeCurrentRoute<TRoutes[keyof TRoutes]> = Object.values(
+      const currentRouteActive: TypeCurrentRoute<TRoutes[keyof TRoutes]> = Object.values(
         this.currentRoute
       ).find((currentRoute) => currentRoute?.isActive);
 
-      if (activeRoute) {
-        currentRoute = routes[activeRoute.name];
-        currentPathname = replaceDynamicValues({ route: activeRoute, params: activeRoute.params });
-        currentQuery = activeRoute.query;
-        currentSearch = queryString.stringify(activeRoute.query as any);
-        currentUrl = `${currentPathname}${currentSearch ? `?${currentSearch}` : ''}`;
-      }
+      const currentRoute = currentRouteActive ? routes[currentRouteActive.name] : undefined;
 
-      /**
-       * Construct next route data
-       *
-       */
+      const {
+        url: currentUrl,
+        query: currentQuery,
+        search: currentSearch,
+        pathname: currentPathname,
+      } = currentRouteActive || {};
 
-      const nextRoute = routes[routeName];
-      const nextPathname = replaceDynamicValues({
+      const {
+        url: nextUrl,
         route: nextRoute,
-        params: 'params' in config ? config.params : undefined,
+        query: nextQuery,
+        search: nextSearch,
+        pathname: nextPathname,
+      } = constructRouteData(routeName, {
+        paramsRaw: 'params' in config ? config.params : undefined,
+        queryRaw: 'query' in config ? config.query : undefined,
       });
-      let nextQuery: Partial<Record<keyof TRoutes[keyof TRoutes]['query'], string>> | undefined;
-      let nextUrl = nextPathname;
-      let nextSearch: undefined | string;
 
-      if ('query' in config && config.query) {
-        const clearedQuery = getQueryValues({
-          route: nextRoute,
-          pathname: `${nextPathname}?${queryString.stringify(config.query as any)}`,
-        });
-
-        if (Object.keys(clearedQuery).length > 0) {
-          nextQuery = clearedQuery;
-          nextSearch = queryString.stringify(clearedQuery);
-          nextUrl = `${nextPathname}?${nextSearch}`;
-        }
-      }
+      if (!nextUrl || !nextRoute || !nextPathname) return '/';
 
       /**
        * Prevent redirect to the same url
@@ -128,7 +140,12 @@ export function createRouter<
       if (currentPathname === nextPathname) {
         if (currentSearch !== nextSearch) {
           adapters.batch(() => {
-            adapters.replaceObject(this.currentRoute[routeName]!.query, nextQuery || {});
+            adapters.replaceObject(this.currentRoute[routeName]!, {
+              ...this.currentRoute[routeName],
+              query: nextQuery || {},
+              search: nextSearch,
+              url: nextUrl,
+            });
           });
 
           if (isClient) {
@@ -144,12 +161,7 @@ export function createRouter<
       });
 
       try {
-        /**
-         * Lifecycle
-         *
-         */
-
-        const config: TypeLifecycleConfig = {
+        const lifecycleConfig: TypeLifecycleConfig = {
           nextUrl,
           nextRoute,
           nextQuery,
@@ -163,39 +175,24 @@ export function createRouter<
           redirect: (redirectConfig: TypeRedirectParams<TRoutes, keyof TRoutes>) => {
             if (isClient) return redirectConfig;
 
-            const redirectRoute = routes[redirectConfig.route];
-            const redirectParams =
-              'params' in redirectConfig && redirectConfig.params
-                ? redirectConfig.params
-                : undefined;
+            const { route: redirectRouteName } = redirectConfig;
 
-            let redirectUrl = replaceDynamicValues({
-              params: redirectParams,
-              route: redirectRoute,
+            const { url: redirectUrl } = constructRouteData(redirectRouteName, {
+              paramsRaw: 'params' in redirectConfig ? redirectConfig.params : undefined,
+              queryRaw: 'query' in redirectConfig ? redirectConfig.query : undefined,
             });
 
-            if ('query' in redirectConfig && redirectConfig.query) {
-              const clearedQuery = getQueryValues({
-                route: nextRoute,
-                pathname: `${nextPathname}?${queryString.stringify(redirectConfig.query as any)}`,
-              });
-
-              if (Object.keys(clearedQuery).length > 0) {
-                redirectUrl = `${redirectUrl}?${queryString.stringify(clearedQuery)}`;
-              }
-            }
-
-            throw new RedirectError(redirectUrl);
+            throw new RedirectError(redirectUrl!);
           },
           preventRedirect: () => {
             throw new PreventError(`Redirect to ${nextUrl} was prevented`);
           },
         };
 
-        await currentRoute?.beforeLeave?.(config, ...(lifecycleParams || []));
+        await currentRoute?.beforeLeave?.(lifecycleConfig, ...(lifecycleParams || []));
 
         const redirectConfig: TypeRedirectParams<TRoutes, keyof TRoutes> =
-          await nextRoute.beforeEnter?.(config, ...(lifecycleParams || []));
+          await nextRoute.beforeEnter?.(lifecycleConfig, ...(lifecycleParams || []));
 
         /**
          * Handle redirect returned from beforeEnter
@@ -219,18 +216,20 @@ export function createRouter<
         await loadComponentToConfig({ route: routes.internalError });
 
         adapters.batch(() => {
-          const newObj: TypeCurrentRoute<TRoutes['internalError']> = {
+          const newCurrent: TypeCurrentRoute<TRoutes['internalError']> = {
             name: routes.internalError.name,
             path: routes.internalError.path,
             props: routes[routes.internalError.name].props,
-            query: adapters.makeObservable({}) as any,
-            params: adapters.makeObservable({}) as any,
+            query: {} as any,
+            params: {} as any,
             pageId: routes[routes.internalError.name].pageId,
+            url: currentUrl || '',
+            pathname: currentPathname || '',
             isActive: true,
           };
 
-          if (!this.currentRoute.internalError) this.currentRoute.internalError = newObj;
-          else adapters.replaceObject(this.currentRoute.internalError!, newObj);
+          if (!this.currentRoute.internalError) this.currentRoute.internalError = newCurrent;
+          else adapters.replaceObject(this.currentRoute.internalError, newCurrent);
 
           Object.values(this.currentRoute).forEach((r) => {
             if (r && r.name !== 'internalError') r.isActive = false;
@@ -243,22 +242,22 @@ export function createRouter<
       }
 
       adapters.batch(() => {
-        const newObj: TypeCurrentRoute<TRoutes[keyof TRoutes]> = {
+        const newCurrent: TypeCurrentRoute<TRoutes[keyof TRoutes]> = {
           name: nextRoute.name,
           path: nextRoute.path,
           props: routes[nextRoute.name].props,
-          query: getQueryValues({ route: nextRoute, pathname: nextUrl }),
+          query: nextQuery || {},
           params: getDynamicValues({ route: nextRoute, pathname: nextUrl }),
           pageId: routes[nextRoute.name].pageId,
+          url: nextUrl,
+          pathname: nextPathname,
+          search: nextSearch,
           isActive: true,
         };
 
-        if (!this.currentRoute[routeName]) {
-          // @ts-ignore
-          this.currentRoute[routeName] = newObj;
-        } else {
-          adapters.replaceObject(this.currentRoute[routeName]!, newObj);
-        }
+        // @ts-ignore
+        if (!this.currentRoute[routeName]) this.currentRoute[routeName] = newCurrent;
+        else adapters.replaceObject(this.currentRoute[routeName], newCurrent);
 
         Object.values(this.currentRoute).forEach((r) => {
           if (r && r.name !== routeName) r.isActive = false;
