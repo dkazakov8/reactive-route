@@ -153,8 +153,8 @@ importers:
         specifier: 6.6.3
         version: 6.6.3(preact@10.27.2)
       reactive-route:
-        specifier: 0.0.1-alpha.35
-        version: 0.0.1-alpha.35
+        specifier: 0.0.1-alpha.36
+        version: 0.0.1-alpha.36
       ultimate-express:
         specifier: 2.0.12
         version: 2.0.12
@@ -196,8 +196,8 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
       reactive-route:
-        specifier: 0.0.1-alpha.35
-        version: 0.0.1-alpha.35
+        specifier: 0.0.1-alpha.36
+        version: 0.0.1-alpha.36
       ultimate-express:
         specifier: 2.0.12
         version: 2.0.12
@@ -230,8 +230,8 @@ importers:
         specifier: 6.15.0
         version: 6.15.0
       reactive-route:
-        specifier: 0.0.1-alpha.35
-        version: 0.0.1-alpha.35
+        specifier: 0.0.1-alpha.36
+        version: 0.0.1-alpha.36
       solid-js:
         specifier: 1.9.10
         version: 1.9.10
@@ -270,8 +270,8 @@ importers:
   examples/vue:
     dependencies:
       reactive-route:
-        specifier: 0.0.1-alpha.35
-        version: 0.0.1-alpha.35
+        specifier: 0.0.1-alpha.36
+        version: 0.0.1-alpha.36
       ultimate-express:
         specifier: 2.0.12
         version: 2.0.12
@@ -2405,8 +2405,8 @@ packages:
     resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
     engines: {node: '>=0.10.0'}
 
-  reactive-route@0.0.1-alpha.35:
-    resolution: {integrity: sha512-sFPJXhhi/BcOqLo2+XwdJRysQ8n5Rkq1w1I6agBtQXpSrUl7SSKHRenPhzx3flzLdmhc0IIHrBqn1ORJHUgD0Q==}
+  reactive-route@0.0.1-alpha.36:
+    resolution: {integrity: sha512-Us64ILQQ1TlaRUvT+Mbex+edKi9k930Olfvlzby7dyJYmubEjtGCu9tUa5VbyYXMAZvqZIKq7bxq2w2xysWyPA==}
     engines: {node: '>=22'}
 
   regex-recursion@6.0.2:
@@ -5157,7 +5157,7 @@ snapshots:
 
   react@19.2.3: {}
 
-  reactive-route@0.0.1-alpha.35: {}
+  reactive-route@0.0.1-alpha.36: {}
 
   regex-recursion@6.0.2:
     dependencies:

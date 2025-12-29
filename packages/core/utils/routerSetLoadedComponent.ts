@@ -10,9 +10,7 @@ export function routerSetLoadedComponent(
 ) {
   const { adapters, routes } = props.router.getConfig();
 
-  const activeRoute = Object.values(props.router.currentRoute).find(
-    (currentRoute) => currentRoute?.isActive
-  );
+  const activeRoute = props.router.getActiveCurrentRoute();
 
   const currentRouteName = activeRoute?.name;
   const currentRoutePage = activeRoute?.pageId;

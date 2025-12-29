@@ -7,9 +7,6 @@ export const queryString = {
 
     return queryStart === -1 ? '' : inputNoHash.slice(queryStart + 1);
   },
-  parse(input: string) {
-    return Object.fromEntries(new URLSearchParams(input));
-  },
   stringify(obj: Record<string, string>) {
     return new URLSearchParams(obj).toString();
   },

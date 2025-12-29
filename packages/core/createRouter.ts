@@ -1,21 +1,16 @@
 import {
   TypeAdapters,
-  TypeCurrentRoute,
   TypeDefaultRoutes,
   TypeLifecycleConfig,
   TypeRedirectParams,
-  TypeRoute,
   TypeRouter,
 } from './types';
-import { getDynamicValues } from './utils/getDynamicValues';
 import { getInitialRoute } from './utils/getInitialRoute';
-import { getQueryValues } from './utils/getQueryValues';
 import { isClient } from './utils/isClient';
 import { loadComponentToConfig } from './utils/loadComponentToConfig';
 import { PreventError } from './utils/PreventError';
-import { queryString } from './utils/queryString';
 import { RedirectError } from './utils/RedirectError';
-import { replaceDynamicValues } from './utils/replaceDynamicValues';
+import { toCurrentRoute } from './utils/toCurrentRoute';
 
 export function createRouter<TRoutes extends TypeDefaultRoutes>(routerConfig: {
   routes: TRoutes;
@@ -25,47 +20,9 @@ export function createRouter<TRoutes extends TypeDefaultRoutes>(routerConfig: {
   const { adapters, routes, lifecycleParams } = routerConfig;
 
   function popHandler() {
-    void router.restoreFromURL({
-      pathname: `${location.pathname}${location.search}`,
-      replace: true,
-    });
-  }
+    const { pathname, search } = location;
 
-  function constructRouteData(
-    routeName: keyof TRoutes | undefined,
-    data: { paramsRaw?: Record<string, any>; queryRaw?: Record<string, any> }
-  ) {
-    if (!routeName) {
-      return {
-        url: undefined,
-        route: undefined,
-        query: undefined,
-        search: undefined,
-        pathname: undefined,
-      };
-    }
-
-    const route = routes[routeName];
-    const pathname = replaceDynamicValues({ route, params: data.paramsRaw as any });
-
-    let query: Partial<Record<keyof TRoutes[keyof TRoutes]['query'], string>> | undefined;
-    let url = pathname;
-    let search: undefined | string;
-
-    if (data.queryRaw) {
-      const clearedQuery = getQueryValues({
-        route,
-        pathname: `${pathname}?${queryString.stringify(data.queryRaw)}`,
-      });
-
-      if (Object.keys(clearedQuery).length > 0) {
-        query = clearedQuery;
-        search = queryString.stringify(clearedQuery);
-        url = `${pathname}?${search}`;
-      }
-    }
-
-    return { route, pathname, query, url, search };
+    void router.restoreFromURL({ pathname: `${pathname}${search}`, replace: true });
   }
 
   const router: TypeRouter<TRoutes> = adapters.makeObservable({
@@ -78,6 +35,9 @@ export function createRouter<TRoutes extends TypeDefaultRoutes>(routerConfig: {
       }
     },
     getConfig: () => routerConfig,
+    getActiveCurrentRoute() {
+      return Object.values(this.currentRoute).find((currentRoute) => currentRoute?.isActive);
+    },
     restoreFromURL(params) {
       return this.redirect(getInitialRoute({ routes, ...params }));
     },
@@ -86,9 +46,7 @@ export function createRouter<TRoutes extends TypeDefaultRoutes>(routerConfig: {
         Object.assign(this.currentRoute, obj.currentRoute);
       });
 
-      const activeRoute: TypeRouter<TRoutes>['currentRoute'][keyof TRoutes] = Object.values(
-        this.currentRoute
-      ).find((currentRoute) => currentRoute?.isActive);
+      const activeRoute = this.getActiveCurrentRoute();
 
       const preloadedRouteName = Object.keys(routes).find(
         (routeName) => activeRoute?.name === routeName
@@ -97,63 +55,46 @@ export function createRouter<TRoutes extends TypeDefaultRoutes>(routerConfig: {
       return loadComponentToConfig({ route: routes[preloadedRouteName] });
     },
     async redirect(config) {
-      const { route: routeName, replace } = config;
+      let { route: routeName, replace } = config;
 
-      const currentRouteActive: TypeCurrentRoute<TRoutes[keyof TRoutes]> = Object.values(
-        this.currentRoute
-      ).find((currentRoute) => currentRoute?.isActive);
-
+      const currentRouteActive = this.getActiveCurrentRoute();
       const currentRoute = currentRouteActive ? routes[currentRouteActive.name] : undefined;
 
-      const {
-        url: currentUrl,
-        query: currentQuery,
-        search: currentSearch,
-        pathname: currentPathname,
-      } = currentRouteActive || {};
-
-      const {
-        url: nextUrl,
+      const nextRoute = routes[routeName];
+      let nextCurrentRoute = toCurrentRoute({
         route: nextRoute,
-        query: nextQuery,
-        search: nextSearch,
-        pathname: nextPathname,
-      } = constructRouteData(routeName, {
         paramsRaw: 'params' in config ? config.params : undefined,
         queryRaw: 'query' in config ? config.query : undefined,
       });
-
-      if (!nextUrl || !nextRoute || !nextPathname) return '/';
 
       /**
        * Prevent redirect to the same url
        *
        */
 
-      if (currentUrl === nextUrl) return nextUrl;
+      if (currentRouteActive?.url === nextCurrentRoute.url) return nextCurrentRoute.url;
 
       /**
        * If pathname is the same, but query changed (no lifecycle)
        *
        */
 
-      if (currentPathname === nextPathname) {
-        if (currentSearch !== nextSearch) {
+      if (currentRouteActive?.pathname === nextCurrentRoute.pathname) {
+        if (currentRouteActive?.search !== nextCurrentRoute.search) {
           adapters.batch(() => {
-            adapters.replaceObject(this.currentRoute[routeName]!, {
-              ...this.currentRoute[routeName],
-              query: nextQuery || {},
-              search: nextSearch,
-              url: nextUrl,
-            });
+            adapters.replaceObject(currentRouteActive!, nextCurrentRoute);
           });
 
           if (isClient) {
-            window.history[replace ? 'replaceState' : 'pushState'](null, '', nextUrl);
+            window.history[replace ? 'replaceState' : 'pushState'](
+              null,
+              '',
+              currentRouteActive.url
+            );
           }
         }
 
-        return nextUrl;
+        return currentRouteActive.url;
       }
 
       adapters.batch(() => {
@@ -162,30 +103,23 @@ export function createRouter<TRoutes extends TypeDefaultRoutes>(routerConfig: {
 
       try {
         const lifecycleConfig: TypeLifecycleConfig = {
-          nextUrl,
-          nextRoute,
-          nextQuery,
-          nextSearch,
-          nextPathname,
-          currentUrl,
-          currentQuery,
-          currentRoute,
-          currentSearch,
-          currentPathname,
+          next: nextCurrentRoute,
+          current: currentRouteActive,
           redirect: (redirectConfig: TypeRedirectParams<TRoutes, keyof TRoutes>) => {
             if (isClient) return redirectConfig;
 
             const { route: redirectRouteName } = redirectConfig;
 
-            const { url: redirectUrl } = constructRouteData(redirectRouteName, {
+            const redirectCurrentRoute = toCurrentRoute({
+              route: routes[redirectRouteName],
               paramsRaw: 'params' in redirectConfig ? redirectConfig.params : undefined,
               queryRaw: 'query' in redirectConfig ? redirectConfig.query : undefined,
             });
 
-            throw new RedirectError(redirectUrl!);
+            throw new RedirectError(redirectCurrentRoute.url);
           },
           preventRedirect: () => {
-            throw new PreventError(`Redirect to ${nextUrl} was prevented`);
+            throw new PreventError(`Redirect to ${nextCurrentRoute.url} was prevented`);
           },
         };
 
@@ -204,7 +138,7 @@ export function createRouter<TRoutes extends TypeDefaultRoutes>(routerConfig: {
         await loadComponentToConfig({ route: routes[nextRoute.name] });
       } catch (error: any) {
         if (error instanceof PreventError) {
-          return currentUrl!;
+          return currentRouteActive!.url;
         }
 
         if (error instanceof RedirectError) {
@@ -215,62 +149,26 @@ export function createRouter<TRoutes extends TypeDefaultRoutes>(routerConfig: {
 
         await loadComponentToConfig({ route: routes.internalError });
 
-        adapters.batch(() => {
-          const newCurrent: TypeCurrentRoute<TRoutes['internalError']> = {
-            name: routes.internalError.name,
-            path: routes.internalError.path,
-            props: routes[routes.internalError.name].props,
-            query: {} as any,
-            params: {} as any,
-            pageId: routes[routes.internalError.name].pageId,
-            url: currentUrl || '',
-            pathname: currentPathname || '',
-            isActive: true,
-          };
-
-          if (!this.currentRoute.internalError) this.currentRoute.internalError = newCurrent;
-          else adapters.replaceObject(this.currentRoute.internalError, newCurrent);
-
-          Object.values(this.currentRoute).forEach((r) => {
-            if (r && r.name !== 'internalError') r.isActive = false;
-          });
-
-          this.isRedirecting = false;
-        });
-
-        return nextUrl;
+        routeName = 'internalError' as any;
+        nextCurrentRoute = toCurrentRoute({ route: routes[routeName] });
       }
 
       adapters.batch(() => {
-        const newCurrent: TypeCurrentRoute<TRoutes[keyof TRoutes]> = {
-          name: nextRoute.name,
-          path: nextRoute.path,
-          props: routes[nextRoute.name].props,
-          query: nextQuery || {},
-          params: getDynamicValues({ route: nextRoute, pathname: nextUrl }),
-          pageId: routes[nextRoute.name].pageId,
-          url: nextUrl,
-          pathname: nextPathname,
-          search: nextSearch,
-          isActive: true,
-        };
-
-        // @ts-ignore
-        if (!this.currentRoute[routeName]) this.currentRoute[routeName] = newCurrent;
-        else adapters.replaceObject(this.currentRoute[routeName], newCurrent);
+        if (!this.currentRoute[routeName]) this.currentRoute[routeName] = nextCurrentRoute;
+        else adapters.replaceObject(this.currentRoute[routeName]!, nextCurrentRoute);
 
         Object.values(this.currentRoute).forEach((r) => {
           if (r && r.name !== routeName) r.isActive = false;
         });
 
-        if (isClient) {
-          window.history[replace ? 'replaceState' : 'pushState'](null, '', nextUrl);
+        if (isClient && routeName !== 'internalError') {
+          window.history[replace ? 'replaceState' : 'pushState'](null, '', nextCurrentRoute.url);
         }
 
         this.isRedirecting = false;
       });
 
-      return nextUrl;
+      return nextCurrentRoute.url;
     },
   });
 
@@ -279,6 +177,7 @@ export function createRouter<TRoutes extends TypeDefaultRoutes>(routerConfig: {
   router.getConfig = router.getConfig.bind(router);
   router.restoreFromURL = router.restoreFromURL.bind(router);
   router.restoreFromServer = router.restoreFromServer.bind(router);
+  router.getActiveCurrentRoute = router.getActiveCurrentRoute.bind(router);
 
   if (isClient) {
     window.addEventListener('popstate', popHandler);

@@ -549,7 +549,7 @@ allPossibleOptions.forEach((options) => {
             async beforeLeave(config, param: string) {
               spyOne(param);
 
-              if (config.nextRoute.name === 'spyOne') {
+              if (config.next.name === 'spyOne') {
                 return config.preventRedirect();
               }
             },

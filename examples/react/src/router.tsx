@@ -36,12 +36,12 @@ export async function getRouter() {
       preventRedirect: {
         path: '/prevent',
         async beforeEnter(config) {
-          if (config.currentRoute?.name === 'dynamic') {
+          if (config.current?.name === 'dynamic') {
             return config.redirect({ route: 'static' });
           }
         },
         async beforeLeave(config) {
-          if (config.nextRoute.name === 'query') {
+          if (config.next.name === 'query') {
             return config.preventRedirect();
           }
         },

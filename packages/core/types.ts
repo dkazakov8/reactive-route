@@ -46,17 +46,8 @@ export type TypeCurrentRoute<TRoute extends TypeRoute> = {
 export type TypeDefaultRoutes = Record<'notFound' | 'internalError' | string, TypeRoute>;
 
 export type TypeLifecycleConfig = {
-  nextUrl: string;
-  nextRoute: any;
-  nextPathname: string;
-  nextQuery?: any;
-  nextSearch?: string;
-
-  currentUrl?: string;
-  currentQuery?: any;
-  currentRoute?: any;
-  currentSearch?: string;
-  currentPathname?: string;
+  next: TypeCurrentRoute<any>;
+  current?: TypeCurrentRoute<any>;
 
   redirect: (params: any) => void;
   preventRedirect: () => void;
@@ -102,6 +93,7 @@ export type TypeRouter<TRoutes extends TypeDefaultRoutes> = {
   isRedirecting: boolean;
   destroy(): void;
   getConfig(): { adapters: TypeAdapters; routes: TRoutes; lifecycleParams?: Array<any> };
+  getActiveCurrentRoute(): TypeCurrentRoute<any> | undefined;
   redirect<TRouteName extends keyof TRoutes>(
     config: TypeRedirectParams<TRoutes, TRouteName>
   ): Promise<string>;

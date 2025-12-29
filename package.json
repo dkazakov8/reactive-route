@@ -2,7 +2,7 @@
   "name": "reactive-route",
   "author": "Dmitry Kazakov",
   "license": "MIT",
-  "version": "0.0.1-alpha.35",
+  "version": "0.0.1-alpha.36",
   "description": "Reactive Router for different frameworks",
   "repository": { "type": "git", "url": "git+https://github.com/dkazakov8/reactive-route.git" },
   "scripts": {

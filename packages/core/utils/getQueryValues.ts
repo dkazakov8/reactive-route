@@ -9,11 +9,9 @@ export function getQueryValues<TRoute extends TypeRoute>(params: {
 
   if (!route.query) return {} as any;
 
-  const qs = queryString.extract(pathname);
-
-  if (!qs) return {} as any;
-
-  const query: Record<keyof TRoute['query'], string> = queryString.parse(qs) as any;
+  const query: Record<keyof TRoute['query'], string> = Object.fromEntries(
+    new URLSearchParams(queryString.extract(pathname))
+  ) as any;
 
   Object.entries(query).forEach(([key, value]) => {
     const validator = route.query![key];
