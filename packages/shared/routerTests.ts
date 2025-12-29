@@ -42,7 +42,7 @@ export async function routerTests(
 
         checkSpy();
 
-        router.destroy();
+        router.destroyHistoryListener();
       });
 
       it('Only beforeSetPageComponent called on first render', async () => {
@@ -58,24 +58,29 @@ export async function routerTests(
 
         checkSpy();
 
-        router.destroy();
+        router.destroyHistoryListener();
       });
 
       it('Restored from server renders correctly', async () => {
         const { router, checkSpy, calls, render } = await prepareRouterTest(options);
 
-        await router.restoreFromServer({
-          currentRoute: {
+        await router.hydrateFromState({
+          // @ts-ignore
+          state: {
             staticRoute: {
               name: 'staticRoute',
               path: '/test/static',
+              props: {},
               query: {},
               params: {},
+              pathname: '/test/static',
+              url: '/test/static',
+              search: '',
               pageId: 'static',
               isActive: true,
             },
           },
-        } as any);
+        });
 
         const container = (await render()).container;
 
@@ -85,7 +90,7 @@ export async function routerTests(
 
         checkSpy();
 
-        router.destroy();
+        router.destroyHistoryListener();
       });
 
       it('No lifecycle if only params changed (with page name)', async () => {
@@ -107,7 +112,7 @@ export async function routerTests(
 
         checkSpy();
 
-        router.destroy();
+        router.destroyHistoryListener();
       });
 
       it('No lifecycle if only params changed (without page name)', async () => {
@@ -129,7 +134,7 @@ export async function routerTests(
 
         checkSpy();
 
-        router.destroy();
+        router.destroyHistoryListener();
       });
 
       it('No lifecycle (same page name)', async () => {
@@ -151,7 +156,7 @@ export async function routerTests(
 
         checkSpy();
 
-        router.destroy();
+        router.destroyHistoryListener();
       });
 
       it('Has lifecycle (no page name)', async () => {
@@ -176,7 +181,7 @@ export async function routerTests(
 
         checkSpy();
 
-        router.destroy();
+        router.destroyHistoryListener();
       });
 
       it('No rerender and lifecycle on props change', async () => {
@@ -198,7 +203,7 @@ export async function routerTests(
 
         checkSpy();
 
-        router.destroy();
+        router.destroyHistoryListener();
       });
 
       it('History pop', async () => {
@@ -292,7 +297,7 @@ export async function routerTests(
 
         expect(location.pathname).to.eq('/test3/asd');
 
-        router.destroy();
+        router.destroyHistoryListener();
       });
 
       it('Unmount check', async () => {
@@ -313,7 +318,7 @@ export async function routerTests(
 
         expect(container.innerHTML).to.eq('');
 
-        router.destroy();
+        router.destroyHistoryListener();
       });
     }
   );

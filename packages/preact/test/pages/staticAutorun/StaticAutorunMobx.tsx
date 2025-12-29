@@ -10,9 +10,9 @@ const StaticAutorun = observer(
     router: TypeRouter<any>;
   }) => {
     const { router } = props;
-    const { adapters } = router.getConfig();
+    const { adapters } = router.getGlobalArguments();
 
-    const currentRoute = router.currentRoute.staticRouteAutorun!;
+    const currentRoute = router.state.staticRouteAutorun!;
 
     props.spy_pageRender();
 

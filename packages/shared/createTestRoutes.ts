@@ -4,9 +4,7 @@ export function createTestRoutes(imports: Record<string, any>) {
   return createRoutes({
     staticRoute: {
       path: '/test/static',
-      query: {
-        q: (value) => value.length > 2,
-      },
+      query: { q: (value) => value.length > 2 },
       pageId: 'static',
       loader: imports.staticRoute as any,
     },

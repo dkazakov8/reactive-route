@@ -1,9 +1,11 @@
-import { routerSetLoadedComponent, TypePropsRouter, TypeRoute } from 'reactive-route';
+import { routerSetLoadedComponent, TypePropsRouter, TypeRouteConfig } from 'reactive-route';
 import { onCleanup, Show } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 
-export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
-  const { adapters, routes } = props.router.getConfig();
+export function Router<TRoutes extends Record<string, TypeRouteConfig>>(
+  props: TypePropsRouter<TRoutes>
+) {
+  const { adapters, routes } = props.router.getGlobalArguments();
 
   const config: {
     loadedComponentName?: keyof TRoutes;

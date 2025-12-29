@@ -2,13 +2,12 @@ export { createRouter } from './createRouter';
 export { createRoutes } from './createRoutes';
 export type {
   TypeAdapters,
-  TypeCurrentRoute,
   TypePropsRouter,
-  TypeRedirectParams,
-  TypeRoute,
+  TypeRouteConfig,
+  TypeRoutePayload,
   TypeRouter,
+  TypeRouteState,
 } from './types';
 export { loadComponentToConfig } from './utils/loadComponentToConfig';
 export { RedirectError } from './utils/RedirectError';
-export { replaceDynamicValues } from './utils/replaceDynamicValues';
 export { routerSetLoadedComponent } from './utils/routerSetLoadedComponent';

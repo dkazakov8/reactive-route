@@ -7,8 +7,8 @@ export default function StaticAutorun(props: {
 }) {
   props.spy_pageRender();
 
-  props.router.getConfig().adapters.autorun(() => {
-    props.spy_pageAutorun(props.router.currentRoute.staticRouteAutorun!.name);
+  props.router.getGlobalArguments().adapters.autorun(() => {
+    props.spy_pageAutorun(props.router.state.staticRouteAutorun!.name);
   });
 
   return 'StaticAutorun';

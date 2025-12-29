@@ -8,14 +8,14 @@ export function routerSetLoadedComponent(
     currentProps: Record<string, any>;
   }
 ) {
-  const { adapters, routes } = props.router.getConfig();
+  const { adapters, routes } = props.router.getGlobalArguments();
 
-  const activeRoute = props.router.getActiveCurrentRoute();
+  const activeRoute = props.router.getActiveRouteState();
 
   const currentRouteName = activeRoute?.name;
   const currentRoutePage = activeRoute?.pageId;
 
-  const componentConfig = routes[currentRouteName];
+  const componentConfig = routes[currentRouteName as any];
 
   let preventRedirect = false;
   if (props.router.isRedirecting) preventRedirect = true;

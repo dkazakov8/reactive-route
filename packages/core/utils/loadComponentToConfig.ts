@@ -1,16 +1,12 @@
-import { TypeRoute } from '../types';
+import { TypeRouteConfig } from '../types';
 
-export function loadComponentToConfig(params: { route: TypeRoute }): Promise<void> {
+export async function loadComponentToConfig(params: { route: TypeRouteConfig }): Promise<void> {
   const { route } = params;
 
   if (!route.component) {
-    return route.loader().then((module: { default: any }) => {
-      const { default: component, ...rest } = module;
+    const { default: component, ...rest } = await route.loader();
 
-      route.component = component;
-      route.otherExports = rest;
-    });
+    route.component = component;
+    route.otherExports = rest;
   }
-
-  return Promise.resolve();
 }

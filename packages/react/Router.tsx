@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { routerSetLoadedComponent, TypePropsRouter, TypeRoute } from 'reactive-route';
+import { routerSetLoadedComponent, TypePropsRouter, TypeRouteConfig } from 'reactive-route';
 
-function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
+function RouterInner<TRoutes extends Record<string, TypeRouteConfig>>(
+  props: TypePropsRouter<TRoutes>
+) {
   const disposerRef = useRef<() => void>(null);
-  const [{ routes, adapters }] = useState(() => props.router.getConfig());
+  const [{ routes, adapters }] = useState(() => props.router.getGlobalArguments());
 
   const [config] = useState<{
     loadedComponentName?: keyof TRoutes;
@@ -40,8 +42,12 @@ function RouterInner<TRoutes extends Record<string, TypeRoute>>(props: TypeProps
   return <LoadedComponent {...config.currentProps} router={props.router} />;
 }
 
-export function Router<TRoutes extends Record<string, TypeRoute>>(props: TypePropsRouter<TRoutes>) {
-  const [Component] = useState(() => props.router.getConfig().adapters.observer!(RouterInner));
+export function Router<TRoutes extends Record<string, TypeRouteConfig>>(
+  props: TypePropsRouter<TRoutes>
+) {
+  const [Component] = useState(() =>
+    props.router.getGlobalArguments().adapters.observer!(RouterInner)
+  );
 
   return <Component {...props} />;
 }

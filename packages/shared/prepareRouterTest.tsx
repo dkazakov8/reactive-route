@@ -17,7 +17,10 @@ export async function prepareRouterTest(options: TypeOptions) {
   const adapters = await getAdapters(options);
   const router = createRouter({ routes: getRoutes(options), adapters });
 
-  router.getConfig().routes.staticRouteAutorun.props = { spy_pageRender, spy_pageAutorun };
+  router.getGlobalArguments().routes.staticRouteAutorun.props = {
+    spy_pageRender,
+    spy_pageAutorun,
+  };
 
   const calls = {
     pageRender: 0,

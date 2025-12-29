@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { routerSetLoadedComponent, TypePropsRouter, TypeRoute } from 'reactive-route';
+import { routerSetLoadedComponent, TypePropsRouter, TypeRouteConfig } from 'reactive-route';
 import { computed, markRaw, onBeforeUnmount, ref, toRaw } from 'vue';
 
 defineOptions({ name: 'ReactiveRouteRouter' });
 
-const props = defineProps<TypePropsRouter<Record<string, TypeRoute>>>();
+const props = defineProps<TypePropsRouter<Record<string, TypeRouteConfig>>>();
 
-const { adapters, routes } = props.router.getConfig();
+const { adapters, routes } = props.router.getGlobalArguments();
 
 const disposerRef = ref<null | (() => void)>(null);
 
