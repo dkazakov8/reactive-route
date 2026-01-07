@@ -1,136 +1,235 @@
-export type TypeAdapters = {
-  batch: (cb: () => void) => void;
-  autorun: (cb: () => void) => any;
-  replaceObject: <TObj extends Record<string, any>>(obj: TObj, newObj: TObj) => void;
-  makeObservable: <TObj extends Record<string, any>>(obj: TObj) => TObj;
+// biome-ignore-all format: Complex TS types are unreadable with auto-formatting
 
-  observer?: (component: any) => any;
-  immediateSetComponent?: boolean;
-};
+/** Just helpers, you may skip reading them */
 
-export type TypeRoutePayloadDefault = {
-  route: string;
-  params?: Record<string, string>;
-  query?: Record<string, string>;
-  replace?: boolean;
-};
+type TypePrettify<TObj> = { [TKey in keyof TObj]: TObj[TKey] };
 
-export type TypeLifecycleFunction = (lifecycleConfig: {
-  nextState: TypeRouteState<TypeRouteConfig>;
-  currentState?: TypeRouteState<TypeRouteConfig>;
-  redirect: (routePayload: TypeRoutePayloadDefault) => void;
-  preventRedirect: () => void;
-}) => Promise<any>;
+type TypeExtractParams<TPath extends string, TSeen extends string = never> = string extends TPath
+  ? Record<string, string>
+  : TPath extends `${string}:${infer TParam}/${infer TPathRest}`
+    ? TParam extends TSeen ? never : TypePrettify<Record<TParam, string> & TypeExtractParams<`/${TPathRest}`, TSeen | TParam>>
+    : TPath extends `${string}:${infer TParam}` ? TParam extends TSeen ? never : Record<TParam, string> : never;
 
-export type TypeRouteConfig = {
+type TypeExact<TTarget, TShape> = TTarget extends TShape
+  ? Exclude<keyof TTarget, keyof TShape> extends never ? TTarget : never
+  : never;
+
+type TypeInferPath<TConfig> = TConfig extends { path: infer TPath extends string }
+  ? TPath
+  : string;
+
+type TypeInferParams<TConfig> = TConfig extends { params: infer TValue }
+  ? TValue
+  : never;
+
+type TypeInferQuery<TConfig> = TConfig extends { query: infer TValue }
+  ? TValue
+  : never;
+
+type TypeParams<TConfig> = TypeInferParams<TConfig> extends never
+  ? {}
+  : { params: Record<keyof TypeInferParams<TConfig>, string> };
+
+type TypeQuery<TConfig> = TypeInferQuery<TConfig> extends never
+  ? {}
+  : { query?: Partial<Record<keyof TypeInferQuery<TConfig>, string>> };
+
+type TypePathHasParams<TPath extends string> = string extends TPath
+  ? true
+  : TPath extends `${string}:${string}` ? true : false;
+
+type TypeConfigParams<TPath extends string> = [TypeExtractParams<TPath>] extends [never]
+  ? TypePathHasParams<TPath> extends true ? never : {} | { params: never }
+  : { params: { [TParam in keyof TypeExtractParams<TPath>]: TypeValidator } };
+
+export type TypeConfigKeys<TConfigs extends TypeConfigsDefault> = string & keyof TConfigs;
+
+/** Some static types as a basic structure */
+
+type TypeValidator = (param: string) => boolean;
+type TypeRedirectOptions = { skipLifecycle?: boolean };
+
+export type TypeURL = string;
+export type TypeReason = 'unmodified' | 'new_query' | 'new_params' | 'new_config';
+
+export type TypeConfigsDefault = Record<string, TypeConfig> & { notFound: TypeErrorConfig; internalError: TypeErrorConfig; };
+
+export type TypeBeforeEnter = (
+  data: {
+    reason: TypeReason;
+    nextState: TypeStateUntyped;
+    currentState?: TypeStateUntyped;
+    redirect: (stateDynamic: TypeStateDynamicUntyped & { replace?: boolean; }) => void;
+  }
+) => Promise<void | (TypeStateDynamicUntyped & { replace?: boolean; })>;
+
+export type TypeBeforeLeave = (
+  data: {
+    reason: TypeReason;
+    nextState: TypeStateUntyped;
+    currentState: TypeStateUntyped;
+    preventRedirect: () => void;
+  }
+) => Promise<void>;
+
+export type TypeConfig = {
   path: string;
   name: string;
   loader: () => Promise<{ default: any }>;
+  props: Record<string, any>;
 
-  props?: Record<string, any>;
   query?: Record<string, TypeValidator>;
   params?: Record<string, TypeValidator>;
-  beforeEnter?: TypeLifecycleFunction;
-  beforeLeave?: TypeLifecycleFunction;
+  beforeEnter?: TypeBeforeEnter;
+  beforeLeave?: TypeBeforeLeave;
   component?: any;
   otherExports?: Record<string, any>;
 };
 
-export type TypeRouteState<TRoute extends TypeRouteConfig> = {
-  name: TRoute['name'];
-  path: TRoute['path'];
-  props: TRoute['props'];
-  query: Partial<Record<keyof TRoute['query'], string>>;
-  params: Record<keyof TRoute['params'], string>;
-  url: string;
-  search: string;
-  pathname: string;
-  isActive: boolean;
+type TypeErrorConfig = Pick<TypeConfig, 'path' | 'loader'> & { props?: TypeConfig['props'] };
+
+/** Config types */
+
+type TypeConfigBase<TPath extends string> = {
+  path: TPath;
+  loader: () => Promise<{ default: any }>;
+  props?: Record<string, any>;
+  query?: Record<string, TypeValidator>;
+
+  // It is impossible for TS 5 to make a double self-inference, so these functions are loosely-typed
+  // I tried tens of approaches and hacks
+  beforeEnter?: TypeBeforeEnter;
+  beforeLeave?: TypeBeforeLeave;
 };
 
-export type TypeRoutesDefault = Record<'notFound' | 'internalError' | string, TypeRouteConfig>;
+export type TypeConfigurableConfigs<TConfigConfigurable> = {
+  [TName in keyof TConfigConfigurable]: TName extends 'notFound' | 'internalError'
+    ? TypeExact<TConfigConfigurable[TName], TypeErrorConfig>
+    : TypeConfigBase<TypeInferPath<TConfigConfigurable[TName]>> &
+      TypeConfigParams<TypeInferPath<TConfigConfigurable[TName]>>;
+} & { notFound: TypeErrorConfig; internalError: TypeErrorConfig };
 
-export type TypeLocationInput = { pathname: string; replace?: boolean };
-
-export type PropsRouter<TRoutes extends TypeRoutesDefault> = {
-  router: TypeRouter<TRoutes>;
+export type TypeConfigs<TConfigConfigurable extends Record<string, any>> = {
+  [TName in string & keyof TConfigConfigurable]: TConfigConfigurable[TName] & {
+    name: TName;
+    props: TypeConfig['props'];
+    component?: TypeConfig['component'];
+    otherExports?: TypeConfig['otherExports'];
+  };
 };
 
-export type TypeRouterLocalObservable = {
-  renderedRouteName?: any;
-  currentProps: Record<string, any>;
+/** State types */
+
+export type TypeState<
+  TConfigs extends TypeConfigsDefault,
+  TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>
+> = {
+  [TName in TNames]: {
+    name: TName,
+    params: [TypeInferParams<TConfigs[TName]>] extends [never]
+      ? Record<never, string>
+      : Record<keyof TypeInferParams<TConfigs[TName]>, string>,
+    query: [TypeInferQuery<TConfigs[TName]>] extends [never]
+      ? Record<never, string>
+      : Partial<Record<keyof TypeInferQuery<TConfigs[TName]>, string>>
+  }
+}[TNames];
+
+// non-generic runtime form of TypeState
+// when TS starts to support recursive types, it can be removed
+export type TypeStateUntyped = {
+  name: string;
+  query: Record<string, string>;
+  params: Record<string, string>;
 };
 
-export type TypeRoutePayload<
-  TRoutes extends TypeRoutesDefault,
-  TRouteName extends keyof TRoutes,
-> = TRoutes[TRouteName]['params'] extends Record<string, TypeValidator>
-  ? TRoutes[TRouteName]['query'] extends Record<string, TypeValidator>
-    ? {
-        route: TRouteName;
-        params: Record<keyof TRoutes[TRouteName]['params'], string>;
-        query?: Partial<Record<keyof TRoutes[TRouteName]['query'], string>>;
-        replace?: boolean;
-      }
-    : {
-        route: TRouteName;
-        params: Record<keyof TRoutes[TRouteName]['params'], string>;
-        replace?: boolean;
-      }
-  : TRoutes[TRouteName]['query'] extends Record<string, TypeValidator>
-    ? {
-        route: TRouteName;
-        query?: Partial<Record<keyof TRoutes[TRouteName]['query'], string>>;
-        replace?: boolean;
-      }
-    : { route: TRouteName; replace?: boolean };
+export type TypeStateDynamic<
+  TConfigs extends TypeConfigsDefault,
+  TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>,
+> = {
+  [TName in TNames]: { name: TName } & TypeParams<TConfigs[TName]> & TypeQuery<TConfigs[TName]>;
+}[TNames];
 
-export type TypeGlobalArguments<TRoutes extends TypeRoutesDefault> = {
+// non-generic runtime form of TypeStateDynamic
+// when TS starts to support recursive types, it can be removed
+export type TypeStateDynamicUntyped = {
+  name: string;
+  query?: Record<string, string>;
+  params?: Record<string, string>;
+};
+
+// generic state accepted by stateToUrl()
+// may be TypeState or TypeStateDynamic
+// router normalizes it before serializing to URL
+export type TypeStateDenormalized<
+  TConfigs extends TypeConfigsDefault,
+  TName extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>
+> = {
+  name: TName;
+  params?: Record<string, string> | Record<never, string>;
+  query?: Record<string, string> | Record<never, string>;
+};
+
+/** Router types */
+
+export type TypeGlobalArguments<
+  TConfigs extends TypeConfigsDefault,
+  TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>,
+> = {
   adapters: TypeAdapters;
-  routes: TRoutes;
+  configs: TConfigs;
   beforeComponentChange?: (params: {
-    prevState?: TypeRouteState<TypeRouteConfig>;
-    prevConfig?: TRoutes[keyof TRoutes];
-    currentState: TypeRouteState<TypeRouteConfig>;
-    currentConfig: TRoutes[keyof TRoutes];
+    prevState?: TypeState<TConfigs, TNames>;
+    prevConfig?: TConfigs[TNames];
+    currentState: TypeState<TConfigs, TNames>;
+    currentConfig: TConfigs[TNames];
   }) => void;
 };
 
-export type TypeRouter<TRoutes extends TypeRoutesDefault> = {
-  state: {
-    [TRouteName in keyof TRoutes | 'notFound' | 'internalError']?: TypeRouteState<
-      TRoutes[TRouteName]
-    >;
-  };
+export type TypeRouter<
+  TConfigs extends TypeConfigsDefault,
+  TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>,
+> = {
+  state: { [TName in TNames]?: TypeState<TConfigs, TName> };
+  activeName?: TNames;
   isRedirecting: boolean;
 
-  // (internal) the arguments passed to createRouter
-  getGlobalArguments(): TypeGlobalArguments<TRoutes>;
+  getGlobalArguments(): TypeGlobalArguments<TConfigs>;
 
-  // (internal) handle history back/forward events
-  historyListener(): void;
-  attachHistoryListener(): void;
-  destroyHistoryListener(): void;
+  listener(): void;
+  historySyncStart(): void;
+  historySyncStop(): void;
 
-  // (internal) takes just { pathname: location.pathname + location.search } and creates TypeRoutePayload
-  createRoutePayload(locationInput: TypeLocationInput): TypeRoutePayload<TRoutes, keyof TRoutes>;
+  // alias for redirect(urlToState(url))
+  init(url: TypeURL, options?: TypeRedirectOptions): Promise<TypeURL>;
 
-  // (public) may be used for creating Link components because it produces URL
-  createRouteState<TRouteName extends keyof TRoutes>(
-    routePayload: TypeRoutePayload<TRoutes, TRouteName>
-  ): TypeRouteState<TRoutes[TRouteName]>;
+  redirect<TName extends TNames>(
+    stateDynamic: TypeStateDynamic<TConfigs, TName> & { replace?: boolean },
+    options?: TypeRedirectOptions
+  ): Promise<TypeURL>;
 
-  // (public) used for redirects and returns URL of the next route
-  redirect<TRouteName extends keyof TRoutes>(
-    routePayload: TypeRoutePayload<TRoutes, TRouteName>
-  ): Promise<string>;
+  urlToState(url: TypeURL): TypeState<TConfigs>;
 
-  // (public) may be used for layouts change above the Router component
-  getActiveRouteState(): TypeRouteState<TRoutes[keyof TRoutes]> | undefined;
+  stateToUrl(state: TypeStateDenormalized<TConfigs>): TypeURL;
 
-  // (public) prepares the router for work. Must be called before Router component's rendering
-  hydrateFromURL(locationInput: TypeLocationInput): Promise<string>;
-  hydrateFromState(routerState: Partial<Pick<TypeRouter<TRoutes>, 'state'>>): Promise<void>;
+  preloadComponent(name: TNames): Promise<void>;
 };
 
-export type TypeValidator = (param: string) => boolean;
+/** Types for adapters */
+
+export type TypeAdapters = {
+  batch: (cb: () => void) => void;
+  autorun: (cb: () => void) => void | (() => void);
+  replaceObject: <T extends Record<string, any>>(obj: T, newObj: T) => void;
+  makeObservable: <T extends Record<string, any>>(obj: T) => T;
+  observer?: (component: any) => any;
+};
+
+/** Types for a Router component */
+
+export type PropsRouter<
+  TConfigs extends TypeConfigsDefault,
+  TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>,
+> = { router: TypeRouter<TConfigs, TNames> };
+
+export type TypeRouterLocal = { renderedName?: any; };

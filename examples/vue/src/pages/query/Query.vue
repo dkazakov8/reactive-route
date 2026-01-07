@@ -1,51 +1,49 @@
 <script lang="ts" setup>
-import { useStore } from '../../components/useStore';
+import Link from '../../components/Link.vue';
+import { useRouter } from '../../router';
+import styles from '../../style.module.css';
 
-const { router } = useStore();
+const { router } = useRouter();
 
-const activeRouteState = router.state.query!;
+const pageState = router.state.query!;
 
 function goRandom() {
   void router.redirect({
-    route: 'query',
+    name: 'query',
     query: { foo: String(Math.random()).slice(2, 10) },
   });
 }
 </script>
 
 <template>
-  <div class="page-container query-page">
-    <h1>Query Page</h1>
+  <div :class="[styles.pageContainer, styles.queryPage]">
+    <div :class="styles.pageTitle">Query Page</div>
 
-    <div class="route-info">
-      <h2>Route Configuration</h2>
-      <pre>query: {
-  path: '/query',
-  query: {
-    foo: (value: string) => value.length > 2,
-  },
-  loader: () => import('./pages/query'),
-}</pre>
+    <div :class="styles.panel">
+      <div :class="styles.sectionTitle">Current query</div>
+      <pre :class="styles.codeBlock"><code :class="styles.inlineCode">{{ JSON.stringify(pageState.query, null, 2) }}</code></pre>
     </div>
 
-    <div class="route-info">
-      <h2>Current Query</h2>
-      <pre>{{ JSON.stringify(activeRouteState.query, null, 2) }}</pre>
+    <div :class="styles.panel">
+      <div :class="styles.sectionTitle">Optional state</div>
+      <div :class="styles.textBlock">Query values do not change the route match, but they can still be validated.</div>
+      <div :class="styles.textBlock">
+        Here <code :class="styles.inlineCode">foo</code> is optional, and only valid values appear in router state.
+      </div>
+      <div :class="styles.actionSpacer" />
+      <div :class="styles.navButton" @click="goRandom">Random query</div>
+      <div :class="styles.note">
+        Generates a valid query and redirects to it.
+      </div>
     </div>
 
-    <div class="actions">
-      <h2>Actions</h2>
-      <button type="button" class="nav-button" @click="goRandom">Go to random query value</button>
-      <p class="note">
-        Update query parameter and observe route changes.
-      </p>
-    </div>
-
-    <div class="navigation">
-      <h2>Navigation</h2>
-      <button @click="router.redirect({ route: 'static' })" class="nav-button">Go to Static Page</button>
-      <button @click="router.redirect({ route: 'dynamic', params: { foo: 'example' } })" class="nav-button">Go to Dynamic Page</button>
-      <button @click="router.redirect({ route: 'preventRedirect' })" class="nav-button">Go to Prevent Page</button>
+    <div :class="styles.sectionNav">
+      <div :class="styles.sectionTitle">Try next</div>
+      <Link :to="{ name: 'static' }" :class="styles.navButton">Static</Link>
+      <Link :to="{ name: 'dynamic', params: { foo: 'example' } }" :class="styles.navButton">
+        Dynamic
+      </Link>
+      <Link :to="{ name: 'preventRedirect' }" :class="styles.navButton">Guards</Link>
     </div>
   </div>
 </template>

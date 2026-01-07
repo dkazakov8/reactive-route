@@ -3,26 +3,28 @@ layout: home
 
 hero:
   name: "Reactive Route"
-  tagline: A powerful, reactive and framework-agnostic router in just 2kb of code
+  tagline: A reactive, framework-agnostic router in 2 KB
+  image:
+    src: /file.svg
   actions:
     - theme: brand
-      text: Get Started
-      link: /guide/
+      text: Documentation
+      link: /en/introduction/overview
     - theme: alt
-      text: View on GitHub
+      text: GitHub
       link: https://github.com/dkazakov8/reactive-route
 
 features:
-  - title: Agnostic
-    details: Works with React, Preact, Solid.js, Vue. Even Vanilla JS
-  - title: Reactive
-    details: Seamlessly integrates with MobX, Observable, Solid.js signals, Vue reactive
-  - title: Simple
-    details: Define your routes in a concise, declarative configuration with built-in lazy-loading support
-  - title: Controllable
-    details: Loading data on page enter, blocking page leaving, navigation guards, redirect chains, query and dynamic params validation - all included out of the box
-  - title: SSR-Oriented
-    details: Full support for server-side rendering with async data loading. Maybe better suited for your app than some "monster" frameworks
+  - title: Fits into your stack
+    details: Works with React, Preact, Solid.js, Vue, Vanilla, and even without JS in MPA
+  - title: Open adapter interface
+    details: Integrates seamlessly with MobX, Observable, Solid.js signals, Vue reactivity, and other proxy-based libraries
+  - title: Centralized
+    details: All routing behavior lives in a single object with built-in lazy-loading support
+  - title: Feature-rich
+    details: Data loading and permission checks on navigation, navigation blocking, redirect chains, query and dynamic parameters validation
   - title: Great DX
-    details: Built with TypeScript for type safety, zero dependencies for a minimal footprint, and backed by over 500 unit and E2E tests
+    details: Strict TypeScript typing, no external dependencies, thorough test coverage, and both CJS and ESM builds for compatibility
+  - title: SSR / MPA / Widget modes
+    details: Easy to set up with minimal boilerplate
 ---

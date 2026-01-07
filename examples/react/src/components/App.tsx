@@ -1,5 +1,9 @@
-import { Router } from './Router';
+import { Router } from 'reactive-route/react';
+
+import { useRouter } from '../router';
 
 export function App() {
-  return <Router />;
+  const { router } = useRouter();
+
+  return <Router router={router} />;
 }

@@ -1,47 +1,49 @@
 <script lang="ts" setup>
-import { useStore } from '../../components/useStore';
-
-const { router } = useStore();
-async function toQuery() {
-  await router.redirect({ route: 'query', query: { foo: 'example' } });
-}
+import Link from '../../components/Link.vue';
+import styles from '../../style.module.css';
 </script>
 
 <template>
-  <div class="page-container prevent-page">
-    <h1>Prevent Redirect Page</h1>
+  <div :class="[styles.pageContainer, styles.preventPage]">
+    <div :class="styles.pageTitle">Navigation guards</div>
 
-    <div class="route-info">
-      <h2>Route Configuration</h2>
-      <pre>preventRedirect: {
-  path: '/prevent',
-  async beforeEnter(config) {
-    if (config.currentState?.name === 'dynamic') {
-      return config.redirect({ route: 'static' });
-    }
-  },
-  async beforeLeave(config) {
-    if (config.nextState.name === 'query') {
-      return config.preventRedirect();
-    }
-  },
-  loader: () => import('./pages/prevent'),
-}</pre>
+    <div :class="styles.panel">
+      <div :class="styles.sectionTitle">beforeEnter + beforeLeave</div>
+      <div :class="styles.textBlock">This page shows both lifecycle guards on one route.</div>
+      <div :class="styles.textBlock">
+        Entering from <code :class="styles.inlineCode">dynamic</code> redirects to <code :class="styles.inlineCode">static</code>. Leaving to
+        <code :class="styles.inlineCode">query</code> is blocked.
+      </div>
     </div>
 
-    <div class="route-description">
-      <h2>How it works</h2>
-      <p>
-        This page demonstrates route guards: navigating here from Dynamic redirects to Static;
-        leaving to Query is prevented.
-      </p>
+    <div :class="styles.panel">
+      <div :class="styles.sectionTitle">Rules</div>
+      <div :class="styles.panelItem">
+        <div :class="styles.itemIcon">⚠️</div>
+        <div :class="styles.itemBody">
+          <div :class="styles.textBlock"><div :class="styles.labelStrong">From dynamic:</div> redirected to static.</div>
+        </div>
+      </div>
+      <div :class="styles.panelItem">
+        <div :class="styles.itemIcon">🚫</div>
+        <div :class="styles.itemBody">
+          <div :class="styles.textBlock"><div :class="styles.labelStrong">To query:</div> navigation is prevented.</div>
+        </div>
+      </div>
     </div>
 
-    <div class="navigation">
-      <h2>Navigation</h2>
-      <button @click="router.redirect({ route: 'static' })" class="nav-button">Go to Static Page</button>
-      <button @click="router.redirect({ route: 'dynamic', params: { foo: 'example' } })" class="nav-button">Go to Dynamic Page</button>
-      <button @click="toQuery" class="nav-button nav-button-blocked">Try to go to Query Page (will be blocked)</button>
+    <div :class="styles.sectionNav">
+      <div :class="styles.sectionTitle">Try next</div>
+      <Link :to="{ name: 'static' }" :class="styles.navButton">Static</Link>
+      <Link :to="{ name: 'dynamic', params: { foo: 'example' } }" :class="styles.navButton">
+        Dynamic
+      </Link>
+      <Link
+        :to="{ name: 'query', query: { foo: 'example' } }"
+        :class="[styles.navButton, styles.navButtonBlocked]"
+      >
+        Blocked query
+      </Link>
     </div>
   </div>
 </template>

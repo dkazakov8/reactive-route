@@ -1,68 +1,49 @@
 <script lang="ts" setup>
-import { useStore } from '../../components/useStore';
+import Link from '../../components/Link.vue';
+import { useRouter } from '../../router';
+import styles from '../../style.module.css';
 
-const { router } = useStore();
+const { router } = useRouter();
 
-const activeRouteState = router.state.dynamic!;
+const pageState = router.state.dynamic!;
 
 function goRandom() {
   void router.redirect({
-    route: 'dynamic',
+    name: 'dynamic',
     params: { foo: String(Math.random()).slice(2, 10) },
   });
 }
 </script>
 
 <template>
-  <div class="page-container dynamic-page">
-    <h1>Dynamic Page</h1>
+  <div :class="[styles.pageContainer, styles.dynamicPage]">
+    <div :class="styles.pageTitle">Dynamic Page</div>
 
-    <div class="route-info">
-      <h2>Route Configuration</h2>
-      <pre>dynamic: {
-  path: '/page/:foo',
-  params: {
-    foo: (value: string) => value.length > 2,
-  },
-  loader: () => import('./pages/dynamic'),
-}</pre>
+    <div :class="styles.panel">
+      <div :class="styles.sectionTitle">Current params</div>
+      <pre :class="styles.codeBlock"><code :class="styles.inlineCode">{{ JSON.stringify(pageState.params, null, 2) }}</code></pre>
     </div>
 
-    <div class="route-info">
-      <h2>Current Parameters</h2>
-      <pre>{{ JSON.stringify(activeRouteState.params, null, 2) }}</pre>
+    <div :class="styles.panel">
+      <div :class="styles.sectionTitle">Path param</div>
+      <div :class="styles.textBlock">
+        The segment <code :class="styles.inlineCode">:foo</code> is read from the URL and validated before the page loads.
+      </div>
+      <div :class="styles.textBlock">
+        Values shorter than 3 characters are rejected, so invalid URLs never reach this screen.
+      </div>
+      <div :class="styles.actionSpacer" />
+      <div :class="styles.navButton" @click="goRandom">Random value</div>
+      <div :class="styles.note">Generates a valid param and redirects to it.</div>
     </div>
 
-    <div class="route-description">
-      <h2>How it works</h2>
-      <p>
-        This is a dynamic route with a parameter <code>:foo</code> in the path. The parameter is
-        validated to ensure it's longer than 2 characters.
-      </p>
-      <p>
-        When you navigate to a URL like '/page/example', the router extracts 'example' as the value
-        of the 'foo' parameter, validates it, and if valid, loads this component.
-      </p>
-      <p>
-        If you try to navigate to '/page/ab' (where 'foo' is only 2 characters), the route won't
-        match because the validation fails.
-      </p>
-    </div>
-
-    <div class="actions">
-      <h2>Actions</h2>
-      <button type="button" class="nav-button" @click="goRandom">Go to random dynamic value</button>
-      <p class="note">
-        Click button and see the page update with new parameters. With SSR we don't even look at URL
-        on frontend during hydration, just restore from the server.
-      </p>
-    </div>
-
-    <div class="navigation">
-      <h2>Navigation</h2>
-      <button @click="router.redirect({ route: 'static' })" class="nav-button">Go to Static Page</button>
-      <button @click="router.redirect({ route: 'query', query: { foo: 'example' } })" class="nav-button">Go to Query Page</button>
-      <button @click="router.redirect({ route: 'preventRedirect' })" class="nav-button">Go to Prevent Page (will redirect to Static)</button>
+    <div :class="styles.sectionNav">
+      <div :class="styles.sectionTitle">Try next</div>
+      <Link :to="{ name: 'static' }" :class="styles.navButton">Static</Link>
+      <Link :to="{ name: 'query', query: { foo: 'example' } }" :class="styles.navButton">
+        Query
+      </Link>
+      <Link :to="{ name: 'preventRedirect' }" :class="styles.navButton">Guards</Link>
     </div>
   </div>
 </template>

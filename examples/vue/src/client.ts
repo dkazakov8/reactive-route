@@ -1,30 +1,18 @@
 import { createApp, createSSRApp } from 'vue';
 
-import './style.css';
-
 import App from './components/App.vue';
-import { getRouter } from './router';
-import { unescapeAllStrings } from './utils/unescapeAllStrings';
+import { getRouter, routerStoreKey } from './router';
 
-const router = await getRouter();
+const router = getRouter();
 
-const initialData = unescapeAllStrings((window as any).INITIAL_DATA as any);
+await router.init(location.href, { skipLifecycle: Boolean(SSR_ENABLED) });
 
-async function renderSSR() {
-  console.log('renderSSR');
+if (SSR_ENABLED) {
+  createSSRApp(App, { router }).provide(routerStoreKey, { router }).mount('#example-app');
 
-  await router.hydrateFromState(initialData.router);
+  console.log('SSR: App has been hydrated, no lifecycle called');
+} else {
+  createApp(App, { router }).provide(routerStoreKey, { router }).mount('#example-app');
 
-  createSSRApp(App, { router }).mount('#app');
+  console.log('CSR: App has been rendered and lifecycle called');
 }
-
-async function renderCSR() {
-  console.log('renderCSR');
-
-  await router.hydrateFromURL({ pathname: location.pathname + location.search });
-
-  createApp(App, { router }).mount('#app');
-}
-
-if (SSR_ENABLED) void renderSSR();
-else void renderCSR();

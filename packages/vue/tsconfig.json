@@ -1,5 +1,11 @@
 {
-  "extends": "../../tsconfig.json",
-  "include": ["."],
-  "exclude": []
+  "extends": "../../tsconfig.build.json",
+  "include": [".", "../../declarations.d.ts"],
+  "exclude": [],
+  "references": [{ "path": "../core" }],
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": ".",
+    "outDir": "../../dist/vue"
+  }
 }

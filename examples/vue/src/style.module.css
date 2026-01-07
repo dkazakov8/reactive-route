@@ -1,0 +1,275 @@
+:global(#example-app) {
+  color-scheme: dark;
+  height: 100%;
+  background:
+    radial-gradient(circle at top, rgba(98, 49, 182, 0.18), transparent 32%),
+    linear-gradient(180deg, #161618 0%, #1b1b1f 100%);
+  background-repeat: no-repeat;
+  min-width: 320px;
+  color: #dfdfd6;
+  font-family:
+    "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.pageContainer {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  text-align: center;
+}
+
+.pageTitle {
+  margin: 0;
+  padding-bottom: 10px;
+  font-size: 40px;
+  line-height: 45px;
+  color: #dfdfd6;
+  font-weight: 700;
+}
+
+.sectionTitle {
+  margin: 18px 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.textBlock {
+  color: #98989f;
+  line-height: 26px;
+}
+
+.textBlock + .textBlock {
+  margin-top: 16px;
+}
+
+.codeBlock {
+  margin: 12px 0 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  border: 1px solid #2e2e32;
+  border-radius: 16px;
+  background: #161618;
+  color: #dfdfd6;
+  text-align: left;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+.inlineCode {
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: rgba(141, 93, 225, 0.18);
+  font-family:
+    ui-monospace, "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
+  font-size: 14px;
+}
+
+.codeBlock .inlineCode {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.panel {
+  margin: 16px 0;
+  padding: 20px 24px;
+  border: 1px solid #2e2e32;
+  border-radius: 16px;
+  background: #202127;
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.24),
+    0 1px 4px rgba(0, 0, 0, 0.2);
+
+  & > .sectionTitle:first-child {
+    margin-top: 0;
+  }
+}
+
+.sectionNav {
+  margin-top: 20px;
+}
+
+.navButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none !important;
+  gap: 8px;
+  margin: 0 10px 8px 0;
+  padding: 9px 13px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 12px;
+  cursor: pointer;
+  color: #fff !important;
+  text-decoration: none !important;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 3px 12px rgba(0, 0, 0, 0.24),
+      0 1px 4px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.actionSpacer {
+  height: 12px;
+}
+
+.note {
+  margin-top: 10px;
+  color: #6a6a71;
+  font-style: italic;
+}
+
+.panelLead,
+.panelItem {
+  display: flex;
+  align-items: center;
+}
+
+.itemIcon {
+  margin-right: 15px;
+  font-size: 24px;
+}
+
+.itemBody {
+  flex: 1;
+}
+
+.panelLead {
+  & .itemIcon {
+    font-size: 32px;
+  }
+}
+
+.panelLead .textBlock {
+  margin: 5px 0;
+}
+
+.panelItem {
+  margin-bottom: 10px;
+  padding: 12px 14px;
+  border: 1px solid #2e2e32;
+  border-radius: 14px;
+  background: #202127;
+}
+
+.labelStrong {
+  display: inline;
+  color: #dfdfd6;
+  font-weight: 700;
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0 16px;
+}
+
+.errorCode {
+  font-size: 132px;
+  font-weight: 700;
+  line-height: 133px;
+  letter-spacing: -4px;
+  color: #8d5de1;
+  text-shadow: 0 0 32px rgba(255, 255, 255, 0.06);
+}
+
+.errorPage,
+.staticPage {
+  & .pageTitle,
+  & .sectionTitle,
+  & .inlineCode {
+    color: #8d5de1;
+  }
+
+  & .pageTitle {
+    margin-top: 0;
+    border-bottom: 2px solid #8d5de1;
+  }
+
+  & .navButton {
+    background: #6231b6;
+
+    &:hover {
+      background: #542a9c;
+    }
+  }
+}
+
+.dynamicPage {
+  & .pageTitle,
+  & .sectionTitle,
+  & .inlineCode {
+    color: #f66f81;
+  }
+
+  & .pageTitle {
+    border-bottom: 2px solid #f66f81;
+  }
+
+  & .navButton {
+    background: #f14158;
+
+    &:hover {
+      background: #b62a3c;
+    }
+  }
+}
+
+.queryPage {
+  & .pageTitle,
+  & .sectionTitle,
+  & .inlineCode {
+    color: #c8abfa;
+  }
+
+  & .pageTitle {
+    border-bottom: 2px solid #c8abfa;
+  }
+
+  & .navButton {
+    background: #a879e6;
+
+    &:hover {
+      background: #8e5cd9;
+    }
+  }
+}
+
+.preventPage {
+  & .pageTitle,
+  & .sectionTitle,
+  & .inlineCode {
+    color: #f9b44e;
+  }
+
+  & .pageTitle {
+    border-bottom: 2px solid #f9b44e;
+  }
+
+  & .navButton {
+    background: #da8b17;
+
+    &:hover {
+      background: #f14158;
+    }
+  }
+}
+
+.navButtonBlocked {
+  background: #f14158;
+
+  &:hover {
+    background: #b62a3c;
+  }
+}

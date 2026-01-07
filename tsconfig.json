@@ -1,22 +1,40 @@
 {
-  "include": ["scripts", "packages", "e2e", "./vitepress", "*.mjs"],
-  "exclude": ["packages/solid"],
+  "include": [
+    "scripts",
+    "e2e",
+    "vitepress",
+    "vitepress/.vitepress/*",
+    "*.mjs",
+    "*.ts",
+    "*.mts",
+    "units"
+  ],
+  "exclude": ["vitepress/modulesMap.ts"],
+  "files": [],
+  "references": [
+    { "path": "./packages/adapters" },
+    { "path": "./packages/core" },
+    { "path": "./packages/react" },
+    { "path": "./packages/solid" },
+    { "path": "./packages/preact" },
+    { "path": "./packages/vue" }
+  ],
   "compilerOptions": {
     "jsx": "react-jsx",
     "outDir": "dist",
-    "module": "commonjs",
     "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
     "strict": true,
-    "noEmit": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "declaration": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
+    "noEmit": false,
     "baseUrl": ".",
-    "paths": {
-      "reactive-route": ["packages/core/index.ts"]
-    }
+    "declaration": true,
+    "skipLibCheck": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "emitDeclarationOnly": true,
+    "allowArbitraryExtensions": true,
+    "paths": { "reactive-route": ["packages/core/index.ts"] }
   },
   "types": ["vite/client", "@testing-library/jest-dom", "vitest/globals"]
 }

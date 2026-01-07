@@ -1,0 +1,32 @@
+import { observer } from 'mobx-react-lite';
+import { useContext, useEffect, useState } from 'react';
+
+import { RouterContext } from './RouterContext';
+
+const StaticAutorun = observer(
+  (props: { spy_pageRender: (props?: any) => void; spy_pageAutorun: (arg: any) => void }) => {
+    const { router } = useContext(RouterContext);
+    const { adapters } = router.getGlobalArguments();
+
+    const currentState = router.state.autorun!;
+
+    props.spy_pageRender(props);
+
+    const [disposer] = useState(() => {
+      return adapters.autorun(() => {
+        props.spy_pageAutorun(currentState.name);
+      });
+    });
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: false
+    useEffect(() => {
+      return () => {
+        disposer?.();
+      };
+    }, []);
+
+    return 'StaticAutorun';
+  }
+);
+
+export default StaticAutorun;

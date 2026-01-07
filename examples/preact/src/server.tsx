@@ -6,54 +6,55 @@ import { RedirectError } from 'reactive-route';
 import express from 'ultimate-express';
 
 import { App } from './components/App';
-import { StoreContext } from './components/StoreContext';
-import { getRouterStore } from './router';
-import { escapeAllStrings } from './utils/escapeAllStrings';
+import { getRouter, RouterContext } from './router';
 
 const publicPath = path.resolve(import.meta.dirname, 'public');
 const templatePath = path.resolve(import.meta.dirname, 'template.html');
 
-const app = express();
+express()
+  .use(express.static(publicPath, { index: false, etag: true }))
+  .get('*', async (req, res) => {
+    if (req.originalUrl.includes('.')) return res.sendStatus(404);
 
-app.use(express.static(publicPath, { index: false, etag: true }));
+    const template = fs.readFileSync(templatePath, 'utf-8');
 
-app.get('*', async (req, res) => {
-  if (req.originalUrl.includes('.')) return res.sendStatus(404);
-
-  const template = fs.readFileSync(templatePath, 'utf-8');
-
-  if (!SSR_ENABLED) {
-    return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- INITIAL_DATA -->', '{}'));
-  }
-
-  const router = await getRouterStore();
-
-  try {
-    const clearedUrl = await router.hydrateFromURL({ pathname: req.originalUrl });
-
-    if (req.originalUrl !== clearedUrl) return res.redirect(clearedUrl);
-  } catch (error: any) {
-    if (error instanceof RedirectError) {
-      return res.redirect(error.message);
+    if (!SSR_ENABLED) {
+      return res.send(template.replace(`<!-- HTML -->`, ''));
     }
 
-    return res.status(500).send('Unexpected error');
-  }
+    const router = getRouter();
 
-  const htmlMarkup = renderToString(
-    <StoreContext.Provider value={{ router }}>
-      <App />
-    </StoreContext.Provider>
-  );
-  const storeJS = JSON.parse(JSON.stringify({ router }));
+    try {
+      const clearedUrl = await router.init(req.originalUrl);
 
-  res.send(
-    template
-      .replace(`<!-- HTML -->`, htmlMarkup)
-      .replace('<!-- INITIAL_DATA -->', JSON.stringify(escapeAllStrings(storeJS)))
-  );
-});
+      if (req.originalUrl !== clearedUrl) {
+        console.log(
+          `Server redirected from ${req.originalUrl} to ${clearedUrl} to clear irrelevant query`
+        );
 
-app.listen(PORT, () => {
-  console.log(`started on`, `http://localhost:${PORT}`);
-});
+        return res.redirect(clearedUrl);
+      }
+    } catch (error: unknown) {
+      if (error instanceof RedirectError) {
+        console.log(
+          `Some beforeEnter issued a redirect from ${req.originalUrl} to ${error.message}`
+        );
+
+        return res.redirect(error.message);
+      }
+
+      return res.status(500).send('Unexpected error');
+    }
+
+    res.send(
+      template.replace(
+        `<!-- HTML -->`,
+        renderToString(
+          <RouterContext.Provider value={{ router }}>
+            <App />
+          </RouterContext.Provider>
+        )
+      )
+    );
+  })
+  .listen(PORT, () => console.log(`started on`, `http://localhost:${PORT}`));

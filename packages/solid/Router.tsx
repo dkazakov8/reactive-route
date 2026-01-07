@@ -1,39 +1,42 @@
-import type { PropsRouter, TypeRouteConfig, TypeRouterLocalObservable } from 'reactive-route';
-import { handleComponentRerender } from 'reactive-route';
-import { onCleanup, Show } from 'solid-js';
+import {
+  handleComponentRerender,
+  type PropsRouter,
+  type TypeConfigsDefault,
+  type TypeRouterLocal,
+} from 'reactive-route';
+import { createSignal, onCleanup, untrack, type ValidComponent } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 
-export function Router<TRoutes extends Record<string, TypeRouteConfig>>(
-  props: PropsRouter<TRoutes>
-) {
-  const { adapters, routes } = props.router.getGlobalArguments();
+export function Router<TConfigs extends TypeConfigsDefault>(props: PropsRouter<TConfigs>) {
+  const { adapters } = props.router.getGlobalArguments();
 
-  const localObservable: TypeRouterLocalObservable = adapters.makeObservable({
-    renderedRouteName: undefined,
-    currentProps: {},
-  });
+  const localState: TypeRouterLocal = { renderedName: undefined };
+  const [count, setCount] = createSignal(1);
 
-  if (adapters.immediateSetComponent) {
-    adapters.batch(() => {
-      handleComponentRerender(props, localObservable);
-    });
-  }
+  let ComponentRef: ValidComponent;
+  let componentPropsRef: Record<string, any> = {};
 
-  const disposer = adapters.autorun(() => handleComponentRerender(props, localObservable));
+  const disposer = adapters.autorun(() =>
+    handleComponentRerender(props, localState, (component, componentProps) => {
+      ComponentRef = component;
+      componentPropsRef = componentProps;
+
+      untrack(() => {
+        setCount(count() + 1);
+      });
+    })
+  );
 
   onCleanup(() => {
     if (typeof disposer === 'function') disposer();
   });
 
   return (
+    // biome-ignore lint/suspicious/noTsIgnore: analyze fails otherwise
     // @ts-ignore
-    <Show when={localObservable.renderedRouteName}>
-      {/* @ts-ignore */}
-      <Dynamic
-        component={routes[localObservable.renderedRouteName!].component}
-        {...localObservable.currentProps}
-        router={props.router}
-      />
-    </Show>
+    <Dynamic
+      component={props.router.activeName ? ComponentRef! : undefined}
+      {...(count() > 0 ? componentPropsRef : {})}
+    />
   );
 }

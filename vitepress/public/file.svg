@@ -1,0 +1,23 @@
+<svg
+  width="32"
+  height="32"
+  viewBox="0 0 32 32"
+  version="1.1"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg">
+  <path
+    style="fill:#542a9c;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
+    d="m 3,2 v 4 4 2 h 8 V 8 6 h 11 v 8 H 3 v 4 10 2 h 8 v -4 -8 h 16 v -4 -1 h 2 V 7 H 27 V 6 2 Z m 19,24 v 4 h 7 v -4 z"/>
+  <rect
+    style="fill:#542a9c;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
+    width="8"
+    height="4"
+    x="19"
+    y="20"/>
+  <rect
+    style="fill:#542a9c;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
+    width="1"
+    height="4"
+    x="21"
+    y="26"/>
+</svg>

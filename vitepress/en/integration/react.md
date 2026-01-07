@@ -1,0 +1,1 @@
+<!-- @include: ../integration.md#integration-react -->

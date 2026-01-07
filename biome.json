@@ -1,15 +1,16 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.1/schema.json",
   "vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
   "files": {
     "includes": [
-      "e2e/**/*.{ts,tsx,mts,vue}",
-      "packages/**/*.{ts,tsx,mts,vue}",
-      "scripts/**/*.{ts,tsx,mts,vue}",
-      "examples/**/*.{ts,tsx,mts,vue}",
-      "vitepress/**/*.{ts,tsx,mts,vue}",
-      "./*.{ts,tsx,mts,vue,json}",
-      "examples/**/*.{css}"
+      "**",
+      "!!**/dist_*",
+      "!!**/dist",
+      "!!**/docs",
+      "!!**/tmp",
+      "!!**/vitepress/.vitepress/cache",
+      "!!**/vitepress/public",
+      "!vitepress/**/modulesMap.ts"
     ]
   },
   "formatter": {
@@ -38,13 +39,14 @@
       "afterEach",
       "SSR_ENABLED",
       "REACTIVITY_SYSTEM",
+      "OPTIONS",
       "PORT"
     ]
   },
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": false,
+      "recommended": true,
       "a11y": {
         "noAutofocus": "off",
         "useAltText": "off",
@@ -57,6 +59,7 @@
         "noDynamicNamespaceImportAccess": "off"
       },
       "complexity": {
+        "noImportantStyles": "off",
         "noUselessSwitchCase": "off",
         "noStaticOnlyClass": "off",
         "noBannedTypes": "off",
@@ -77,6 +80,8 @@
         "noUselessTypeConstraint": "error"
       },
       "correctness": {
+        "noUnknownPseudoClass": "off",
+        "useHookAtTopLevel": "off",
         "noUnusedFunctionParameters": "off",
         "noChildrenProp": "error",
         "noConstantCondition": "error",
@@ -113,7 +118,8 @@
         "useNodejsImportProtocol": "error",
         "noInferrableTypes": "error",
         "noNamespace": "error",
-        "noParameterAssign": "error",
+        "noParameterAssign": "off",
+        "useConsistentObjectDefinitions": "error",
         "noRestrictedImports": "error",
         "noYodaExpression": "error",
         "useArrayLiterals": "error",

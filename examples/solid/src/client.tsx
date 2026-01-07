@@ -1,75 +1,42 @@
+import { enableObservable } from 'kr-observable/solidjs';
 import { hydrate, render } from 'solid-js/web';
 
-import './style.css';
-
-import { enableObservable } from 'kr-observable/solidjs';
-import { Reaction } from 'mobx';
-import { enableExternalSource } from 'solid-js';
-
 import { App } from './components/App';
-import { StoreContext } from './components/StoreContext';
-import { getRouter } from './router';
-import { unescapeAllStrings } from './utils/unescapeAllStrings';
+import { getRouter, RouterContext } from './router';
+import { syncMobxWithSolid } from './syncMobxWithSolid';
 
 if (REACTIVITY_SYSTEM === 'kr-observable') {
   enableObservable(false);
 }
 
 if (REACTIVITY_SYSTEM === 'mobx') {
-  let id = 0;
-
-  enableExternalSource((fn, trigger) => {
-    const reaction = new Reaction(`mobx@${++id}`, trigger);
-
-    return {
-      track: (x) => {
-        let next;
-
-        reaction.track(() => (next = fn(x)));
-
-        return next;
-      },
-      dispose: () => reaction.dispose(),
-    };
-  });
+  syncMobxWithSolid();
 }
 
-const router = await getRouter();
+const router = getRouter();
 
-const contextValue = { router };
+await router.init(location.href, { skipLifecycle: Boolean(SSR_ENABLED) });
 
-const initialData = unescapeAllStrings((window as any).INITIAL_DATA as any);
-
-async function renderSSR() {
-  console.log('renderSSR');
-
-  await contextValue.router.hydrateFromState(initialData.router);
-
-  function AppToRender() {
-    return (
-      <StoreContext.Provider value={contextValue}>
+if (SSR_ENABLED) {
+  hydrate(
+    () => (
+      <RouterContext.Provider value={{ router }}>
         <App />
-      </StoreContext.Provider>
-    );
-  }
+      </RouterContext.Provider>
+    ),
+    document.getElementById('example-app')!
+  );
 
-  hydrate(AppToRender, document.getElementById('app')!);
-}
-
-async function renderCSR() {
-  console.log('renderCSR');
-
-  await contextValue.router.hydrateFromURL({ pathname: location.pathname + location.search });
-
+  console.log('SSR: App has been hydrated, no lifecycle called');
+} else {
   render(
     () => (
-      <StoreContext.Provider value={contextValue}>
+      <RouterContext.Provider value={{ router }}>
         <App />
-      </StoreContext.Provider>
+      </RouterContext.Provider>
     ),
-    document.getElementById('app')!
+    document.getElementById('example-app')!
   );
-}
 
-if (SSR_ENABLED) void renderSSR();
-else void renderCSR();
+  console.log('CSR: App has been rendered and lifecycle called');
+}

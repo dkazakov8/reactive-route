@@ -1,5 +1,5 @@
 {
-  "name": "example",
+  "name": "reactive-route-solid",
   "author": "Dmitry Kazakov",
   "license": "MIT",
   "type": "module",
@@ -12,10 +12,10 @@
     "ssr-mobx": "tsx build.ts mobx ssr"
   },
   "dependencies": {
-    "kr-observable": "3.1.12",
+    "kr-observable": "3.1.14",
     "mobx": "6.15.0",
-    "reactive-route": "0.0.1-beta.0",
-    "solid-js": "1.9.10",
+    "reactive-route": "0.0.1-beta.7",
+    "solid-js": "1.9.11",
     "ultimate-express": "2.0.12"
   },
   "devDependencies": {
@@ -27,6 +27,6 @@
     "babel-preset-solid": "1.9.10",
     "esbuild": "0.27.2",
     "tsx": "4.21.0",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   }
 }

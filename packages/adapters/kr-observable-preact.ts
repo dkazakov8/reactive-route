@@ -1,5 +1,4 @@
 import { autorun, makeObservable } from 'kr-observable';
-// @ts-ignore
 import { observer } from 'kr-observable/preact';
 import { TypeAdapters } from 'reactive-route';
 
@@ -13,6 +12,6 @@ export const adapters: TypeAdapters = {
     }
     Object.assign(obj as Record<string, any>, newObj);
   },
-  makeObservable: makeObservable,
+  makeObservable,
   observer,
 };

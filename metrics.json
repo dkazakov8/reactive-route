@@ -1,0 +1,52 @@
+{
+  "coverage": "94.64 %",
+  "units": 354,
+  "e2e": 144,
+  "sizes": {
+    "reactive-route": {
+      "minified": 5.26,
+      "compressed": 2.1,
+      "version": "0.0.1-beta.7",
+      "link": "https://github.com/m-dmitry/reactive-route"
+    },
+    "@kitbag/router": {
+      "minified": 112.16,
+      "compressed": 30.45,
+      "version": "0.22.0",
+      "link": "https://router.kitbag.dev/"
+    },
+    "mobx-router": {
+      "minified": 25.71,
+      "compressed": 7.87,
+      "version": "1.0.0",
+      "link": "https://github.com/kitze/mobx-router"
+    },
+    "react-router": {
+      "minified": 184.46,
+      "compressed": 51.49,
+      "version": "7.13.0",
+      "link": "https://reactrouter.com/"
+    },
+    "@tanstack/react-router": {
+      "minified": 151.71,
+      "compressed": 40.93,
+      "version": "1.157.15",
+      "link": "https://tanstack.com/router"
+    },
+    "vue-router": {
+      "minified": 137.26,
+      "compressed": 40.34,
+      "version": "5.0.0",
+      "link": "https://router.vuejs.org/"
+    },
+    "@solidjs/router": {
+      "minified": 23.4,
+      "compressed": 8.54,
+      "version": "0.15.4",
+      "link": "https://docs.solidjs.com/solid-router/"
+    }
+  },
+  "localSize": "2.11kb",
+  "coreSize": "1.77kb",
+  "widgetSize": "13.3 KB"
+}

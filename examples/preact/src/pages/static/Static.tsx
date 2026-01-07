@@ -1,53 +1,34 @@
-import { useContext } from 'preact/hooks';
-
-import { StoreContext } from '../../components/StoreContext';
+import { Link } from '../../components/Link';
+import styles from '../../style.module.css';
 
 export default function Static() {
-  const { router } = useContext(StoreContext);
-
   return (
-    <div className="page-container static-page">
-      <h1>Static Page</h1>
+    <div className={`${styles.pageContainer} ${styles.staticPage}`}>
+      <div className={styles.pageTitle}>Static Page</div>
 
-      <div className="route-info">
-        <h2>Route Configuration</h2>
-        <pre>
-          {`static: {
-  path: '/static',
-  loader: () => import('./pages/static'),
-}`}
-        </pre>
+      <div className={styles.panel}>
+        <div className={styles.sectionTitle}>Fixed path</div>
+        <div className={styles.textBlock}>
+          A plain route with a fixed URL. Open <code className={styles.inlineCode}>/static</code>{' '}
+          and the loader renders this page.
+        </div>
+        <div className={styles.textBlock}>
+          The home page uses <code className={styles.inlineCode}>beforeEnter</code> and lands here
+          automatically.
+        </div>
       </div>
 
-      <div className="route-description">
-        <h2>How it works</h2>
-        <p>
-          This is a simple static route with a fixed path. When you navigate to '/static', the
-          router loads this component using the loader function.
-        </p>
-        <p>The home page ('/') automatically redirects to this page using a beforeEnter hook.</p>
-      </div>
-
-      <div className="navigation">
-        <h2>Navigation</h2>
-        <button
-          onClick={() => router.redirect({ route: 'dynamic', params: { foo: 'example' } })}
-          className="nav-button"
-        >
-          Go to Dynamic Page
-        </button>
-        <button
-          onClick={() => router.redirect({ route: 'query', query: { foo: 'example' } })}
-          className="nav-button"
-        >
-          Go to Query Page
-        </button>
-        <button
-          onClick={() => router.redirect({ route: 'preventRedirect' })}
-          className="nav-button"
-        >
-          Go to Prevent Page
-        </button>
+      <div className={styles.sectionNav}>
+        <div className={styles.sectionTitle}>Try next</div>
+        <Link className={styles.navButton} to={{ name: 'dynamic', params: { foo: 'example' } }}>
+          Dynamic
+        </Link>
+        <Link className={styles.navButton} to={{ name: 'query', query: { foo: 'example' } }}>
+          Query
+        </Link>
+        <Link className={styles.navButton} to={{ name: 'preventRedirect' }}>
+          Guards
+        </Link>
       </div>
     </div>
   );

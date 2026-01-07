@@ -5,24 +5,17 @@ import { parse } from 'node:path';
 // @ts-expect-error no types
 import { transformAsync } from '@babel/core';
 import { pluginReplace } from '@espcom/esbuild-plugin-replace';
-import esbuild, { Plugin } from 'esbuild';
+import esbuild, { BuildOptions, Plugin } from 'esbuild';
 import pluginVue from 'unplugin-vue';
 
-import { genSizeBadges } from './genSizeBadges';
+import { buildWidget } from './buildWidget';
+import { createExamplesTree } from './createExamplesTree';
+import { measure } from './measure';
 
-async function generateBuild(type: 'cjs' | 'esm', folderName: string) {
-  const [, packageName, fileName] = folderName.split('/');
-
-  const outFolder = path.resolve(packageName === 'core' ? `./dist` : `./dist/${packageName}`);
-
-  const outFile = path.resolve(
-    outFolder,
-    `${fileName || 'index'}.${type === 'esm' ? 'mjs' : 'cjs'}`
-  );
-
+function getPlugins(framework: 'vue' | 'solid') {
   const plugins: Array<Plugin> = [];
 
-  if (packageName === 'solid') {
+  if (framework === 'solid') {
     plugins.push(
       pluginReplace([
         {
@@ -44,80 +37,91 @@ async function generateBuild(type: 'cjs' | 'esm', folderName: string) {
     );
   }
 
-  if (packageName === 'vue') {
+  if (framework === 'vue') {
     plugins.push(pluginVue.esbuild({ include: [/\.vue$/] }));
   }
 
-  await esbuild.build({
+  return plugins;
+}
+
+async function generateBuild(folderName: string) {
+  const fileName = folderName.split('/')[1] || 'index';
+
+  const startTime = performance.now();
+
+  const entryFile_path = path.resolve('packages', folderName);
+  const entryFolder_path = path.resolve(
+    'packages',
+    folderName.includes('adapters') ? path.dirname(folderName) : folderName
+  );
+  const entryTsconfig = JSON.parse(
+    fs.readFileSync(path.resolve(entryFolder_path, 'tsconfig.json'), 'utf8')
+  );
+
+  const outFolder_path = path.resolve(entryFolder_path, entryTsconfig.compilerOptions.outDir);
+  const outFile_path = path.resolve(outFolder_path, fileName);
+
+  const buildOptions: BuildOptions = {
     bundle: true,
     metafile: true,
-    sourcemap: false,
+    sourcemap: true,
     target: 'es2022',
     packages: 'external',
+    legalComments: 'none',
     write: true,
     minify: false,
     treeShaking: true,
     external: ['reactive-route'],
-    format: type,
-    entryPoints: [path.resolve(process.cwd(), folderName)],
-    outfile: outFile,
-    plugins,
-  });
+    entryPoints: [entryFile_path],
+    plugins: getPlugins(folderName as any),
+  };
 
-  if (type === 'esm' && packageName === 'core') {
-    await genSizeBadges(outFile, packageName);
-  }
+  await Promise.all([
+    esbuild.build({ ...buildOptions, format: 'esm', outfile: `${outFile_path}.mjs` }),
+    esbuild.build({ ...buildOptions, format: 'cjs', outfile: `${outFile_path}.cjs` }),
+  ]);
 
-  return { packageName, fileName };
+  fs.readdirSync(outFolder_path)
+    .filter((file) => file.endsWith('.tsbuildinfo'))
+    .forEach((file) => {
+      fs.rmSync(path.resolve(outFolder_path, file), { force: true });
+    });
+
+  const endTime = performance.now();
+
+  console.log(
+    `\x1b[32m[${folderName}]\x1b[0m built in \x1b[33m${(endTime - startTime).toFixed(2)}ms\x1b[0m`
+  );
+
+  return {
+    relativePath: `./${path.relative(path.resolve('dist'), outFile_path).replaceAll('\\', '/')}`,
+  };
 }
 
 void Promise.all([
-  generateBuild('esm', 'packages/core'),
-  generateBuild('cjs', 'packages/core'),
-  generateBuild('esm', 'packages/solid'),
-  generateBuild('cjs', 'packages/solid'),
-  generateBuild('esm', 'packages/react'),
-  generateBuild('cjs', 'packages/react'),
-  generateBuild('esm', 'packages/preact'),
-  generateBuild('cjs', 'packages/preact'),
-  generateBuild('esm', 'packages/vue'),
-  generateBuild('cjs', 'packages/vue'),
-  generateBuild('esm', 'packages/adapters/mobx-react'),
-  generateBuild('cjs', 'packages/adapters/mobx-react'),
-  generateBuild('esm', 'packages/adapters/mobx-preact'),
-  generateBuild('cjs', 'packages/adapters/mobx-preact'),
-  generateBuild('esm', 'packages/adapters/mobx-solid'),
-  generateBuild('cjs', 'packages/adapters/mobx-solid'),
-  generateBuild('esm', 'packages/adapters/solid'),
-  generateBuild('cjs', 'packages/adapters/solid'),
-  generateBuild('esm', 'packages/adapters/kr-observable-react'),
-  generateBuild('cjs', 'packages/adapters/kr-observable-react'),
-  generateBuild('esm', 'packages/adapters/kr-observable-preact'),
-  generateBuild('cjs', 'packages/adapters/kr-observable-preact'),
-  generateBuild('esm', 'packages/adapters/kr-observable-solid'),
-  generateBuild('cjs', 'packages/adapters/kr-observable-solid'),
-  generateBuild('esm', 'packages/adapters/vue'),
-  generateBuild('cjs', 'packages/adapters/vue'),
-]).then((genData) => {
+  generateBuild('core'),
+  generateBuild('solid'),
+  generateBuild('react'),
+  generateBuild('preact'),
+  generateBuild('vue'),
+  generateBuild('adapters/mobx-react'),
+  generateBuild('adapters/mobx-preact'),
+  generateBuild('adapters/mobx-solid'),
+  generateBuild('adapters/solid'),
+  generateBuild('adapters/kr-observable-react'),
+  generateBuild('adapters/kr-observable-preact'),
+  generateBuild('adapters/kr-observable-solid'),
+  generateBuild('adapters/vue'),
+]).then(async (builtPackages) => {
   const globalPkg = JSON.parse(fs.readFileSync(path.resolve('./package.json'), 'utf8'));
 
   const exports: Record<string, { types: string; require: string; import: string }> = {};
 
-  genData.forEach(({ packageName, fileName }) => {
-    if (packageName === 'core') {
-      exports[`.`] = {
-        types: `./${packageName}/${fileName || 'index'}.d.ts`,
-        require: `./${fileName || 'index'}.cjs`,
-        import: `./${fileName || 'index'}.mjs`,
-      };
-
-      return;
-    }
-
-    exports[`./${packageName}${fileName ? `/${fileName}` : ''}`] = {
-      types: `./${packageName}/${fileName || 'index'}.d.ts`,
-      require: `./${packageName}/${fileName || 'index'}.cjs`,
-      import: `./${packageName}/${fileName || 'index'}.mjs`,
+  builtPackages.forEach(({ relativePath }) => {
+    exports[relativePath.replace('/index', '')] = {
+      types: `${relativePath}.d.ts`,
+      require: `${relativePath}.cjs`,
+      import: `${relativePath}.mjs`,
     };
   });
 
@@ -127,10 +131,12 @@ void Promise.all([
     license: globalPkg.license,
     version: globalPkg.version,
     description: globalPkg.description,
+    keywords: globalPkg.keywords,
+    homepage: globalPkg.homepage,
+    bugs: globalPkg.bugs,
     repository: globalPkg.repository,
-    dependencies: globalPkg.dependencies,
-    engines: globalPkg.engines,
-    exports: exports,
+    peerDependencies: globalPkg.peerDependencies,
+    exports,
     main: exports[`.`].require,
     module: exports[`.`].import,
     types: exports[`.`].types,
@@ -142,5 +148,23 @@ void Promise.all([
     'utf8'
   );
 
-  fs.writeFileSync(path.resolve('./dist/.npmignore'), `*.tsbuildinfo\n`, 'utf8');
+  const modulesMap = builtPackages
+    .map((item) => {
+      const importPath = `${globalPkg.name}${item.relativePath.replace('/index', '').replace('.', '')}`;
+
+      if (importPath.includes('adapters')) return `import { adapters } from '${importPath}'`;
+      if (importPath.includes('/')) return `import { Router } from '${importPath}'`;
+
+      return `import { createConfigs, createRouter } from '${importPath}'`;
+    })
+    .join(';\n');
+
+  fs.writeFileSync(path.resolve('vitepress/modulesMap.ts'), modulesMap, 'utf8');
+  fs.cpSync(path.resolve('README.md'), path.resolve('dist/README.md'));
+
+  await measure();
+
+  await createExamplesTree();
+
+  await buildWidget();
 });

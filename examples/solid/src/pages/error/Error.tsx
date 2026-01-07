@@ -1,80 +1,50 @@
-import { useContext } from 'solid-js';
-
-import { StoreContext } from '../../components/StoreContext';
+import { Link } from '../../components/Link';
+import styles from '../../style.module.css';
 
 export default function Error(props: { errorCode: number }) {
-  const { router } = useContext(StoreContext);
-
   return (
-    <div className="page-container">
-      <div className="error-container">
-        <div className="error-code">{props.errorCode}</div>
-        <h1>{props.errorCode === 404 ? 'Page Not Found' : 'Internal Server Error'}</h1>
+    <div className={`${styles.pageContainer} ${styles.errorPage}`}>
+      <div className={styles.errorContainer}>
+        <div className={styles.errorCode}>{props.errorCode}</div>
+        <div className={styles.pageTitle}>
+          {props.errorCode === 404 ? 'Page Not Found' : 'Internal Server Error'}
+        </div>
       </div>
 
-      <div className="route-info">
-        <h2>Route Configuration</h2>
-        <pre>
+      <div className={styles.panel}>
+        <div className={styles.sectionTitle}>
+          {props.errorCode === 404 ? 'Fallback route' : 'Runtime fallback'}
+        </div>
+        <div className={styles.textBlock}>
           {props.errorCode === 404
-            ? `notFound: {
-  path: '/error404',
-  props: { errorCode: 404 },
-  loader: () => import('./pages/error'),
-}`
-            : `internalError: {
-  path: '/error500',
-  props: { errorCode: 500 },
-  loader: () => import('./pages/error'),
-}`}
-        </pre>
-      </div>
-
-      <div className="route-description">
-        <h2>How it works</h2>
-        <p>
-          This is an error page that handles both 404 (Not Found) and 500 (Internal Server Error)
-          errors. The router passes the error code as a prop to this component.
-        </p>
-        <p>
-          When a route is not found or when an internal error occurs, the router automatically
-          redirects to the appropriate error page.
-        </p>
+            ? 'Shown when no route matches the requested URL.'
+            : 'Shown when route processing or rendering throws unexpectedly.'}
+        </div>
         {props.errorCode === 404 ? (
-          <p>
-            The 404 page is shown when a user tries to navigate to a URL that doesn't match any
-            defined route.
-          </p>
+          <div className={styles.textBlock}>
+            The URL stays useful for debugging while the app renders a controlled fallback.
+          </div>
         ) : (
-          <p>
-            The 500 page is shown when an unexpected error occurs during route processing or
-            component rendering.
-          </p>
+          <div className={styles.textBlock}>
+            The router switches to a safe screen instead of leaving the app in a broken state.
+          </div>
         )}
       </div>
 
-      <div className="navigation">
-        <h2>Navigation</h2>
-        <button onClick={() => router.redirect({ route: 'static' })} className="nav-button">
-          Go to Static Page
-        </button>
-        <button
-          onClick={() => router.redirect({ route: 'dynamic', params: { foo: 'example' } })}
-          className="nav-button"
-        >
-          Go to Dynamic Page
-        </button>
-        <button
-          onClick={() => router.redirect({ route: 'query', query: { foo: 'example' } })}
-          className="nav-button"
-        >
-          Go to Query Page
-        </button>
-        <button
-          onClick={() => router.redirect({ route: 'preventRedirect' })}
-          className="nav-button"
-        >
-          Go to Prevent Page
-        </button>
+      <div className={styles.sectionNav}>
+        <div className={styles.sectionTitle}>Try next</div>
+        <Link to={{ name: 'static' }} className={styles.navButton}>
+          Static
+        </Link>
+        <Link to={{ name: 'dynamic', params: { foo: 'example' } }} className={styles.navButton}>
+          Dynamic
+        </Link>
+        <Link to={{ name: 'query', query: { foo: 'example' } }} className={styles.navButton}>
+          Query
+        </Link>
+        <Link to={{ name: 'preventRedirect' }} className={styles.navButton}>
+          Guards
+        </Link>
       </div>
     </div>
   );

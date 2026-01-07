@@ -1,35 +1,32 @@
 <script lang="ts" setup>
-import { useStore } from '../../components/useStore';
-
-const { router } = useStore();
+import Link from '../../components/Link.vue';
+import styles from '../../style.module.css';
 </script>
 
 <template>
-  <div class="page-container static-page">
-    <h1>Static Page</h1>
+  <div :class="[styles.pageContainer, styles.staticPage]">
+    <div :class="styles.pageTitle">Static Page</div>
 
-    <div class="route-info">
-      <h2>Route Configuration</h2>
-      <pre>static: {
-  path: '/static',
-  loader: () => import('./pages/static'),
-}</pre>
+    <div :class="styles.panel">
+      <div :class="styles.sectionTitle">Fixed path</div>
+      <div :class="styles.textBlock">
+        A plain route with a fixed URL. Open <code :class="styles.inlineCode">/static</code> and the loader renders this
+        page.
+      </div>
+      <div :class="styles.textBlock">
+        The home page uses <code :class="styles.inlineCode">beforeEnter</code> and lands here automatically.
+      </div>
     </div>
 
-    <div class="route-description">
-      <h2>How it works</h2>
-      <p>
-        This is a simple static route with a fixed path. When you navigate to '/static', the router
-        loads this component using the loader function.
-      </p>
-      <p>The home page ('/') automatically redirects to this page using a beforeEnter hook.</p>
-    </div>
-
-    <div class="navigation">
-      <h2>Navigation</h2>
-      <button @click="router.redirect({ route: 'dynamic', params: { foo: 'example' } })" class="nav-button">Go to Dynamic Page</button>
-      <button @click="router.redirect({ route: 'query', query: { foo: 'example' } })" class="nav-button">Go to Query Page</button>
-      <button @click="router.redirect({ route: 'preventRedirect' })" class="nav-button">Go to Prevent Page</button>
+    <div :class="styles.sectionNav">
+      <div :class="styles.sectionTitle">Try next</div>
+      <Link :to="{ name: 'dynamic', params: { foo: 'example' } }" :class="styles.navButton">
+        Dynamic
+      </Link>
+      <Link :to="{ name: 'query', query: { foo: 'example' } }" :class="styles.navButton">
+        Query
+      </Link>
+      <Link :to="{ name: 'preventRedirect' }" :class="styles.navButton">Guards</Link>
     </div>
   </div>
 </template>

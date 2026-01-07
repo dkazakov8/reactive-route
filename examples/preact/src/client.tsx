@@ -1,41 +1,28 @@
 import { hydrate, render } from 'preact';
 
-import './style.css';
-
 import { App } from './components/App';
-import { StoreContext } from './components/StoreContext';
-import { getRouterStore } from './router';
-import { unescapeAllStrings } from './utils/unescapeAllStrings';
+import { getRouter, RouterContext } from './router';
 
-const router = await getRouterStore();
+const router = getRouter();
 
-const initialData = unescapeAllStrings((window as any).INITIAL_DATA as any);
+await router.init(location.href, { skipLifecycle: Boolean(SSR_ENABLED) });
 
-async function renderSSR() {
-  console.log('renderSSR');
-
-  await router.hydrateFromState(initialData.router);
-
+if (SSR_ENABLED) {
   hydrate(
-    <StoreContext.Provider value={{ router }}>
+    <RouterContext.Provider value={{ router }}>
       <App />
-    </StoreContext.Provider>,
-    document.getElementById('app')!
+    </RouterContext.Provider>,
+    document.getElementById('example-app')!
   );
-}
 
-async function renderCSR() {
-  console.log('renderCSR');
-
-  await router.hydrateFromURL({ pathname: location.pathname + location.search });
-
+  console.log('SSR: App has been hydrated, no lifecycle called');
+} else {
   render(
-    <StoreContext.Provider value={{ router }}>
+    <RouterContext.Provider value={{ router }}>
       <App />
-    </StoreContext.Provider>,
-    document.getElementById('app')!
+    </RouterContext.Provider>,
+    document.getElementById('example-app')!
   );
-}
 
-if (SSR_ENABLED) void renderSSR();
-else void renderCSR();
+  console.log('CSR: App has been rendered and lifecycle called');
+}

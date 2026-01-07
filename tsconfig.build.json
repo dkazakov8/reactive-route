@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["declarations.d.ts"],
+  "references": [
+    { "path": "./packages/adapters" },
+    { "path": "./packages/core" },
+    { "path": "./packages/react" },
+    { "path": "./packages/solid" },
+    { "path": "./packages/preact" },
+    { "path": "./packages/vue" }
+  ]
+}

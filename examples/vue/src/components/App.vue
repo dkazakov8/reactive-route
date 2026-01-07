@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import Router from './Router.vue';
-import { provideStore } from './useStore';
+import { Router } from 'reactive-route/vue';
 
-const props = defineProps<{ router: any }>();
-provideStore({ router: props.router });
+import { useRouter } from '../router';
+
+const { router } = useRouter();
 </script>
 
 <template>
-  <Router />
+  <Router :router="router" />
 </template>

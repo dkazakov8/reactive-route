@@ -1,41 +1,33 @@
-<script lang="ts" setup>
-import type { PropsRouter, TypeRouteConfig, TypeRouterLocalObservable } from 'reactive-route';
-import { handleComponentRerender } from 'reactive-route';
-import { computed, markRaw, onBeforeUnmount, ref, toRaw } from 'vue';
+<script lang="ts" setup generic="TConfigs extends TypeConfigsDefault">
+import {
+  handleComponentRerender,
+  type PropsRouter,
+  type TypeConfigsDefault,
+  type TypeRouterLocal,
+} from 'reactive-route';
 
 defineOptions({ name: 'ReactiveRouteRouter' });
 
-const props = defineProps<PropsRouter<Record<string, TypeRouteConfig>>>();
+const props = defineProps<PropsRouter<TConfigs>>();
 
-const { adapters, routes } = props.router.getGlobalArguments();
+const { adapters } = props.router.getGlobalArguments();
 
-const disposerRef = ref<null | (() => void)>(null);
+let ComponentRef: any;
+let componentPropsRef: Record<string, any> = {};
 
-const localObservable: TypeRouterLocalObservable = adapters.makeObservable({
-  renderedRouteName: undefined,
-  currentProps: {},
-});
+const localState: TypeRouterLocal = { renderedName: undefined };
 
-if (adapters.immediateSetComponent) {
-  handleComponentRerender(props, localObservable);
-}
+adapters.autorun(() =>
+  handleComponentRerender(props, localState, (component, componentProps) => {
+    if (ComponentRef !== component) {
+      ComponentRef = component;
+    }
 
-const disposer = adapters.autorun(() => handleComponentRerender(props, localObservable));
-
-/* v8 ignore if -- @preserve */
-if (typeof disposer === 'function') disposerRef.value = disposer;
-
-onBeforeUnmount(() => {
-  disposerRef.value?.();
-});
-
-const LoadedComponent = computed(() => {
-  const comp = routes[localObservable.renderedRouteName as any]?.component;
-
-  return comp ? markRaw(toRaw(comp)) : null;
-});
+    componentPropsRef = componentProps;
+  })
+);
 </script>
 
 <template>
-  <component :is="LoadedComponent" v-if="LoadedComponent" v-bind="localObservable.currentProps" :router="props.router"  />
+  <component :is="ComponentRef" v-if="props.router.activeName" v-bind="componentPropsRef" />
 </template>
