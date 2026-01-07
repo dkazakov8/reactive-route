@@ -10,7 +10,7 @@ Thumbs.db
 .vscode
 node_modules
 npm-debug.*
-docs/.vitepress/cache
+docs
 tmp
 test-results
 vitepress/.vitepress/cache
