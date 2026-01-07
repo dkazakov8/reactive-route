@@ -71,6 +71,7 @@ export default defineConfig({
       createProjectConfig('vue', [vue.vite()]),
       createProjectConfig('vue-ssr', [vue.vite()]),
     ],
+    reporters: ['default', ['json', { outputFile: './test-results/test-results.json' }]],
     coverage: {
       clean: true,
       enabled: true,

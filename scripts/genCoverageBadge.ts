@@ -9,6 +9,12 @@ const summary: Record<string, { total: number; pct: number }> = JSON.parse(
   fs.readFileSync(path.resolve(process.cwd(), 'test-results/coverage-summary.json'), 'utf-8')
 ).total;
 
+console.log(
+  JSON.parse(
+    fs.readFileSync(path.resolve(process.cwd(), 'test-results/test-results.json'), 'utf-8')
+  ).numPassedTests
+);
+
 const coverageByGroup = Object.values(summary)
   .filter((item) => item.total > 0)
   .map((item) => item.pct);

@@ -4,33 +4,36 @@ import { data } from '../dynamic.data'
 
 # Why Reactive Route?
 
+<br>
+<Badge type="warning">{{ data.version }}</Badge>
+<Badge type="info">Size: <span style="color:var(--docsearch-focus-color)">{{ data.size }}</span></Badge>
+<Badge type="info">Coverage: <span style="color:var(--docsearch-focus-color)">{{ data.coverage }}</span> in over <span style="color:var(--docsearch-focus-color)">{{ data.passedTests }}</span> tests</Badge>
+
 When you use a reactive state management library (either Signals or Proxy-based) it's usually quite 
 challenging to integrate existing routing libraries. They are usually hard-linked to the UI (e.g., JSX-based) 
 and have their own non-reactive state. Eventually, your project ends up with two routing states 
-and the struggle of keeping them in sync.
+(or three including browser's history) and the struggle of keeping them in sync.
 
 Also, you may have microfrontends or just several projects using different UI libraries (like React, 
 Solid.js, Vue) and different reactivity systems (MobX, Observable, Solid.js signals, Vue reactive). 
-It's much easier to have a single routing library with a unified approach across all these apps. 
-Developers from one tech stack will feel "at home" when working with others, 
-leading to more stable code and faster delivery.
+It's much easier to have a single routing library with a unified approach across all these apps and
+feel "at home" when working with other tech stacks.
 
 So, we need a reactive-first solution that works with any UI and reactive library.
 
-Reactive Route is battle-proven both for small projects (Solid.js 5.6 KB + Reactive Route {{ data.size }}
-are ready for mobile-only projects or landing pages with SSR) and large-scale applications 
-(50+ pages on React with partial SSR for an unauthorized zone).
+Reactive Route is battle-proven both for small projects (with Solid.js it's about 8 KB and ready 
+for mobile-only projects or landing pages with SSR) and large-scale applications.
 
 Currently, Reactive Route provides official implementations for:
 
-- React + MobX
-- React + Observable
+- React + [MobX](https://mobx.js.org/)
+- React + [Observable](https://observable.ru/)
 - Preact (no compat) + MobX
 - Preact (no compat) + Observable
-- Solid.js + Solid.js signals
+- Solid.js + [Solid.js reactivity](https://docs.solidjs.com/concepts/intro-to-reactivity)
 - Solid.js + MobX
 - Solid.js + Observable
-- Vue + Vue reactive
+- Vue + [Vue reactivity](https://vuejs.org/guide/extras/reactivity-in-depth)
 
 and the core is open for your own stack just by passing relevant adapters and a Router component.
 
@@ -46,7 +49,7 @@ Microfrontends are also technically supported, though their implementation varie
 from project to project, so Reactive Route does not provide a boilerplate architecture for them.
 
 - **Modular Data Integration**: You can export any data from pages, and it is accessible through 
-several built-in methods like `beforeEnter` and `beforeSetPageComponent`. This is essential for SSR 
+a method `beforeComponentChange`. This is essential for SSR 
 with modular/domain/per-page stores and serves as a powerful Dependency Injection mechanism.
 
 - **Server-Side Rendering**: An easy-to-use mechanism for pre-rendering pages on the server side with
@@ -55,16 +58,18 @@ optional data loading and optional clearing of irrelevant query parameters from 
 - **Strict Validation**: Every dynamic parameter from the URL (e.g., `/page/:id/:mode`) and every 
 query parameter must have a validator, preventing invalid routes and improving application robustness.
 
-- **TypeScript Integration**: Comprehensive TypeScript support for routes, dynamic parameters, and query parameters, 
+- **Type Safety**: Comprehensive TypeScript support for routes, dynamic parameters, and query parameters, 
 providing excellent DX with autocomplete. No more redirects to untyped strings or manual searching during refactoring.
 
 - **Architect's Dream**: The router is a flat, separate layer that works with any framework – or none at all.
 No more routing logic buried inside UI components and templates. No need for AST parsing of markup to
 find routes, and no polluted component trees. There are also no requirements for folder structure or file naming.
 
-- **Stability**: The library is backed by over 500 unit and E2E tests which run the
-[examples](/examples/react) in real browsers. This open-source version was released only after 7 years 
-of development, optimization, and battle-testing in dozens of projects.
+- **Optimization**: The reactive-first solution optimizes component rerenders and has a built-in 
+cache for different routes which load the same component (needed for imitating "nested routes" behavior).
+
+- **Stability**: The library is backed by over {{ data.passedTests }} unit and E2E tests which run 
+in real browsers using Playwright.
 
 Ready to give it a try? If you are an experienced developer, you can jump straight into the [examples](/examples/react)
 for your favorite stack – the usage is intuitive and straightforward. Or, follow the 
