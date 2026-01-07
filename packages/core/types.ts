@@ -1,3 +1,5 @@
+import { s } from 'vitest/dist/chunks/reporters.d.Rsi0PyxX';
+
 export type TypeAdapters = {
   batch: (cb: () => void) => void;
   autorun: (cb: () => void) => any;
@@ -38,7 +40,6 @@ export type TypeRouteConfig = {
 
 export type TypeRouteState<TRoute extends TypeRouteConfig> = {
   name: TRoute['name'];
-  path: TRoute['path'];
   props: TRoute['props'];
   query: Partial<Record<keyof TRoute['query'], string>>;
   params: Record<keyof TRoute['params'], string>;
@@ -49,8 +50,6 @@ export type TypeRouteState<TRoute extends TypeRouteConfig> = {
 };
 
 export type TypeRoutesDefault = Record<'notFound' | 'internalError' | string, TypeRouteConfig>;
-
-export type TypeLocationInput = { pathname: string; replace?: boolean };
 
 export type PropsRouter<TRoutes extends TypeRoutesDefault> = {
   router: TypeRouter<TRoutes>;
@@ -113,7 +112,7 @@ export type TypeRouter<TRoutes extends TypeRoutesDefault> = {
   destroyHistoryListener(): void;
 
   // (internal) takes just { pathname: location.pathname + location.search } and creates TypeRoutePayload
-  createRoutePayload(locationInput: TypeLocationInput): TypeRoutePayload<TRoutes, keyof TRoutes>;
+  createRoutePayload(locationInput: string): TypeRoutePayload<TRoutes, keyof TRoutes>;
 
   // (public) may be used for creating Link components because it produces URL
   createRouteState<TRouteName extends keyof TRoutes>(
@@ -129,8 +128,10 @@ export type TypeRouter<TRoutes extends TypeRoutesDefault> = {
   getActiveRouteState(): TypeRouteState<TRoutes[keyof TRoutes]> | undefined;
 
   // (public) prepares the router for work. Must be called before Router component's rendering
-  hydrateFromURL(locationInput: TypeLocationInput): Promise<string>;
+  hydrateFromURL(locationInput: string): Promise<string>;
   hydrateFromState(routerState: Partial<Pick<TypeRouter<TRoutes>, 'state'>>): Promise<void>;
+
+  preloadComponent(routeName: keyof TRoutes): Promise<void>;
 };
 
 export type TypeValidator = (param: string) => boolean;

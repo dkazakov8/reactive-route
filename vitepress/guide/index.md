@@ -1,3 +1,7 @@
+<script setup>
+import { data } from '../dynamic.data'
+</script>
+
 # Why Reactive Route?
 
 When you use a reactive state management library (either Signals or Proxy-based) it's usually quite 
@@ -13,8 +17,8 @@ leading to more stable code and faster delivery.
 
 So, we need a reactive-first solution that works with any UI and reactive library.
 
-Reactive Route is battle-proven both for small projects (Solid.js + Reactive Route
-are just 8 kb of code, ready for mobile-only projects or landing pages with SSR) and large-scale applications 
+Reactive Route is battle-proven both for small projects (Solid.js 5.6 KB + Reactive Route {{ data.size }}
+are ready for mobile-only projects or landing pages with SSR) and large-scale applications 
 (50+ pages on React with partial SSR for an unauthorized zone).
 
 Currently, Reactive Route provides official implementations for:

@@ -98,12 +98,16 @@ void Promise.all([
   generateBuild('cjs', 'packages/adapters/kr-observable-solid'),
   generateBuild('esm', 'packages/adapters/vue'),
   generateBuild('cjs', 'packages/adapters/vue'),
-]).then((genData) => {
+]).then((results) => {
+  const builtPackages = Array.from(
+    new Map(results.map((p) => [`${p.packageName}-${p.fileName}`, p])).values()
+  );
+
   const globalPkg = JSON.parse(fs.readFileSync(path.resolve('./package.json'), 'utf8'));
 
   const exports: Record<string, { types: string; require: string; import: string }> = {};
 
-  genData.forEach(({ packageName, fileName }) => {
+  builtPackages.forEach(({ packageName, fileName }) => {
     if (packageName === 'core') {
       exports[`.`] = {
         types: `./${packageName}/${fileName || 'index'}.d.ts`,
@@ -143,4 +147,17 @@ void Promise.all([
   );
 
   fs.writeFileSync(path.resolve('./dist/.npmignore'), `*.tsbuildinfo\n`, 'utf8');
+
+  const modulesMap = builtPackages
+    .map((item) => {
+      if (item.packageName === 'core')
+        return `import { createRoutes, createRouter } from '${globalPkg.name}'`;
+
+      if (!item.fileName) return `import { Router } from '${globalPkg.name}/${item.packageName}'`;
+
+      return `import { adapters } from '${globalPkg.name}/${item.packageName}/${item.fileName}'`;
+    })
+    .join('\n');
+
+  fs.writeFileSync(path.resolve('./vitepress/modulesMap.ts'), modulesMap, 'utf8');
 });

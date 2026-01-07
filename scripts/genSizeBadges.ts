@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import * as zlib from 'node:zlib';
 
 import * as esbuild from 'esbuild';
@@ -38,9 +40,17 @@ export async function genSizeBadges(outFile: string, packageName: string) {
     [zlib.constants.BROTLI_PARAM_SIZE_HINT]: contentBuffer.length,
   });
 
+  const size = bytesForHuman(compressedBuffer.byteLength);
+
   saveBadge({
     fileName: `${packageName}.svg`,
-    label: `Minified + brotli`,
-    message: bytesForHuman(compressedBuffer.byteLength),
+    label: `compressed`,
+    message: size,
   });
+
+  let vitepressData = fs.readFileSync(path.resolve('./vitepress/dynamic.data.ts'), 'utf-8');
+
+  vitepressData = vitepressData.replace(/size: '([^']?)+'/, `size: '${size}'`);
+
+  fs.writeFileSync(path.resolve('./vitepress/dynamic.data.ts'), vitepressData, 'utf-8');
 }

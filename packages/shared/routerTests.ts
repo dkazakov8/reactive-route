@@ -68,7 +68,6 @@ export async function routerTests(
           state: {
             staticRoute: {
               name: 'staticRoute',
-              path: '/test/static',
               props: {},
               query: {},
               params: {},

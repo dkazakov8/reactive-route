@@ -18,12 +18,9 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     isRedirecting: false,
 
     historyListener() {
-      void this.redirect(
-        this.createRoutePayload({
-          pathname: `${location.pathname}${location.search}`,
-          replace: true,
-        })
-      );
+      const routePayload = this.createRoutePayload(`${location.pathname}${location.search}`);
+
+      void this.redirect({ ...routePayload, replace: true });
     },
     attachHistoryListener() {
       if (isClient) window.addEventListener('popstate', this.historyListener);
@@ -37,8 +34,6 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     },
 
     createRoutePayload(locationInput) {
-      const { pathname, replace } = locationInput;
-
       /**
        * This is the initial step when we only have a URL like `/path?foo=bar`
        *
@@ -48,27 +43,41 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
        *
        */
 
-      const [pathnamePart = '', queryPart = ''] = pathname.split('?');
+      let [pathname = '', search = ''] = locationInput.split('?');
+
+      const pathnameParts: Array<string> = [];
+
+      pathname = pathname
+        .split('/')
+        .filter(Boolean)
+        .map((str) => {
+          let deserializedPart = str;
+
+          try {
+            deserializedPart = decodeURIComponent(str);
+          } catch (_e) {
+            // no need to handle errors and log malformed values
+            // they should be validated by the developer
+          }
+
+          pathnameParts.push(deserializedPart);
+
+          return str;
+        })
+        .join('/');
 
       let route: TypeRouteConfig | undefined;
       const query: Record<string, string> = {};
       let params: Record<string, string> = {};
 
-      const pathnameArray = pathnamePart
-        .split('/')
-        .filter(Boolean)
-        .map((str) => decodeURIComponent(str));
-
       for (const routeName in routes) {
-        if (!Object.hasOwn(routes, routeName)) continue;
+        if (!routes.hasOwnProperty(routeName)) continue;
 
         const testedRoute = routes[routeName];
+        const testedPathname = testedRoute.path.split('/').filter(Boolean).join('/');
 
         // return a static match instantly, it has the top priority
-        if (
-          !testedRoute.path.includes(':') &&
-          (pathname === testedRoute.path || pathname === `${testedRoute.path}/`)
-        ) {
+        if (!testedPathname.includes(':') && testedPathname === pathname) {
           route = testedRoute;
 
           break;
@@ -77,21 +86,23 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         // if a dynamic route has been found, no need to search for another
         if (route) continue;
 
-        const routePathnameArray = testedRoute.path.split('/').filter(Boolean);
+        const testedPathnameParts = testedPathname.split('/').filter(Boolean);
 
-        if (routePathnameArray.length !== pathnameArray.length) continue;
+        if (testedPathnameParts.length !== pathnameParts.length) continue;
 
         // Dynamic params must have functional validators
         // and static params should match
-        const validationFailed = routePathnameArray.some((paramName, i) => {
-          const paramFromUrl = pathnameArray[i];
+        const validationFailed = testedPathnameParts.some((paramName, i) => {
+          const paramFromUrl = pathnameParts[i];
 
           if (paramName[0] !== ':') return paramName !== paramFromUrl;
 
           const validator = testedRoute.params?.[paramName.slice(1)];
 
           if (typeof validator !== 'function') {
-            throw new Error(`missing validator for param "${paramName.slice(1)}"`);
+            throw new Error(
+              `missing validator for pathname dynamic parameter "${paramName.slice(1)}"`
+            );
           }
 
           return !validator(paramFromUrl);
@@ -101,10 +112,10 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         if (!validationFailed) {
           route = testedRoute;
 
-          for (let i = 0; i < routePathnameArray.length; i++) {
-            const paramName = routePathnameArray[i];
+          for (let i = 0; i < testedPathnameParts.length; i++) {
+            const paramName = testedPathnameParts[i];
 
-            if (paramName[0] === ':') params[paramName.slice(1)] = pathnameArray[i];
+            if (paramName[0] === ':') params[paramName.slice(1)] = pathnameParts[i];
           }
         }
       }
@@ -112,10 +123,10 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       route = route || routes.notFound;
 
       if (route.query) {
-        const urlQuery = new URLSearchParams(queryPart);
+        const urlQuery = new URLSearchParams(search);
 
         for (const key in route.query) {
-          if (!Object.hasOwn(route.query, key)) continue;
+          if (!route.query.hasOwnProperty(key)) continue;
 
           const value = urlQuery.get(key);
           const validator = route.query[key];
@@ -128,12 +139,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
       if (!route.params) params = {};
 
-      return {
-        route: route.name,
-        query,
-        params,
-        replace,
-      } as TypeRoutePayload<TRoutes, keyof TRoutes>;
+      return { route: route.name, query, params };
     },
 
     createRouteState(routePayload) {
@@ -147,9 +153,12 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       const pathname =
         'params' in routePayload
           ? route.path.replace(/:([^/]+)/g, (_, pathPart: string) => {
-              const value = routePayload.params?.[pathPart];
+              const value = routePayload.params[pathPart];
 
-              if (!value) throw new Error(`no param "${pathPart}" passed for route ${route.name}`);
+              if (!value)
+                throw new Error(
+                  `no dynamic parameter "${pathPart}" passed for route ${route.name}`
+                );
 
               params[pathPart] = value;
 
@@ -159,7 +168,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
       if (route.query && 'query' in routePayload && routePayload.query) {
         for (const key in route.query) {
-          if (!Object.hasOwn(route.query, key)) continue;
+          if (!route.query.hasOwnProperty(key)) continue;
 
           const value = routePayload.query[key];
           const validator = route.query[key];
@@ -170,12 +179,11 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         }
       }
 
-      const search = new URLSearchParams(query).toString();
+      const search = new URLSearchParams(query).toString().replace(/\+/g, '%20');
       const url = `${pathname}${search ? `?${search}` : ''}`;
 
       return {
         name: route.name,
-        path: route.path,
         props: route.props,
         isActive: true,
         url,
@@ -255,14 +263,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         nextRouteState = this.createRouteState({ route: 'internalError' } as any);
       }
 
-      const route = routes[nextRouteState.name];
-
-      if (!route.component) {
-        const { default: component, ...rest } = await route.loader();
-
-        route.component = component;
-        route.otherExports = rest;
-      }
+      await this.preloadComponent(nextRouteState.name);
 
       adapters.batch(() => {
         if (!this.state[nextRouteState.name]) {
@@ -291,6 +292,17 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       return Object.values(this.state).find((currentRoute) => currentRoute?.isActive);
     },
 
+    async preloadComponent(routeName) {
+      const route = routes[routeName];
+
+      if (!route.component) {
+        const { default: component, ...rest } = await route.loader();
+
+        route.component = component;
+        route.otherExports = rest;
+      }
+    },
+
     hydrateFromURL(locationInput) {
       return this.redirect(this.createRoutePayload(locationInput));
     },
@@ -301,14 +313,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
       const activeRoute = this.getActiveRouteState();
 
-      const route = routes[activeRoute!.name];
-
-      if (!route.component) {
-        const { default: component, ...rest } = await route.loader();
-
-        route.component = component;
-        route.otherExports = rest;
-      }
+      await this.preloadComponent(activeRoute!.name);
     },
   } as TypeRouter<TRoutes>);
 
@@ -318,6 +323,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
   router.redirect = router.redirect.bind(router);
   router.hydrateFromURL = router.hydrateFromURL.bind(router);
+  router.preloadComponent = router.preloadComponent.bind(router);
   router.createRouteState = router.createRouteState.bind(router);
   router.hydrateFromState = router.hydrateFromState.bind(router);
   router.getGlobalArguments = router.getGlobalArguments.bind(router);

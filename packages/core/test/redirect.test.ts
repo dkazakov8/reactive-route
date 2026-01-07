@@ -18,7 +18,6 @@ function check(router: TypeRouter<any>, redirectParams: any, url?: string) {
   });
 
   expect(currentRoute.name).to.deep.eq(expectedCurrentRoute.name);
-  expect(currentRoute.path).to.deep.eq(expectedCurrentRoute.path);
   expect(currentRoute.props).to.deep.eq(expectedCurrentRoute.props);
   expect(currentRoute.params).to.deep.eq(expectedCurrentRoute.params || {});
   expect(currentRoute.query).to.deep.eq(expectedCurrentRoute.query);
@@ -28,7 +27,7 @@ function check(router: TypeRouter<any>, redirectParams: any, url?: string) {
     expect(url).to.eq(expectedCurrentRoute.url);
   }
 
-  if (expectedCurrentRoute.path === '/test/static') {
+  if (expectedCurrentRoute.pathname === '/test/static') {
     expect(redirectParams.route.otherExports?.store).to.deep.eq('');
     expect(redirectParams.route.otherExports?.actions).to.deep.eq('');
   }
@@ -70,7 +69,7 @@ allPossibleOptions.forEach((options) => {
     it('restoreFromURL: sets initial route', async () => {
       const router = createRouter({ routes: routesDefault, adapters: await getAdapters(options) });
 
-      const url = await router.hydrateFromURL({ pathname: routesDefault.staticRoute.path });
+      const url = await router.hydrateFromURL('/test/static');
 
       check(router, { route: routesDefault.staticRoute }, url);
     });
@@ -78,7 +77,7 @@ allPossibleOptions.forEach((options) => {
     it('restoreFromURL: sets initial route not found', async () => {
       const router = createRouter({ routes: routesDefault, adapters: await getAdapters(options) });
 
-      const url = await router.hydrateFromURL({ pathname: '/testX/static' });
+      const url = await router.hydrateFromURL('/testX/static');
 
       check(router, { route: routesDefault.notFound }, url);
     });
@@ -739,22 +738,22 @@ allPossibleOptions.forEach((options) => {
       const redirectThree = new RedirectError(routes.three.path);
 
       await expect(async () => {
-        await router.hydrateFromURL({ pathname: routes.four.path });
+        await router.hydrateFromURL(routes.four.path);
       }).rejects.toThrowError(redirectThree);
 
       const redirectTwo = new RedirectError(routes.two.path);
 
       await expect(async () => {
-        await router.hydrateFromURL({ pathname: redirectThree.message });
+        await router.hydrateFromURL(redirectThree.message);
       }).rejects.toThrowError(redirectTwo);
 
       const redirectOne = new RedirectError(routes.one.path);
 
       await expect(async () => {
-        await router.hydrateFromURL({ pathname: redirectTwo.message });
+        await router.hydrateFromURL(redirectTwo.message);
       }).rejects.toThrowError(redirectOne);
 
-      const url = await router.hydrateFromURL({ pathname: redirectOne.message });
+      const url = await router.hydrateFromURL(redirectOne.message);
 
       check(router, { route: routes.one }, url);
     });

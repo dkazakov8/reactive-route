@@ -7,7 +7,7 @@
       "packages/**/*.{ts,tsx,mts,vue}",
       "scripts/**/*.{ts,tsx,mts,vue}",
       "examples/**/*.{ts,tsx,mts,vue}",
-      "vitepress/**/*.{ts,tsx,mts,vue}",
+      "vitepress/.vitepress/**/*.{ts,tsx,mts,vue}",
       "./*.{ts,tsx,mts,vue,json}",
       "examples/**/*.{css}"
     ]

@@ -2,11 +2,6 @@ import { createRoutes } from '../core';
 
 export function createTestRoutes(imports: Record<string, any>) {
   return createRoutes({
-    staticRoute: {
-      path: '/test/static',
-      query: { q: (value) => value.length > 2 },
-      loader: imports.staticRoute as any,
-    },
     dynamicRoute: {
       path: '/test/:static',
       params: { static: (value) => value.length > 2 },
@@ -15,6 +10,11 @@ export function createTestRoutes(imports: Record<string, any>) {
         s: (value) => value.length > 2,
       },
       loader: imports.dynamicRoute as any,
+    },
+    staticRoute: {
+      path: '/test/static',
+      query: { q: (value) => value.length > 2 },
+      loader: imports.staticRoute as any,
     },
     dynamicRoute2: {
       path: '/test3/:static',
@@ -55,6 +55,10 @@ export function createTestRoutes(imports: Record<string, any>) {
       path: '/test/static/autorun',
       loader: imports.staticRouteAutorun as any,
       props: {},
+    },
+    specialCharsPathname: {
+      path: '/special/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B%3Fx%3Dtest',
+      loader: imports.staticRoute as any,
     },
     notFound: {
       path: '/error404',
