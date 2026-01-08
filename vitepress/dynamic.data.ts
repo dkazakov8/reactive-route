@@ -1,20 +1,20 @@
-import path from "node:path";
-import fs from "node:fs";
+import fs from 'node:fs';
+import path from 'node:path';
 
 export default {
   load() {
-    const globalPkg = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'));
+    const globalPkg = JSON.parse(
+      fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8')
+    );
+    const metrics = JSON.parse(
+      fs.readFileSync(path.resolve(process.cwd(), 'metrics.json'), 'utf8')
+    );
 
-    const size = fs.readFileSync(path.resolve(process.cwd(), 'assets/core.svg'), 'utf-8')
-      .match(/>(\d+\.?(\d+)?\s[\w%]+)</)?.[1];
-    const coverage = fs.readFileSync(path.resolve(process.cwd(), 'assets/coverage.svg'), 'utf-8')
-      .match(/>(\d+\.?(\d+)?\s[\w%]+)</)?.[1];
-
-
-    const passedTests = JSON.parse(
-      fs.readFileSync(path.resolve(process.cwd(), 'test-results/test-results.json'), 'utf-8')
-    ).numPassedTests
-
-    return { size, version: globalPkg.version, coverage, passedTests };
-  }
-}
+    return {
+      size: metrics.size,
+      version: globalPkg.version,
+      coverage: metrics.coverage,
+      passedTests: metrics.tests,
+    };
+  },
+};

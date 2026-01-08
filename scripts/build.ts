@@ -8,7 +8,8 @@ import { pluginReplace } from '@espcom/esbuild-plugin-replace';
 import esbuild, { Plugin } from 'esbuild';
 import pluginVue from 'unplugin-vue';
 
-import { genSizeBadges } from './genSizeBadges';
+import { getCompressedSize } from './getCompressedSize';
+import { saveMetrics } from './saveMetrics';
 
 async function generateBuild(type: 'cjs' | 'esm', folderName: string) {
   const [, packageName, fileName] = folderName.split('/');
@@ -65,7 +66,9 @@ async function generateBuild(type: 'cjs' | 'esm', folderName: string) {
   });
 
   if (type === 'esm' && packageName === 'core') {
-    await genSizeBadges(outFile, packageName);
+    const size = await getCompressedSize(outFile);
+
+    saveMetrics({ key: 'size', value: size });
   }
 
   return { packageName, fileName };

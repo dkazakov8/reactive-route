@@ -7,6 +7,8 @@ import babel from 'vite-plugin-babel';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig, TestProjectConfiguration } from 'vitest/config';
 
+import { VitestReporter } from './scripts/vitestReporter';
+
 const solidPlugin = babel({
   filter: /\.tsx?$/,
   babelConfig: { presets: ['@babel/preset-typescript', 'babel-preset-solid'] },
@@ -71,12 +73,12 @@ export default defineConfig({
       createProjectConfig('vue', [vue.vite()]),
       createProjectConfig('vue-ssr', [vue.vite()]),
     ],
-    reporters: ['default', ['json', { outputFile: './test-results/test-results.json' }]],
+    reporters: [new VitestReporter()],
     coverage: {
       clean: true,
       enabled: true,
       provider: 'v8',
-      reporter: ['text', 'json-summary'],
+      reporter: ['text'],
       reportsDirectory: './test-results',
       include: ['packages/*'],
       exclude: [

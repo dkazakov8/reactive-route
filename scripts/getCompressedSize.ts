@@ -2,8 +2,6 @@ import * as zlib from 'node:zlib';
 
 import * as esbuild from 'esbuild';
 
-import { saveBadge } from './saveBadge';
-
 function bytesForHuman(bytes: number) {
   let unit = 'B';
 
@@ -18,7 +16,7 @@ function bytesForHuman(bytes: number) {
   return `${bytes.toFixed(2)} ${unit}`;
 }
 
-export async function genSizeBadges(outFile: string, packageName: string) {
+export async function getCompressedSize(outFile: string) {
   const result = await esbuild.build({
     bundle: true,
     minify: true,
@@ -38,11 +36,5 @@ export async function genSizeBadges(outFile: string, packageName: string) {
     [zlib.constants.BROTLI_PARAM_SIZE_HINT]: contentBuffer.length,
   });
 
-  const size = bytesForHuman(compressedBuffer.byteLength);
-
-  saveBadge({
-    fileName: `${packageName}.svg`,
-    label: `compressed`,
-    message: size,
-  });
+  return bytesForHuman(compressedBuffer.byteLength);
 }
