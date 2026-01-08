@@ -1,5 +1,6 @@
 {
   "size": "1.65 KB",
   "tests": 410,
-  "coverage": "97.13 %"
+  "coverage": "97.13 %",
+  "e2e": 144
 }

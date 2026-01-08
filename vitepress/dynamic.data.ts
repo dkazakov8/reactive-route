@@ -9,12 +9,13 @@ export default {
     const metrics = JSON.parse(
       fs.readFileSync(path.resolve(process.cwd(), 'metrics.json'), 'utf8')
     );
+    const passedTests = metrics.tests + metrics.e2e;
 
     return {
       size: metrics.size,
       version: globalPkg.version,
       coverage: metrics.coverage,
-      passedTests: metrics.tests,
+      passedTests,
     };
   },
 };

@@ -7,7 +7,7 @@ import { data } from '../dynamic.data'
 <br>
 <Badge type="warning">{{ data.version }}</Badge>
 <Badge type="info">Size: <span style="color:var(--docsearch-focus-color)">{{ data.size }}</span></Badge>
-<Badge type="info">Coverage: <span style="color:var(--docsearch-focus-color)">{{ data.coverage }}</span> in over <span style="color:var(--docsearch-focus-color)">{{ data.passedTests }}</span> tests</Badge>
+<Badge type="info">Coverage: <span style="color:var(--docsearch-focus-color)">{{ data.coverage }}</span> in <span style="color:var(--docsearch-focus-color)">{{ data.passedTests }}</span> tests</Badge>
 
 When you use a reactive state management library (either Signals or Proxy-based) it's usually quite 
 challenging to integrate existing routing libraries. They are usually hard-linked to the UI (e.g., JSX-based) 
@@ -68,7 +68,7 @@ find routes, and no polluted component trees. There are also no requirements for
 - **Optimization**: The reactive-first solution optimizes component rerenders and has a built-in 
 cache for different routes which load the same component (needed for imitating "nested routes" behavior).
 
-- **Stability**: The library is backed by over {{ data.passedTests }} unit and E2E tests which run 
+- **Stability**: The library is backed by <span style="color:var(--docsearch-focus-color)">{{ data.passedTests }}</span> unit and E2E tests which run 
 in real browsers using Playwright.
 
 Ready to give it a try? If you are an experienced developer, you can jump straight into the [examples](/examples/react)

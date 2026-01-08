@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-type TypeKey = 'size' | 'coverage' | 'tests';
+type TypeKey = 'size' | 'coverage' | 'tests' | 'e2e';
 
 export function saveMetrics({ key, value }: { key: TypeKey; value: string | number }) {
   const metricsPath = path.resolve(process.cwd(), 'metrics.json');
