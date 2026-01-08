@@ -59,7 +59,7 @@ async function renderSSR() {
 async function renderCSR() {
   console.log('renderCSR');
 
-  await contextValue.router.hydrateFromURL({ pathname: location.pathname + location.search });
+  await contextValue.router.hydrateFromURL(location.pathname + location.search);
 
   render(
     () => (

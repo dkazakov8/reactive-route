@@ -21,7 +21,7 @@ async function renderSSR() {
 async function renderCSR() {
   console.log('renderCSR');
 
-  await router.hydrateFromURL({ pathname: location.pathname + location.search });
+  await router.hydrateFromURL(location.pathname + location.search);
 
   createApp(App, { router }).mount('#app');
 }

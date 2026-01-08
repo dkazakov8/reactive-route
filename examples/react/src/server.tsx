@@ -29,7 +29,7 @@ app.get('*', async (req, res) => {
   const router = await getRouter();
 
   try {
-    const clearedUrl = await router.hydrateFromURL({ pathname: req.originalUrl });
+    const clearedUrl = await router.hydrateFromURL(req.originalUrl);
 
     if (req.originalUrl !== clearedUrl) return res.redirect(clearedUrl);
   } catch (error: any) {

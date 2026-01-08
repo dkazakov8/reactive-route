@@ -6,11 +6,11 @@
       "e2e/**/*.{ts,tsx,mts,vue}",
       "packages/**/*.{ts,tsx,mts,vue}",
       "scripts/**/*.{ts,tsx,mts,vue}",
-      "examples/**/*.{ts,tsx,mts,vue}",
+      "examples/**/*.{ts,tsx,mts,vue,css}",
+      "!!**/dist_*",
       "vitepress/**/*.{ts,tsx,mts,vue}",
       "!vitepress/**/modulesMap.ts",
-      "./*.{ts,tsx,mts,vue,json}",
-      "examples/**/*.{css}"
+      "./*.{ts,tsx,mts,vue,json,cjs}"
     ]
   },
   "formatter": {
