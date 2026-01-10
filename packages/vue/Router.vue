@@ -2,13 +2,13 @@
 import {
   handleComponentRerender,
   type PropsRouter,
-  type TypeRouteConfig,
   type TypeRouterLocalObservable,
+  type TypeRoutesDefault,
 } from 'reactive-route';
 
 defineOptions({ name: 'ReactiveRouteRouter' });
 
-const props = defineProps<PropsRouter<Record<string, TypeRouteConfig>>>();
+const props = defineProps<PropsRouter<TypeRoutesDefault>>();
 
 const { adapters } = props.router.getGlobalArguments();
 

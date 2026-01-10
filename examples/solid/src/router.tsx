@@ -1,4 +1,5 @@
 import { createRouter, createRoutes } from 'reactive-route';
+import { createContext } from 'solid-js';
 
 export async function getRouter() {
   let adapters: any;
@@ -72,3 +73,7 @@ export async function getRouter() {
     adapters,
   });
 }
+
+export const RouterContext = createContext<{ router: Awaited<ReturnType<typeof getRouter>> }>(
+  undefined
+);

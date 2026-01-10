@@ -6,8 +6,7 @@ import { RedirectError } from 'reactive-route';
 import express from 'ultimate-express';
 
 import { App } from './components/App';
-import { StoreContext } from './components/StoreContext';
-import { getRouter } from './router';
+import { getRouter, RouterContext } from './router';
 import { escapeAllStrings } from './utils/escapeAllStrings';
 
 const publicPath = path.resolve(import.meta.dirname, 'public');
@@ -39,9 +38,9 @@ app.get('*', async (req, res) => {
   }
 
   const htmlMarkup = renderToString(
-    <StoreContext.Provider value={{ router }}>
+    <RouterContext.Provider value={{ router }}>
       <App />
-    </StoreContext.Provider>
+    </RouterContext.Provider>
   );
   const storeJS = JSON.parse(JSON.stringify({ router }));
 

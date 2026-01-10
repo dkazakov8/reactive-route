@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useRouterStore } from '../../components/useRouterStore';
+import { useRouterStore } from '../../router';
 
 const { router } = useRouterStore();
 

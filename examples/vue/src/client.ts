@@ -3,7 +3,7 @@ import { createApp, createSSRApp } from 'vue';
 import './style.css';
 
 import App from './components/App.vue';
-import { getRouter } from './router';
+import { getRouter, routerStoreKey } from './router';
 import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
 const router = await getRouter();
@@ -15,7 +15,7 @@ async function renderSSR() {
 
   await router.hydrateFromState(initialData.router);
 
-  createSSRApp(App, { router }).mount('#app');
+  createSSRApp(App, { router }).provide(routerStoreKey, { router }).mount('#app');
 }
 
 async function renderCSR() {
@@ -23,7 +23,7 @@ async function renderCSR() {
 
   await router.hydrateFromURL(location.pathname + location.search);
 
-  createApp(App, { router }).mount('#app');
+  createApp(App, { router }).provide(routerStoreKey, { router }).mount('#app');
 }
 
 if (SSR_ENABLED) void renderSSR();

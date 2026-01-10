@@ -3,8 +3,7 @@ import { hydrate, render } from 'preact';
 import './style.css';
 
 import { App } from './components/App';
-import { StoreContext } from './components/StoreContext';
-import { getRouterStore } from './router';
+import { getRouterStore, RouterContext } from './router';
 import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
 const router = await getRouterStore();
@@ -17,9 +16,9 @@ async function renderSSR() {
   await router.hydrateFromState(initialData.router);
 
   hydrate(
-    <StoreContext.Provider value={{ router }}>
+    <RouterContext.Provider value={{ router }}>
       <App />
-    </StoreContext.Provider>,
+    </RouterContext.Provider>,
     document.getElementById('app')!
   );
 }
@@ -30,9 +29,9 @@ async function renderCSR() {
   await router.hydrateFromURL(location.pathname + location.search);
 
   render(
-    <StoreContext.Provider value={{ router }}>
+    <RouterContext.Provider value={{ router }}>
       <App />
-    </StoreContext.Provider>,
+    </RouterContext.Provider>,
     document.getElementById('app')!
   );
 }

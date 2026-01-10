@@ -163,7 +163,7 @@ If you need to show loaders on redirects, you may use this parameter. For global
 
 ```tsx
 const GlobalHeader = () => {
-  const { router } = useContext(StoreContext);
+  const { router } = useContext(RouterContext);
   
   return router.isRedirecting ? <Loader /> : null;
 }
@@ -173,7 +173,7 @@ Or for a local one:
 
 ```tsx
 const GlobalHeader = () => {
-  const { router } = useContext(StoreContext);
+  const { router } = useContext(RouterContext);
   
   return <Button isLoading={router.isRedirecting} />;
 }

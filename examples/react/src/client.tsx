@@ -3,8 +3,7 @@ import { createRoot, hydrateRoot } from 'react-dom/client';
 import './style.css';
 
 import { App } from './components/App';
-import { StoreContext } from './components/StoreContext';
-import { getRouter } from './router';
+import { getRouter, RouterContext } from './router';
 import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
 const router = await getRouter();
@@ -18,9 +17,9 @@ async function renderSSR() {
 
   hydrateRoot(
     document.getElementById('app')!,
-    <StoreContext.Provider value={{ router }}>
+    <RouterContext.Provider value={{ router }}>
       <App />
-    </StoreContext.Provider>
+    </RouterContext.Provider>
   );
 }
 
@@ -30,9 +29,9 @@ async function renderCSR() {
   await router.hydrateFromURL(location.pathname + location.search);
 
   createRoot(document.getElementById('app')!).render(
-    <StoreContext.Provider value={{ router }}>
+    <RouterContext.Provider value={{ router }}>
       <App />
-    </StoreContext.Provider>
+    </RouterContext.Provider>
   );
 }
 

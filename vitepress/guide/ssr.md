@@ -8,7 +8,7 @@ for example, from `lodash`. These utilities are not included in `reactive-route`
 
 ```tsx [server.tsx]
 import { getRouter } from './router';
-import { StoreContext } from './StoreContext';
+import { RouterContext } from './RouterContext';
 import { RedirectError } from 'reactive-route';
 
 express()
@@ -33,9 +33,9 @@ express()
     }
 
     const htmlMarkup = renderToString(
-      <StoreContext.Provider value={{ router }}>
+      <RouterContext.Provider value={{ router }}>
         <App />
-      </StoreContext.Provider>
+      </RouterContext.Provider>
     );
     
     // A very simple method of serialization, but sufficient for react-route
@@ -54,7 +54,7 @@ express()
 
 ```tsx [client.tsx]
 import { getRouter } from './router';
-import { StoreContext } from './StoreContext';
+import { RouterContext } from './RouterContext';
 
 const router = getRouter();
 const initialData = unescapeAllStrings(window.INITIAL_DATA);
@@ -63,8 +63,8 @@ await router.restoreFromServer(initialData.router);
 
 hydrate(
   document.getElementById('app'),
-  <StoreContext.Provider value={{ router }}>
+  <RouterContext.Provider value={{ router }}>
     <App />
-  </StoreContext.Provider>
+  </RouterContext.Provider>
 );
 ```

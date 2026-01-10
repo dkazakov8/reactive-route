@@ -3,7 +3,7 @@ import { PropsRouter, TypeRouteConfig, TypeRouterLocalObservable } from './types
 export function handleComponentRerender(
   props: PropsRouter<any>,
   localObservable: TypeRouterLocalObservable,
-  setComponent?: (component: any) => void
+  setComponent: (component: any) => void
 ) {
   const { adapters, routes, beforeComponentChange } = props.router.getGlobalArguments();
 

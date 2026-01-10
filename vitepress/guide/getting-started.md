@@ -128,10 +128,10 @@ Create a custom Router component that uses the context to access the router stor
 import { useContext } from '{ui-library}';
 import { Router } from 'reactive-route/{ui-library}';
 
-import { StoreContext } from './StoreContext';
+import { RouterContext } from './RouterContext';
 
 export function App() {
-  const { router } = useContext(StoreContext);
+  const { router } = useContext(RouterContext);
 
   return <Router router={router} />;
 }
@@ -140,7 +140,7 @@ export function App() {
 ### 3. Initialize the router and render
 
 ```tsx [client.tsx]
-import { StoreContext } from './StoreContext';
+import { RouterContext } from './RouterContext';
 import { getRouterStore } from './router';
 import { Router } from './components/Router';
 
@@ -153,8 +153,8 @@ await router.restoreFromURL({
 // the implementation is dependent on the UI library
 render(
   element,
-  <StoreContext.Provider value={{ router }}>
+  <RouterContext.Provider value={{ router }}>
     <Router />
-  </StoreContext.Provider>
+  </RouterContext.Provider>
 );
 ```

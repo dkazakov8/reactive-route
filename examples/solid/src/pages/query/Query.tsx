@@ -1,9 +1,9 @@
 import { useContext } from 'solid-js';
 
-import { StoreContext } from '../../components/StoreContext';
+import { RouterContext } from '../../router';
 
 export default function Query() {
-  const { router } = useContext(StoreContext);
+  const { router } = useContext(RouterContext);
 
   return (
     <div className="page-container query-page">

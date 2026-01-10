@@ -1,3 +1,4 @@
+import { createContext } from 'preact';
 import { createRouter, createRoutes } from 'reactive-route';
 
 export async function getRouterStore() {
@@ -63,3 +64,7 @@ export async function getRouterStore() {
     adapters,
   });
 }
+
+export const RouterContext = createContext<{ router: Awaited<ReturnType<typeof getRouterStore>> }>(
+  undefined
+);

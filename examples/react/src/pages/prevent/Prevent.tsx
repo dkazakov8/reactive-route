@@ -1,9 +1,9 @@
 import { useContext } from 'react';
 
-import { StoreContext } from '../../components/StoreContext';
+import { RouterContext } from '../../router';
 
 export default function Prevent() {
-  const { router } = useContext(StoreContext);
+  const { router } = useContext(RouterContext);
 
   return (
     <div className="page-container prevent-page">

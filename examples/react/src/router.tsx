@@ -1,3 +1,4 @@
+import { createContext } from 'react';
 import { createRouter, createRoutes } from 'reactive-route';
 
 export async function getRouter() {
@@ -63,3 +64,7 @@ export async function getRouter() {
     adapters,
   });
 }
+
+export const RouterContext = createContext<{ router: Awaited<ReturnType<typeof getRouter>> }>(
+  undefined
+);

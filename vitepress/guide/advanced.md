@@ -49,7 +49,7 @@ import { TypeCurrentRoute } from 'reactive-route';
 import { routes } from 'routes';
 
 function MyComponent() {
-  const { router } = useContext(StoreContext);
+  const { router } = useContext(RouterContext);
   
   const currentRoute = router.currentRoute as TypeCurrentRoute<typeof routes.tabs>;
 
@@ -97,7 +97,7 @@ export const homeStore = {
 }
 
 export default function Home() {
-  const { modularStores } = useContext(StoreContext);
+  const { modularStores } = useContext(RouterContext);
 
   return `Home ${modularStores.homeStore.foo}`;
 }
@@ -105,7 +105,7 @@ export default function Home() {
 
 ```tsx [components/Router.tsx]
 export function Router() {
-  const { router, modularStores } = useContext(StoreContext);
+  const { router, modularStores } = useContext(RouterContext);
 
   return (
     <RouterLib

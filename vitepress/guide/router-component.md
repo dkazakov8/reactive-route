@@ -8,10 +8,10 @@ The router is the central piece that manages the state of the router and provide
 import { useContext } from '{ui-library}';
 import { Router as RouterLib } from 'reactive-route/{ui-library}';
 
-import { StoreContext } from './StoreContext';
+import { RouterContext } from './RouterContext';
 
 export function Router() {
-  const { router } = useContext(StoreContext);
+  const { router } = useContext(RouterContext);
 
   return <RouterLib router={router} />;
 }
@@ -31,10 +31,10 @@ import { useContext } from '{ui-library}';
 import { Router as RouterLib } from 'reactive-route/{ui-library}';
 
 import { routes } from '../routes';
-import { StoreContext } from './StoreContext';
+import { RouterContext } from './RouterContext';
 
 export function Router() {
-  const { router } = useContext(StoreContext);
+  const { router } = useContext(RouterContext);
 
   return (
     <RouterLib

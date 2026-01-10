@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import {
   handleComponentRerender,
   type PropsRouter,
-  type TypeRouteConfig,
   type TypeRouterLocalObservable,
+  type TypeRoutesDefault,
 } from 'reactive-route';
 
-function RouterInner<TRoutes extends Record<string, TypeRouteConfig>>(props: PropsRouter<TRoutes>) {
+function RouterInner<TRoutes extends TypeRoutesDefault>(props: PropsRouter<TRoutes>) {
   const [{ adapters }] = useState(() => props.router.getGlobalArguments());
 
   const disposerRef = useRef<() => void>(null);
@@ -43,12 +43,10 @@ function RouterInner<TRoutes extends Record<string, TypeRouteConfig>>(props: Pro
   return <ComponentRef.current {...localObservable.currentProps} />;
 }
 
-export function Router<TRoutes extends Record<string, TypeRouteConfig>>(
-  props: PropsRouter<TRoutes>
-) {
+export function Router<TRoutes extends TypeRoutesDefault>(props: PropsRouter<TRoutes>) {
   const [Component] = useState(() =>
     props.router.getGlobalArguments().adapters.observer!(RouterInner)
   );
 
-  return <Component {...props} />;
+  return <Component router={props.router} />;
 }

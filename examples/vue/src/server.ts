@@ -7,7 +7,7 @@ import { createSSRApp } from 'vue';
 import { renderToString } from 'vue/server-renderer';
 
 import App from './components/App.vue';
-import { getRouter } from './router';
+import { getRouter, routerStoreKey } from './router';
 import { escapeAllStrings } from './utils/escapeAllStrings';
 
 const publicPath = path.resolve(import.meta.dirname, 'public');
@@ -40,7 +40,9 @@ app.get('*', async (req, res) => {
     return res.status(500).send('Unexpected error');
   }
 
-  const htmlMarkup = await renderToString(createSSRApp(App, { router }));
+  const htmlMarkup = await renderToString(
+    createSSRApp(App, { router }).provide(routerStoreKey, { router })
+  );
   const storeJS = JSON.parse(JSON.stringify({ router }));
 
   res.send(

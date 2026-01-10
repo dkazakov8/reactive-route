@@ -1,4 +1,5 @@
 import { createRouter, createRoutes } from 'reactive-route';
+import { InjectionKey, inject } from 'vue';
 
 export async function getRouter() {
   const adapters = await import('reactive-route/adapters/vue').then((m) => m.adapters);
@@ -57,4 +58,16 @@ export async function getRouter() {
     }),
     adapters,
   });
+}
+
+type RouterStore = { router: Awaited<ReturnType<typeof getRouter>> };
+
+export const routerStoreKey: InjectionKey<RouterStore> = Symbol('RouterStore');
+
+export function useRouterStore(): RouterStore {
+  const store = inject(routerStoreKey);
+
+  if (!store) throw new Error('RouterStore: router is not provided');
+
+  return store;
 }

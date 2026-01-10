@@ -7,8 +7,7 @@ import { Reaction } from 'mobx';
 import { enableExternalSource } from 'solid-js';
 
 import { App } from './components/App';
-import { StoreContext } from './components/StoreContext';
-import { getRouter } from './router';
+import { getRouter, RouterContext } from './router';
 import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
 if (REACTIVITY_SYSTEM === 'kr-observable') {
@@ -47,9 +46,9 @@ async function renderSSR() {
 
   function AppToRender() {
     return (
-      <StoreContext.Provider value={contextValue}>
+      <RouterContext.Provider value={contextValue}>
         <App />
-      </StoreContext.Provider>
+      </RouterContext.Provider>
     );
   }
 
@@ -63,9 +62,9 @@ async function renderCSR() {
 
   render(
     () => (
-      <StoreContext.Provider value={contextValue}>
+      <RouterContext.Provider value={contextValue}>
         <App />
-      </StoreContext.Provider>
+      </RouterContext.Provider>
     ),
     document.getElementById('app')!
   );
