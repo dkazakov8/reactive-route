@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+import globalAfter from './globalAfter';
+
 type TypeVariant = { folder: string; script: string; port?: number; name?: string };
 
 const csrVariants: Array<TypeVariant> = [
@@ -44,6 +46,7 @@ export default defineConfig({
     timeout: 10000,
     cwd: __dirname,
     stdout: 'pipe',
+    wait: { stdout: /started/ },
   })),
   projects: variants.map((variant) => ({
     name: variant.name,
@@ -53,4 +56,8 @@ export default defineConfig({
     },
   })),
   globalTeardown: require.resolve('./globalAfter'),
+});
+
+process.on('SIGINT', () => {
+  globalAfter();
 });

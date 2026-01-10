@@ -8,12 +8,14 @@ export function saveMetrics({ key, value }: { key: TypeKey; value: string | numb
   const metrics: Record<TypeKey, any> = JSON.parse(fs.readFileSync(metricsPath, 'utf-8'));
 
   if (metrics[key] === value) {
-    console.log(`[metrics] unchanged ${key}: ${value}`);
+    console.log(`\x1b[32m[metrics]\x1b[0m unchanged ${key}: \x1b[33m${value}\x1b[0m`);
 
     return;
   }
 
-  console.log(`[metrics] changed ${key}: ${metrics[key]} -> ${value}`);
+  console.log(
+    `\x1b[32m[metrics]\x1b[0m changed ${key}: \x1b[33m${metrics[key]}\x1b[0m -> \x1b[33m${value}\x1b[0m`
+  );
 
   metrics[key] = value;
 

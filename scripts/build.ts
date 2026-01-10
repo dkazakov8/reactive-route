@@ -13,10 +13,11 @@ import { saveMetrics } from './saveMetrics';
 
 async function generateBuild(type: 'cjs' | 'esm', folderName: string) {
   const [, packageName, fileName] = folderName.split('/');
+  const startTime = performance.now();
 
   const outFolder = path.resolve(packageName === 'core' ? `./dist` : `./dist/${packageName}`);
 
-  const outFile = path.resolve(
+  const outfile = path.resolve(
     outFolder,
     `${fileName || 'index'}.${type === 'esm' ? 'mjs' : 'cjs'}`
   );
@@ -61,17 +62,17 @@ async function generateBuild(type: 'cjs' | 'esm', folderName: string) {
     external: ['reactive-route'],
     format: type,
     entryPoints: [path.resolve(process.cwd(), folderName)],
-    outfile: outFile,
+    outfile,
     plugins,
   });
 
-  if (type === 'esm' && packageName === 'core') {
-    const size = await getCompressedSize(outFile);
+  const endTime = performance.now();
 
-    saveMetrics({ key: 'size', value: size });
-  }
+  console.log(
+    `\x1b[32m[${packageName}${fileName ? `/${fileName}` : ''}]\x1b[0m built in \x1b[33m${(endTime - startTime).toFixed(2)}ms\x1b[0m`
+  );
 
-  return { packageName, fileName };
+  return { packageName, fileName, outfile, type };
 }
 
 void Promise.all([
@@ -101,7 +102,11 @@ void Promise.all([
   generateBuild('cjs', 'packages/adapters/kr-observable-solid'),
   generateBuild('esm', 'packages/adapters/vue'),
   generateBuild('cjs', 'packages/adapters/vue'),
-]).then((results) => {
+]).then(async (results) => {
+  const coreData = results.find((r) => r.type === 'esm' && r.packageName === 'core');
+
+  if (coreData) saveMetrics({ key: 'size', value: await getCompressedSize(coreData.outfile) });
+
   const builtPackages = Array.from(
     new Map(results.map((p) => [`${p.packageName}-${p.fileName}`, p])).values()
   );
