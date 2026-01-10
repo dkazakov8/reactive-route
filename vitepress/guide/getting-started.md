@@ -31,56 +31,94 @@ your routes configuration using the `createRoutes` function:
 import { createRoutes, createRouter } from 'reactive-route';
 import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
-const routes = createRoutes({
-  home: {
-    path: '/',
-    loader: () => import('./pages/home'),
-  },
-  user: {
-    path: '/user/:id',
-    params: {
-      id: (value) => /^\d+$/.test(value),
-    },
-    query: {
-      phone: (value) => value.length > 0 && value.length < 10,
-    },
-    loader: () => import('./pages/user'),
-  },
-  notFound: {
-    path: '/not-found',
-    props: { errorCode: 404 },
-    loader: () => import('./pages/error'),
-  },
-  internalError: {
-    path: '/internal-error',
-    props: { errorCode: 500 },
-    loader: () => import('./pages/error'),
-  },
-});
-
-//  If you prefer Context and SSR
 export function getRouter() {
-  return createRouter({ routes, adapters });
-}
+  const routes = createRoutes({
+    home: {
+      path: '/',
+      loader: () => import('./pages/home'),
+    },
+    user: {
+      path: '/user/:id',
+      params: {
+        id: (value) => /^\d+$/.test(value),
+      },
+      query: {
+        phone: (value) => value.length > 0 && value.length < 10,
+      },
+      loader: () => import('./pages/user'),
+    },
+    notFound: {
+      path: '/not-found',
+      props: { errorCode: 404 },
+      loader: () => import('./pages/error'),
+    },
+    internalError: {
+      path: '/internal-error',
+      props: { errorCode: 500 },
+      loader: () => import('./pages/error'),
+    },
+  });
 
-//  If you prefer singletons
-export const router = createRouter({ routes, adapters })
+  
+  return createRouter({ adapters, routes });
+}
 ```
 
-Pages `notFound` and `internalError` are required for error handling in the library.
+Routes `notFound` and `internalError` are required for error handling in the library. Their
+configuration is fully customizable as any other routes.
 
 The recommended way is to use Context to pass it to UI components to avoid circular dependencies,
 multiple instances and add the possibility of SSR.
 
-```typescript [StoreContext.tsx]
-import { createContext } from '{ui-library}';
+::: code-group
+```tsx [react]
+import { createContext } from 'react';
 
-import { getRouter } from './router';
-
-export const StoreContext = createContext(
+export const RouterContext = createContext(
   undefined as unknown as { router: ReturnType<typeof getRouter> }
 );
 ```
+
+```tsx [preact]
+import { createContext } from 'preact';
+
+export const RouterContext = createContext(
+  undefined as unknown as { router: ReturnType<typeof getRouter> }
+);
+```
+
+```tsx [solid]
+import { createContext } from 'solid-js';
+
+export const RouterContext = createContext(
+  undefined as unknown as { router: ReturnType<typeof getRouter> }
+);
+```
+
+```vue [vue]
+<script lang="ts" setup>
+import { InjectionKey, inject, provide } from 'vue';
+
+export interface Store {
+  router: ReturnType<typeof getRouter>;
+}
+
+export const StoreKey: InjectionKey<Store> = Symbol('Store');
+
+export function provideStore(store: Store) {
+  provide(StoreKey, store);
+}
+
+export function useStore(): Store {
+  const store = inject(StoreKey);
+
+  if (!store) throw new Error('Store is not provided');
+
+  return store;
+}
+</script>
+```
+:::
 
 ### 2. Set Up the Router Component
 
@@ -88,14 +126,14 @@ Create a custom Router component that uses the context to access the router stor
 
 ```tsx [components/Router.tsx]
 import { useContext } from '{ui-library}';
-import { Router as RouterLib } from 'reactive-route/{ui-library}';
+import { Router } from 'reactive-route/{ui-library}';
 
 import { StoreContext } from './StoreContext';
 
-export function Router() {
+export function App() {
   const { router } = useContext(StoreContext);
 
-  return <RouterLib router={router} />;
+  return <Router router={router} />;
 }
 ```
 

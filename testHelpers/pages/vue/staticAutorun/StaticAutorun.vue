@@ -1,7 +1,7 @@
 <template>StaticAutorun</template>
 
 <script setup lang="ts">
-import type { TypeRouter } from 'reactive-route';
+import type { TypeRouter } from 'packages/core';
 
 const props = defineProps<{
   spy_pageRender: () => void;

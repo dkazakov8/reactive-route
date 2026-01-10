@@ -1,4 +1,4 @@
-import { routerTests } from '../../shared/routerTests';
+import { routerTests } from '../../../testHelpers/routerTests';
 
 routerTests([
   {

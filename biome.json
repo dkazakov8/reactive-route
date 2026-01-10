@@ -3,14 +3,15 @@
   "vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
   "files": {
     "includes": [
-      "e2e/**/*.{ts,tsx,mts,vue}",
-      "packages/**/*.{ts,tsx,mts,vue}",
-      "scripts/**/*.{ts,tsx,mts,vue}",
-      "examples/**/*.{ts,tsx,mts,vue,css}",
+      "e2e/**/*.{ts,tsx,mts,vue,css,cjs}",
+      "packages/**/*.{ts,tsx,mts,vue,css,cjs}",
+      "scripts/**/*.{ts,tsx,mts,vue,css,cjs}",
+      "examples/**/*.{ts,tsx,mts,vue,css,cjs}",
+      "testHelpers/**/*.{ts,tsx,mts,vue,css,cjs}",
       "!!**/dist_*",
-      "vitepress/**/*.{ts,tsx,mts,vue}",
+      "vitepress/**/*.{ts,tsx,mts,vue,css,cjs}",
       "!vitepress/**/modulesMap.ts",
-      "./*.{ts,tsx,mts,vue,json,cjs}"
+      "./*.{ts,tsx,mts,vue,css,cjs,json}"
     ]
   },
   "formatter": {

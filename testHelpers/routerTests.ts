@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { isClient } from '../core/constants';
+import { isClient } from '../packages/core/constants';
 import { prepareRouterTest } from './prepareRouterTest';
 import { TypeOptions } from './types';
 

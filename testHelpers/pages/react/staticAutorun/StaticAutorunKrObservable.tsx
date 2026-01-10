@@ -1,7 +1,7 @@
 // @ts-ignore
-import { observer } from 'kr-observable/preact';
-import { useState } from 'preact/hooks';
-import { TypeRouter } from 'reactive-route';
+import { observer } from 'kr-observable/react';
+import { TypeRouter } from 'packages/core';
+import { useState } from 'react';
 
 const StaticAutorun = observer(
   (props: {

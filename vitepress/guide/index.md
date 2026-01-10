@@ -9,7 +9,7 @@ import { data } from '../dynamic.data'
 <Badge type="info">Size: <span style="color:var(--docsearch-focus-color)">{{ data.size }}</span></Badge>
 <Badge type="info">Coverage: <span style="color:var(--docsearch-focus-color)">{{ data.coverage }}</span> in <span style="color:var(--docsearch-focus-color)">{{ data.passedTests }}</span> tests</Badge>
 
-When you use a reactive state management library (either Signals or Proxy-based) it's usually quite 
+When you use a reactive state management library (either Signals or Proxy-based) it's quite 
 challenging to integrate existing routing libraries. They are usually hard-linked to the UI (e.g., JSX-based) 
 and have their own non-reactive state. Eventually, your project ends up with two routing states 
 (or three including browser's history) and the struggle of keeping them in sync.
@@ -19,7 +19,7 @@ Solid.js, Vue) and different reactivity systems (MobX, Observable, Solid.js sign
 It's much easier to have a single routing library with a unified approach across all these apps and
 feel "at home" when working with other tech stacks.
 
-So, we need a reactive-first solution that works with any UI and reactive library.
+So, a reactive-first solution that works with any UI and reactive library was born.
 
 Reactive Route is battle-proven both for small projects (with Solid.js it's about 8 KB and ready 
 for mobile-only projects or landing pages with SSR) and large-scale applications.
@@ -39,14 +39,12 @@ and the core is open for your own stack just by passing relevant adapters and a 
 
 ### What makes Reactive Route a great choice
 
-- **Lifecycle**: Built-in `beforeEnter` and `beforeLeave` methods allow you to control navigation flow, 
+- **Lifecycle**: Built-in async `beforeEnter` and `beforeLeave` methods allow you to control navigation flow, 
 perform authentication checks, load data, fill stores, handle unsaved changes, perform multiple redirects.
 
 - **Dynamic Component Loading**: Async imports (e.g., `() => import('./pages/Home')`) allow JS 
 chunks to load on demand (when a user navigates to a specific page or programmatically), improving application performance. 
-This feature depends on your bundler's ability to generate separate chunks. 
-Microfrontends are also technically supported, though their implementation varies greatly 
-from project to project, so Reactive Route does not provide a boilerplate architecture for them.
+This feature depends on your bundler's ability to generate separate chunks.
 
 - **Modular Data Integration**: You can export any data from pages, and it is accessible through 
 a method `beforeComponentChange`. This is essential for SSR 

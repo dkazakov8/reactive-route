@@ -1,6 +1,6 @@
 import { expect, vi } from 'vitest';
 
-import { createRouter } from '../core';
+import { createRouter } from '../packages/core';
 import { getAdapters } from './getAdapters';
 import { getRender } from './getRender';
 import { getRouterComponent } from './getRouterComponent';

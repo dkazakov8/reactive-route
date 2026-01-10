@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { getAdapters } from '../../shared/getAdapters';
-import { getRoutes } from '../../shared/getRoutes';
-import { allPossibleOptions } from '../../shared/types';
+import { getAdapters } from '../../../testHelpers/getAdapters';
+import { getRoutes } from '../../../testHelpers/getRoutes';
+import { allPossibleOptions } from '../../../testHelpers/types';
 import { createRouter } from '../createRouter';
 
 [allPossibleOptions[0]].forEach((options) => {

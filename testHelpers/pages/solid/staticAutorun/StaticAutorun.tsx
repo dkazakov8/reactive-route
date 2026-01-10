@@ -1,4 +1,4 @@
-import { TypeRouter } from 'reactive-route';
+import { TypeRouter } from 'packages/core';
 
 export default function StaticAutorun(props: {
   spy_pageRender: () => void;

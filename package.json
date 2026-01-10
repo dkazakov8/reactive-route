@@ -10,13 +10,14 @@
   },
   "scripts": {
     "upd": "rm -rf ./node_modules&&pnpm i --prefer-offline",
+    "updg": "rm -rf ./node_modules&&pnpm i --prefer-offline --ignore-pnpmfile",
     "build": "rm -rf ./dist&&node --import tsx ./scripts/build.ts&&tsc -b tsconfig.react.json --noEmit false&&tsc -b ./tsconfig.solid.json --noEmit false",
     "npm-publish": "pnpm run build&&cd ./dist&&npm publish --access public --tag latest&&cd ../",
     "analyze": "biome check --no-errors-on-unmatched .&&tsc --project tsconfig.json&&tsc --project tsconfig.solid.json&&tsc --project examples/react&&tsc --project examples/preact&&tsc --project examples/solid&&vue-tsc --project examples/vue",
     "prepare": "husky",
     "up": "bash -c 'pnpm upgrade -r $@' bash",
     "test": "vitest --clearCache&&vitest run",
-    "test-watch": "vitest --clearCache&&vitest --coverage=false",
+    "test-watch": "vitest --clearCache&&vitest --coverage=false --reporter=default",
     "e2e": "playwright test --config ./e2e/runner.ts",
     "docs:dev": "vitepress dev vitepress",
     "docs:build": "vitepress build vitepress --outDir docs"
@@ -27,7 +28,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react": "19.2.7",
+    "@types/react": "19.2.8",
     "@types/react-dom": "19.2.3",
     "kr-observable": "3.1.12",
     "mobx": "6.15.0",
@@ -38,22 +39,22 @@
     "react-dom": "19.2.3",
     "solid-js": "1.9.10",
     "tsx": "4.21.0",
-    "typescript": "5.9.2",
     "vue": "3.5.26",
 
     "@biomejs/biome": "2.3.10",
     "husky": "9.1.7",
-    "lint-staged": "16.2.4",
+    "lint-staged": "16.2.7",
+    "typescript": "5.9.3",
 
-    "@types/node": "25.0.3",
+    "@types/node": "25.0.5",
     "esbuild": "0.27.2",
     "@espcom/esbuild-plugin-replace": "1.3.2",
-    "baseline-browser-mapping": "2.9.11",
+    "baseline-browser-mapping": "2.9.14",
     "@babel/core": "7.28.5",
     "@babel/preset-typescript": "7.28.5",
     "babel-preset-solid": "1.9.10",
     "unplugin-vue": "7.1.0",
-    "vue-tsc": "3.2.0",
+    "vue-tsc": "3.2.2",
 
     "vitepress": "2.0.0-alpha.15",
     "vitepress-plugin-group-icons": "1.6.5",
@@ -68,7 +69,7 @@
     "playwright": "1.57.0",
     "@playwright/test": "1.57.0",
     "vite-plugin-babel": "1.3.2",
-    "vite-tsconfig-paths": "6.0.3",
+    "vite-tsconfig-paths": "6.0.4",
     "preact-render-to-string": "6.6.5",
     "@preact/preset-vite": "2.10.2"
   },

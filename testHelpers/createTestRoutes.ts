@@ -1,4 +1,4 @@
-import { createRoutes } from '../core';
+import { createRoutes } from '../packages/core';
 
 export function createTestRoutes(imports: Record<string, any>) {
   return createRoutes({

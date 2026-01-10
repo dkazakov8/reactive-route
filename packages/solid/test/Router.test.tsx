@@ -3,7 +3,7 @@ import { enableObservable } from 'kr-observable/solidjs';
 import { Reaction } from 'mobx';
 import { enableExternalSource } from 'solid-js';
 
-import { routerTests } from '../../shared/routerTests';
+import { routerTests } from '../../../testHelpers/routerTests';
 
 routerTests(
   [

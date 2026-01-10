@@ -83,7 +83,7 @@ export default defineConfig({
       include: ['packages/*'],
       exclude: [
         'packages/*/test/*',
-        'packages/shared',
+        'packages/testHelpers',
         'packages/*/index.ts',
         'packages/declarations.d.ts',
       ],
