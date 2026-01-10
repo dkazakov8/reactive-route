@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { PropsRouter, TypeRouteConfig, TypeRouterLocalObservable } from 'reactive-route';
 import { handleComponentRerender } from 'reactive-route';
-import { computed, markRaw, onBeforeUnmount, ref, toRaw } from 'vue';
+import { computed, onBeforeUnmount, ref } from 'vue';
 
 defineOptions({ name: 'ReactiveRouteRouter' });
 
@@ -32,10 +32,10 @@ onBeforeUnmount(() => {
 const LoadedComponent = computed(() => {
   const comp = routes[localObservable.renderedRouteName as any]?.component;
 
-  return comp ? markRaw(toRaw(comp)) : null;
+  return comp ? comp : null;
 });
 </script>
 
 <template>
-  <component :is="LoadedComponent" v-if="LoadedComponent" v-bind="localObservable.currentProps" :router="props.router"  />
+  <component :is="LoadedComponent" v-if="LoadedComponent" v-bind="localObservable.currentProps" />
 </template>

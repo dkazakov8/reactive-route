@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import Router from './Router.vue';
-import { provideStore } from './useStore';
+import { provideRouterStore } from './useRouterStore';
 
 const props = defineProps<{ router: any }>();
-provideStore({ router: props.router });
+
+provideRouterStore({ router: props.router });
 </script>
 
 <template>

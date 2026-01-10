@@ -31,7 +31,7 @@ function RouterInner<TRoutes extends Record<string, TypeRouteConfig>>(props: Pro
 
   const LoadedComponent = routes[localObservable.renderedRouteName].component;
 
-  return <LoadedComponent {...localObservable.currentProps} router={props.router} />;
+  return <LoadedComponent {...localObservable.currentProps} />;
 }
 
 export function Router<TRoutes extends Record<string, TypeRouteConfig>>(

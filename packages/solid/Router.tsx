@@ -32,7 +32,6 @@ export function Router<TRoutes extends Record<string, TypeRouteConfig>>(
       <Dynamic
         component={routes[localObservable.renderedRouteName!].component}
         {...localObservable.currentProps}
-        router={props.router}
       />
     </Show>
   );

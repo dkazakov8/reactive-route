@@ -4,6 +4,7 @@ import { createRouter } from '../packages/core';
 import { getAdapters } from './getAdapters';
 import { getRender } from './getRender';
 import { getRouterComponent } from './getRouterComponent';
+import { getRouterContext } from './getRouterContext';
 import { getRoutes } from './getRoutes';
 import { getServerRender } from './getServerRender';
 import { TypeOptions } from './types';
@@ -14,6 +15,7 @@ export async function prepareRouterTest(options: TypeOptions) {
   const spy_beforeComponentChange = vi.fn();
 
   const adapters = await getAdapters(options);
+  const RouterContext = await getRouterContext(options);
   const router = createRouter({
     routes: getRoutes(options),
     adapters,
@@ -44,11 +46,26 @@ export async function prepareRouterTest(options: TypeOptions) {
   let App: any;
 
   if (options.renderer === 'vue') {
-    const h = (await import('vue')).h;
+    const { h, defineComponent } = await import('vue');
 
-    App = () => h(Router, { router });
-  } else {
-    App = () => <Router router={router} />;
+    App = defineComponent({
+      name: 'App',
+      setup() {
+        RouterContext({ router });
+
+        return () => h(Router, { router });
+      },
+    });
+  } else if (
+    options.renderer === 'react' ||
+    options.renderer === 'preact' ||
+    options.renderer === 'solid'
+  ) {
+    App = () => (
+      <RouterContext.Provider value={{ router }}>
+        <Router router={router} />
+      </RouterContext.Provider>
+    );
   }
 
   const render = await getRender(options, App);

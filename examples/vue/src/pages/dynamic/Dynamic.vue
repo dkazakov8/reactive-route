@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useStore } from '../../components/useStore';
+import { useRouterStore } from '../../components/useRouterStore';
 
-const { router } = useStore();
+const { router } = useRouterStore();
 
 const activeRouteState = router.state.dynamic!;
 
