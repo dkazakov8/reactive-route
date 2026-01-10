@@ -1,38 +1,45 @@
-import type { PropsRouter, TypeRouteConfig, TypeRouterLocalObservable } from 'reactive-route';
-import { handleComponentRerender } from 'reactive-route';
-import { onCleanup, Show } from 'solid-js';
+import {
+  handleComponentRerender,
+  type PropsRouter,
+  type TypeRouteConfig,
+  type TypeRouterLocalObservable,
+} from 'reactive-route';
+import { onCleanup, type ValidComponent } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 
 export function Router<TRoutes extends Record<string, TypeRouteConfig>>(
   props: PropsRouter<TRoutes>
 ) {
-  const { adapters, routes } = props.router.getGlobalArguments();
+  const { adapters } = props.router.getGlobalArguments();
 
   const localObservable: TypeRouterLocalObservable = adapters.makeObservable({
     renderedRouteName: undefined,
     currentProps: {},
   });
 
-  if (adapters.immediateSetComponent) {
-    adapters.batch(() => {
-      handleComponentRerender(props, localObservable);
+  let Component: ValidComponent;
+
+  if (typeof window === 'undefined') {
+    handleComponentRerender(props, localObservable, (component) => {
+      Component = component;
+    });
+  } else {
+    const disposer = adapters.autorun(() =>
+      handleComponentRerender(props, localObservable, (component) => {
+        Component = component;
+      })
+    );
+
+    onCleanup(() => {
+      if (typeof disposer === 'function') disposer();
     });
   }
 
-  const disposer = adapters.autorun(() => handleComponentRerender(props, localObservable));
-
-  onCleanup(() => {
-    if (typeof disposer === 'function') disposer();
-  });
-
   return (
     // @ts-ignore
-    <Show when={localObservable.renderedRouteName}>
-      {/* @ts-ignore */}
-      <Dynamic
-        component={routes[localObservable.renderedRouteName!].component}
-        {...localObservable.currentProps}
-      />
-    </Show>
+    <Dynamic
+      component={localObservable.renderedRouteName ? Component! : undefined}
+      {...localObservable.currentProps}
+    />
   );
 }

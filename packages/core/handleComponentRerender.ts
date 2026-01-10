@@ -2,7 +2,8 @@ import { PropsRouter, TypeRouteConfig, TypeRouterLocalObservable } from './types
 
 export function handleComponentRerender(
   props: PropsRouter<any>,
-  localObservable: TypeRouterLocalObservable
+  localObservable: TypeRouterLocalObservable,
+  setComponent?: (component: any) => void
 ) {
   const { adapters, routes, beforeComponentChange } = props.router.getGlobalArguments();
 
@@ -32,7 +33,9 @@ export function handleComponentRerender(
   adapters.batch(() => {
     beforeComponentChange?.({ prevState, prevConfig, currentState, currentConfig });
 
-    localObservable.currentProps = currentConfig!.props || {};
-    localObservable.renderedRouteName = currentConfig!.name;
+    localObservable.currentProps = currentConfig.props || {};
+    localObservable.renderedRouteName = currentConfig.name;
+
+    setComponent?.(currentConfig.component);
   });
 }

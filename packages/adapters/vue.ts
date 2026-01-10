@@ -3,7 +3,7 @@ import { reactive, watchEffect } from 'vue';
 
 export const adapters: TypeAdapters = {
   batch: (cb) => cb(),
-  autorun: (cb) => watchEffect(cb, { flush: 'post' }),
+  autorun: (cb) => watchEffect(cb, { flush: 'pre' }),
   replaceObject: (obj, newObj) => {
     for (const variableKey in obj) {
       /* v8 ignore if -- @preserve */
@@ -14,5 +14,4 @@ export const adapters: TypeAdapters = {
     Object.assign(obj as Record<string, any>, newObj);
   },
   makeObservable: reactive as any,
-  immediateSetComponent: true,
 };

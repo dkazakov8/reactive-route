@@ -56,11 +56,7 @@ export async function prepareRouterTest(options: TypeOptions) {
         return () => h(Router, { router });
       },
     });
-  } else if (
-    options.renderer === 'react' ||
-    options.renderer === 'preact' ||
-    options.renderer === 'solid'
-  ) {
+  } else {
     App = () => (
       <RouterContext.Provider value={{ router }}>
         <Router router={router} />

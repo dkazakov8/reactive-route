@@ -1,5 +1,3 @@
-import { s } from 'vitest/dist/chunks/reporters.d.Rsi0PyxX';
-
 export type TypeAdapters = {
   batch: (cb: () => void) => void;
   autorun: (cb: () => void) => any;
@@ -7,7 +5,6 @@ export type TypeAdapters = {
   makeObservable: <TObj extends Record<string, any>>(obj: TObj) => TObj;
 
   observer?: (component: any) => any;
-  immediateSetComponent?: boolean;
 };
 
 export type TypeRoutePayloadDefault = {
