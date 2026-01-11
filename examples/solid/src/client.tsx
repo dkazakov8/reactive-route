@@ -35,18 +35,16 @@ if (REACTIVITY_SYSTEM === 'mobx') {
 
 const router = await getRouter();
 
-const contextValue = { router };
-
 const initialData = unescapeAllStrings((window as any).INITIAL_DATA as any);
 
 async function renderSSR() {
   console.log('renderSSR');
 
-  await contextValue.router.hydrateFromState(initialData.router);
+  await router.hydrateFromState(initialData.router);
 
   function AppToRender() {
     return (
-      <RouterContext.Provider value={contextValue}>
+      <RouterContext.Provider value={{ router }}>
         <App />
       </RouterContext.Provider>
     );
@@ -58,11 +56,11 @@ async function renderSSR() {
 async function renderCSR() {
   console.log('renderCSR');
 
-  await contextValue.router.hydrateFromURL(location.pathname + location.search);
+  await router.hydrateFromURL(location.pathname + location.search);
 
   render(
     () => (
-      <RouterContext.Provider value={contextValue}>
+      <RouterContext.Provider value={{ router }}>
         <App />
       </RouterContext.Provider>
     ),

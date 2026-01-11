@@ -2,4 +2,11 @@ import Theme from 'vitepress/theme';
 import 'virtual:group-icons.css';
 import './custom.css';
 
-export default Theme;
+import Tabs from './components/Tabs.vue';
+
+export default {
+  ...Theme,
+  enhanceApp({ app }: any) {
+    app.component('Tabs', Tabs);
+  },
+};

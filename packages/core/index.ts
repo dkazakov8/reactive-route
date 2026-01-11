@@ -5,6 +5,7 @@ export { handleComponentRerender } from './handleComponentRerender';
 export type {
   PropsRouter,
   TypeAdapters,
+  TypeRouteConfig,
   TypeRoutePayload,
   TypeRouter,
   TypeRouterLocalObservable,

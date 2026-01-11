@@ -72,8 +72,5 @@
     "vite-tsconfig-paths": "6.0.4",
     "preact-render-to-string": "6.6.5",
     "@preact/preset-vite": "2.10.2"
-  },
-  "engines": {
-    "node": ">=22"
   }
 }

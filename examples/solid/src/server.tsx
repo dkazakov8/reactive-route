@@ -53,10 +53,8 @@ app.get('*', async (req, res) => {
 
   const router = await getRouter();
 
-  const contextValue = { router };
-
   try {
-    const clearedUrl = await contextValue.router.hydrateFromURL(req.originalUrl);
+    const clearedUrl = await router.hydrateFromURL(req.originalUrl);
 
     if (req.originalUrl !== clearedUrl) return res.redirect(clearedUrl);
   } catch (error: any) {
@@ -68,11 +66,11 @@ app.get('*', async (req, res) => {
   }
 
   const htmlMarkup = renderToString(() => (
-    <RouterContext.Provider value={contextValue}>
+    <RouterContext.Provider value={{ router }}>
       <App />
     </RouterContext.Provider>
   ));
-  const storeJS = JSON.parse(JSON.stringify(contextValue));
+  const storeJS = JSON.parse(JSON.stringify({ router }));
 
   res.send(
     template

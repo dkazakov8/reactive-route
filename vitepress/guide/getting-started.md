@@ -1,5 +1,7 @@
 # Getting Started
 
+## Installation
+
 The all-in-one package includes everything needed to use Reactive Route.
 
 ::: code-group
@@ -16,18 +18,25 @@ pnpm add reactive-route
 ```
 :::
 
-### Modules map
+## Modules map
 
 <<< @/modulesMap.ts
 
-## Basic Setup
+## Router Store and Routes
 
-### 1. Create a Router Store and Define Your Routes
+First, create a router store using the `createRouter` function and your routes configuration using 
+the `createRoutes` function. 
 
-First, create a router store using the `createRouter` function and 
-your routes configuration using the `createRoutes` function:
+Routes `notFound` and `internalError` are required for error handling in the library, their 
+configuration is fully customizable as any other routes.
 
-```typescript [router.ts]
+The recommended way is to use Context to pass it to UI components to avoid circular dependencies,
+multiple instances and add the possibility of SSR.
+
+::: code-group
+```tsx [react]
+// router.tsx
+import { createContext } from 'react';
 import { createRoutes, createRouter } from 'reactive-route';
 import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
@@ -40,10 +49,10 @@ export function getRouter() {
     user: {
       path: '/user/:id',
       params: {
-        id: (value) => /^\d+$/.test(value),
+        id: (value) => /^\d+$/.test(value)
       },
       query: {
-        phone: (value) => value.length > 0 && value.length < 10,
+        phone: (value) => value.length < 10
       },
       loader: () => import('./pages/user'),
     },
@@ -56,79 +65,160 @@ export function getRouter() {
       path: '/internal-error',
       props: { errorCode: 500 },
       loader: () => import('./pages/error'),
-    },
+    }
   });
-
   
   return createRouter({ adapters, routes });
 }
-```
 
-Routes `notFound` and `internalError` are required for error handling in the library. Their
-configuration is fully customizable as any other routes.
-
-The recommended way is to use Context to pass it to UI components to avoid circular dependencies,
-multiple instances and add the possibility of SSR.
-
-::: code-group
-```tsx [react]
-import { createContext } from 'react';
-
-export const RouterContext = createContext(
-  undefined as unknown as { router: ReturnType<typeof getRouter> }
-);
+export const RouterContext = createContext<{ 
+  router: ReturnType<typeof getRouter> 
+}>(undefined);
 ```
 
 ```tsx [preact]
+// router.tsx
 import { createContext } from 'preact';
+import { createRoutes, createRouter } from 'reactive-route';
+import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
-export const RouterContext = createContext(
-  undefined as unknown as { router: ReturnType<typeof getRouter> }
-);
+export function getRouter() {
+  const routes = createRoutes({
+    home: {
+      path: '/',
+      loader: () => import('./pages/home'),
+    },
+    user: {
+      path: '/user/:id',
+      params: {
+        id: (value) => /^\d+$/.test(value)
+      },
+      query: {
+        phone: (value) => value.length < 10
+      },
+      loader: () => import('./pages/user'),
+    },
+    notFound: {
+      path: '/not-found',
+      props: { errorCode: 404 },
+      loader: () => import('./pages/error'),
+    },
+    internalError: {
+      path: '/internal-error',
+      props: { errorCode: 500 },
+      loader: () => import('./pages/error'),
+    }
+  });
+
+  return createRouter({ adapters, routes });
+}
+
+export const RouterContext = createContext<{
+  router: ReturnType<typeof getRouter>
+}>(undefined);
 ```
 
 ```tsx [solid]
+// router.tsx
 import { createContext } from 'solid-js';
+import { createRoutes, createRouter } from 'reactive-route';
+import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
-export const RouterContext = createContext(
-  undefined as unknown as { router: ReturnType<typeof getRouter> }
-);
+export function getRouter() {
+  const routes = createRoutes({
+    home: {
+      path: '/',
+      loader: () => import('./pages/home'),
+    },
+    user: {
+      path: '/user/:id',
+      params: {
+        id: (value) => /^\d+$/.test(value)
+      },
+      query: {
+        phone: (value) => value.length < 10
+      },
+      loader: () => import('./pages/user'),
+    },
+    notFound: {
+      path: '/not-found',
+      props: { errorCode: 404 },
+      loader: () => import('./pages/error'),
+    },
+    internalError: {
+      path: '/internal-error',
+      props: { errorCode: 500 },
+      loader: () => import('./pages/error'),
+    }
+  });
+
+  return createRouter({ adapters, routes });
+}
+
+export const RouterContext = createContext<{
+  router: ReturnType<typeof getRouter>
+}>(undefined);
 ```
 
-```vue [vue]
-<script lang="ts" setup>
-import { InjectionKey, inject, provide } from 'vue';
+```ts [vue]
+// router.ts
+import { InjectionKey, inject } from 'vue';
+import { createRoutes, createRouter } from 'reactive-route';
+import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
-export interface Store {
-  router: ReturnType<typeof getRouter>;
+export function getRouter() {
+  const routes = createRoutes({
+    home: {
+      path: '/',
+      loader: () => import('./pages/home'),
+    },
+    user: {
+      path: '/user/:id',
+      params: {
+        id: (value) => /^\d+$/.test(value)
+      },
+      query: {
+        phone: (value) => value.length < 10
+      },
+      loader: () => import('./pages/user'),
+    },
+    notFound: {
+      path: '/not-found',
+      props: { errorCode: 404 },
+      loader: () => import('./pages/error'),
+    },
+    internalError: {
+      path: '/internal-error',
+      props: { errorCode: 500 },
+      loader: () => import('./pages/error'),
+    }
+  });
+
+  return createRouter({ adapters, routes });
 }
 
-export const StoreKey: InjectionKey<Store> = Symbol('Store');
+export const routerStoreKey: InjectionKey<{ 
+  router: ReturnType<typeof getRouter> 
+}> = Symbol();
 
-export function provideStore(store: Store) {
-  provide(StoreKey, store);
-}
-
-export function useStore(): Store {
-  const store = inject(StoreKey);
-
-  if (!store) throw new Error('Store is not provided');
-
-  return store;
-}
-</script>
+export const useRouterStore = () => inject(routerStoreKey)!;
 ```
 :::
 
-### 2. Set Up the Router Component
+## Router Component and Context providing
 
-Create a custom Router component that uses the context to access the router store:
+In this tutorial we will use CSR (client-only rendering) by using `router.hydrateFromURL` function.
+[SSR](/guide/ssr) version is very similar, but uses `router.hydrateFromServer` and relevant `hydrate` functions from
+UI frameworks.
 
-```tsx [components/Router.tsx]
-import { useContext } from '{ui-library}';
-import { Router } from 'reactive-route/{ui-library}';
+<Tabs :frameworks="['react', 'preact', 'solid', 'vue']">
+<template #react>
 
-import { RouterContext } from './RouterContext';
+::: code-group
+```tsx [App.tsx]
+import { useContext } from 'react';
+import { Router } from 'reactive-route/react';
+import { RouterContext } from './router';
 
 export function App() {
   const { router } = useContext(RouterContext);
@@ -136,25 +226,129 @@ export function App() {
   return <Router router={router} />;
 }
 ```
+```tsx [entry.tsx]
+import { createRoot } from 'react-dom/client';
 
-### 3. Initialize the router and render
+import { App } from './App';
+import { getRouter, RouterContext } from './router';
 
-```tsx [client.tsx]
-import { RouterContext } from './RouterContext';
-import { getRouterStore } from './router';
-import { Router } from './components/Router';
+const router = getRouter();
 
-const router = getRouterStore();
+await router.hydrateFromURL(location.pathname + location.search);
 
-await router.restoreFromURL({
-  pathname: location.pathname + location.search,
-});
-
-// the implementation is dependent on the UI library
-render(
-  element,
+createRoot(document.getElementById('app')!).render(
   <RouterContext.Provider value={{ router }}>
-    <Router />
+    <App />
   </RouterContext.Provider>
 );
 ```
+:::
+
+</template>
+<template #preact>
+
+::: code-group
+```tsx [App.tsx]
+import { useContext } from 'preact';
+import { Router } from 'reactive-route/preact';
+import { RouterContext } from './router';
+
+export function App() {
+  const { router } = useContext(RouterContext);
+
+  return <Router router={router} />;
+}
+```
+```tsx [entry.tsx]
+import { render } from 'preact';
+
+import { App } from './App';
+import { getRouter, RouterContext } from './router';
+
+const router = getRouter();
+
+await router.hydrateFromURL(location.pathname + location.search);
+
+render(
+  <RouterContext.Provider value={{ router }}>
+    <App />
+  </RouterContext.Provider>,
+  document.getElementById('app')!
+);
+```
+:::
+
+</template>
+<template #solid>
+
+::: code-group
+```tsx [App.tsx]
+import { useContext } from 'solid-js';
+import { Router } from 'reactive-route/solid';
+import { RouterContext } from './router';
+
+export function App() {
+  const { router } = useContext(RouterContext);
+
+  return <Router router={router} />;
+}
+```
+```tsx [entry.tsx]
+import { render } from 'solid-js/web';
+
+import { App } from './App';
+import { getRouter, RouterContext } from './router';
+
+const router = getRouter();
+
+await router.hydrateFromURL(location.pathname + location.search);
+
+render(
+  () => (
+    <RouterContext.Provider value={{ router }}>
+      <App />
+    </RouterContext.Provider>
+  ),
+  document.getElementById('app')!
+);
+```
+:::
+
+</template>
+<template #vue>
+
+::: code-group
+```vue [App.vue]
+<script lang="ts" setup>
+  import { Router } from 'reactive-route/vue';
+
+  import { useRouterStore } from './router';
+
+  const { router } = useRouterStore();
+</script>
+
+<template>
+  <Router :router="router" />
+</template>
+```
+```ts [entry.ts]
+import { createApp } from 'vue';
+
+import App from './App.vue';
+import { getRouter, routerStoreKey } from './router';
+
+const router = getRouter();
+
+await router.hydrateFromURL(location.pathname + location.search);
+
+createApp(App, { router })
+  .provide(routerStoreKey, { router })
+  .mount('#app');
+```
+:::
+
+</template>
+</Tabs>
+
+Everything has been set up and ready to use. In future, you will only edit the routes configuration
+to add new pages or change existing ones.

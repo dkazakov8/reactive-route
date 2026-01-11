@@ -5,7 +5,7 @@ import { RouterContext } from '../../router';
 export default function Query() {
   const { router } = useContext(RouterContext);
 
-  const activeRouteState = router.state.query!;
+  const routeState = router.state.query!;
 
   return (
     <div className="page-container query-page">
@@ -26,7 +26,7 @@ export default function Query() {
 
       <div className="current-query">
         <h2>Current Query Parameters</h2>
-        <pre>{JSON.stringify(activeRouteState.query, null, 2)}</pre>
+        <pre>{JSON.stringify(routeState.query, null, 2)}</pre>
       </div>
 
       <div className="route-description">

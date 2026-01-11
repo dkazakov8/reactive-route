@@ -5,7 +5,7 @@ import { RouterContext } from '../../router';
 export default function Dynamic() {
   const { router } = useContext(RouterContext);
 
-  const activeRouteState = router.state.dynamic!;
+  const routeState = router.state.dynamic!;
 
   return (
     <div className="page-container dynamic-page">
@@ -26,7 +26,7 @@ export default function Dynamic() {
 
       <div className="route-info">
         <h2>Current Parameters</h2>
-        <pre>{JSON.stringify(activeRouteState.params, null, 2)}</pre>
+        <pre>{JSON.stringify(routeState.params, null, 2)}</pre>
       </div>
 
       <div className="route-description">

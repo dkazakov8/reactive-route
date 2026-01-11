@@ -3,7 +3,7 @@ import { useRouterStore } from '../../router';
 
 const { router } = useRouterStore();
 
-const activeRouteState = router.state.dynamic!;
+const routeState = router.state.dynamic!;
 
 function goRandom() {
   void router.redirect({
@@ -30,7 +30,7 @@ function goRandom() {
 
     <div class="route-info">
       <h2>Current Parameters</h2>
-      <pre>{{ JSON.stringify(activeRouteState.params, null, 2) }}</pre>
+      <pre>{{ JSON.stringify(routeState.params, null, 2) }}</pre>
     </div>
 
     <div class="route-description">

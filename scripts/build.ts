@@ -141,7 +141,6 @@ void Promise.all([
     description: globalPkg.description,
     repository: globalPkg.repository,
     dependencies: globalPkg.dependencies,
-    engines: globalPkg.engines,
     exports: exports,
     main: exports[`.`].require,
     module: exports[`.`].import,

@@ -3,7 +3,7 @@ import { useRouterStore } from '../../router';
 
 const { router } = useRouterStore();
 
-const activeRouteState = router.state.query!;
+const routeState = router.state.query!;
 
 function goRandom() {
   void router.redirect({
@@ -30,7 +30,7 @@ function goRandom() {
 
     <div class="route-info">
       <h2>Current Query</h2>
-      <pre>{{ JSON.stringify(activeRouteState.query, null, 2) }}</pre>
+      <pre>{{ JSON.stringify(routeState.query, null, 2) }}</pre>
     </div>
 
     <div class="actions">

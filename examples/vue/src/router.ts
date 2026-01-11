@@ -60,14 +60,8 @@ export async function getRouter() {
   });
 }
 
-type RouterStore = { router: Awaited<ReturnType<typeof getRouter>> };
+export const routerStoreKey: InjectionKey<{
+  router: Awaited<ReturnType<typeof getRouter>>;
+}> = Symbol();
 
-export const routerStoreKey: InjectionKey<RouterStore> = Symbol('RouterStore');
-
-export function useRouterStore(): RouterStore {
-  const store = inject(routerStoreKey);
-
-  if (!store) throw new Error('RouterStore: router is not provided');
-
-  return store;
-}
+export const useRouterStore = () => inject(routerStoreKey)!;
