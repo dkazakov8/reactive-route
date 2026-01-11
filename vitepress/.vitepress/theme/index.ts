@@ -4,9 +4,13 @@ import './custom.css';
 
 import Tabs from './components/Tabs.vue';
 
+console.log(Theme);
+
 export default {
   ...Theme,
-  enhanceApp({ app }: any) {
-    app.component('Tabs', Tabs);
+  enhanceApp(params: any) {
+    Theme.enhanceApp(params);
+
+    params.app.component('Tabs', Tabs);
   },
 };

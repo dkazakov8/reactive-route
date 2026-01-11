@@ -251,10 +251,18 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         if (redirectRoutePayload) return this.redirect(redirectRoutePayload);
       } catch (error: any) {
         if (error instanceof PreventError) {
+          adapters.batch(() => {
+            this.isRedirecting = false;
+          });
+
           return activeRouteState!.url;
         }
 
         if (error instanceof RedirectError) {
+          adapters.batch(() => {
+            this.isRedirecting = false;
+          });
+
           throw error;
         }
 

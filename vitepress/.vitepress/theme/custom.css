@@ -7,3 +7,19 @@
 :root.dark {
   --vp-code-color: #bb9ee1;
 }
+
+.table-td {
+  pre {
+    padding: 10px 0 !important;
+  }
+  code {
+    padding: 0 10px !important;
+  }
+  .vp-block {
+    margin: 0 !important;
+  }
+  .copy,
+  .lang {
+    display: none !important;
+  }
+}
