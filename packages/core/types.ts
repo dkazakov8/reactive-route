@@ -1,9 +1,8 @@
 export type TypeAdapters = {
   batch: (cb: () => void) => void;
   autorun: (cb: () => void) => any;
-  replaceObject: <TObj extends Record<string, any>>(obj: TObj, newObj: TObj) => void;
-  makeObservable: <TObj extends Record<string, any>>(obj: TObj) => TObj;
-
+  replaceObject: <T extends Record<string, any>>(obj: T, newObj: T) => void;
+  makeObservable: <T extends Record<string, any>>(obj: T) => T;
   observer?: (component: any) => any;
 };
 

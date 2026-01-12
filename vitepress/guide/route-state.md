@@ -89,37 +89,3 @@ Record<string, any>
 </tr></tbody>
 </table>
 
-## Encoding
-
-In Reactive Route the router handles the process of encoding and decoding in this way:
-
-For example, the user comes to the website with a path: `/test/with%20space?q=and%26symbols`.
-
-`hydrateFromURL` calls `createRoutePayload` which finds the corresponding `Config` and produces the following `Payload`
-with auto-redirecting to it:
-
-```ts
-{
-  route: 'test', 
-  params: { id: 'with space' },
-  query: { q: 'and&symbols' }
-}
-```
-
-Then a `State` is produced by `createRoutePayload` in `router.state.test`:
-
-```ts
-{
-  isActive: true,
-  name: 'test',
-  params: { id: 'with space' },
-  pathname: '/test/with%20space',
-  props: undefined,
-  query: { q: 'and&symbols' },
-  search: 'q=and%26symbols',
-  url: '/test/with%20space?q=and%26symbols'
-}
-```
-
-So, the process is double-sided. `createRoutePayload` validates and decodes, while `createRouteState`
-validates and encodes to ensure safety, prevent malformed values and produce correct URLs.

@@ -14,13 +14,13 @@ It usually looks like this:
     id: (value) => /^\d+$/.test(value)
   },
   query: {
-    phone: (value) => value.length < 10
+    phone: (value) => value.length < 15
   },
   loader: () => import('./pages/user'),
   async beforeEnter({ redirect }) {
     await api.loadUser();
 
-    if (isAuthenticated()) return redirect({ route: 'dashboard' });
+    if (store.isAuthenticated()) return redirect({ route: 'dashboard' });
   },
   async beforeLeave({ nextRoute, preventRedirect }) {
     if (nextRoute.name === 'home') return preventRedirect();
@@ -47,7 +47,7 @@ and fill it with values. It usually looks like this:
 
 There are two functions to create it from string: `router.createRoutePayload` and `router.hydrateFromURL`
 (an alias for creating a payload and redirecting). They will automatically find a relevant route config
-and validate all the params and query values, like
+and validate all the params and query values:
 
 ```tsx
 console.log(router.createRoutePayload(`/user/9999?phone=123456`))
@@ -174,15 +174,52 @@ console.log(router.createRouteState({
 // {
 //   name: 'user', 
 //   params: { id: '9999' },
-//   pathname: '/user/9999',
-//   props: undefined,
 //   query: { phone: '123456' },
+//
+//   pathname: '/user/9999',
 //   search: 'phone=123456',
 //   url: '/user/9999?phone=123456',
+//
+//   props: undefined,
+//   isActive: true,
 // }
 ```
 
 That is useful in creating `Link` components where you can use `<a href={routeState.url} />` for
 better UX and SEO or when JS is disabled in browser.
 
-The next documentation sections will describe these three simple structures in detail.
+## Encoding
+
+In Reactive Route the router handles the process of encoding and decoding in this way
+(imagine we disabled numeric validation for `id`):
+
+```ts
+await router.hydrateFromURL(`/user/with%20space?phone=and%26symbols`);
+
+// under the hood it calls router.createRoutePayload to create a Payload
+// with decoded values
+// {
+//   route: 'user', 
+//   params: { id: 'with space' },
+//   query: { phone: 'and&symbols' }
+// }
+
+// during redirect a router.createRouteState is called
+// which encodes params back to URL
+console.log(router.state.user)
+// {
+//   name: 'test',
+//   params: { id: 'with space' },
+//   query: { phone: 'and&symbols' },
+//
+//   pathname: '/user/with%20space',
+//   search: 'phone=and%26symbols',
+//   url: '/user/with%20space?phone=and%26symbols',
+//
+//   props: undefined,
+//   isActive: true,
+// }
+```
+
+So, the process is double-sided. `createRoutePayload` validates and decodes, while `createRouteState`
+validates and encodes to ensure safety, prevent malformed values and produce correct URLs.

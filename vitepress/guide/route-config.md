@@ -70,23 +70,23 @@ Record<
 <td class="table-td">
 
 ```ts
-(config: TypeLifecycleConfig) => 
+(lifecycleConfig: TypeLifecycleConfig) => 
   Promise<void>
 ```
 
 </td>
-<td>Hook called before entering the route</td>
+<td>A lifecycle function, called before entering the route</td>
 </tr><tr>
 <td><code>beforeLeave?</code></td>
 <td class="table-td">
 
 ```ts
-(config: TypeLifecycleConfig) => 
+(lifecycleConfig: TypeLifecycleConfig) => 
   Promise<void>
 ```
 
 </td>
-<td>Hook called before leaving the route</td>
+<td>A lifecycle function, called before leaving the route</td>
   </tr></tbody>
 </table>
 
