@@ -2,7 +2,8 @@
 
 ## Installation
 
-The all-in-one package includes everything needed to use Reactive Route.
+The all-in-one package includes everything needed to use Reactive Route. Refer to Framework Integration
+sections for required peer dependencies.
 
 ::: code-group
 ```sh [npm]
@@ -34,7 +35,7 @@ The recommended way is to use Context to pass it to UI components to avoid circu
 multiple instances and add the possibility of SSR.
 
 ::: code-group
-```tsx [react]
+```tsx [React]
 // router.tsx
 import { createContext } from 'react';
 <!-- @include: ../snippets/get-router.md -->
@@ -44,7 +45,7 @@ export const RouterContext = createContext<{
 }>(undefined);
 ```
 
-```tsx [preact]
+```tsx [Preact]
 // router.tsx
 import { createContext } from 'preact';
 <!-- @include: ../snippets/get-router.md -->
@@ -54,7 +55,7 @@ export const RouterContext = createContext<{
 }>(undefined);
 ```
 
-```tsx [solid]
+```tsx [Solid]
 // router.tsx
 import { createContext } from 'solid-js';
 <!-- @include: ../snippets/get-router.md -->
@@ -64,7 +65,7 @@ export const RouterContext = createContext<{
 }>(undefined);
 ```
 
-```ts [vue]
+```ts [Vue]
 // router.ts
 import { InjectionKey, inject } from 'vue';
 <!-- @include: ../snippets/get-router.md -->

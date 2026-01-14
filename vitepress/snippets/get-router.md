@@ -13,7 +13,7 @@ export function getRouter() {
         id: (value) => /^\d+$/.test(value)
       },
       query: {
-        phone: (value) => value.length < 10
+        phone: (value) => value.length < 15
       },
       loader: () => import('./pages/user'),
     },

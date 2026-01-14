@@ -60,7 +60,7 @@ Is an object containing additional information compared to `Payload`.
 It is kept in `router.state` in a **reactive** way and can be accessed from any UI component like this:
 
 ::: code-group
-```tsx [react]
+```tsx [React]
 // pages/user/index.tsx
 import { useContext } from 'react';
 import { RouterContext } from '../../router';
@@ -78,7 +78,7 @@ export default function PageUser() {
   )
 }
 ```
-```tsx [preact]
+```tsx [Preact]
 // pages/user/index.tsx
 import { useContext } from 'preact';
 import { RouterContext } from '../../router';
@@ -96,7 +96,7 @@ export default function PageUser() {
   )
 }
 ```
-```tsx [solid]
+```tsx [Solid]
 // pages/user/index.tsx
 import { useContext } from 'solid-js';
 import { RouterContext } from '../../router';
@@ -112,7 +112,7 @@ export default function PageUser() {
   )
 }
 ```
-```vue [vue]
+```vue [Vue]
 // pages/user/User.vue
 <script lang="ts" setup>
   import { useRouterStore } from '../../router';

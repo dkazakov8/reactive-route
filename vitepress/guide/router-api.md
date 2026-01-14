@@ -195,7 +195,7 @@ made for stability reasons when you have async functions or autoruns attached to
 A reactive boolean parameter that helps with showing loaders on redirects.
 
 ::: code-group
-```tsx [react]
+```tsx [React]
 // If you want a global "loading line" on top of page
 // or an overlay on the whole page
 function GlobalLoader() {
@@ -211,7 +211,7 @@ function SomeComponent() {
   return <Button isLoading={router.isRedirecting} />;
 }
 ```
-```tsx [preact]
+```tsx [Preact]
 // If you want a global "loading line" on top of page
 // or an overlay on the whole page
 function GlobalLoader() {
@@ -227,7 +227,7 @@ function SomeComponent() {
   return <Button isLoading={router.isRedirecting} />;
 }
 ```
-```tsx [solid]
+```tsx [Solid]
 // If you want a global "loading line" on top of page
 // or an overlay on the whole page
 function GlobalLoader() {
@@ -243,7 +243,7 @@ function SomeComponent() {
   return <Button isLoading={router.isRedirecting} />;
 }
 ```
-```vue [vue]
+```vue [Vue]
 <script lang="ts" setup>
   import { useRouterStore } from '../../router';
 
@@ -271,7 +271,7 @@ Returns the current `State` of the active route, if any. May be useful when you 
 global layouts above the Router component.
 
 ::: code-group
-```tsx [react]
+```tsx [React]
 import { LayoutLogin } from 'layouts/LayoutLogin'
 import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
 
@@ -291,7 +291,7 @@ function App() {
   );
 }
 ```
-```tsx [preact]
+```tsx [Preact]
 import { LayoutLogin } from 'layouts/LayoutLogin'
 import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
 
@@ -311,7 +311,7 @@ function App() {
   );
 }
 ```
-```tsx [solid]
+```tsx [Solid]
 import { LayoutLogin } from 'layouts/LayoutLogin'
 import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
 
@@ -332,7 +332,7 @@ function App() {
   );
 }
 ```
-```vue [vue]
+```vue [Vue]
 <script lang="ts" setup>
   import { computed } from 'vue';
   import { useRouterStore } from '../../router';
