@@ -128,9 +128,9 @@ Record<string, any>
   </tr></tbody>
 </table>
 
-## Config Types
+## Config Variants
 
-There are only two types - `Static` and `Dynamic`.
+There are only two variants - `Static` and `Dynamic`.
 Dynamic routes have parameters in their paths, indicated by a colon prefix:
 
 ```typescript

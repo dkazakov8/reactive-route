@@ -1,3 +1,4 @@
+// #region type-adapters
 export type TypeAdapters = {
   batch: (cb: () => void) => void;
   autorun: (cb: () => void) => any;
@@ -5,6 +6,7 @@ export type TypeAdapters = {
   makeObservable: <T extends Record<string, any>>(obj: T) => T;
   observer?: (component: any) => any;
 };
+// #endregion type-adapters
 
 export type TypeRoutePayloadDefault = {
   route: string;

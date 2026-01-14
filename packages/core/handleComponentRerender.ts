@@ -21,21 +21,14 @@ export function handleComponentRerender(
   const prevConfig: TypeRouteConfig | undefined = routes[localObservable.renderedRouteName];
   const prevState = props.router.state[localObservable.renderedRouteName];
 
-  // 4. If the new component is the same, but the route has changed - just update props
-  if (currentConfig.component === prevConfig?.component) {
-    adapters.batch(() => {
-      localObservable.currentProps = currentConfig.props || {};
-    });
-
-    return;
-  }
-
   adapters.batch(() => {
-    beforeComponentChange?.({ prevState, prevConfig, currentState, currentConfig });
-
     localObservable.currentProps = currentConfig.props || {};
     localObservable.renderedRouteName = currentConfig.name;
 
-    setComponent?.(currentConfig.component);
+    if (currentConfig.component !== prevConfig?.component) {
+      beforeComponentChange?.({ prevState, prevConfig, currentState, currentConfig });
+
+      setComponent(currentConfig.component);
+    }
   });
 }

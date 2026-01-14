@@ -37,39 +37,7 @@ multiple instances and add the possibility of SSR.
 ```tsx [react]
 // router.tsx
 import { createContext } from 'react';
-import { createRoutes, createRouter } from 'reactive-route';
-import { adapters } from 'reactive-route/adapters/{reactive-system}';
-
-export function getRouter() {
-  const routes = createRoutes({
-    home: {
-      path: '/',
-      loader: () => import('./pages/home'),
-    },
-    user: {
-      path: '/user/:id',
-      params: {
-        id: (value) => /^\d+$/.test(value)
-      },
-      query: {
-        phone: (value) => value.length < 10
-      },
-      loader: () => import('./pages/user'),
-    },
-    notFound: {
-      path: '/not-found',
-      props: { errorCode: 404 },
-      loader: () => import('./pages/error'),
-    },
-    internalError: {
-      path: '/internal-error',
-      props: { errorCode: 500 },
-      loader: () => import('./pages/error'),
-    }
-  });
-  
-  return createRouter({ adapters, routes });
-}
+<!-- @include: ../snippets/get-router.md -->
 
 export const RouterContext = createContext<{ 
   router: ReturnType<typeof getRouter> 
@@ -79,39 +47,7 @@ export const RouterContext = createContext<{
 ```tsx [preact]
 // router.tsx
 import { createContext } from 'preact';
-import { createRoutes, createRouter } from 'reactive-route';
-import { adapters } from 'reactive-route/adapters/{reactive-system}';
-
-export function getRouter() {
-  const routes = createRoutes({
-    home: {
-      path: '/',
-      loader: () => import('./pages/home'),
-    },
-    user: {
-      path: '/user/:id',
-      params: {
-        id: (value) => /^\d+$/.test(value)
-      },
-      query: {
-        phone: (value) => value.length < 10
-      },
-      loader: () => import('./pages/user'),
-    },
-    notFound: {
-      path: '/not-found',
-      props: { errorCode: 404 },
-      loader: () => import('./pages/error'),
-    },
-    internalError: {
-      path: '/internal-error',
-      props: { errorCode: 500 },
-      loader: () => import('./pages/error'),
-    }
-  });
-
-  return createRouter({ adapters, routes });
-}
+<!-- @include: ../snippets/get-router.md -->
 
 export const RouterContext = createContext<{
   router: ReturnType<typeof getRouter>
@@ -121,39 +57,7 @@ export const RouterContext = createContext<{
 ```tsx [solid]
 // router.tsx
 import { createContext } from 'solid-js';
-import { createRoutes, createRouter } from 'reactive-route';
-import { adapters } from 'reactive-route/adapters/{reactive-system}';
-
-export function getRouter() {
-  const routes = createRoutes({
-    home: {
-      path: '/',
-      loader: () => import('./pages/home'),
-    },
-    user: {
-      path: '/user/:id',
-      params: {
-        id: (value) => /^\d+$/.test(value)
-      },
-      query: {
-        phone: (value) => value.length < 10
-      },
-      loader: () => import('./pages/user'),
-    },
-    notFound: {
-      path: '/not-found',
-      props: { errorCode: 404 },
-      loader: () => import('./pages/error'),
-    },
-    internalError: {
-      path: '/internal-error',
-      props: { errorCode: 500 },
-      loader: () => import('./pages/error'),
-    }
-  });
-
-  return createRouter({ adapters, routes });
-}
+<!-- @include: ../snippets/get-router.md -->
 
 export const RouterContext = createContext<{
   router: ReturnType<typeof getRouter>
@@ -163,39 +67,7 @@ export const RouterContext = createContext<{
 ```ts [vue]
 // router.ts
 import { InjectionKey, inject } from 'vue';
-import { createRoutes, createRouter } from 'reactive-route';
-import { adapters } from 'reactive-route/adapters/{reactive-system}';
-
-export function getRouter() {
-  const routes = createRoutes({
-    home: {
-      path: '/',
-      loader: () => import('./pages/home'),
-    },
-    user: {
-      path: '/user/:id',
-      params: {
-        id: (value) => /^\d+$/.test(value)
-      },
-      query: {
-        phone: (value) => value.length < 10
-      },
-      loader: () => import('./pages/user'),
-    },
-    notFound: {
-      path: '/not-found',
-      props: { errorCode: 404 },
-      loader: () => import('./pages/error'),
-    },
-    internalError: {
-      path: '/internal-error',
-      props: { errorCode: 500 },
-      loader: () => import('./pages/error'),
-    }
-  });
-
-  return createRouter({ adapters, routes });
-}
+<!-- @include: ../snippets/get-router.md -->
 
 export const routerStoreKey: InjectionKey<{ 
   router: ReturnType<typeof getRouter> 

@@ -78,11 +78,11 @@ to increase compatibility.
 
 | Browser     | Version supported | Limiting Feature                                                                                                                           |
 |:------------|:------------------|:-------------------------------------------------------------------------------------------------------------------------------------------|
-| **Chrome**  | **> 55**          | `async/await` (v55), `URLSearchParams` (v49) [[1]](https://caniuse.com/mdn-api_urlsearchparams) [[2]](https://caniuse.com/async-functions) |
-| **Firefox** | **> 52**          | `async/await` (v52), `URLSearchParams` (v44) [[1]](https://caniuse.com/mdn-api_urlsearchparams) [[2]](https://caniuse.com/async-functions) |
-| **Safari**  | **> 10.1**        | `async/await` (v10.1), `URLSearchParams` (v10.1) [[1]](https://caniuse.com/mdn-api_urlsearchparams)                                        |
-| **Edge**    | **> 17**          | `async/await` (v15), `URLSearchParams` (v17) [[1]](https://caniuse.com/mdn-api_urlsearchparams) [[2]](https://caniuse.com/async-functions) |
-| **Opera**   | **> 42**          | `async/await` (v42), `URLSearchParams` (v36) [[1]](https://caniuse.com/mdn-api_urlsearchparams)                                            |
+| **Chrome**  | **> 55**          | `async/await` (v55), `URLSearchParams` (v49) [[1]](https://caniuse.com/async-functions) [[2]](https://caniuse.com/mdn-api_urlsearchparams) |
+| **Firefox** | **> 52**          | `async/await` (v52), `URLSearchParams` (v44)                                                                                               |
+| **Safari**  | **> 10.1**        | `async/await` (v10.1), `URLSearchParams` (v10.1)                                                                                           |
+| **Edge**    | **> 17**          | `async/await` (v15), `URLSearchParams` (v17)                                                                                               |
+| **Opera**   | **> 42**          | `async/await` (v42), `URLSearchParams` (v36)                                                                                               |
 | **IE**      | **None**          |
 | **Node.js** | **> 10**          |                                                                                                                                            |
 

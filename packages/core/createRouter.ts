@@ -120,7 +120,13 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         }
       }
 
-      route = route || routes.notFound;
+      if (!route) {
+        return {
+          route: 'notFound',
+          params: {},
+          query: {},
+        };
+      }
 
       if (route.query) {
         const urlQuery = new URLSearchParams(search);
@@ -314,6 +320,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     hydrateFromURL(locationInput) {
       return this.redirect(this.createRoutePayload(locationInput));
     },
+
     async hydrateFromState(routerState) {
       adapters.batch(() => {
         Object.assign(this.state, routerState.state);

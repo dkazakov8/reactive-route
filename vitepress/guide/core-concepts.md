@@ -34,34 +34,20 @@ methods and for internal caching.
 
 ## Route `Payload`
 
-Is an object containing all the relevant information to detect a Route Config
+Is an object containing all the relevant information to detect a `Config`
 and fill it with values. It usually looks like this:
 
 ```tsx
-{ 
-  route: 'user', 
-  params: { id: '9999' }, 
-  query: { phone: '123456' } 
-}
+<!-- @include: ../snippets/payload.md -->
 ```
 
-There are two functions to create it from string: `router.createRoutePayload` and `router.hydrateFromURL`
-(an alias for creating a payload and redirecting). They will automatically find a relevant route config
-and validate all the params and query values:
+It can be created from string with `router.createRoutePayload`, but usually you will pass a `Payload` 
+manually to the `router.redirect` function in an imperative way:
 
 ```tsx
 console.log(router.createRoutePayload(`/user/9999?phone=123456`))
+<!-- @include: ../snippets/payload-commented.md -->
 
-// { 
-//  route: 'user', 
-//  params: { id: '9999' }, 
-//  query: { phone: '123456' }
-// }
-```
-
-But usually you will pass a Route `Payload` manually to the `router.redirect` function in an imperative way:
-
-```tsx
 button.onclick = () => router.redirect({
   route: 'user',
   params: { id: '9999' },
@@ -74,15 +60,7 @@ button.onclick = () => router.redirect({
 Is an object containing all the relevant information to render a route and looks like this:
 
 ```ts
-{
-  name: 'user', 
-  params: { id: '9999' },
-  pathname: '/user/9999',
-  props: undefined,
-  query: { phone: '123456' },
-  search: 'phone=123456',
-  url: '/user/9999?phone=123456',
-}
+<!-- @include: ../snippets/state.md -->
 ```
 
 It is kept in `router.state` in a **reactive** way and can be accessed from any UI component like this:
@@ -165,24 +143,8 @@ better alternatives to this.
 This object can also be constructed manually from `Payload` with `router.createRouteState`:
 
 ```ts
-console.log(router.createRouteState({
-  route: 'user',
-  params: { id: '9999' },
-  query: { phone: '123456' }
-}))
-
-// {
-//   name: 'user', 
-//   params: { id: '9999' },
-//   query: { phone: '123456' },
-//
-//   pathname: '/user/9999',
-//   search: 'phone=123456',
-//   url: '/user/9999?phone=123456',
-//
-//   props: undefined,
-//   isActive: true,
-// }
+console.log(router.createRouteState(<!-- @include: ../snippets/payload.md -->))
+<!-- @include: ../snippets/state-commented.md -->
 ```
 
 That is useful in creating `Link` components where you can use `<a href={routeState.url} />` for
