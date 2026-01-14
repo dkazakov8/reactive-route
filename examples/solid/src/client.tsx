@@ -42,15 +42,14 @@ async function renderSSR() {
 
   await router.hydrateFromState(initialData.router);
 
-  function AppToRender() {
-    return (
+  hydrate(
+    () => (
       <RouterContext.Provider value={{ router }}>
         <App />
       </RouterContext.Provider>
-    );
-  }
-
-  hydrate(AppToRender, document.getElementById('app')!);
+    ),
+    document.getElementById('app')!
+  );
 }
 
 async function renderCSR() {

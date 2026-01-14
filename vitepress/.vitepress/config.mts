@@ -6,6 +6,7 @@ export default defineConfig({
   description: 'Config-based routing for different frameworks',
   base: '/reactive-route/',
   head: [['link', { rel: 'icon', href: '/reactive-route/file.svg' }]],
+  appearance: 'force-dark',
   markdown: {
     config(md) {
       md.use(groupIconMdPlugin);
@@ -64,8 +65,7 @@ export default defineConfig({
     search: { provider: 'local' },
     socialLinks: [{ icon: 'github', link: 'https://github.com/dkazakov8/reactive-route' }],
     footer: {
-      message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2017-present Dmitry Kazakov',
+      message: 'Released under the MIT License',
     },
   },
 });

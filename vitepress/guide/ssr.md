@@ -1,70 +1,188 @@
 # Server-Side Rendering
 
-For server-side rendering, you need to initialize the router store on both the server and the client.
-Use `renderToString` and `hydrate` from you framework, as well as `escapeAllStrings` and `unescapeAllStrings` -
-for example, from `lodash`. These utilities are not included in `reactive-route`.
+For server-side rendering, you need to initialize the router on both the server and the client.
+The `escapeAllStrings` and `unescapeAllStrings` utilities are not provided by this library, because if you
+use SSR you already have them - for example, from `lodash`.
 
 ### Server
 
-```tsx [server.tsx]
-import { getRouter } from './router';
-import { RouterContext } from './RouterContext';
-import { RedirectError } from 'reactive-route';
+::: code-group
+```tsx [React]
+import { renderToString } from 'react-dom/server';
+import { getRouter, RouterContext } from 'router';
 
-express()
-  .get('*', async (req, res) => {
-    const template = fs.readFileSync(templatePath, 'utf-8');
+<!-- @include: ../snippets/ssr.md -->
 
-    const router = getRouter();
+  const htmlMarkup = renderToString(
+    <RouterContext.Provider value={{ router }}>
+      <App />
+    </RouterContext.Provider>
+  );
 
-    try {
-      await router.restoreFromURL({ pathname: req.originalUrl });
-    } catch (error: any) {
-      // The redirects on server-side are made manually, because
-      // we can't manipulate the browser's url and history
-      if (error instanceof RedirectError) {
-        // error.message is a full new path here
-        return res.redirect(error.message);
-      }
+  const routerJS = JSON.parse(JSON.stringify({ router }));
 
-      console.error(error);
-
-      return res.status(500).send('Unexpected error');
-    }
-
-    const htmlMarkup = renderToString(
-      <RouterContext.Provider value={{ router }}>
-        <App />
-      </RouterContext.Provider>
-    );
-    
-    // A very simple method of serialization, but sufficient for react-route
-    const storeJS = JSON.parse(JSON.stringify({ router }));
-    const initialData = JSON.stringify(escapeAllStrings(storeJS));
-
-    res.send(
-      template
-        .replace(`<!-- HTML -->`, htmlMarkup)
-        .replace('<!-- INITIAL_DATA -->', initialData)
-    );
-  })
+  res.send(
+    template
+      .replace(`<!-- HTML -->`, htmlMarkup)
+      .replace('<!-- INITIAL_DATA -->', JSON.stringify(
+        escapeAllStrings(storeJS)
+      ))
+  );
+});
 ```
+```tsx [Preact]
+import { renderToString } from 'preact-render-to-string';
+import { getRouter, RouterContext } from 'router';
+
+<!-- @include: ../snippets/ssr.md -->
+
+  const htmlMarkup = renderToString(
+    <RouterContext.Provider value={{ router }}>
+      <App />
+    </RouterContext.Provider>
+  );
+
+  const routerJS = JSON.parse(JSON.stringify({ router }));
+
+  res.send(
+    template
+      .replace(`<!-- HTML -->`, htmlMarkup)
+      .replace('<!-- INITIAL_DATA -->', JSON.stringify(
+        escapeAllStrings(storeJS)
+      ))
+  );
+});
+```
+```tsx [Solid]
+import { generateHydrationScript, renderToString } from 'solid-js/web';
+import { getRouter, RouterContext } from 'router';
+
+<!-- @include: ../snippets/ssr.md -->
+
+  const htmlMarkup = renderToString(() => (
+    <RouterContext.Provider value={{ router }}>
+      <App />
+    </RouterContext.Provider>
+  ));
+
+  const routerJS = JSON.parse(JSON.stringify({ router }));
+  
+  res.send(
+    template
+      .replace(`<!-- HTML -->`, htmlMarkup)
+      .replace(`<!-- HYDRATION -->`, generateHydrationScript())
+      .replace('<!-- INITIAL_DATA -->', JSON.stringify(
+        escapeAllStrings(routerJS)
+      ))
+  );
+});
+```
+```ts [Vue]
+import { createSSRApp } from 'vue';
+import { renderToString } from 'vue/server-renderer';
+import { getRouter, routerStoreKey } from './router';
+
+<!-- @include: ../snippets/ssr.md -->
+
+  const htmlMarkup = await renderToString(
+    createSSRApp(App, { router }).provide(routerStoreKey, { router })
+  );
+  const storeJS = JSON.parse(JSON.stringify({ router }));
+
+  res.send(
+    template
+      .replace(`<!-- HTML -->`, htmlMarkup)
+      .replace('<!-- INITIAL_DATA -->', JSON.stringify(
+        escapeAllStrings(storeJS)
+      ))
+  );
+});
+```
+:::
 
 ### Client
 
-```tsx [client.tsx]
-import { getRouter } from './router';
-import { RouterContext } from './RouterContext';
+::: code-group
+```tsx [React]
+import { hydrateRoot } from 'react';
+
+import { App } from './App';
+import { getRouter, RouterContext } from './router';
+import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
 const router = getRouter();
-const initialData = unescapeAllStrings(window.INITIAL_DATA);
 
-await router.restoreFromServer(initialData.router);
+await router.hydrateFromState(
+  unescapeAllStrings(window.INITIAL_DATA).router
+);
 
-hydrate(
-  document.getElementById('app'),
+hydrateRoot(
+  document.getElementById('app')!,
   <RouterContext.Provider value={{ router }}>
     <App />
   </RouterContext.Provider>
 );
 ```
+```tsx [Preact]
+import { hydrate } from 'preact';
+
+import { App } from './App';
+import { getRouter, RouterContext } from './router';
+import { unescapeAllStrings } from './utils/unescapeAllStrings';
+
+const router = getRouter();
+
+await router.hydrateFromState(
+  unescapeAllStrings(window.INITIAL_DATA).router
+);
+
+hydrate(
+  <RouterContext.Provider value={{ router }}>
+    <App />
+  </RouterContext.Provider>,
+  document.getElementById('app')!
+);
+```
+
+```tsx [Solid]
+import { hydrate } from 'solid-js/web';
+
+import { App } from './App';
+import { getRouter, RouterContext } from './router';
+import { unescapeAllStrings } from './utils/unescapeAllStrings';
+
+const router = getRouter();
+
+await router.hydrateFromState(
+  unescapeAllStrings(window.INITIAL_DATA).router
+);
+
+hydrate(
+  () => (
+    <RouterContext.Provider value={{ router }}>
+      <App />
+    </RouterContext.Provider>
+  ),
+  document.getElementById('app')!
+);
+```
+
+```ts [Vue]
+import { createSSRApp } from 'vue';
+
+import { App } from './App';
+import { getRouter, RouterContext } from './router';
+import { unescapeAllStrings } from './utils/unescapeAllStrings';
+
+const router = getRouter();
+
+await router.hydrateFromState(
+  unescapeAllStrings(window.INITIAL_DATA).router
+);
+
+createSSRApp(App, { router })
+  .provide(routerStoreKey, { router })
+  .mount('#app');
+```
+:::
+
