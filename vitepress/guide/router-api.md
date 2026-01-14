@@ -106,7 +106,7 @@ redirect({ route: 'user', params: { id: '123' }, query: { a: 'b' } });
 Accepts a pathname+search string and returns `Payload`. If no matching `Config` is found,
 the `notFound` `Payload` will be returned with empty `params` and `query`.
 
-Note that all the unrelevant or invalid query parameters are stripped off.
+Note that all irrelevant or invalid query parameters are stripped off.
 
 ```ts
 router.createRoutePayload(`/user/9999?phone=123456&gtm=value`)
@@ -135,7 +135,7 @@ router.createRouteState(<!-- @include: ../snippets/payload.md -->)
 Just an alias for `router.redirect(router.createRoutePayload(locationString))`.
 So, it accepts a pathname+search string and returns a `url` from a newly created `State`.
 
-Note that all the unrelevant or invalid query parameters are stripped off.
+Note that all irrelevant or invalid query parameters are stripped off.
 
 ```ts
 const clearedURL = await router.hydrateFromURL(
@@ -149,7 +149,7 @@ await router.hydrateFromURL(`${location.pathname}${location.search}`)
 
 // in SSR is usually used like this (with Express.js)
 const clearedURL = await router.hydrateFromURL(req.originalUrl)
-// if you want to remove the unrelevant query params 
+// if you want to remove irrelevant query params 
 // and unify slashes format
 if (req.originalUrl !== clearedURL) res.redirect(clearedURL)
 ```
@@ -175,12 +175,12 @@ they have already been called on server. So use it only to restore state from th
 A **reactive** object with route names as keys and `State` as values, for example:
 
 ```ts
-console.log(route.state.user)
+console.log(router.state.user)
 <!-- @include: ../snippets/state-commented.md -->
 ```
 
 Is intended to be used to show some values in UI or for writing logic in autoruns/effects. When
-you redirect to the same route with different params or query, only the values in `route.state.user`
+you redirect to the same route with different params or query, only the values in `router.state.user`
 will be updated, and no page component will be re-rendered.
 
 ::: tip
@@ -420,7 +420,7 @@ stores. Also, this function may be used for cancelling async functions and API c
 
 ::: tip
 Destroying in most cases should be delayed until all async logic is completed, otherwise it may
-try to read unexisting `globalStore.pages[prevConfig.name]`.
+try to read non-existent `globalStore.pages[prevConfig.name]`.
 :::
 
 ## Types

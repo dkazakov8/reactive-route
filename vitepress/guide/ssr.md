@@ -1,8 +1,8 @@
 # Server-Side Rendering
 
 For server-side rendering, you need to initialize the router on both the server and the client.
-The `escapeAllStrings` and `unescapeAllStrings` utilities are not provided by this library, because if you
-use SSR you already have them - for example, from `lodash`.
+The `escapeAllStrings` and `unescapeAllStrings` utilities are not provided by this library because if you
+use SSR, you already have them - for example, from `lodash`.
 
 ### Server
 

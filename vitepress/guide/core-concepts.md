@@ -130,13 +130,13 @@ export default function PageUser() {
 :::
 
 Do not worry about the "non-null assertion" operator `!` - the relevant route's state will 
-definetely exist if only one route uses this page component. Otherwise, choose the relevant one
+definitely exist if only one route uses this page component. Otherwise, choose the relevant one
 like `routeState = router.state.userView || router.state.userEdit`, but there are
 better alternatives to this.
 
 This object can also be constructed manually from `Payload` with [router.createRouteState](/guide/router-api#router-createroutestate).
 
-That is useful in creating `Link` components where you can use `<a href={routeState.url} />` for
+That is useful for creating `Link` components where you can use `<a href={routeState.url} />` for
 better UX and SEO or when JS is disabled in browser.
 
 ## Encoding

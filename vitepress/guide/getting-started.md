@@ -223,5 +223,5 @@ createApp(App, { router })
 </template>
 </Tabs>
 
-Everything has been set up and ready to use. In future, you will only edit the routes configuration
+Everything has been set up and is ready to use. In the future, you will only edit the routes configuration
 to add new pages or change existing ones.
