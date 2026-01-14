@@ -45,7 +45,7 @@ function getDefaultRoutes(routes: any) {
       props: { errorNumber: 500 },
       loader: routes.internalError.loader,
     },
-  };
+  } as const;
 }
 
 function createCounters() {

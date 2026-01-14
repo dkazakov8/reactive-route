@@ -34,8 +34,8 @@ export default defineConfig({
         {
           text: 'API',
           items: [
-            { text: 'Route Config', link: '/guide/route-config' },
-            { text: 'Route State', link: '/guide/route-state' },
+            { text: 'Config', link: '/guide/config' },
+            { text: 'State', link: '/guide/state' },
             { text: 'Router API', link: '/guide/router-api' },
             { text: 'SSR', link: '/guide/ssr' },
             { text: 'Advanced', link: '/guide/advanced' },

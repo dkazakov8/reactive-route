@@ -13,7 +13,7 @@ ReturnType<typeof createRoutes>
 ```
 
 </td>
-<td>An object with Route <code>Configs</code></td>
+<td>An object with <code>Configs</code></td>
 </tr><tr>
 <td><code>adapters</code></td>
 <td class="table-td">
@@ -183,6 +183,13 @@ Is intended to be used to show some values in UI or for writing logic in autorun
 you redirect to the same route with different params or query, only the values in `route.state.user`
 will be updated, and no page component will be re-rendered.
 
+::: tip
+The router **does not** automatically destroy the old `State` when you redirect to another route.
+So, it will be always there, but with `isActive: false` parameter. If you want to save some bytes of memory,
+you can destroy the old `State` manually in [beforeComponentChange](#beforecomponentchange). This is
+made for stability reasons when you have async functions or autoruns attached to some inactive state.
+:::
+
 ## router.isRedirecting
 
 A reactive boolean parameter that helps with showing loaders on redirects.
@@ -256,6 +263,164 @@ function SomeComponent() {
   </Button>
 </template>
 ```
+:::
+
+## router.getActiveRouteState
+
+Returns the current `State` of the active route, if any. May be useful when you have several
+global layouts above the Router component.
+
+::: code-group
+```tsx [react]
+import { LayoutLogin } from 'layouts/LayoutLogin'
+import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
+
+function App() {
+  const { router } = useContext(RouterContext);
+  
+  const activeStateName = router.getActiveRouteState()?.name;
+  
+  const Layout = ['login', 'restore', 'checkSms'].includes(activeStateName) 
+    ? LayoutLogin 
+    : LayoutAuthZone;
+  
+  return (
+    <Layout>
+      <Router router={router} />
+    </Layout>
+  );
+}
+```
+```tsx [preact]
+import { LayoutLogin } from 'layouts/LayoutLogin'
+import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
+
+function App() {
+  const { router } = useContext(RouterContext);
+  
+  const activeStateName = router.getActiveRouteState()?.name;
+  
+  const Layout = ['login', 'restore', 'checkSms'].includes(activeStateName) 
+    ? LayoutLogin 
+    : LayoutAuthZone;
+  
+  return (
+    <Layout>
+      <Router router={router} />
+    </Layout>
+  );
+}
+```
+```tsx [solid]
+import { LayoutLogin } from 'layouts/LayoutLogin'
+import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
+
+function App() {
+  const { router } = useContext(RouterContext);
+
+  const activeStateName = () => router.getActiveRouteState()?.name;
+
+  return (
+    <Dynamic 
+      component={['login', 'restore', 'checkSms'].includes(activeStateName()) 
+        ? LayoutLogin 
+        : LayoutAuthZone
+      }
+    >
+      <Router router={router} />
+    </Dynamic>
+  );
+}
+```
+```vue [vue]
+<script lang="ts" setup>
+  import { computed } from 'vue';
+  import { useRouterStore } from '../../router';
+  
+  import LayoutLogin from 'layouts/LayoutLogin.vue'
+  import LayoutAuthZone from 'layouts/LayoutAuthZone.vue'
+
+  const { router } = useRouterStore();
+
+  const activeStateName = computed(() => router.getActiveRouteState()?.name);
+  
+  const Layout = computed(() => 
+    ['login', 'restore', 'checkSms'].includes(activeStateName.value) 
+      ? LayoutLogin 
+      : LayoutAuthZone
+  );
+</script>
+
+<template>
+  <component :is="Layout">
+    <Router :router="router" />
+  </component>
+</template>
+```
+:::
+
+Or to connect Dev Tools to the router to see all the changes. Currently no built-in Dev Tools
+are provided, but you can effortlessly debug with
+
+```ts
+// use the analog of autorun in your reactive system
+autorun(() => console.log(JSON.stringify(router.getActiveRouteState())))
+```
+
+## router.preloadComponent
+
+By default, the router will load the component only during redirects. But sometimes you may want
+to preload the component programmatically. This is useful only when code splitting is enabled in
+your bundler.
+
+```ts
+// initiate as usual
+await router.hydrateFromURL(location.pathname + location.search);
+
+// preload when the network is idle and the page is fully rendered
+setTimeout(async () => {
+  try {
+    await router.preloadComponent('login')
+    await router.preloadComponent('dashboard')
+  } catch(e) {
+    console.error('Seems like the user lost connection')
+  }
+}, 5000)
+```
+
+## beforeComponentChange
+
+This lifecycle function is called only when the rendered component changes (not route!) and is
+intended to be used for modular architectures. For example, if some page exports a modular
+store like `export class PageStore { data: {}, destroy() {} }`
+
+```ts
+const globalStore = { pages: {} };
+
+createRouter({
+  routes,
+  adapters,
+  beforeComponentChange({ prevConfig, currentConfig }) {
+    const ExportedPageStore = currentConfig.otherExports.PageStore;
+    
+    if (ExportedPageStore) {
+      globalStore.pages[currentConfig.name] = new ExportedPageStore();
+    }
+    
+    // now check the previous page store and destroy it if needed
+    globalStore.pages[prevConfig.name]?.destroy();
+      
+    delete globalStore.pages[prevConfig.name];
+  }
+})
+```
+
+Then you just pass `globalStore` to your pages with Context and get code-splitting for modular
+stores. Also, this function may be used for cancelling async functions and API calls.
+
+::: tip
+Destroying in most cases should be delayed until all async logic is completed, otherwise it may
+try to read unexisting `globalStore.pages[prevConfig.name]`.
 :::
 
 ## Types

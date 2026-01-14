@@ -1,22 +1,29 @@
-import { TypeRouteConfig } from './types';
+import { TypeRouteConfig, TypeRouteConfigInput } from './types';
 
 export function createRoutes<
-  TConfig extends {
-    [Key in keyof TConfig | 'notFound' | 'internalError']: Omit<
+  const TConfig extends {
+    [K in keyof TConfig]: TypeRouteConfigInput<
+      TConfig[K] extends { path: infer P extends string } ? P : string
+    >;
+  } & {
+    notFound: Omit<TypeRouteConfig, 'name' | 'component' | 'otherExports' | 'params' | 'query'>;
+    internalError: Omit<
       TypeRouteConfig,
-      'name' | 'component' | 'otherExports'
+      'name' | 'component' | 'otherExports' | 'params' | 'query'
     >;
   },
->(config: TConfig) {
+>(
+  config: TConfig
+): {
+  [Key in keyof TConfig]: TConfig[Key] & {
+    name: Key;
+    component?: TypeRouteConfig['component'];
+    otherExports?: TypeRouteConfig['otherExports'];
+  };
+} {
   Object.entries(config).forEach(([key, value]) => {
     (value as any).name = key;
   });
 
-  return config as {
-    [Key in keyof TConfig]: TConfig[Key] & {
-      name: Key;
-      component?: any;
-      otherExports?: Record<string, any>;
-    };
-  };
+  return config as any;
 }

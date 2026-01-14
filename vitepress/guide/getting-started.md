@@ -28,7 +28,7 @@ First, create a router store using the `createRouter` function and your routes c
 the `createRoutes` function. 
 
 Routes `notFound` and `internalError` are required for error handling in the library, their 
-configuration is fully customizable as any other routes.
+configuration is partially customizable (no `params` and `query` are allowed).
 
 The recommended way is to use Context to pass it to UI components to avoid circular dependencies,
 multiple instances and add the possibility of SSR.

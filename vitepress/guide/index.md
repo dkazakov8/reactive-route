@@ -59,6 +59,7 @@ query parameter must have a validator, preventing invalid routes and improving a
 
 - **Type Safety**: Comprehensive TypeScript support for routes, dynamic parameters, and query parameters, 
 providing excellent DX with autocomplete. No more redirects to untyped strings or manual searching during refactoring.
+It's much better than in many popular routing libraries where "absolute type-safety" means `string | unknown`.
 
 - **Architect's Dream**: The router is a flat, separate layer that works with any framework – or none at all.
 No more routing logic buried inside UI components and templates. No need for AST parsing of markup to

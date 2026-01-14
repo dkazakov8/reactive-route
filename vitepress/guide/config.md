@@ -1,8 +1,8 @@
-# Route Config
+# Config
 
 The basic idea is covered in the [Core Concepts](/guide/core-concepts) section.
 
-## API Configurable
+## Properties Configurable
 
 <table>
   <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
@@ -45,13 +45,13 @@ Record<string, any>
 
 ```ts
 Record<
-  string,
+  TypeExtractRouteParams<TPath>,
   (value: string) => boolean
 >
 ```
 
 </td>
-<td>Validation functions for path segments (required if route type is <em>Dynamic</em>)</td>
+<td>Validation functions for path segments (required when the route variant is <em>Dynamic</em> and restricted when <em>Static</em>)</td>
 </tr><tr>
 <td><code>query?</code></td>
 <td class="table-td">
@@ -91,7 +91,9 @@ Record<
 </table>
 
 
-## API Internal (auto-added)
+## Properties Internal
+
+These arguments are auto-added by the library and can't be specified manually.
 
 <table>
   <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
@@ -128,7 +130,7 @@ Record<string, any>
   </tr></tbody>
 </table>
 
-## Config Variants
+## Static / Dynamic
 
 There are only two variants - `Static` and `Dynamic`.
 Dynamic routes have parameters in their paths, indicated by a colon prefix:
@@ -150,7 +152,7 @@ user: { // Dynamic
 A validation function is required, and if it's not satisfied in any route, the user will be redirected to the `notFound` route.
 If the page component is rendered, you can be sure that all the params are validated and present in `router.state[routeName].params`.
 
-## Query Parameters
+## Query
 
 Both types may have query parameters:
 
@@ -241,7 +243,7 @@ function getRouter(api: Api, store: Store) {
         await api.loadUser();
 
         if (!store.isAuthenticated()) {
-          // pass a Route Payload as in a regular route.redirect
+          // pass a Payload like in a regular route.redirect
           return redirect({
             route: 'login',
             query: { returnTo: 'dashboard' }

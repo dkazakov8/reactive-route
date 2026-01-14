@@ -22,7 +22,7 @@ export async function prepareRouterTest(options: TypeOptions) {
     beforeComponentChange: spy_beforeComponentChange,
   });
 
-  router.getGlobalArguments().routes.staticRouteAutorun.props = {
+  (router.getGlobalArguments().routes.staticRouteAutorun as any).props = {
     spy_pageRender,
     spy_pageAutorun,
   };

@@ -1,8 +1,8 @@
 # Core Concepts
 
-There are only three public structures in the library - `Config`, `Payload` and `State`:
+There are only three structures in the library - `Config`, `Payload` and `State`:
 
-## Route `Config`
+## Config
 
 Is a configuration object you pass to the `createRoutes` function for route names.
 It usually looks like this:
@@ -32,7 +32,7 @@ When you redirect to another route, the library executes `loader` and extends th
 with some other fields like `name`, `component` and `otherExports`, so they can be used in lifecycle
 methods and for internal caching.
 
-## Route `Payload`
+## Payload
 
 Is an object containing all the relevant information to detect a `Config`
 and fill it with values. It usually looks like this:
@@ -41,23 +41,17 @@ and fill it with values. It usually looks like this:
 <!-- @include: ../snippets/payload.md -->
 ```
 
-It can be created from string with `router.createRoutePayload`, but usually you will pass a `Payload` 
-manually to the `router.redirect` function in an imperative way:
+It can be created from a string with [router.createRoutePayload](/guide/router-api#router-createroutepayload), 
+but usually you will pass it manually to the [router.redirect](/guide/router-api#router-redirect) 
+function imperatively:
 
 ```tsx
-console.log(router.createRoutePayload(`/user/9999?phone=123456`))
-<!-- @include: ../snippets/payload-commented.md -->
-
-button.onclick = () => router.redirect({
-  route: 'user',
-  params: { id: '9999' },
-  query: { phone: '123456' }
-})
+button.onclick = () => router.redirect(<!-- @include: ../snippets/payload.md -->)
 ```
 
-## Route `State`
+## State
 
-Is an object containing all the relevant information to render a route and looks like this:
+Is an object containing additional information compared to `Payload`.
 
 ```ts
 <!-- @include: ../snippets/state.md -->
@@ -140,12 +134,7 @@ definetely exist if only one route uses this page component. Otherwise, choose t
 like `routeState = router.state.userView || router.state.userEdit`, but there are
 better alternatives to this.
 
-This object can also be constructed manually from `Payload` with `router.createRouteState`:
-
-```ts
-console.log(router.createRouteState(<!-- @include: ../snippets/payload.md -->))
-<!-- @include: ../snippets/state-commented.md -->
-```
+This object can also be constructed manually from `Payload` with [router.createRouteState](/guide/router-api#router-createroutestate).
 
 That is useful in creating `Link` components where you can use `<a href={routeState.url} />` for
 better UX and SEO or when JS is disabled in browser.

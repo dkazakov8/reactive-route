@@ -1,8 +1,8 @@
-# Route State
+# State
 
 The basic idea is covered in the [Core Concepts](/guide/core-concepts) section.
 
-## API
+## Properties
 
 <table>
   <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
@@ -75,7 +75,7 @@ boolean
 ```
 
 </td>
-<td>An indicator that this route is active and the relevant page component is rendered</td>
+<td>An indicator that the relevant page component is rendered or will be rendered in the next tick</td>
 </tr><tr>
 <td><code>props?</code></td>
 <td class="table-td">
@@ -85,7 +85,7 @@ Record<string, any>
 ```
 
 </td>
-<td>Static props from Route <code>Config</code></td>
+<td>Static props from <code>Config</code></td>
 </tr></tbody>
 </table>
 

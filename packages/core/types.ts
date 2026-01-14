@@ -1,3 +1,11 @@
+type TypeExtractRouteParams<T extends string> = string extends T
+  ? Record<string, string>
+  : T extends `${string}:${infer Param}/${infer Rest}`
+    ? { [K in Param | keyof TypeExtractRouteParams<`/${Rest}`>]: string }
+    : T extends `${string}:${infer Param}`
+      ? { [K in Param]: string }
+      : never;
+
 // #region type-adapters
 export type TypeAdapters = {
   batch: (cb: () => void) => void;
@@ -21,6 +29,18 @@ export type TypeLifecycleFunction = (lifecycleConfig: {
   redirect: (routePayload: TypeRoutePayloadDefault) => void;
   preventRedirect: () => void;
 }) => Promise<any>;
+
+export type TypeRouteConfigInput<TPath extends string> = {
+  path: TPath;
+  loader: () => Promise<{ default: any }>;
+
+  props?: Record<string, any>;
+  query?: Record<string, TypeValidator>;
+  beforeEnter?: TypeLifecycleFunction;
+  beforeLeave?: TypeLifecycleFunction;
+} & (TypeExtractRouteParams<TPath> extends never
+  ? { params?: never }
+  : { params: { [K in keyof TypeExtractRouteParams<TPath>]: TypeValidator } });
 
 export type TypeRouteConfig = {
   path: string;
