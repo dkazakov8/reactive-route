@@ -58,6 +58,7 @@ export default defineConfig({
             { text: 'React', link: '/examples/react' },
             { text: 'Preact', link: '/examples/preact' },
             { text: 'Solid.js', link: '/examples/solid' },
+            { text: 'Vue', link: '/examples/vue' },
           ],
         },
       ],
