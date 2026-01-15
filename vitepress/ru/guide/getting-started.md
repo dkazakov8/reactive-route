@@ -1,9 +1,8 @@
-# Getting Started
+# Начало работы
 
-## Installation
+## Установка
 
-The all-in-one package includes everything needed to use Reactive Route. Refer to Framework Integration
-sections for required peer dependencies.
+Пакет "all-in-one" включает всё необходимое для использования Reactive Route. Обратитесь к разделам "Интеграция с фреймворками" для получения информации о необходимых зависимостях (peer dependencies).
 
 ::: code-group
 ```sh [npm]
@@ -19,26 +18,23 @@ pnpm add reactive-route
 ```
 :::
 
-## Modules map
+## Карта модулей
 
 <<< @/modulesMap.ts
 
-## Router Store and Routes
+## Стор роутера и маршруты
 
-First, create a router store using the `createRouter` function and your routes configuration using 
-the `createRoutes` function. 
+Сначала создайте стор роутера с помощью функции `createRouter` и конфигурацию маршрутов с помощью функции `createRoutes`.
 
-Routes `notFound` and `internalError` are required for error handling in the library, their 
-configuration is partially customizable (no `params` and `query` are allowed).
+Маршруты `notFound` (не найдено) и `internalError` (внутренняя ошибка) обязательны для обработки ошибок в библиотеке, их конфигурация частично настраиваема (параметры `params` и `query` не допускаются).
 
-The recommended way is to use Context to pass it to UI components to avoid circular dependencies,
-multiple instances and add the possibility of SSR.
+Рекомендуемый способ — использовать Context (контекст) для передачи стора в UI-компоненты. Это позволяет избежать циклических зависимостей, создания нескольких экземпляров и добавляет возможность SSR.
 
 ::: code-group
 ```tsx [React]
 // router.tsx
 import { createContext } from 'react';
-<!-- @include: ../snippets/get-router.md -->
+<!-- @include: ../../snippets/get-router.md -->
 
 export const RouterContext = createContext<{ 
   router: ReturnType<typeof getRouter> 
@@ -48,7 +44,7 @@ export const RouterContext = createContext<{
 ```tsx [Preact]
 // router.tsx
 import { createContext } from 'preact';
-<!-- @include: ../snippets/get-router.md -->
+<!-- @include: ../../snippets/get-router.md -->
 
 export const RouterContext = createContext<{
   router: ReturnType<typeof getRouter>
@@ -58,7 +54,7 @@ export const RouterContext = createContext<{
 ```tsx [Solid]
 // router.tsx
 import { createContext } from 'solid-js';
-<!-- @include: ../snippets/get-router.md -->
+<!-- @include: ../../snippets/get-router.md -->
 
 export const RouterContext = createContext<{
   router: ReturnType<typeof getRouter>
@@ -68,7 +64,7 @@ export const RouterContext = createContext<{
 ```ts [Vue]
 // router.ts
 import { InjectionKey, inject } from 'vue';
-<!-- @include: ../snippets/get-router.md -->
+<!-- @include: ../../snippets/get-router.md -->
 
 export const routerStoreKey: InjectionKey<{ 
   router: ReturnType<typeof getRouter> 
@@ -78,11 +74,9 @@ export const useRouterStore = () => inject(routerStoreKey)!;
 ```
 :::
 
-## Router Component and Context providing
+## Компонент Router и предоставление контекста
 
-In this tutorial we will use CSR (client-only rendering) by using `router.hydrateFromURL` function.
-[SSR](/guide/ssr) version is very similar, but uses `router.hydrateFromServer` and relevant `hydrate` functions from
-UI frameworks.
+В этом руководстве мы будем использовать CSR (client-only rendering) с помощью функции `router.hydrateFromURL`. Версия для [SSR](/ru/guide/ssr) очень похожа, но использует `router.hydrateFromServer` и соответствующие функции `hydrate` из UI-фреймворков.
 
 <Tabs :frameworks="['react', 'preact', 'solid', 'vue']">
 <template #react>
@@ -223,5 +217,4 @@ createApp(App, { router })
 </template>
 </Tabs>
 
-Everything has been set up and is ready to use. In the future, you will only edit the routes configuration
-to add new pages or change existing ones.
+Все настроено и готово к использованию. В дальнейшем вы будете редактировать только конфигурацию маршрутов, чтобы добавлять новые страницы или изменять существующие.

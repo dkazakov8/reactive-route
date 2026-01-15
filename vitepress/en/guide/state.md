@@ -1,6 +1,6 @@
 # State
 
-The basic idea is covered in the [Core Concepts](/guide/core-concepts) section.
+The basic idea is covered in the [Core Concepts](/en/guide/core-concepts) section.
 
 ## Properties
 

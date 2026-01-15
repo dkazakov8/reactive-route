@@ -38,15 +38,15 @@ Is an object containing all the relevant information to detect a `Config`
 and fill it with values. It usually looks like this:
 
 ```tsx
-<!-- @include: ../snippets/payload.md -->
+<!-- @include: ../../snippets/payload.md -->
 ```
 
-It can be created from a string with [router.createRoutePayload](/guide/router-api#router-createroutepayload), 
-but usually you will pass it manually to the [router.redirect](/guide/router-api#router-redirect) 
+It can be created from a string with [router.createRoutePayload](/en/guide/router-api#router-createroutepayload), 
+but usually you will pass it manually to the [router.redirect](/en/guide/router-api#router-redirect) 
 function imperatively:
 
 ```tsx
-button.onclick = () => router.redirect(<!-- @include: ../snippets/payload.md -->)
+button.onclick = () => router.redirect(<!-- @include: ../../snippets/payload.md -->)
 ```
 
 ## State
@@ -54,7 +54,7 @@ button.onclick = () => router.redirect(<!-- @include: ../snippets/payload.md -->
 Is an object containing additional information compared to `Payload`.
 
 ```ts
-<!-- @include: ../snippets/state.md -->
+<!-- @include: ../../snippets/state.md -->
 ```
 
 It is kept in `router.state` in a **reactive** way and can be accessed from any UI component like this:
@@ -63,7 +63,7 @@ It is kept in `router.state` in a **reactive** way and can be accessed from any 
 ```tsx [React]
 // pages/user/index.tsx
 import { useContext } from 'react';
-import { RouterContext } from '../../router';
+import { RouterContext } from '../../../router';
 
 export default function PageUser() {
   const { router } = useContext(RouterContext);
@@ -81,7 +81,7 @@ export default function PageUser() {
 ```tsx [Preact]
 // pages/user/index.tsx
 import { useContext } from 'preact';
-import { RouterContext } from '../../router';
+import { RouterContext } from '../../../router';
 
 export default function PageUser() {
   const { router } = useContext(RouterContext);
@@ -99,7 +99,7 @@ export default function PageUser() {
 ```tsx [Solid]
 // pages/user/index.tsx
 import { useContext } from 'solid-js';
-import { RouterContext } from '../../router';
+import { RouterContext } from '../../../router';
 
 export default function PageUser() {
   const { router } = useContext(RouterContext);
@@ -115,7 +115,7 @@ export default function PageUser() {
 ```vue [Vue]
 // pages/user/User.vue
 <script lang="ts" setup>
-  import { useRouterStore } from '../../router';
+  import { useRouterStore } from '../../../router';
 
   const { router } = useRouterStore();
 
@@ -134,7 +134,7 @@ definitely exist if only one route uses this page component. Otherwise, choose t
 like `routeState = router.state.userView || router.state.userEdit`, but there are
 better alternatives to this.
 
-This object can also be constructed manually from `Payload` with [router.createRouteState](/guide/router-api#router-createroutestate).
+This object can also be constructed manually from `Payload` with [router.createRouteState](/en/guide/router-api#router-createroutestate).
 
 That is useful for creating `Link` components where you can use `<a href={routeState.url} />` for
 better UX and SEO or when JS is disabled in browser.

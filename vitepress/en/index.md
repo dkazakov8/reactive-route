@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /guide/
+      link: /en/guide/
     - theme: alt
       text: View on GitHub
       link: https://github.com/dkazakov8/reactive-route

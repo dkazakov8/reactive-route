@@ -159,7 +159,7 @@ Reactive Route is plain, so it can't help with breadcrumbs, but for layouting th
 
 There are three major ways to work with dynamic components:
 
-1. Outside of the Router component as described in [router.getActiveRouteState](/guide/router-api#router-getactiveroutestate)
+1. Outside of the Router component as described in [router.getActiveRouteState](/en/guide/router-api#router-getactiveroutestate)
 
 2. Inside the page component by reacting to dynamic params
 

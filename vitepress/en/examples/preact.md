@@ -1,10 +1,10 @@
-# React Example
+# Preact Example
 
 To use it follow these steps:
 
 ```shell
-npx degit dkazakov8/reactive-route/examples/react react-example
-cd react-example
+npx degit dkazakov8/reactive-route/examples/preact preact-example
+cd preact-example
 npm install
 ```
 
@@ -16,4 +16,4 @@ Next, choose the mode and reactivity system to start:
 - `npm run ssr-observable` - SSR for Observable
 
 Note, that wrapping of components in `observer` is made by the ESBuild bundler in this example.
-In your own projects, remember to follow the relevant [Framework Integration](/guide/react).
+In your own projects, remember to follow the relevant [Framework Integration](/en/guide/preact).
