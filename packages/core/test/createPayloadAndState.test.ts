@@ -22,7 +22,7 @@ import { createRouter } from '../createRouter';
 
     it('Recognizes static route + prevails over dynamic routes', () => {
       let expected = {
-        route: 'staticRoute',
+        name: 'staticRoute',
         params: {},
         query: {},
       };
@@ -44,7 +44,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'specialCharsPathname',
+        name: 'specialCharsPathname',
         params: {},
         query: {},
       } as any;
@@ -68,7 +68,7 @@ import { createRouter } from '../createRouter';
 
     it('Recognizes static route + query params', () => {
       const expected = {
-        route: 'staticRoute',
+        name: 'staticRoute',
         params: {},
         query: { q: 'value-for-q' },
       };
@@ -95,7 +95,7 @@ import { createRouter } from '../createRouter';
 
     it('Recognizes dynamic route', () => {
       let expected = {
-        route: 'dynamicRoute',
+        name: 'dynamicRoute',
         params: { static: 'value-for-static' },
         query: {},
       };
@@ -117,7 +117,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'dynamicRoute3',
+        name: 'dynamicRoute3',
         params: { ':static': 'value-for-:static' },
         query: {},
       } as any;
@@ -141,7 +141,7 @@ import { createRouter } from '../createRouter';
 
     it('Recognizes dynamic route + query params', () => {
       let expected = {
-        route: 'dynamicRoute',
+        name: 'dynamicRoute',
         params: { static: 'value-for-static' },
         query: { q: 'value-for-q' },
       };
@@ -166,7 +166,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'dynamicRoute',
+        name: 'dynamicRoute',
         params: { static: 'value-for-static' },
         query: {},
       } as any;
@@ -193,7 +193,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'dynamicRoute',
+        name: 'dynamicRoute',
         params: { static: 'value-for-static' },
         query: { q: 'value-for-q', s: 'value-for-s' },
       } as any;
@@ -217,7 +217,7 @@ import { createRouter } from '../createRouter';
 
     it('Deserializes query parts', () => {
       let expected = {
-        route: 'staticRoute',
+        name: 'staticRoute',
         params: {},
         query: { q: 'шеллы' },
       } as any;
@@ -236,7 +236,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'staticRoute',
+        name: 'staticRoute',
         params: {},
         query: { q: '?x=test' },
       };
@@ -255,7 +255,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'staticRoute',
+        name: 'staticRoute',
         params: {},
         query: { q: 'malformed%2' },
       };
@@ -275,7 +275,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'staticRoute',
+        name: 'staticRoute',
         params: {},
         query: { q: 'malformed%2' },
       };
@@ -295,7 +295,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'staticRoute',
+        name: 'staticRoute',
         params: {},
         query: { q: 'foo\0bar' },
       };
@@ -314,7 +314,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'staticRoute',
+        name: 'staticRoute',
         params: {},
         query: { q: '../../etc/passwd' },
       };
@@ -333,7 +333,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'staticRoute',
+        name: 'staticRoute',
         params: {},
         query: { q: 'with space' },
       };
@@ -352,7 +352,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'staticRoute',
+        name: 'staticRoute',
         params: {},
         query: { q: 'and&symbols' },
       };
@@ -373,7 +373,7 @@ import { createRouter } from '../createRouter';
 
     it('Deserializes dynamic pathname parts', () => {
       let expected = {
-        route: 'noPageName2',
+        name: 'noPageName2',
         params: { foo: 'шеллы', bar: '?x=test' },
         query: {},
       } as any;
@@ -392,7 +392,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'noPageName2',
+        name: 'noPageName2',
         params: { foo: 'malformed%2', bar: 'percent' },
         query: {},
       };
@@ -413,7 +413,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'noPageName2',
+        name: 'noPageName2',
         params: { foo: 'foo\0bar', bar: 'baz' },
         query: {},
       };
@@ -432,7 +432,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'noPageName2',
+        name: 'noPageName2',
         params: { foo: '../../etc/passwd', bar: 'bar' },
         query: {},
       };
@@ -451,7 +451,7 @@ import { createRouter } from '../createRouter';
       });
 
       expected = {
-        route: 'noPageName2',
+        name: 'noPageName2',
         params: { foo: 'with space', bar: 'and&symbols' },
         query: {},
       };
@@ -472,7 +472,7 @@ import { createRouter } from '../createRouter';
 
     it('Returns notFound if there is no match', () => {
       const expected = {
-        route: 'notFound',
+        name: 'notFound',
         params: {},
         query: {},
       };
@@ -517,21 +517,21 @@ import { createRouter } from '../createRouter';
     it('Throws validation errors for createRouteState', () => {
       expect(() => {
         router.createRouteState({
-          route: 'dynamicRoute',
+          name: 'dynamicRoute',
           params: {} as any,
         });
       }).to.throw(`no dynamic parameter "static" passed for route dynamicRoute`);
 
       expect(() => {
         router.createRouteState({
-          route: 'dynamicRoute',
+          name: 'dynamicRoute',
           params: { static: '' } as any,
         });
       }).to.throw(`no dynamic parameter "static" passed for route dynamicRoute`);
 
       expect(() => {
         router.createRouteState({
-          route: 'dynamicRouteMultiple',
+          name: 'dynamicRouteMultiple',
           params: { param: 'dynamic' } as any,
         });
       }).to.throw(`no dynamic parameter "param2" passed for route dynamicRouteMultiple`);

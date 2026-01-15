@@ -22,7 +22,7 @@ export async function getRouter() {
         path: '/',
         loader: () => import('./pages/home'),
         async beforeEnter(config) {
-          return config.redirect({ route: 'static' });
+          return config.redirect({ name: 'static' });
         },
       },
       static: {
@@ -47,7 +47,7 @@ export async function getRouter() {
         path: '/prevent',
         async beforeEnter(config) {
           if (config.currentState?.name === 'dynamic') {
-            return config.redirect({ route: 'static' });
+            return config.redirect({ name: 'static' });
           }
         },
         async beforeLeave(config) {

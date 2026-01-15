@@ -17,7 +17,7 @@ export type TypeAdapters = {
 // #endregion type-adapters
 
 export type TypeRoutePayloadDefault = {
-  route: string;
+  name: string;
   params?: Record<string, string>;
   query?: Record<string, string>;
   replace?: boolean;
@@ -84,23 +84,23 @@ export type TypeRoutePayload<
 > = TRoutes[TRouteName]['params'] extends Record<string, TypeValidator>
   ? TRoutes[TRouteName]['query'] extends Record<string, TypeValidator>
     ? {
-        route: TRouteName;
+        name: TRouteName;
         params: Record<keyof TRoutes[TRouteName]['params'], string>;
         query?: Partial<Record<keyof TRoutes[TRouteName]['query'], string>>;
         replace?: boolean;
       }
     : {
-        route: TRouteName;
+        name: TRouteName;
         params: Record<keyof TRoutes[TRouteName]['params'], string>;
         replace?: boolean;
       }
   : TRoutes[TRouteName]['query'] extends Record<string, TypeValidator>
     ? {
-        route: TRouteName;
+        name: TRouteName;
         query?: Partial<Record<keyof TRoutes[TRouteName]['query'], string>>;
         replace?: boolean;
       }
-    : { route: TRouteName; replace?: boolean };
+    : { name: TRouteName; replace?: boolean };
 
 export type TypeGlobalArguments<TRoutes extends TypeRoutesDefault> = {
   adapters: TypeAdapters;

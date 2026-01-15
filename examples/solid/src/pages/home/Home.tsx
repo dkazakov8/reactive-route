@@ -20,7 +20,7 @@ export default function Home() {
   path: '/',
   loader: () => import('./pages/home'),
   async beforeEnter(config) {
-    return config.redirect({ route: 'static' });
+    return config.redirect({ name: 'static' });
   },
 }`}
         </pre>

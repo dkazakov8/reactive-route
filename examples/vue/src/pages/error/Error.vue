@@ -15,9 +15,9 @@ const { router } = useRouterStore();
 
     <div class="navigation">
       <h2>Navigation</h2>
-      <button @click="router.redirect({ route: 'dynamic', params: { foo: 'example' } })" class="nav-button">Go to Dynamic Page</button>
-      <button @click="router.redirect({ route: 'query', query: { foo: 'example' } })" class="nav-button">Go to Query Page</button>
-      <button @click="router.redirect({ route: 'preventRedirect' })" class="nav-button">Go to Prevent Page</button>
+      <button @click="router.redirect({ name: 'dynamic', params: { foo: 'example' } })" class="nav-button">Go to Dynamic Page</button>
+      <button @click="router.redirect({ name: 'query', query: { foo: 'example' } })" class="nav-button">Go to Query Page</button>
+      <button @click="router.redirect({ name: 'preventRedirect' })" class="nav-button">Go to Prevent Page</button>
     </div>
   </div>
 </template>

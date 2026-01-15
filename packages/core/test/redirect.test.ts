@@ -12,7 +12,7 @@ function check(router: TypeRouter<any>, redirectParams: any, url?: string) {
   const currentRoute = router.getActiveRouteState()!;
 
   const expectedCurrentRoute = router.createRouteState({
-    route: redirectParams.route.name,
+    name: redirectParams.route.name,
     query: redirectParams.query,
     params: redirectParams.params,
   });
@@ -100,7 +100,7 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      let url = await router.redirect({ route: 'spyOne' });
+      let url = await router.redirect({ name: 'spyOne' });
 
       counter.spyOne += 1;
 
@@ -108,7 +108,7 @@ allPossibleOptions.forEach((options) => {
 
       check(router, { route: routes.spyOne }, url);
 
-      url = await router.redirect({ route: 'spyOne' });
+      url = await router.redirect({ name: 'spyOne' });
 
       checkSpy();
 
@@ -136,7 +136,7 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      let url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      let url = await router.redirect({ name: 'spyOneDynamic', params: { static: 'foo' } });
 
       counter.spyOne += 1;
 
@@ -144,7 +144,7 @@ allPossibleOptions.forEach((options) => {
 
       check(router, { route: routes.spyOneDynamic, params: { static: 'foo' } }, url);
 
-      url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      url = await router.redirect({ name: 'spyOneDynamic', params: { static: 'foo' } });
 
       checkSpy();
 
@@ -172,7 +172,7 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      let url = await router.redirect({ route: 'spyOne', query: { q: 'foo' } });
+      let url = await router.redirect({ name: 'spyOne', query: { q: 'foo' } });
 
       counter.spyOne += 1;
 
@@ -180,7 +180,7 @@ allPossibleOptions.forEach((options) => {
 
       check(router, { route: routes.spyOne, query: { q: 'foo' } }, url);
 
-      url = await router.redirect({ route: 'spyOne', query: { q: 'foo' } });
+      url = await router.redirect({ name: 'spyOne', query: { q: 'foo' } });
 
       checkSpy();
 
@@ -208,7 +208,7 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      let url = await router.redirect({ route: 'spyOne', query: { q: 'foo' } });
+      let url = await router.redirect({ name: 'spyOne', query: { q: 'foo' } });
 
       counter.spyOne += 1;
 
@@ -216,7 +216,7 @@ allPossibleOptions.forEach((options) => {
 
       check(router, { route: routes.spyOne, query: { q: 'foo' } }, url);
 
-      url = await router.redirect({ route: 'spyOne', query: { q: 'bar' } });
+      url = await router.redirect({ name: 'spyOne', query: { q: 'bar' } });
 
       checkSpy();
 
@@ -244,7 +244,7 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      let url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      let url = await router.redirect({ name: 'spyOneDynamic', params: { static: 'foo' } });
 
       counter.spyOne += 1;
 
@@ -252,7 +252,7 @@ allPossibleOptions.forEach((options) => {
 
       check(router, { route: routes.spyOneDynamic, params: { static: 'foo' } }, url);
 
-      url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'bar' } });
+      url = await router.redirect({ name: 'spyOneDynamic', params: { static: 'bar' } });
 
       counter.spyOne += 1;
 
@@ -280,7 +280,7 @@ allPossibleOptions.forEach((options) => {
       const { routes } = router.getGlobalArguments();
 
       // TODO: check url
-      await router.redirect({ route: 'buggyCode' });
+      await router.redirect({ name: 'buggyCode' });
 
       check(router, { route: routes.internalError });
     });
@@ -303,13 +303,13 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      let url = await router.redirect({ route: 'spyOne' });
+      let url = await router.redirect({ name: 'spyOne' });
 
       checkSpy();
 
       check(router, { route: routes.spyOne }, url);
 
-      url = await router.redirect({ route: 'spyOne' });
+      url = await router.redirect({ name: 'spyOne' });
 
       checkSpy();
 
@@ -341,13 +341,13 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      let url = await router.redirect({ route: 'spyOne' });
+      let url = await router.redirect({ name: 'spyOne' });
 
       checkSpy();
 
       check(router, { route: routes.spyOne }, url);
 
-      url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      url = await router.redirect({ name: 'spyOneDynamic', params: { static: 'foo' } });
 
       counter.spyOne += 1;
 
@@ -377,13 +377,13 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      let url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      let url = await router.redirect({ name: 'spyOneDynamic', params: { static: 'foo' } });
 
       checkSpy();
 
       check(router, { route: routes.spyOneDynamic, params: { static: 'foo' } }, url);
 
-      url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      url = await router.redirect({ name: 'spyOneDynamic', params: { static: 'foo' } });
 
       checkSpy();
 
@@ -411,13 +411,13 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      let url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'foo' } });
+      let url = await router.redirect({ name: 'spyOneDynamic', params: { static: 'foo' } });
 
       checkSpy();
 
       check(router, { route: routes.spyOneDynamic, params: { static: 'foo' } }, url);
 
-      url = await router.redirect({ route: 'spyOneDynamic', params: { static: 'bar' } });
+      url = await router.redirect({ name: 'spyOneDynamic', params: { static: 'bar' } });
 
       counter.spyOne += 1;
 
@@ -459,11 +459,11 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      let url = await router.redirect({ route: 'preventRedirect' });
+      let url = await router.redirect({ name: 'preventRedirect' });
 
       check(router, { route: routes.preventRedirect }, url);
 
-      url = await router.redirect({ route: 'spyOne' });
+      url = await router.redirect({ name: 'spyOne' });
 
       // Redirect to spyOne prevented
       check(router, { route: routes.preventRedirect }, url);
@@ -472,7 +472,7 @@ allPossibleOptions.forEach((options) => {
 
       checkSpy();
 
-      url = await router.redirect({ route: 'spyTwoDynamic', params: { static: 'asd' } });
+      url = await router.redirect({ name: 'spyTwoDynamic', params: { static: 'asd' } });
 
       // Redirect to spyTwoDynamic not prevented
       check(router, { route: routes.spyTwoDynamic, params: { static: 'asd' } }, url);
@@ -504,12 +504,12 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      let url = await router.redirect({ route: 'buggyCode' });
+      let url = await router.redirect({ name: 'buggyCode' });
 
       check(router, { route: routes.buggyCode }, url);
 
       // TODO: check url
-      url = await router.redirect({ route: 'spyOne' });
+      url = await router.redirect({ name: 'spyOne' });
 
       check(router, { route: routes.internalError });
     });
@@ -517,17 +517,17 @@ allPossibleOptions.forEach((options) => {
     it('query: no push to history if query is the same', async () => {
       const router = createRouter({ routes: routesDefault, adapters: await getAdapters(options) });
 
-      let url = await router.redirect({ route: 'staticRoute', query: { q: 'test' } });
+      let url = await router.redirect({ name: 'staticRoute', query: { q: 'test' } });
 
       check(router, { route: routesDefault.staticRoute, query: { q: 'test' } }, url);
 
-      url = await router.redirect({ route: 'staticRoute', query: { q: 'test' } });
+      url = await router.redirect({ name: 'staticRoute', query: { q: 'test' } });
 
       check(router, { route: routesDefault.staticRoute, query: { q: 'test' } }, url);
 
       // url is cleared of nonExistent
       url = await router.redirect({
-        route: 'staticRoute',
+        name: 'staticRoute',
         // @ts-ignore
         query: { q: 'test', nonExistent: 'test' },
       });
@@ -538,13 +538,13 @@ allPossibleOptions.forEach((options) => {
     it('query: no push to history if query is the same (non existent param)', async () => {
       const router = createRouter({ routes: routesDefault, adapters: await getAdapters(options) });
 
-      let url = await router.redirect({ route: 'staticRoute' });
+      let url = await router.redirect({ name: 'staticRoute' });
 
       check(router, { route: routesDefault.staticRoute }, url);
 
       // url is cleared of nonExistent
       // @ts-ignore
-      url = await router.redirect({ route: 'staticRoute', query: { nonExistent: 'test' } });
+      url = await router.redirect({ name: 'staticRoute', query: { nonExistent: 'test' } });
 
       check(router, { route: routesDefault.staticRoute }, url);
     });
@@ -552,19 +552,19 @@ allPossibleOptions.forEach((options) => {
     it('query: push to history if query changed', async () => {
       const router = createRouter({ routes: routesDefault, adapters: await getAdapters(options) });
 
-      let url = await router.redirect({ route: 'staticRoute', query: { q: 'test' } });
+      let url = await router.redirect({ name: 'staticRoute', query: { q: 'test' } });
 
       check(router, { route: routesDefault.staticRoute, query: { q: 'test' } }, url);
 
-      url = await router.redirect({ route: 'staticRoute', query: { q: 'test2' } });
+      url = await router.redirect({ name: 'staticRoute', query: { q: 'test2' } });
 
       check(router, { route: routesDefault.staticRoute, query: { q: 'test2' } }, url);
 
-      url = await router.redirect({ route: 'staticRoute' });
+      url = await router.redirect({ name: 'staticRoute' });
 
       check(router, { route: routesDefault.staticRoute }, url);
 
-      url = await router.redirect({ route: 'staticRoute', query: { q: 'test' } });
+      url = await router.redirect({ name: 'staticRoute', query: { q: 'test' } });
 
       check(router, { route: routesDefault.staticRoute, query: { q: 'test' } }, url);
     });
@@ -589,7 +589,7 @@ allPossibleOptions.forEach((options) => {
             async beforeEnter(config) {
               spyTwo();
 
-              return config.redirect({ route: 'spyOne' });
+              return config.redirect({ name: 'spyOne' });
             },
           },
           ...getDefaultRoutes(routesDefault),
@@ -598,7 +598,7 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      const url = await router.redirect({ route: 'redirectSpyOne' });
+      const url = await router.redirect({ name: 'redirectSpyOne' });
 
       counter.spyOne += 1;
       counter.spyTwo += 1;
@@ -619,21 +619,21 @@ allPossibleOptions.forEach((options) => {
             path: '/2',
             loader: routesDefault.dynamicRoute.loader,
             async beforeEnter(config) {
-              return config.redirect({ route: 'one' });
+              return config.redirect({ name: 'one' });
             },
           },
           three: {
             path: '/3',
             loader: routesDefault.dynamicRoute.loader,
             async beforeEnter(config) {
-              return config.redirect({ route: 'two' });
+              return config.redirect({ name: 'two' });
             },
           },
           four: {
             path: '/4',
             loader: routesDefault.dynamicRoute.loader,
             async beforeEnter(config) {
-              return config.redirect({ route: 'three' });
+              return config.redirect({ name: 'three' });
             },
           },
           ...getDefaultRoutes(routesDefault),
@@ -642,7 +642,7 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      const url = await router.redirect({ route: 'four' });
+      const url = await router.redirect({ name: 'four' });
 
       check(router, { route: routes.one }, url);
     });
@@ -670,7 +670,7 @@ allPossibleOptions.forEach((options) => {
               spyTwo();
 
               return config.redirect({
-                route: 'spyOne',
+                name: 'spyOne',
                 params: { dynamic: 'bar' },
                 query: { a: 'test' },
               });
@@ -682,7 +682,7 @@ allPossibleOptions.forEach((options) => {
       });
       const { routes } = router.getGlobalArguments();
 
-      const url = await router.redirect({ route: 'spyOne', params: { dynamic: 'foo' } });
+      const url = await router.redirect({ name: 'spyOne', params: { dynamic: 'foo' } });
 
       counter.spyOne += 1;
 
@@ -691,7 +691,7 @@ allPossibleOptions.forEach((options) => {
       checkSpy();
 
       await expect(async () => {
-        await router.redirect({ route: 'redirectSpyOne' });
+        await router.redirect({ name: 'redirectSpyOne' });
       }).rejects.toThrowError(new RedirectError('/test/bar?a=test'));
 
       counter.spyTwo += 1;
@@ -712,21 +712,21 @@ allPossibleOptions.forEach((options) => {
             path: '/2',
             loader: routesDefault.dynamicRoute.loader,
             async beforeEnter(config) {
-              return config.redirect({ route: 'one' });
+              return config.redirect({ name: 'one' });
             },
           },
           three: {
             path: '/3',
             loader: routesDefault.dynamicRoute.loader,
             async beforeEnter(config) {
-              return config.redirect({ route: 'two' });
+              return config.redirect({ name: 'two' });
             },
           },
           four: {
             path: '/4',
             loader: routesDefault.dynamicRoute.loader,
             async beforeEnter(config) {
-              return config.redirect({ route: 'three' });
+              return config.redirect({ name: 'three' });
             },
           },
           ...getDefaultRoutes(routesDefault),

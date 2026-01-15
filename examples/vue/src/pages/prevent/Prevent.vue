@@ -3,7 +3,7 @@ import { useRouterStore } from '../../router';
 
 const { router } = useRouterStore();
 async function toQuery() {
-  await router.redirect({ route: 'query', query: { foo: 'example' } });
+  await router.redirect({ name: 'query', query: { foo: 'example' } });
 }
 </script>
 
@@ -17,7 +17,7 @@ async function toQuery() {
   path: '/prevent',
   async beforeEnter(config) {
     if (config.currentState?.name === 'dynamic') {
-      return config.redirect({ route: 'static' });
+      return config.redirect({ name: 'static' });
     }
   },
   async beforeLeave(config) {
@@ -39,8 +39,8 @@ async function toQuery() {
 
     <div class="navigation">
       <h2>Navigation</h2>
-      <button @click="router.redirect({ route: 'static' })" class="nav-button">Go to Static Page</button>
-      <button @click="router.redirect({ route: 'dynamic', params: { foo: 'example' } })" class="nav-button">Go to Dynamic Page</button>
+      <button @click="router.redirect({ name: 'static' })" class="nav-button">Go to Static Page</button>
+      <button @click="router.redirect({ name: 'dynamic', params: { foo: 'example' } })" class="nav-button">Go to Dynamic Page</button>
       <button @click="toQuery" class="nav-button nav-button-blocked">Try to go to Query Page (will be blocked)</button>
     </div>
   </div>

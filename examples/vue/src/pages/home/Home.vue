@@ -17,7 +17,7 @@
 
     <div class="route-info">
       <h2>Route Configuration</h2>
-      <pre>home: {\n  path: '/',\n  loader: () => import('./pages/home'),\n  async beforeEnter(config) {\n    return config.redirect({ route: 'static' });\n  },\n}</pre>
+      <pre>home: {\n  path: '/',\n  loader: () => import('./pages/home'),\n  async beforeEnter(config) {\n    return config.redirect({ name: 'static' });\n  },\n}</pre>
     </div>
 
     <div class="route-description">

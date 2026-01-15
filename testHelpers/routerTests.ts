@@ -19,7 +19,7 @@ export async function routerTests(
 
         const container = (await render()).container;
 
-        await router.redirect({ route: 'staticRouteAutorun' });
+        await router.redirect({ name: 'staticRouteAutorun' });
 
         calls.pageRender += 1;
         calls.pageAutorun += 1;
@@ -31,7 +31,7 @@ export async function routerTests(
 
         checkSpy();
 
-        await router.redirect({ route: 'staticRoute' });
+        await router.redirect({ name: 'staticRoute' });
 
         calls.beforeComponentChange += 1;
 
@@ -49,7 +49,7 @@ export async function routerTests(
 
         const container = (await render()).container;
 
-        await router.redirect({ route: 'staticRoute' });
+        await router.redirect({ name: 'staticRoute' });
 
         calls.beforeComponentChange += 1;
 
@@ -95,7 +95,7 @@ export async function routerTests(
 
         const container = (await render()).container;
 
-        await router.redirect({ route: 'dynamicRoute', params: { static: 'asd' } });
+        await router.redirect({ name: 'dynamicRoute', params: { static: 'asd' } });
 
         calls.beforeComponentChange += 1;
 
@@ -103,7 +103,7 @@ export async function routerTests(
 
         checkSpy();
 
-        await router.redirect({ route: 'dynamicRoute', params: { static: 'dsa' } });
+        await router.redirect({ name: 'dynamicRoute', params: { static: 'dsa' } });
 
         expect(container.innerHTML).to.eq('<div>Dynamic</div>');
 
@@ -117,7 +117,7 @@ export async function routerTests(
 
         const container = (await render()).container;
 
-        await router.redirect({ route: 'noPageName', params: { foo: 'foo' } });
+        await router.redirect({ name: 'noPageName', params: { foo: 'foo' } });
 
         calls.beforeComponentChange += 1;
 
@@ -125,7 +125,7 @@ export async function routerTests(
 
         checkSpy();
 
-        await router.redirect({ route: 'noPageName', params: { foo: 'bar' } });
+        await router.redirect({ name: 'noPageName', params: { foo: 'bar' } });
 
         expect(container.innerHTML).to.eq('<div>No page name</div>');
 
@@ -139,7 +139,7 @@ export async function routerTests(
 
         const container = (await render()).container;
 
-        await router.redirect({ route: 'dynamicRoute', params: { static: 'asd' } });
+        await router.redirect({ name: 'dynamicRoute', params: { static: 'asd' } });
 
         calls.beforeComponentChange += 1;
 
@@ -147,7 +147,7 @@ export async function routerTests(
 
         checkSpy();
 
-        await router.redirect({ route: 'dynamicRoute2', params: { static: 'dsa' } });
+        await router.redirect({ name: 'dynamicRoute2', params: { static: 'dsa' } });
 
         expect(container.innerHTML).to.eq('<div>Dynamic</div>');
 
@@ -161,7 +161,7 @@ export async function routerTests(
 
         const container = (await render()).container;
 
-        await router.redirect({ route: 'noPageName', params: { foo: 'bar' } });
+        await router.redirect({ name: 'noPageName', params: { foo: 'bar' } });
 
         calls.beforeComponentChange += 1;
 
@@ -169,7 +169,7 @@ export async function routerTests(
 
         checkSpy();
 
-        await router.redirect({ route: 'noPageName2', params: { foo: 'foo', bar: 'bar' } });
+        await router.redirect({ name: 'noPageName2', params: { foo: 'foo', bar: 'bar' } });
 
         expect(container.innerHTML).to.eq('<div>No page name</div>');
 
@@ -183,7 +183,7 @@ export async function routerTests(
 
         const container = (await render()).container;
 
-        await router.redirect({ route: 'notFound' });
+        await router.redirect({ name: 'notFound' });
 
         calls.beforeComponentChange += 1;
 
@@ -191,7 +191,7 @@ export async function routerTests(
 
         checkSpy();
 
-        await router.redirect({ route: 'internalError' });
+        await router.redirect({ name: 'internalError' });
 
         expect(container.innerHTML).to.eq('Error 500');
 
@@ -216,7 +216,7 @@ export async function routerTests(
 
         const container = (await render()).container;
 
-        await router.redirect({ route: 'staticRoute' });
+        await router.redirect({ name: 'staticRoute' });
 
         calls.beforeComponentChange += 1;
 
@@ -226,7 +226,7 @@ export async function routerTests(
 
         expect(location.pathname).to.eq('/test/static');
 
-        await router.redirect({ route: 'dynamicRoute', params: { static: 'asd' } });
+        await router.redirect({ name: 'dynamicRoute', params: { static: 'asd' } });
 
         calls.beforeComponentChange += 1;
 
@@ -236,7 +236,7 @@ export async function routerTests(
 
         expect(location.pathname).to.eq('/test/asd');
 
-        await router.redirect({ route: 'dynamicRoute2', params: { static: 'asd' } });
+        await router.redirect({ name: 'dynamicRoute2', params: { static: 'asd' } });
 
         expect(container.innerHTML).to.eq('<div>Dynamic</div>');
 
@@ -297,7 +297,7 @@ export async function routerTests(
         const screen = await render();
         const container = screen.container;
 
-        await router.redirect({ route: 'staticRoute' });
+        await router.redirect({ name: 'staticRoute' });
 
         calls.beforeComponentChange += 1;
 
@@ -320,7 +320,7 @@ export async function routerTests(
       it('SSR', async () => {
         const { router, renderToString, checkSpy, calls } = await prepareRouterTest(options);
 
-        await router.redirect({ route: 'staticRoute' });
+        await router.redirect({ name: 'staticRoute' });
 
         const html1 = await renderToString();
 

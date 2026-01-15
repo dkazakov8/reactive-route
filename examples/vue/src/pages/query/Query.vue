@@ -7,7 +7,7 @@ const routeState = router.state.query!;
 
 function goRandom() {
   void router.redirect({
-    route: 'query',
+    name: 'query',
     query: { foo: String(Math.random()).slice(2, 10) },
   });
 }
@@ -43,9 +43,9 @@ function goRandom() {
 
     <div class="navigation">
       <h2>Navigation</h2>
-      <button @click="router.redirect({ route: 'static' })" class="nav-button">Go to Static Page</button>
-      <button @click="router.redirect({ route: 'dynamic', params: { foo: 'example' } })" class="nav-button">Go to Dynamic Page</button>
-      <button @click="router.redirect({ route: 'preventRedirect' })" class="nav-button">Go to Prevent Page</button>
+      <button @click="router.redirect({ name: 'static' })" class="nav-button">Go to Static Page</button>
+      <button @click="router.redirect({ name: 'dynamic', params: { foo: 'example' } })" class="nav-button">Go to Dynamic Page</button>
+      <button @click="router.redirect({ name: 'preventRedirect' })" class="nav-button">Go to Prevent Page</button>
     </div>
   </div>
 </template>

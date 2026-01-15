@@ -66,7 +66,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         })
         .join('/');
 
-      let route: TypeRouteConfig | undefined;
+      let config: TypeRouteConfig | undefined;
       const query: Record<string, string> = {};
       let params: Record<string, string> = {};
 
@@ -78,13 +78,13 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
         // return a static match instantly, it has the top priority
         if (!testedPathname.includes(':') && testedPathname === pathname) {
-          route = testedRoute;
+          config = testedRoute;
 
           break;
         }
 
         // if a dynamic route has been found, no need to search for another
-        if (route) continue;
+        if (config) continue;
 
         const testedPathnameParts = testedPathname.split('/').filter(Boolean);
 
@@ -110,7 +110,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
         // no return instantly because next routes may have static match
         if (!validationFailed) {
-          route = testedRoute;
+          config = testedRoute;
 
           for (let i = 0; i < testedPathnameParts.length; i++) {
             const paramName = testedPathnameParts[i];
@@ -120,22 +120,18 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         }
       }
 
-      if (!route) {
-        return {
-          route: 'notFound',
-          params: {},
-          query: {},
-        };
+      if (!config) {
+        return { name: 'notFound', params: {}, query: {} };
       }
 
-      if (route.query) {
+      if (config.query) {
         const urlQuery = new URLSearchParams(search);
 
-        for (const key in route.query) {
-          if (!route.query.hasOwnProperty(key)) continue;
+        for (const key in config.query) {
+          if (!config.query.hasOwnProperty(key)) continue;
 
           const value = urlQuery.get(key);
-          const validator = route.query[key];
+          const validator = config.query[key];
 
           if (typeof validator === 'function' && typeof value === 'string' && validator(value)) {
             query[key] = value;
@@ -143,13 +139,13 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         }
       }
 
-      if (!route.params) params = {};
+      if (!config.params) params = {};
 
-      return { route: route.name, query, params };
+      return { name: config.name, query, params };
     },
 
     createRouteState(routePayload) {
-      const route = routes[routePayload.route];
+      const config = routes[routePayload.name];
 
       const params: Record<string, string> = {};
       const query: Record<string, string> = {};
@@ -158,26 +154,26 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       // and fill params with relevant values (omitting not required in a path)
       const pathname =
         'params' in routePayload
-          ? route.path.replace(/:([^/]+)/g, (_, pathPart: string) => {
+          ? config.path.replace(/:([^/]+)/g, (_, pathPart: string) => {
               const value = routePayload.params[pathPart];
 
               if (!value)
                 throw new Error(
-                  `no dynamic parameter "${pathPart}" passed for route ${route.name}`
+                  `no dynamic parameter "${pathPart}" passed for route ${config.name}`
                 );
 
               params[pathPart] = value;
 
               return encodeURIComponent(value);
             })
-          : route.path;
+          : config.path;
 
-      if (route.query && 'query' in routePayload && routePayload.query) {
-        for (const key in route.query) {
-          if (!route.query.hasOwnProperty(key)) continue;
+      if (config.query && 'query' in routePayload && routePayload.query) {
+        for (const key in config.query) {
+          if (!config.query.hasOwnProperty(key)) continue;
 
           const value = routePayload.query[key];
-          const validator = route.query[key];
+          const validator = config.query[key];
 
           if (typeof validator === 'function' && typeof value === 'string' && validator(value)) {
             query[key] = value;
@@ -189,8 +185,8 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       const url = `${pathname}${search ? `?${search}` : ''}`;
 
       return {
-        name: route.name,
-        props: route.props,
+        name: config.name,
+        props: config.props,
         isActive: true,
         url,
         query: query as any,
@@ -200,106 +196,94 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       };
     },
 
-    async redirect(nextRoutePayload) {
-      const activeRouteState = this.getActiveRouteState();
-      const activeRouteConfig = activeRouteState ? routes[activeRouteState.name] : undefined;
+    async redirect(nextPayload) {
+      const currentState = this.getActiveRouteState();
+      let nextState = this.createRouteState(nextPayload);
 
-      let nextRouteState = this.createRouteState({
-        route: nextRoutePayload.route,
-        params: 'params' in nextRoutePayload ? nextRoutePayload.params : undefined,
-        query: 'query' in nextRoutePayload ? nextRoutePayload.query : undefined,
-      } as any);
-      const nextRouteConfig = routes[nextRoutePayload.route];
+      const beforeLeave = currentState ? routes[currentState.name]?.beforeLeave : undefined;
+      const beforeEnter = routes[nextState.name].beforeEnter;
 
-      if (activeRouteState?.url === nextRouteState.url) return nextRouteState.url;
+      if (currentState?.url === nextState.url) return currentState.url;
 
-      if (activeRouteState?.pathname === nextRouteState.pathname) {
-        if (activeRouteState?.search !== nextRouteState.search) {
-          adapters.batch(() => adapters.replaceObject(activeRouteState!, nextRouteState));
+      if (currentState?.pathname === nextState.pathname) {
+        if (currentState?.search !== nextState.search) {
+          adapters.batch(() => adapters.replaceObject(currentState, nextState));
 
           if (isClient) {
-            window.history[nextRoutePayload.replace ? 'replaceState' : 'pushState'](
+            window.history[nextPayload.replace ? 'replaceState' : 'pushState'](
               null,
               '',
-              activeRouteState.url
+              currentState.url
             );
           }
         }
 
-        return activeRouteState.url;
+        return currentState.url;
       }
 
-      adapters.batch(() => {
-        this.isRedirecting = true;
-      });
+      this.isRedirecting = true;
 
       try {
         const lifecycleConfig: Parameters<TypeLifecycleFunction>[0] = {
-          nextState: nextRouteState,
-          currentState: activeRouteState,
-          redirect: (redirectRoutePayload) => {
-            if (isClient) return redirectRoutePayload;
+          nextState: nextState,
+          currentState: currentState,
+          redirect: ((redirectPayload: TypeRoutePayload<TRoutes, keyof TRoutes>) => {
+            if (isClient) return redirectPayload;
 
-            const redirectRouteState = this.createRouteState(redirectRoutePayload as any);
+            const redirectRouteState = this.createRouteState(redirectPayload);
 
             throw new RedirectError(redirectRouteState.url);
-          },
+          }) as any,
           preventRedirect() {
-            throw new PreventError(`Redirect to ${nextRouteState.url} was prevented`);
+            throw new PreventError(`Redirect to ${nextState.url} was prevented`);
           },
         };
 
-        await activeRouteConfig?.beforeLeave?.(lifecycleConfig);
+        await beforeLeave?.(lifecycleConfig);
 
         const redirectRoutePayload: TypeRoutePayload<TRoutes, keyof TRoutes> | undefined =
-          await nextRouteConfig.beforeEnter?.(lifecycleConfig);
+          await beforeEnter?.(lifecycleConfig);
 
         if (redirectRoutePayload) return this.redirect(redirectRoutePayload);
       } catch (error: any) {
-        if (error instanceof PreventError) {
+        if (error instanceof PreventError || error instanceof RedirectError) {
           adapters.batch(() => {
             this.isRedirecting = false;
           });
-
-          return activeRouteState!.url;
         }
 
-        if (error instanceof RedirectError) {
-          adapters.batch(() => {
-            this.isRedirecting = false;
-          });
+        if (error instanceof PreventError) return currentState!.url;
 
-          throw error;
-        }
+        if (error instanceof RedirectError) throw error;
 
         console.error(error);
 
-        nextRouteState = this.createRouteState({ route: 'internalError' } as any);
+        nextState = this.createRouteState({ name: 'internalError' } as any);
       }
 
-      await this.preloadComponent(nextRouteState.name);
+      await this.preloadComponent(nextState.name);
 
       adapters.batch(() => {
-        if (!this.state[nextRouteState.name]) {
-          this.state[nextRouteState.name] = nextRouteState as any;
-        } else adapters.replaceObject(this.state[nextRouteState.name]!, nextRouteState);
+        if (!this.state[nextState.name]) {
+          this.state[nextState.name] = nextState as any;
+        } else adapters.replaceObject(this.state[nextState.name]!, nextState as any);
 
         Object.values(this.state).forEach((r) => {
-          if (r && r.name !== nextRouteState.name) r.isActive = false;
+          if (r && r.name !== nextState.name) r.isActive = false;
         });
 
-        if (isClient && nextRouteState.name !== 'internalError') {
-          window.history[nextRoutePayload.replace ? 'replaceState' : 'pushState'](
+        if (isClient && nextState.name !== 'internalError') {
+          window.history[nextPayload.replace ? 'replaceState' : 'pushState'](
             null,
             '',
-            nextRouteState.url
+            nextState.url
           );
         }
 
         this.isRedirecting = false;
       });
 
-      return nextRouteState.url;
+      return nextState.url;
     },
 
     getActiveRouteState() {

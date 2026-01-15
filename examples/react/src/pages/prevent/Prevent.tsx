@@ -16,7 +16,7 @@ export default function Prevent() {
   path: '/prevent',
   async beforeEnter(config) {
     if (config.currentState?.name === 'dynamic') {
-      return config.redirect({ route: 'static' });
+      return config.redirect({ name: 'static' });
     }
   },
   async beforeLeave(config) {
@@ -66,17 +66,17 @@ export default function Prevent() {
 
       <div className="navigation">
         <h2>Navigation</h2>
-        <button onClick={() => router.redirect({ route: 'static' })} className="nav-button">
+        <button onClick={() => router.redirect({ name: 'static' })} className="nav-button">
           Go to Static Page
         </button>
         <button
-          onClick={() => router.redirect({ route: 'dynamic', params: { foo: 'example' } })}
+          onClick={() => router.redirect({ name: 'dynamic', params: { foo: 'example' } })}
           className="nav-button"
         >
           Go to Dynamic Page
         </button>
         <button
-          onClick={() => router.redirect({ route: 'query', query: { foo: 'example' } })}
+          onClick={() => router.redirect({ name: 'query', query: { foo: 'example' } })}
           className="nav-button nav-button-blocked"
         >
           Try to go to Query Page (will be blocked)
