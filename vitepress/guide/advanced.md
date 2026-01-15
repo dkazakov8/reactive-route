@@ -14,21 +14,21 @@ const routes = createRoutes({
     path: '/2',
     loader: () => import('./pages/two'),
     async beforeEnter({ redirect }) {
-      return redirect({ route: 'one' });
+      return redirect({ name: 'one' });
     },
   },
   three: {
     path: '/3',
     loader: () => import('./pages/three'),
     async beforeEnter({ redirect }) {
-      return redirect({ route: 'two' });
+      return redirect({ name: 'two' });
     },
   },
   four: {
     path: '/4',
     loader: () => import('./pages/four'),
     async beforeEnter({ redirect }) {
-      return redirect({ route: 'three' });
+      return redirect({ name: 'three' });
     },
   },
   

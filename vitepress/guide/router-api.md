@@ -79,26 +79,26 @@ This function is fully typed, and TypeScript hints will be shown for autocomplet
 
 ```typescript
 // Good
-redirect({ route: 'home' })
-redirect({ route: 'user', params: { id: '123' } })
-redirect({ route: 'user', params: { id: '123' }, query: { phone: '321' } })
+redirect({ name: 'home' })
+redirect({ name: 'user', params: { id: '123' } })
+redirect({ name: 'user', params: { id: '123' }, query: { phone: '321' } })
 
 // TS errors
 
 // no "route" key
 redirect({});
 // no Config with this name
-redirect({ route: 'nonExisting' });
+redirect({ name: 'nonExisting' });
 // home Config is a static route, params should not be passed
-redirect({ route: 'home', params: {} });
+redirect({ name: 'home', params: {} });
 // user Config is a dynamic route, params should be present
-redirect({ route: 'user' });
+redirect({ name: 'user' });
 // params.id should be present
-redirect({ route: 'user', params: {} });
+redirect({ name: 'user', params: {} });
 // not existing params.a was passed
-redirect({ route: 'user', params: { id: '123', a: 'b' } });
+redirect({ name: 'user', params: { id: '123', a: 'b' } });
 // not existing query.a was passed
-redirect({ route: 'user', params: { id: '123' }, query: { a: 'b' } });
+redirect({ name: 'user', params: { id: '123' }, query: { a: 'b' } });
 ```
 
 ## router.createRoutePayload
@@ -114,7 +114,7 @@ router.createRoutePayload(`/user/9999?phone=123456&gtm=value`)
 
 router.createRoutePayload(`/not-existing/admin?hacker=sql-inject`)
 // { 
-//  route: 'notFound', 
+//  name: 'notFound', 
 //  params: {}, 
 //  query: {}
 // }

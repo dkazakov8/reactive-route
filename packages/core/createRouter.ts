@@ -5,6 +5,7 @@ import {
   TypeRouteConfig,
   TypeRoutePayload,
   TypeRouter,
+  TypeRouteState,
   TypeRoutesDefault,
 } from './types';
 
@@ -241,10 +242,10 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
         await beforeLeave?.(lifecycleConfig);
 
-        const redirectRoutePayload: TypeRoutePayload<TRoutes, keyof TRoutes> | undefined =
+        const redirectPayload: TypeRoutePayload<TRoutes, keyof TRoutes> | undefined =
           await beforeEnter?.(lifecycleConfig);
 
-        if (redirectRoutePayload) return this.redirect(redirectRoutePayload);
+        if (redirectPayload) return this.redirect(redirectPayload);
       } catch (error: any) {
         if (error instanceof PreventError || error instanceof RedirectError) {
           adapters.batch(() => {
@@ -268,9 +269,11 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
           this.state[nextState.name] = nextState as any;
         } else adapters.replaceObject(this.state[nextState.name]!, nextState as any);
 
-        Object.values(this.state).forEach((r) => {
-          if (r && r.name !== nextState.name) r.isActive = false;
-        });
+        const allStates: Array<TypeRouteState<any>> = Object.values(this.state);
+
+        for (const state of allStates) {
+          if (state?.name !== nextState.name) state.isActive = false;
+        }
 
         if (isClient && nextState.name !== 'internalError') {
           window.history[nextPayload.replace ? 'replaceState' : 'pushState'](

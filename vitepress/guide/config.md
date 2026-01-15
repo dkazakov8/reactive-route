@@ -245,7 +245,7 @@ function getRouter(api: Api, store: Store) {
         if (!store.isAuthenticated()) {
           // pass a Payload like in a regular route.redirect
           return redirect({
-            route: 'login',
+            name: 'login',
             query: { returnTo: 'dashboard' }
           });
         }

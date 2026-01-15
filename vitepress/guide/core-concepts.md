@@ -20,7 +20,7 @@ It usually looks like this:
   async beforeEnter({ redirect }) {
     await api.loadUser();
 
-    if (store.isAuthenticated()) return redirect({ route: 'dashboard' });
+    if (store.isAuthenticated()) return redirect({ name: 'dashboard' });
   },
   async beforeLeave({ nextRoute, preventRedirect }) {
     if (nextRoute.name === 'home') return preventRedirect();
@@ -150,7 +150,7 @@ await router.hydrateFromURL(`/user/with%20space?phone=and%26symbols`);
 // under the hood it calls router.createRoutePayload to create a Payload
 // with decoded values
 // {
-//   route: 'user', 
+//   name: 'user', 
 //   params: { id: 'with space' },
 //   query: { phone: 'and&symbols' }
 // }
