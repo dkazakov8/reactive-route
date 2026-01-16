@@ -1,12 +1,12 @@
 import { isClient, PreventError, RedirectError } from './constants';
 import {
+  TypeConfig,
   TypeGlobalArguments,
   TypeLifecycleFunction,
-  TypeRouteConfig,
-  TypeRoutePayload,
+  TypePayload,
   TypeRouter,
-  TypeRouteState,
   TypeRoutesDefault,
+  TypeState,
 } from './types';
 
 export function createRouter<TRoutes extends TypeRoutesDefault>(
@@ -19,9 +19,9 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     isRedirecting: false,
 
     historyListener() {
-      const routePayload = this.locationToPayload(`${location.pathname}${location.search}`);
+      const payload = this.locationToPayload(`${location.pathname}${location.search}`);
 
-      void this.redirect({ ...routePayload, replace: true });
+      void this.redirect({ ...payload, replace: true });
     },
     attachHistoryListener() {
       if (isClient) window.addEventListener('popstate', this.historyListener);
@@ -34,7 +34,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       return globalArguments;
     },
 
-    locationToPayload(locationInput) {
+    locationToPayload(url) {
       /**
        * This is the initial step when we only have a URL like `/path?foo=bar`
        *
@@ -44,7 +44,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
        *
        */
 
-      let [pathname = '', search = ''] = locationInput.split('?');
+      let [pathname = '', search = ''] = url.split('?');
 
       const pathnameParts: Array<string> = [];
 
@@ -67,19 +67,19 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         })
         .join('/');
 
-      let config: TypeRouteConfig | undefined;
+      let config: TypeConfig | undefined;
       const query: Record<string, string> = {};
       let params: Record<string, string> = {};
 
       for (const routeName in routes) {
         if (!routes.hasOwnProperty(routeName)) continue;
 
-        const testedRoute = routes[routeName];
-        const testedPathname = testedRoute.path.split('/').filter(Boolean).join('/');
+        const testedConfig = routes[routeName];
+        const testedPathname = testedConfig.path.split('/').filter(Boolean).join('/');
 
         // return a static match instantly, it has the top priority
         if (!testedPathname.includes(':') && testedPathname === pathname) {
-          config = testedRoute;
+          config = testedConfig;
 
           break;
         }
@@ -98,7 +98,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
           if (paramName[0] !== ':') return paramName !== paramFromUrl;
 
-          const validator = testedRoute.params?.[paramName.slice(1)];
+          const validator = testedConfig.params?.[paramName.slice(1)];
 
           if (typeof validator !== 'function') {
             throw new Error(
@@ -111,7 +111,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
         // no return instantly because next routes may have static match
         if (!validationFailed) {
-          config = testedRoute;
+          config = testedConfig;
 
           for (let i = 0; i < testedPathnameParts.length; i++) {
             const paramName = testedPathnameParts[i];
@@ -145,18 +145,17 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       return { name: config.name, query, params };
     },
 
-    payloadToState(routePayload) {
-      const config = routes[routePayload.name];
-
+    payloadToState(payload) {
+      const config = routes[payload.name];
       const params: Record<string, string> = {};
       const query: Record<string, string> = {};
 
       // fill the route path with passed params
       // and fill params with relevant values (omitting not required in a path)
       const pathname =
-        'params' in routePayload
+        'params' in payload
           ? config.path.replace(/:([^/]+)/g, (_, pathPart: string) => {
-              const value = routePayload.params[pathPart];
+              const value = payload.params[pathPart];
 
               if (!value)
                 throw new Error(
@@ -169,11 +168,11 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
             })
           : config.path;
 
-      if (config.query && 'query' in routePayload && routePayload.query) {
+      if (config.query && 'query' in payload && payload.query) {
         for (const key in config.query) {
           if (!config.query.hasOwnProperty(key)) continue;
 
-          const value = routePayload.query[key];
+          const value = payload.query[key];
           const validator = config.query[key];
 
           if (typeof validator === 'function' && typeof value === 'string' && validator(value)) {
@@ -187,13 +186,15 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
       return {
         name: config.name,
-        props: config.props,
-        isActive: true,
-        url,
         query: query as any,
         params: params as any,
+
+        url,
         search,
         pathname,
+
+        props: config.props,
+        isActive: true,
       };
     },
 
@@ -228,7 +229,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         const lifecycleConfig: Parameters<TypeLifecycleFunction>[0] = {
           nextState: nextState,
           currentState: currentState,
-          redirect: ((redirectPayload: TypeRoutePayload<TRoutes, keyof TRoutes>) => {
+          redirect: ((redirectPayload: TypePayload<TRoutes, keyof TRoutes>) => {
             if (isClient) return redirectPayload;
 
             const redirectRouteState = this.payloadToState(redirectPayload);
@@ -242,7 +243,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
         await beforeLeave?.(lifecycleConfig);
 
-        const redirectPayload: TypeRoutePayload<TRoutes, keyof TRoutes> | undefined =
+        const redirectPayload: TypePayload<TRoutes, keyof TRoutes> | undefined =
           await beforeEnter?.(lifecycleConfig);
 
         if (redirectPayload) return this.redirect(redirectPayload);
@@ -269,7 +270,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
           this.state[nextState.name] = nextState as any;
         } else adapters.replaceObject(this.state[nextState.name]!, nextState as any);
 
-        const allStates: Array<TypeRouteState<any>> = Object.values(this.state);
+        const allStates: Array<TypeState<any>> = Object.values(this.state);
 
         for (const state of allStates) {
           if (state?.name !== nextState.name) state.isActive = false;
@@ -308,9 +309,9 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       return this.redirect(this.locationToPayload(locationInput));
     },
 
-    async hydrateFromState(routerState) {
+    async hydrateFromState(routerData) {
       adapters.batch(() => {
-        Object.assign(this.state, routerState.state);
+        Object.assign(this.state, routerData.state);
       });
 
       const activeRoute = this.getActiveState();

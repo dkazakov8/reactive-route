@@ -5,10 +5,10 @@ export { handleComponentRerender } from './handleComponentRerender';
 export type {
   PropsRouter,
   TypeAdapters,
-  TypeRouteConfig,
-  TypeRoutePayload,
+  TypeConfig,
+  TypePayload,
   TypeRouter,
   TypeRouterLocalObservable,
-  TypeRouteState,
   TypeRoutesDefault,
+  TypeState,
 } from './types';

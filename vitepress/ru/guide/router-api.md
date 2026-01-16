@@ -28,9 +28,9 @@ ReturnType<typeof createRoutes>
 
 ```ts
 (params: {
-  prevState?: TypeRouteState;
+  prevState?: TypeState;
   prevConfig?: TypeRouteConfig;
-  currentState: TypeRouteState;
+  currentState: TypeState;
   currentConfig: TypeRouteConfig;
 }) => void
 ```
@@ -68,7 +68,7 @@ createRoutes({
 Выполняет навигацию к указанному `Payload` и возвращает `url` из вновь созданного `State`:
 
 ```typescript
-const clearedURL = await router.redirect(<!-- @include: ../../snippets/payload.md -->)
+const clearedURL = await router.redirect(<!-- @include: @/snippets/payload.md -->)
 // был создан router.state.user и возвращен его url
 // clearedURL === '/user/9999?phone=123456'
 ```
@@ -107,7 +107,7 @@ redirect({ name: 'user', params: { id: '123' }, query: { a: 'b' } });
 
 ```ts
 router.locationToPayload(`/user/9999?phone=123456&gtm=value`)
-<!-- @include: ../../snippets/payload-commented.md -->
+<!-- @include: @/snippets/payload-commented.md -->
 
 router.locationToPayload(`/not-existing/admin?hacker=sql-inject`)
 // { 
@@ -122,8 +122,8 @@ router.locationToPayload(`/not-existing/admin?hacker=sql-inject`)
 Принимает `Payload` и возвращает `State`. Она отлично типизирована в TS, так же как и `router.redirect`.
 
 ```ts
-router.payloadToState(<!-- @include: ../../snippets/payload.md -->)
-<!-- @include: ../../snippets/state-commented.md -->
+router.payloadToState(<!-- @include: @/snippets/payload.md -->)
+<!-- @include: @/snippets/state-commented.md -->
 ```
 
 
@@ -159,7 +159,7 @@ if (req.originalUrl !== clearedURL) res.redirect(clearedURL)
 const stateFromServer = window.__ROUTER_STATE__;
 
 // то, что ожидается от сервера:
-stateFromServer.user = <!-- @include: ../../snippets/state.md -->
+stateFromServer.user = <!-- @include: @/snippets/state.md -->
 
 await router.hydrateFromState({ state: stateFromServer })
 ```
@@ -172,7 +172,7 @@ await router.hydrateFromState({ state: stateFromServer })
 
 ```ts
 console.log(router.state.user)
-<!-- @include: ../../snippets/state-commented.md -->
+<!-- @include: @/snippets/state-commented.md -->
 ```
 
 Предназначен для отображения значений в UI или для написания логики в autoruns/effects. Когда вы переходите на тот же маршрут с другими параметрами (params или query), обновляются только значения в `router.state.user`, и компонент страницы не перерендеривается.

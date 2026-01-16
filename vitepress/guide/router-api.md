@@ -28,9 +28,9 @@ ReturnType<typeof createRoutes>
 
 ```ts
 (params: {
-  prevState?: TypeRouteState;
+  prevState?: TypeState;
   prevConfig?: TypeRouteConfig;
-  currentState: TypeRouteState;
+  currentState: TypeState;
   currentConfig: TypeRouteConfig;
 }) => void
 ```
@@ -68,7 +68,7 @@ createRoutes({
 Navigates to a specified `Payload` and returns a `url` from a newly created `State`:
 
 ```typescript
-const clearedURL = await router.redirect(<!-- @include: ../../snippets/payload.md -->)
+const clearedURL = await router.redirect(<!-- @include: @/snippets/payload.md -->)
 // router.state.user was created and returned it's url
 // clearedURL === '/user/9999?phone=123456'
 
@@ -110,7 +110,7 @@ Note that all irrelevant or invalid query parameters are stripped off.
 
 ```ts
 router.locationToPayload(`/user/9999?phone=123456&gtm=value`)
-<!-- @include: ../../snippets/payload-commented.md -->
+<!-- @include: @/snippets/payload-commented.md -->
 
 router.locationToPayload(`/not-existing/admin?hacker=sql-inject`)
 // { 
@@ -125,8 +125,8 @@ router.locationToPayload(`/not-existing/admin?hacker=sql-inject`)
 Accepts a `Payload` and returns a `State`. It is perfectly TS-typed just like `router.redirect`.
 
 ```ts
-router.payloadToState(<!-- @include: ../../snippets/payload.md -->)
-<!-- @include: ../../snippets/state-commented.md -->
+router.payloadToState(<!-- @include: @/snippets/payload.md -->)
+<!-- @include: @/snippets/state-commented.md -->
 ```
 
 
@@ -162,7 +162,7 @@ Accepts a `router.state` from an object and makes all the necessary preparations
 const stateFromServer = window.__ROUTER_STATE__;
 
 // what is expected from the server
-stateFromServer.user = <!-- @include: ../../snippets/state.md -->
+stateFromServer.user = <!-- @include: @/snippets/state.md -->
 
 await router.hydrateFromState({ state: stateFromServer })
 ```
@@ -176,7 +176,7 @@ A **reactive** object with route names as keys and `State` as values, for exampl
 
 ```ts
 console.log(router.state.user)
-<!-- @include: ../../snippets/state-commented.md -->
+<!-- @include: @/snippets/state-commented.md -->
 ```
 
 Is intended to be used to show some values in UI or for writing logic in autoruns/effects. When

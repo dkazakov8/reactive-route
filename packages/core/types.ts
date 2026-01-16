@@ -1,10 +1,13 @@
-type TypeExtractRouteParams<T extends string> = string extends T
+type TypeExtractParams<T extends string> = string extends T
   ? Record<string, string>
   : T extends `${string}:${infer Param}/${infer Rest}`
-    ? { [K in Param | keyof TypeExtractRouteParams<`/${Rest}`>]: string }
+    ? { [K in Param | keyof TypeExtractParams<`/${Rest}`>]: string }
     : T extends `${string}:${infer Param}`
       ? { [K in Param]: string }
       : never;
+
+export type TypeURL = string;
+export type TypeValidator = (param: string) => boolean;
 
 // #region type-adapters
 export type TypeAdapters = {
@@ -16,7 +19,7 @@ export type TypeAdapters = {
 };
 // #endregion type-adapters
 
-export type TypeRoutePayloadDefault = {
+export type TypePayloadDefault = {
   name: string;
   params?: Record<string, string>;
   query?: Record<string, string>;
@@ -24,13 +27,13 @@ export type TypeRoutePayloadDefault = {
 };
 
 export type TypeLifecycleFunction = (lifecycleConfig: {
-  nextState: TypeRouteState<TypeRouteConfig>;
-  currentState?: TypeRouteState<TypeRouteConfig>;
-  redirect: (routePayload: TypeRoutePayloadDefault) => void;
+  nextState: TypeState<TypeConfig>;
+  currentState?: TypeState<TypeConfig>;
+  redirect: (payload: TypePayloadDefault) => void;
   preventRedirect: () => void;
 }) => Promise<any>;
 
-export type TypeRouteConfigInput<TPath extends string> = {
+export type TypeConfigConfigurable<TPath extends string> = {
   path: TPath;
   loader: () => Promise<{ default: any }>;
 
@@ -38,11 +41,11 @@ export type TypeRouteConfigInput<TPath extends string> = {
   query?: Record<string, TypeValidator>;
   beforeEnter?: TypeLifecycleFunction;
   beforeLeave?: TypeLifecycleFunction;
-} & (TypeExtractRouteParams<TPath> extends never
+} & (TypeExtractParams<TPath> extends never
   ? { params?: never }
-  : { params: { [K in keyof TypeExtractRouteParams<TPath>]: TypeValidator } });
+  : { params: { [K in keyof TypeExtractParams<TPath>]: TypeValidator } });
 
-export type TypeRouteConfig = {
+export type TypeConfig = {
   path: string;
   name: string;
   loader: () => Promise<{ default: any }>;
@@ -56,18 +59,18 @@ export type TypeRouteConfig = {
   otherExports?: Record<string, any>;
 };
 
-export type TypeRouteState<TRoute extends TypeRouteConfig> = {
+export type TypeState<TRoute extends TypeConfig> = {
   name: TRoute['name'];
   props: TRoute['props'];
   query: Partial<Record<keyof TRoute['query'], string>>;
   params: Record<keyof TRoute['params'], string>;
-  url: string;
+  url: TypeURL;
   search: string;
   pathname: string;
   isActive: boolean;
 };
 
-export type TypeRoutesDefault = Record<'notFound' | 'internalError' | string, TypeRouteConfig>;
+export type TypeRoutesDefault = Record<'notFound' | 'internalError' | string, TypeConfig>;
 
 export type PropsRouter<TRoutes extends TypeRoutesDefault> = {
   router: TypeRouter<TRoutes>;
@@ -78,7 +81,7 @@ export type TypeRouterLocalObservable = {
   currentProps: Record<string, any>;
 };
 
-export type TypeRoutePayload<
+export type TypePayload<
   TRoutes extends TypeRoutesDefault,
   TRouteName extends keyof TRoutes,
 > = TRoutes[TRouteName]['params'] extends Record<string, TypeValidator>
@@ -106,18 +109,16 @@ export type TypeGlobalArguments<TRoutes extends TypeRoutesDefault> = {
   adapters: TypeAdapters;
   routes: TRoutes;
   beforeComponentChange?: (params: {
-    prevState?: TypeRouteState<TypeRouteConfig>;
+    prevState?: TypeState<TypeConfig>;
     prevConfig?: TRoutes[keyof TRoutes];
-    currentState: TypeRouteState<TypeRouteConfig>;
+    currentState: TypeState<TypeConfig>;
     currentConfig: TRoutes[keyof TRoutes];
   }) => void;
 };
 
 export type TypeRouter<TRoutes extends TypeRoutesDefault> = {
   state: {
-    [TRouteName in keyof TRoutes | 'notFound' | 'internalError']?: TypeRouteState<
-      TRoutes[TRouteName]
-    >;
+    [TRouteName in keyof TRoutes | 'notFound' | 'internalError']?: TypeState<TRoutes[TRouteName]>;
   };
   isRedirecting: boolean;
 
@@ -129,23 +130,21 @@ export type TypeRouter<TRoutes extends TypeRoutesDefault> = {
   attachHistoryListener(): void;
   destroyHistoryListener(): void;
 
-  locationToPayload(locationInput: string): TypeRoutePayload<TRoutes, keyof TRoutes>;
+  locationToPayload(url: TypeURL): TypePayload<TRoutes, keyof TRoutes>;
 
   payloadToState<TRouteName extends keyof TRoutes>(
-    routePayload: TypeRoutePayload<TRoutes, TRouteName>
-  ): TypeRouteState<TRoutes[TRouteName]>;
+    payload: TypePayload<TRoutes, TRouteName>
+  ): TypeState<TRoutes[TRouteName]>;
 
   redirect<TRouteName extends keyof TRoutes>(
-    routePayload: TypeRoutePayload<TRoutes, TRouteName>
-  ): Promise<string>;
+    payload: TypePayload<TRoutes, TRouteName>
+  ): Promise<TypeURL>;
 
-  getActiveState(): TypeRouteState<TRoutes[keyof TRoutes]> | undefined;
+  getActiveState(): TypeState<TRoutes[keyof TRoutes]> | undefined;
 
-  hydrateFromURL(locationInput: string): Promise<string>;
+  hydrateFromURL(url: TypeURL): Promise<TypeURL>;
 
   hydrateFromState(routerState: Partial<Pick<TypeRouter<TRoutes>, 'state'>>): Promise<void>;
 
-  preloadComponent(routeName: keyof TRoutes): Promise<void>;
+  preloadComponent(name: keyof TRoutes): Promise<void>;
 };
-
-export type TypeValidator = (param: string) => boolean;

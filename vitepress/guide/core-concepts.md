@@ -19,7 +19,7 @@ Is an object containing all the relevant information to detect a `Config`
 and fill it with values. It usually looks like this:
 
 ```ts
-<!-- @include: ../../snippets/payload.md -->
+<!-- @include: @/snippets/payload.md -->
 ```
 
 It can be created from a string with [router.locationToPayload](/guide/router-api#router-locationtopayload), 
@@ -27,7 +27,7 @@ but usually you will pass it manually to the [router.redirect](/guide/router-api
 function imperatively:
 
 ```tsx
-button.onclick = () => router.redirect(<!-- @include: ../../snippets/payload.md -->)
+button.onclick = () => router.redirect(<!-- @include: @/snippets/payload.md -->)
 ```
 
 ## State
@@ -35,80 +35,12 @@ button.onclick = () => router.redirect(<!-- @include: ../../snippets/payload.md 
 Is an object containing additional information compared to `Payload`.
 
 ```ts
-<!-- @include: ../../snippets/state.md -->
+<!-- @include: @/snippets/state.md -->
 ```
 
 It is kept in `router.state` in a **reactive** way and can be accessed from any UI component like this:
 
-::: code-group
-```tsx [React]
-// pages/user/index.tsx
-import { useContext } from 'react';
-import { RouterContext } from '../../../router';
-
-export default function PageUser() {
-  const { router } = useContext(RouterContext);
-
-  const routeState = router.state.user!;
-  
-  return (
-    <>
-      ID: {routeState.params.id}
-      Phone: {routeState.query.phone}
-    </>
-  )
-}
-```
-```tsx [Preact]
-// pages/user/index.tsx
-import { useContext } from 'preact';
-import { RouterContext } from '../../../router';
-
-export default function PageUser() {
-  const { router } = useContext(RouterContext);
-
-  const routeState = router.state.user!;
-
-  return (
-    <>
-      ID: {routeState.params.id}
-      Phone: {routeState.query.phone}
-    </>
-  )
-}
-```
-```tsx [Solid]
-// pages/user/index.tsx
-import { useContext } from 'solid-js';
-import { RouterContext } from '../../../router';
-
-export default function PageUser() {
-  const { router } = useContext(RouterContext);
-
-  return (
-    <>
-      ID: {router.state.user!.params.id}
-      Phone: {router.state.user!.query.phone}
-    </>
-  )
-}
-```
-```vue [Vue]
-// pages/user/User.vue
-<script lang="ts" setup>
-  import { useRouterStore } from '../../../router';
-
-  const { router } = useRouterStore();
-
-  const routeState = router.state.user!;
-</script>
-
-<template>
-  ID: {routeState.params.id}
-  Phone: {routeState.query.phone}
-</template>
-```
-:::
+<!-- @include: @/snippets/core-concepts/state-in-components.md -->
 
 Do not worry about the "non-null assertion" operator `!` - the relevant route's state will 
 definitely exist if only one route uses this page component. Otherwise, choose the relevant one

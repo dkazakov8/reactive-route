@@ -11,7 +11,7 @@ use SSR, you already have them - for example, from `lodash`.
 import { renderToString } from 'react-dom/server';
 import { getRouter, RouterContext } from 'router';
 
-<!-- @include: ../../snippets/ssr.md -->
+<!-- @include: @/snippets/ssr.md -->
 
   const htmlMarkup = renderToString(
     <RouterContext.Provider value={{ router }}>
@@ -34,7 +34,7 @@ import { getRouter, RouterContext } from 'router';
 import { renderToString } from 'preact-render-to-string';
 import { getRouter, RouterContext } from 'router';
 
-<!-- @include: ../../snippets/ssr.md -->
+<!-- @include: @/snippets/ssr.md -->
 
   const htmlMarkup = renderToString(
     <RouterContext.Provider value={{ router }}>
@@ -57,7 +57,7 @@ import { getRouter, RouterContext } from 'router';
 import { generateHydrationScript, renderToString } from 'solid-js/web';
 import { getRouter, RouterContext } from 'router';
 
-<!-- @include: ../../snippets/ssr.md -->
+<!-- @include: @/snippets/ssr.md -->
 
   const htmlMarkup = renderToString(() => (
     <RouterContext.Provider value={{ router }}>
@@ -82,7 +82,7 @@ import { createSSRApp } from 'vue';
 import { renderToString } from 'vue/server-renderer';
 import { getRouter, routerStoreKey } from './router';
 
-<!-- @include: ../../snippets/ssr.md -->
+<!-- @include: @/snippets/ssr.md -->
 
   const htmlMarkup = await renderToString(
     createSSRApp(App, { router }).provide(routerStoreKey, { router })

@@ -1,6 +1,6 @@
-# Конфигурация (Config)
+# Config
 
-Основная идея изложена в разделе [Основные концепции](/ru/guide/core-concepts).
+Общее назначение изложено в разделе [Основные структуры](/ru/guide/core-concepts).
 
 ## Настраиваемые свойства
 
@@ -22,13 +22,13 @@ string
 
 ```ts
 () => Promise<{
-  default,
+  default: PageComponent,
   ...otherExports
 }>
 ```
 
 </td>
-<td>Функция, возвращающая Promise, который разрешается в компонент (он должен быть в экспорте <strong>default</strong>)</td>
+<td>Функция, возвращающая Promise с компонентом в параметре <strong>default</strong></td>
 </tr><tr>
 <td><code>props?</code></td>
 <td class="table-td">
@@ -38,20 +38,20 @@ Record<string, any>
 ```
 
 </td>
-<td>Статические пропсы для передачи в компонент</td>
+<td>Статичные props, передаваемые в компонент страницы</td>
 </tr><tr>
 <td><code>params?</code></td>
 <td class="table-td">
 
 ```ts
 Record<
-  TypeExtractRouteParams<TPath>,
+  TypeExtractParams<TPath>,
   (value: string) => boolean
 >
 ```
 
 </td>
-<td>Функции валидации для сегментов пути (обязательны, когда вариант маршрута — <em>Dynamic</em>, и ограничены, когда <em>Static</em>)</td>
+<td>Валидаторы для динамических сегментов path</td>
 </tr><tr>
 <td><code>query?</code></td>
 <td class="table-td">
@@ -64,36 +64,35 @@ Record<
 ```
 
 </td>
-<td>Функции валидации для параметров запроса (query parameters)</td>
+<td>Валидаторы для query параметров</td>
 </tr><tr>
 <td><code>beforeEnter?</code></td>
 <td class="table-td">
 
 ```ts
-(lifecycleConfig: TypeLifecycleConfig) => 
+(data: TypeLifecycleConfig) => 
   Promise<void>
 ```
 
 </td>
-<td>Функция жизненного цикла, вызываемая перед входом на маршрут</td>
+<td>Функция жизненного цикла, вызываемая перед редиректом на страницу</td>
 </tr><tr>
 <td><code>beforeLeave?</code></td>
 <td class="table-td">
 
 ```ts
-(lifecycleConfig: TypeLifecycleConfig) => 
+(data: TypeLifecycleConfig) => 
   Promise<void>
 ```
 
 </td>
-<td>Функция жизненного цикла, вызываемая перед уходом с маршрута</td>
+<td>Функция жизненного цикла, вызываемая перед уходом со страницы</td>
   </tr></tbody>
 </table>
 
-
 ## Внутренние свойства
 
-Эти аргументы автоматически добавляются библиотекой и не могут быть указаны вручную.
+Автоматически добавляются библиотекой и не могут быть указаны вручную.
 
 <table>
   <thead><tr><th>Свойство</th><th>Тип</th><th>Описание</th></tr></thead>
@@ -116,7 +115,7 @@ any
 ```
 
 </td>
-<td>Это экспорт <code>default</code>, возвращаемый функцией <code>loader</code></td>
+<td>Поле <code>default</code>, возвращенное <code>loader</code></td>
 </tr><tr>
 <td><code>otherExports?</code></td>
 <td class="table-td">
@@ -126,57 +125,53 @@ Record<string, any>
 ```
 
 </td>
-<td>Это все экспорты, возвращаемые функцией <code>loader</code>, кроме <code>default</code></td>
+<td>Все экспорты, возвращенные <code>loader</code>, кроме <code>default</code></td>
   </tr></tbody>
 </table>
 
-## Статические / Динамические (Static / Dynamic)
+## Static / Dynamic
 
-Существует всего два варианта — `Static` и `Dynamic`.
-Динамические маршруты имеют параметры в своих путях, которые обозначаются префиксом в виде двоеточия:
+Существует всего два варианта `Config` - `Static` и `Dynamic` (имеют части в `path` с префиксом в виде двоеточия):
 
-```typescript
-home: { // Static (Статический)
-  path: '/',
-  loader: () => import('./pages/home')
-},
-user: { // Dynamic (Динамический)
-  path: '/user/:id', 
-  params: {
-    id: (value) => /^\d+$/.test(value) // Функция валидации
-  },
-  loader: () => import('./pages/user')
-}
-```
+<!-- @include: @/snippets/config/static-dynamic.md -->
 
-Функция валидации обязательна, и если она не будет удовлетворена в каком-либо маршруте, пользователь будет перенаправлен на маршрут `notFound`.
-Если компонент страницы отрендерен, вы можете быть уверены, что все параметры проверены и присутствуют в `router.state[routeName].params`.
+Валидаторы для динамических частей `path` обязательны, TS автоматически их извлекает из строки и подсказывает,
+как описать в `params`.
 
-## Параметры запроса (Query)
+Если какой-либо валидатор вернул `false` (в данном примере — если id в URL не числовой `/user/not-numeric`)
+и не найдено других подходящих `Config`, пользователь будет перенаправлен на `notFound`.
 
-Оба типа маршрутов могут иметь параметры запроса:
+Если компонент страницы отрендерен, вы можете быть уверены, что все параметры 
+провалидированы и находятся в `router.state[name].params`.
 
-```typescript
-search: {
-  path: '/search',
-  query: {
-    text: (value) => value.length > 1
-  },
-  loader: () => import('./pages/search')
-}
-```
+## Query
 
-Функция валидации обязательна, и если она не будет удовлетворена, параметр будет недоступен из `State`. Это означает, что все параметры запроса необязательны и могут иметь значение `undefined` в `router.state[routeName].query`.
+Оба варианта `Config` могут иметь query параметры:
+
+<!-- @include: @/snippets/config/query.md -->
+
+Если валидатор вернет `false`, данный параметр будет `undefined` в `router.state[name].query`. Таким образом, все
+query параметры являются необязательными, и их отсутствие не приводит к редиректу на `notFound`.
+
+Если логика приложения требует, чтобы не только динамические части `path` были обязательными, но и
+определенные query параметры, то можно их проверять в `beforeEnter` и редиректить императивно на `notFound`
+или другой подходящий `Config`.
 
 ## Функции жизненного цикла
 
-Существуют две мощные функции жизненного цикла, которые позволяют вам контролировать поток навигации и выполнять загрузку данных.
+> [!IMPORTANT]
+> Функции жизненного цикла вызываются при редиректе на новый `Config` или изменении динамических
+> параметров в текущем. При изменении query в рамках текущего `Config` они вызваны не будут!
+> 
+> Таким образом, в настоящее время не поддерживается схема загрузки данных роутером, основываясь на query.
+> Если такой механизм нужен — загружайте данные, реагируя на изменение `router.state[name].query`.
 
-`beforeEnter` вызывается перед входом на маршрут. Ее можно использовать для перенаправления на другой маршрут, выполнения проверок аутентификации и загрузки данных.
+async `beforeEnter` вызывается перед редиректом на страницу. Ее можно использовать для 
+перенаправления на другой `Config`, выполнения проверок аутентификации и загрузки данных.
 
-`beforeLeave` вызывается перед уходом с маршрута. Ее можно использовать для предотвращения навигации или показа диалогового окна подтверждения.
+async `beforeLeave` вызывается перед уходом со страницы. Ее можно использовать для прерывания редиректа.
 
-Обе функции получают первым аргументом объект API:
+В обе функции первым аргументом передается объект со свойствами:
 
 <table>
   <thead><tr><th>Свойство</th><th>Тип</th><th>Описание</th></tr></thead>
@@ -185,21 +180,21 @@ search: {
 <td class="table-td">
 
 ```ts
-TypeRouteState
+TypeState
 ```
 
 </td>
-<td>Куда роутер перенаправляет пользователя</td>
+<td>Следующий предполагаемый <code>State</code></td>
 </tr><tr>
 <td><code>currentState?</code></td>
 <td class="table-td">
 
 ```ts
-TypeRouteState
+TypeState
 ```
 
 </td>
-<td>Текущее состояние маршрута (имеет значение <code>undefined</code> до первого редиректа)</td>
+<td>Текущий активный <code>State</code> (<code>undefined</code> при самом первом редиректе)</td>
 </tr><tr>
 </tr><tr>
 <td><code>preventRedirect</code></td>
@@ -210,7 +205,7 @@ TypeRouteState
 ```
 
 </td>
-<td>Метод для остановки процесса перенаправления</td>
+<td>Метод для остановки редиректа</td>
 </tr><tr>
 <td><code>redirect</code></td>
 <td class="table-td">
@@ -221,55 +216,19 @@ TypeRouteState
 ```
 
 </td>
-<td>Метод для перенаправления внутри жизненного цикла. Мы не можем использовать здесь <code>router.redirect</code>, так как маршруты определяются до роутера</td>
+<td>Метод для редиректа внутри жизненного цикла. Так как <code>createRoutes</code> вызывается до создания роутера, здесь не получится использовать <code>router.redirect</code></td>
   </tr></tbody>
 </table>
 
-Простой пример:
+Пример использования:
 
-```typescript
-// для поддержки SSR аргументы должны передаваться здесь
-function getRouter(api: Api, store: Store) {
-  const routes = createRoutes({
-    dashboard: {
-      path: '/dashboard',
-      loader: () => import('./pages/dashboard'),
-      async beforeEnter({ redirect }) {
-        await api.loadUser();
+<!-- @include: @/snippets/config/lifecycle.md -->
 
-        if (!store.isAuthenticated()) {
-          // передаем Payload как в обычном роутере.redirect
-          return redirect({
-            name: 'login',
-            query: { returnTo: 'dashboard' }
-          });
-        }
+Всегда используйте `return` с `redirect` и `preventRedirect` для стабильной логики редиректов.
 
-        await api.loadDashboard();
-      },
-      async beforeLeave({ preventRedirect, nextState }) {
-        const hasUnsavedChanges = await api.checkForm();
+> [!WARNING]
+> `redirect` в жизненном цикле не имеет полной TS-типизации, поэтому при рефакторинге
+TS не выведет ошибок. Используйте с осторожностью.
 
-        if (hasUnsavedChanges) {
-          const confirmed = window.confirm(
-            `У вас есть несохраненные изменения. Вы уверены, что хотите уйти?`
-          );
-
-          if (!confirmed) return preventRedirect();
-        }
-
-        if (nextState.name === 'user') return preventRedirect();
-      },
-    }
-    
-    // другие конфигурации маршрутов
-  });
-}
-```
-
-Всегда не забывайте использовать `return` вместе с `redirect` и `preventRedirect` для обеспечения правильного контроля потока.
-И будьте осторожны с функцией `redirect` в жизненном цикле — у нее нет детальных типов TS, чтобы избежать циклической зависимости. Таким образом, если вы проведете рефакторинг своих маршрутов, ошибки TS здесь не будут показаны, что может привести к неправильным редиректам.
-
-Необработанные ошибки в функциях жизненного цикла приведут к рендерингу маршрута `internalError`, поэтому важно правильно обрабатывать ошибки, используя блоки `try-catch` или методы `Promise.catch()`.
-
-Обратите внимание, что `beforeEnter` вызывается при изменении динамических параметров, но не вызывается при изменении параметров запроса (query). Это поведение может стать настраиваемым в будущих версиях.
+Необработанные ошибки в функциях жизненного цикла приведут к рендерингу `internalError`, 
+поэтому важно правильно обрабатывать логику, используя `try-catch` или `Promise.catch()`.

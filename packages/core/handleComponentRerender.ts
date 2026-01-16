@@ -1,4 +1,4 @@
-import { PropsRouter, TypeRouteConfig, TypeRouterLocalObservable } from './types';
+import { PropsRouter, TypeConfig, TypeRouterLocalObservable } from './types';
 
 export function handleComponentRerender(
   props: PropsRouter<any>,
@@ -17,8 +17,8 @@ export function handleComponentRerender(
   // changed. No need to call router lifecycle or update props
   if (!currentState || localObservable.renderedRouteName === currentState.name) return;
 
-  const currentConfig: TypeRouteConfig = routes[currentState.name];
-  const prevConfig: TypeRouteConfig | undefined = routes[localObservable.renderedRouteName];
+  const currentConfig: TypeConfig = routes[currentState.name];
+  const prevConfig: TypeConfig | undefined = routes[localObservable.renderedRouteName];
   const prevState = props.router.state[localObservable.renderedRouteName];
 
   adapters.batch(() => {

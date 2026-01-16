@@ -189,7 +189,7 @@ Both have a first argument with API:
 <td class="table-td">
 
 ```ts
-TypeRouteState
+TypeState
 ```
 
 </td>
@@ -199,7 +199,7 @@ TypeRouteState
 <td class="table-td">
 
 ```ts
-TypeRouteState
+TypeState
 ```
 
 </td>
@@ -232,45 +232,7 @@ because routes are defined before the router</td>
 
 Here is a simple demonstration:
 
-```typescript
-// to support SSR the arguments should be passed here
-function getRouter(api: Api, store: Store) {
-  const routes = createRoutes({
-    dashboard: {
-      path: '/dashboard',
-      loader: () => import('./pages/dashboard'),
-      async beforeEnter({ redirect }) {
-        await api.loadUser();
-
-        if (!store.isAuthenticated()) {
-          // pass a Payload like in a regular route.redirect
-          return redirect({
-            name: 'login',
-            query: { returnTo: 'dashboard' }
-          });
-        }
-
-        await api.loadDashboard();
-      },
-      async beforeLeave({ preventRedirect, nextState }) {
-        const hasUnsavedChanges = await api.checkForm();
-
-        if (hasUnsavedChanges) {
-          const confirmed = window.confirm(
-            `You have unsaved changes. Are you sure you want to leave?`
-          );
-
-          if (!confirmed) return preventRedirect();
-        }
-
-        if (nextState.name === 'user') return preventRedirect();
-      },
-    }
-    
-    // other Route Configs
-  });
-}
-```
+<!-- @include: @/snippets/config/lifecycle.md -->
 
 Always remember to use `return` with `redirect` and `preventRedirect` to ensure proper flow control.
 And be careful with `redirect` function in lifecycle - it has no detailed TS types to avoid circular dependency.

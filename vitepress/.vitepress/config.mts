@@ -84,8 +84,8 @@ export default defineConfig({
             {
               text: 'API',
               items: [
-                { text: 'Конфигурация', link: '/ru/guide/config' },
-                { text: 'Состояние', link: '/ru/guide/state' },
+                { text: 'Config', link: '/ru/guide/config' },
+                { text: 'State', link: '/ru/guide/state' },
                 { text: 'Router API', link: '/ru/guide/router-api' },
                 { text: 'SSR', link: '/ru/guide/ssr' },
                 { text: 'Продвинутое использование', link: '/ru/guide/advanced' },

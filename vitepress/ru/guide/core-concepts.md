@@ -1,6 +1,6 @@
 # Основные структуры
 
-В Reactive Route их всего три - `Config`, `Payload` и `State`:
+В Reactive Route их всего три - `Config`, `Payload` и `State`.
 
 ## Config
 
@@ -21,148 +21,50 @@
 значениями:
 
 ```ts
-<!-- @include: ../../snippets/payload.md -->
+<!-- @include: @/snippets/payload.md -->
 ```
 
-Его можно создать из строки с
-помощью [router.locationToPayload](/ru/guide/router-api#router-locationtopayload), но обычно вы
-будете передавать его вручную в функцию [router.redirect](/ru/guide/router-api#router-redirect)
-императивно:
+Обычно он пишется вручную (с подсказками от TS) и передается в [router.redirect](/ru/guide/router-api#router-redirect):
 
 ```tsx
-button.onclick = () => router.redirect(<!-- @include: ../../snippets/payload.md -->)
+button.onclick = () => router.redirect(<!-- @include: @/snippets/payload.md -->)
 ```
 
-## State (Состояние)
+## State
 
-Это объект, содержащий дополнительную информацию по сравнению с `Payload`.
+Это объект, содержащий расширенную информацию по сравнению с `Payload`:
 
 ```ts
-<!-- @include: ../../snippets/state.md -->
+<!-- @include: @/snippets/state.md -->
 ```
 
-Оно хранится в `router.state` **реактивным** способом и может быть доступно из любого UI-компонента
-следующим образом:
+Его можно сконструировать вручную из `Payload` с помощью [router.payloadToState](/ru/guide/router-api#router-payloadtostate), а также
+он хранится в `router.state[name]` **реактивно** и доступен везде, где есть доступ к `router`:
 
-::: code-group
+<!-- @include: @/snippets/core-concepts/state-in-components.md -->
 
-```tsx [React]
-// pages/user/index.tsx
-import {useContext} from 'react';
-import {RouterContext} from '../../../router';
+Оператор "non-null assertion" безопасен, если только один `Config` использует `loader`, загружающий 
+этот компонент страницы. В противном случае нужно писать соответствующую логику, 
+например `routeState = router.state.userView || router.state.userEdit`.
 
-export default function PageUser() {
-  const {router} = useContext(RouterContext);
+## Декодирование
 
-  const routeState = router.state.user!;
-
-  return (
-    <>
-      ID: {routeState.params.id}
-      Phone: {routeState.query.phone}
-    </>
-  )
-}
-```
-
-```tsx [Preact]
-// pages/user/index.tsx
-import {useContext} from 'preact';
-import {RouterContext} from '../../../router';
-
-export default function PageUser() {
-  const {router} = useContext(RouterContext);
-
-  const routeState = router.state.user!;
-
-  return (
-    <>
-      ID: {routeState.params.id}
-      Phone: {routeState.query.phone}
-    </>
-  )
-}
-```
-
-```tsx [Solid]
-// pages/user/index.tsx
-import {useContext} from 'solid-js';
-import {RouterContext} from '../../../router';
-
-export default function PageUser() {
-  const {router} = useContext(RouterContext);
-
-  return (
-    <>
-      ID: {router.state.user!.params.id}
-      Phone: {router.state.user!.query.phone}
-    </>
-  )
-}
-```
-
-```vue [Vue]
-// pages/user/User.vue
-<script lang="ts" setup>
-  import {useRouterStore} from '../../../router';
-
-  const {router} = useRouterStore();
-
-  const routeState = router.state.user!;
-</script>
-
-<template>
-  ID: {routeState.params.id}
-  Phone: {routeState.query.phone}
-</template>
-```
-
-:::
-
-Не беспокойтесь об операторе "non-null assertion" `!` — состояние соответствующего маршрута точно
-будет существовать, если только один маршрут использует этот компонент страницы. В противном случае
-выберите подходящее, например `routeState = router.state.userView || router.state.userEdit`, но для
-этого есть лучшие альтернативы.
-
-Этот объект также можно сконструировать вручную из `Payload` с
-помощью [router.payloadToState](/ru/guide/router-api#router-payloadtostate).
-
-Это полезно для создания компонентов `Link`, где вы можете использовать
-`<a href={routeState.url} />` для лучшего UX и SEO или на случай, если JS отключен в браузере.
-
-## Кодирование (Encoding)
-
-В Reactive Route роутер обрабатывает процесс кодирования и декодирования следующим образом (
-представьте, что мы отключили числовую валидацию для `id`):
+Браузер работает с URL в [закодированном формате](https://developers.google.com/maps/url-encoding),
+поэтому Reactive Route имеет встроенные механизмы кодирования и декодирования.
 
 ```ts
 await router.hydrateFromURL(`/user/with%20space?phone=and%26symbols`);
+// "под капотом" вызывается router.locationToPayload для создания 
+// Payload с декодированными значениями
+<!-- @include: @/snippets/core-concepts/payload-decoded.md -->
 
-// "под капотом" вызывается router.locationToPayload для создания Payload
-// с декодированными значениями
-// {
-//   name: 'user', 
-//   params: { id: 'with space' },
-//   query: { phone: 'and&symbols' }
-// }
+// дальше происходит установка State через router.payloadToState, 
+// который создает закодированные свойства
 
-// во время редиректа вызывается router.payloadToState,
-// который кодирует параметры обратно в URL
-console.log(router.state.user)
-// {
-//   name: 'test',
-//   params: { id: 'with space' },
-//   query: { phone: 'and&symbols' },
-//
-//   pathname: '/user/with%20space',
-//   search: 'phone=and%26symbols',
-//   url: '/user/with%20space?phone=and%26symbols',
-//
-//   props: undefined,
-//   isActive: true,
-// }
+console.log(router.state.user);
+<!-- @include: @/snippets/core-concepts/state-decoded.md -->
 ```
 
-Таким образом, процесс является двусторонним. `locationToPayload` проверяет и декодирует, а
-`payloadToState` проверяет и кодирует для обеспечения безопасности, предотвращения некорректных
-значений и создания правильных URL-адресов.
+Также при двустороннем процессе кодирования и декодирования вызываются валидаторы из `Config`.
+Этот процесс обеспечивает безопасность, предотвращает передачу некорректных значений и создает 
+корректные URL.
