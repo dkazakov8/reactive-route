@@ -1,9 +1,7 @@
-import { useContext } from 'solid-js';
-
-import { RouterContext } from '../../router';
+import { useRouter } from '../../router';
 
 export default function Dynamic() {
-  const { router } = useContext(RouterContext);
+  const { router } = useRouter();
 
   return (
     <div className="page-container dynamic-page">

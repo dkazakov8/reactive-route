@@ -9,9 +9,9 @@ import { createRoutes } from '../createRoutes';
 import { TypeRouter } from '../types';
 
 function check(router: TypeRouter<any>, redirectParams: any, url?: string) {
-  const currentRoute = router.getActiveRouteState()!;
+  const currentRoute = router.getActiveState()!;
 
-  const expectedCurrentRoute = router.createRouteState({
+  const expectedCurrentRoute = router.payloadToState({
     name: redirectParams.route.name,
     query: redirectParams.query,
     params: redirectParams.params,

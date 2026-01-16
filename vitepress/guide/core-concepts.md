@@ -7,26 +7,7 @@ There are only three structures in the library - `Config`, `Payload` and `State`
 Is a configuration object you pass to the `createRoutes` function for route names.
 It usually looks like this:
 
-```tsx
-{
-  path: '/user/:id',
-  params: {
-    id: (value) => /^\d+$/.test(value)
-  },
-  query: {
-    phone: (value) => value.length < 15
-  },
-  loader: () => import('./pages/user'),
-  async beforeEnter({ redirect }) {
-    await api.loadUser();
-
-    if (store.isAuthenticated()) return redirect({ name: 'dashboard' });
-  },
-  async beforeLeave({ nextRoute, preventRedirect }) {
-    if (nextRoute.name === 'home') return preventRedirect();
-  }
-}
-```
+<!-- @include: @/snippets/core-concepts/config-example.md -->
 
 When you redirect to another route, the library executes `loader` and extends this configuration 
 with some other fields like `name`, `component` and `otherExports`, so they can be used in lifecycle
@@ -37,12 +18,12 @@ methods and for internal caching.
 Is an object containing all the relevant information to detect a `Config`
 and fill it with values. It usually looks like this:
 
-```tsx
+```ts
 <!-- @include: ../../snippets/payload.md -->
 ```
 
-It can be created from a string with [router.createRoutePayload](/en/guide/router-api#router-createroutepayload), 
-but usually you will pass it manually to the [router.redirect](/en/guide/router-api#router-redirect) 
+It can be created from a string with [router.locationToPayload](/guide/router-api#router-locationtopayload), 
+but usually you will pass it manually to the [router.redirect](/guide/router-api#router-redirect) 
 function imperatively:
 
 ```tsx
@@ -134,7 +115,7 @@ definitely exist if only one route uses this page component. Otherwise, choose t
 like `routeState = router.state.userView || router.state.userEdit`, but there are
 better alternatives to this.
 
-This object can also be constructed manually from `Payload` with [router.createRouteState](/en/guide/router-api#router-createroutestate).
+This object can also be constructed manually from `Payload` with [router.payloadToState](/guide/router-api#router-payloadtostate).
 
 That is useful for creating `Link` components where you can use `<a href={routeState.url} />` for
 better UX and SEO or when JS is disabled in browser.
@@ -147,7 +128,7 @@ In Reactive Route the router handles the process of encoding and decoding in thi
 ```ts
 await router.hydrateFromURL(`/user/with%20space?phone=and%26symbols`);
 
-// under the hood it calls router.createRoutePayload to create a Payload
+// under the hood it calls router.locationToPayload to create a Payload
 // with decoded values
 // {
 //   name: 'user', 
@@ -155,7 +136,7 @@ await router.hydrateFromURL(`/user/with%20space?phone=and%26symbols`);
 //   query: { phone: 'and&symbols' }
 // }
 
-// during redirect a router.createRouteState is called
+// during redirect a router.payloadToState is called
 // which encodes params back to URL
 console.log(router.state.user)
 // {
@@ -172,5 +153,5 @@ console.log(router.state.user)
 // }
 ```
 
-So, the process is double-sided. `createRoutePayload` validates and decodes, while `createRouteState`
+So, the process is double-sided. `locationToPayload` validates and decodes, while `payloadToState`
 validates and encodes to ensure safety, prevent malformed values and produce correct URLs.

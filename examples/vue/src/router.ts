@@ -64,4 +64,4 @@ export const routerStoreKey: InjectionKey<{
   router: Awaited<ReturnType<typeof getRouter>>;
 }> = Symbol();
 
-export const useRouterStore = () => inject(routerStoreKey)!;
+export const useRouter = () => inject(routerStoreKey)!;

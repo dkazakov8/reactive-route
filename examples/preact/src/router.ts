@@ -1,20 +1,12 @@
+import { createContext } from 'preact';
+import { useContext } from 'preact/hooks';
 import { createRouter, createRoutes } from 'reactive-route';
-import { createContext } from 'solid-js';
 
-export async function getRouter() {
-  let adapters: any;
-
-  if (REACTIVITY_SYSTEM === 'solid') {
-    adapters = await import('reactive-route/adapters/solid').then((m) => m.adapters);
-  }
-
-  if (REACTIVITY_SYSTEM === 'kr-observable') {
-    adapters = await import('reactive-route/adapters/kr-observable-solid').then((m) => m.adapters);
-  }
-
-  if (REACTIVITY_SYSTEM === 'mobx') {
-    adapters = await import('reactive-route/adapters/mobx-solid').then((m) => m.adapters);
-  }
+export async function getRouterStore() {
+  const adapters =
+    REACTIVITY_SYSTEM === 'mobx'
+      ? await import('reactive-route/adapters/mobx-preact').then((m) => m.adapters)
+      : await import('reactive-route/adapters/kr-observable-preact').then((m) => m.adapters);
 
   return createRouter({
     routes: createRoutes({
@@ -74,6 +66,10 @@ export async function getRouter() {
   });
 }
 
-export const RouterContext = createContext<{ router: Awaited<ReturnType<typeof getRouter>> }>(
+export const RouterContext = createContext<{ router: Awaited<ReturnType<typeof getRouterStore>> }>(
   undefined
 );
+
+export function useRouter() {
+  return useContext(RouterContext);
+}

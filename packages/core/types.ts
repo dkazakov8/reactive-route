@@ -129,24 +129,20 @@ export type TypeRouter<TRoutes extends TypeRoutesDefault> = {
   attachHistoryListener(): void;
   destroyHistoryListener(): void;
 
-  // (internal) takes just { pathname: location.pathname + location.search } and creates TypeRoutePayload
-  createRoutePayload(locationInput: string): TypeRoutePayload<TRoutes, keyof TRoutes>;
+  locationToPayload(locationInput: string): TypeRoutePayload<TRoutes, keyof TRoutes>;
 
-  // (public) may be used for creating Link components because it produces URL
-  createRouteState<TRouteName extends keyof TRoutes>(
+  payloadToState<TRouteName extends keyof TRoutes>(
     routePayload: TypeRoutePayload<TRoutes, TRouteName>
   ): TypeRouteState<TRoutes[TRouteName]>;
 
-  // (public) used for redirects and returns URL of the next route
   redirect<TRouteName extends keyof TRoutes>(
     routePayload: TypeRoutePayload<TRoutes, TRouteName>
   ): Promise<string>;
 
-  // (public) may be used for layouts change above the Router component
-  getActiveRouteState(): TypeRouteState<TRoutes[keyof TRoutes]> | undefined;
+  getActiveState(): TypeRouteState<TRoutes[keyof TRoutes]> | undefined;
 
-  // (public) prepares the router for work. Must be called before Router component's rendering
   hydrateFromURL(locationInput: string): Promise<string>;
+
   hydrateFromState(routerState: Partial<Pick<TypeRouter<TRoutes>, 'state'>>): Promise<void>;
 
   preloadComponent(routeName: keyof TRoutes): Promise<void>;

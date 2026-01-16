@@ -13,11 +13,11 @@ import { createRouter } from '../createRouter';
     });
 
     function check(locationInput: string, expected: any) {
-      expect(router.createRoutePayload(locationInput)).to.deep.eq(expected);
+      expect(router.locationToPayload(locationInput)).to.deep.eq(expected);
     }
 
     function checkState(routePayload: any, expected: any) {
-      expect(router.createRouteState(routePayload)).to.deep.eq(expected);
+      expect(router.payloadToState(routePayload)).to.deep.eq(expected);
     }
 
     it('Recognizes static route + prevails over dynamic routes', () => {
@@ -500,37 +500,37 @@ import { createRouter } from '../createRouter';
     });
 
     it('Throws an error when no validators', () => {
-      expect(() => router.createRoutePayload('/test2/param')).to.throw(
+      expect(() => router.locationToPayload('/test2/param')).to.throw(
         'missing validator for pathname dynamic parameter "param"'
       );
-      expect(() => router.createRoutePayload('/test2/param/')).to.throw(
+      expect(() => router.locationToPayload('/test2/param/')).to.throw(
         'missing validator for pathname dynamic parameter "param"'
       );
-      expect(() => router.createRoutePayload('test2/param')).to.throw(
+      expect(() => router.locationToPayload('test2/param')).to.throw(
         'missing validator for pathname dynamic parameter "param"'
       );
-      expect(() => router.createRoutePayload('test2/param/')).to.throw(
+      expect(() => router.locationToPayload('test2/param/')).to.throw(
         'missing validator for pathname dynamic parameter "param"'
       );
     });
 
-    it('Throws validation errors for createRouteState', () => {
+    it('Throws validation errors for payloadToState', () => {
       expect(() => {
-        router.createRouteState({
+        router.payloadToState({
           name: 'dynamicRoute',
           params: {} as any,
         });
       }).to.throw(`no dynamic parameter "static" passed for route dynamicRoute`);
 
       expect(() => {
-        router.createRouteState({
+        router.payloadToState({
           name: 'dynamicRoute',
           params: { static: '' } as any,
         });
       }).to.throw(`no dynamic parameter "static" passed for route dynamicRoute`);
 
       expect(() => {
-        router.createRouteState({
+        router.payloadToState({
           name: 'dynamicRouteMultiple',
           params: { param: 'dynamic' } as any,
         });

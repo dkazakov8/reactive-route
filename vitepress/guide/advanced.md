@@ -159,7 +159,7 @@ Reactive Route is plain, so it can't help with breadcrumbs, but for layouting th
 
 There are three major ways to work with dynamic components:
 
-1. Outside of the Router component as described in [router.getActiveRouteState](/en/guide/router-api#router-getactiveroutestate)
+1. Outside of the Router component as described in [router.getActiveState](/guide/router-api#router-getactivestate)
 
 2. Inside the page component by reacting to dynamic params
 
@@ -283,7 +283,7 @@ function PageUser() {
   
   useEffect(() => {
     const disposer = autorun(() => {
-      const activeState = router.getActiveRouteState();
+      const activeState = router.getActiveState();
       
       if (activeState?.name === 'dashboard') {
         setLayout(View)
@@ -312,7 +312,7 @@ function PageUser() {
   
   useEffect(() => {
     const disposer = autorun(() => {
-      const activeState = router.getActiveRouteState();
+      const activeState = router.getActiveState();
       
       if (activeState?.name === 'dashboard') {
         setLayout(View)
@@ -338,7 +338,7 @@ function PageUser() {
   const { router } = useContext(RouterContext);
 
   const Layout = createMemo(() => {
-    const activeState = router.getActiveRouteState();
+    const activeState = router.getActiveState();
 
     if (activeState?.name === 'dashboard') return View;
     if (activeState?.name === 'dashboardEdit') return Edit;
@@ -362,7 +362,7 @@ import { useRouterStore } from './router';
 const { router } = useRouterStore();
 
 const Layout = computed(() => {
-  const activeState = router.getActiveRouteState();
+  const activeState = router.getActiveState();
 
   if (activeState?.name === 'dashboard') return View;
   if (activeState?.name === 'dashboardEdit') return Edit;

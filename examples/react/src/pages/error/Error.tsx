@@ -1,9 +1,7 @@
-import { useContext } from 'react';
-
-import { RouterContext } from '../../router';
+import { useRouter } from '../../router';
 
 export default function Error(props: { errorCode: number }) {
-  const { router } = useContext(RouterContext);
+  const { router } = useRouter();
 
   return (
     <div className="page-container">

@@ -1,9 +1,7 @@
-import { useContext } from 'preact/hooks';
-
-import { RouterContext } from '../../router';
+import { useRouter } from '../../router';
 
 export default function Dynamic() {
-  const { router } = useContext(RouterContext);
+  const { router } = useRouter();
 
   const routeState = router.state.dynamic!;
 

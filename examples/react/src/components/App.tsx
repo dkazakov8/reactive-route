@@ -1,10 +1,9 @@
-import { useContext } from 'react';
 import { Router } from 'reactive-route/react';
 
-import { RouterContext } from '../router';
+import { useRouter } from '../router';
 
 export function App() {
-  const { router } = useContext(RouterContext);
+  const { router } = useRouter();
 
   return <Router router={router} />;
 }

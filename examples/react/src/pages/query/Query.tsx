@@ -1,9 +1,7 @@
-import { useContext } from 'react';
-
-import { RouterContext } from '../../router';
+import { useRouter } from '../../router';
 
 export default function Query() {
-  const { router } = useContext(RouterContext);
+  const { router } = useRouter();
 
   const routeState = router.state.query!;
 

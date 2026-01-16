@@ -1,5 +1,5 @@
 <script setup>
-import { data } from '../../dynamic.data'
+import { data } from '../dynamic.data'
 </script>
 
 # Why Reactive Route?
@@ -87,6 +87,6 @@ to increase compatibility.
 | **IE**      | **None**          |
 | **Node.js** | **> 10**          |                                                                                                                                            |
 
-Ready to give it a try? If you are an experienced developer, you can jump straight into the [examples](/en/examples/react)
+Ready to give it a try? If you are an experienced developer, you can jump straight into the [examples](/examples/react)
 for your favorite stack – the usage is intuitive and straightforward. Or, follow the 
-[Getting Started](/en/guide/getting-started) guide for step-by-step instructions.
+[Getting Started](/guide/getting-started) guide for step-by-step instructions.

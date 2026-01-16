@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { useRouterStore } from '../../router';
+import { useRouter } from '../../router';
 
 const props = defineProps<{ errorCode: number }>();
 
-const { router } = useRouterStore();
+const { router } = useRouter();
 </script>
 
 <template>

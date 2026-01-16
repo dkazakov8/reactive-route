@@ -1,10 +1,9 @@
 import { Router } from 'reactive-route/solid';
-import { useContext } from 'solid-js';
 
-import { RouterContext } from '../router';
+import { useRouter } from '../router';
 
 export function App() {
-  const { router } = useContext(RouterContext);
+  const { router } = useRouter();
 
   return <Router router={router} />;
 }

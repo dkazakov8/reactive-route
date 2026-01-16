@@ -1,44 +1,33 @@
-# Основные концепции
+# Основные структуры
 
-В библиотеке есть всего три основные структуры: `Config` (Конфигурация), `Payload` (Полезная нагрузка) и `State` (Состояние):
+В Reactive Route их всего три - `Config`, `Payload` и `State`:
 
-## Config (Конфигурация)
+## Config
 
-Это объект конфигурации, который вы передаете в функцию `createRoutes`.
-Обычно он выглядит так:
+Это объект, который передается в функцию `createRoutes` с определенным ключом:
 
-```tsx
-{
-  path: '/user/:id',
-  params: {
-    id: (value) => /^\d+$/.test(value)
-  },
-  query: {
-    phone: (value) => value.length < 15
-  },
-  loader: () => import('./pages/user'),
-  async beforeEnter({ redirect }) {
-    await api.loadUser();
+<!-- @include: @/snippets/core-concepts/config-example.md -->
 
-    if (store.isAuthenticated()) return redirect({ name: 'dashboard' });
-  },
-  async beforeLeave({ nextRoute, preventRedirect }) {
-    if (nextRoute.name === 'home') return preventRedirect();
-  }
-}
-```
+При инициализации роутера этот объект дополняется свойством `name: 'user'` (значение равно ключу), вручную его указывать
+не нужно. Это сделано для защиты от опечаток и синхронизации имен между всеми структурами.
 
-Когда вы переходите на другой маршрут, библиотека выполняет `loader` и дополняет эту конфигурацию другими полями, такими как `name`, `component` и `otherExports`, чтобы их можно было использовать в методах жизненного цикла и для внутреннего кэширования.
+При редиректе выполняется `loader` и дополняет этот объект еще двумя свойствами - `component` 
+(это то, что пришло в экспорте `default`) и `otherExports` (все остальные экспорты). Их можно использовать в
+[beforeComponentChange](/ru/guide/router-api.html#beforecomponentchange).
 
-## Payload (Полезная нагрузка)
+## Payload
 
-Это объект, содержащий всю необходимую информацию для определения `Config` и заполнения его значениями. Обычно он выглядит так:
+Это объект, содержащий всю необходимую информацию для определения `Config` и заполнения его
+значениями:
 
-```tsx
+```ts
 <!-- @include: ../../snippets/payload.md -->
 ```
 
-Его можно создать из строки с помощью [router.createRoutePayload](/ru/guide/router-api#router-createroutepayload), но обычно вы будете передавать его вручную в функцию [router.redirect](/ru/guide/router-api#router-redirect) императивно:
+Его можно создать из строки с
+помощью [router.locationToPayload](/ru/guide/router-api#router-locationtopayload), но обычно вы
+будете передавать его вручную в функцию [router.redirect](/ru/guide/router-api#router-redirect)
+императивно:
 
 ```tsx
 button.onclick = () => router.redirect(<!-- @include: ../../snippets/payload.md -->)
@@ -52,19 +41,21 @@ button.onclick = () => router.redirect(<!-- @include: ../../snippets/payload.md 
 <!-- @include: ../../snippets/state.md -->
 ```
 
-Оно хранится в `router.state` **реактивным** способом и может быть доступно из любого UI-компонента следующим образом:
+Оно хранится в `router.state` **реактивным** способом и может быть доступно из любого UI-компонента
+следующим образом:
 
 ::: code-group
+
 ```tsx [React]
 // pages/user/index.tsx
-import { useContext } from 'react';
-import { RouterContext } from '../../../router';
+import {useContext} from 'react';
+import {RouterContext} from '../../../router';
 
 export default function PageUser() {
-  const { router } = useContext(RouterContext);
+  const {router} = useContext(RouterContext);
 
   const routeState = router.state.user!;
-  
+
   return (
     <>
       ID: {routeState.params.id}
@@ -73,13 +64,14 @@ export default function PageUser() {
   )
 }
 ```
+
 ```tsx [Preact]
 // pages/user/index.tsx
-import { useContext } from 'preact';
-import { RouterContext } from '../../../router';
+import {useContext} from 'preact';
+import {RouterContext} from '../../../router';
 
 export default function PageUser() {
-  const { router } = useContext(RouterContext);
+  const {router} = useContext(RouterContext);
 
   const routeState = router.state.user!;
 
@@ -91,13 +83,14 @@ export default function PageUser() {
   )
 }
 ```
+
 ```tsx [Solid]
 // pages/user/index.tsx
-import { useContext } from 'solid-js';
-import { RouterContext } from '../../../router';
+import {useContext} from 'solid-js';
+import {RouterContext} from '../../../router';
 
 export default function PageUser() {
-  const { router } = useContext(RouterContext);
+  const {router} = useContext(RouterContext);
 
   return (
     <>
@@ -107,12 +100,13 @@ export default function PageUser() {
   )
 }
 ```
+
 ```vue [Vue]
 // pages/user/User.vue
 <script lang="ts" setup>
-  import { useRouterStore } from '../../../router';
+  import {useRouterStore} from '../../../router';
 
-  const { router } = useRouterStore();
+  const {router} = useRouterStore();
 
   const routeState = router.state.user!;
 </script>
@@ -122,22 +116,29 @@ export default function PageUser() {
   Phone: {routeState.query.phone}
 </template>
 ```
+
 :::
 
-Не беспокойтесь об операторе "non-null assertion" `!` — состояние соответствующего маршрута точно будет существовать, если только один маршрут использует этот компонент страницы. В противном случае выберите подходящее, например `routeState = router.state.userView || router.state.userEdit`, но для этого есть лучшие альтернативы.
+Не беспокойтесь об операторе "non-null assertion" `!` — состояние соответствующего маршрута точно
+будет существовать, если только один маршрут использует этот компонент страницы. В противном случае
+выберите подходящее, например `routeState = router.state.userView || router.state.userEdit`, но для
+этого есть лучшие альтернативы.
 
-Этот объект также можно сконструировать вручную из `Payload` с помощью [router.createRouteState](/ru/guide/router-api#router-createroutestate).
+Этот объект также можно сконструировать вручную из `Payload` с
+помощью [router.payloadToState](/ru/guide/router-api#router-payloadtostate).
 
-Это полезно для создания компонентов `Link`, где вы можете использовать `<a href={routeState.url} />` для лучшего UX и SEO или на случай, если JS отключен в браузере.
+Это полезно для создания компонентов `Link`, где вы можете использовать
+`<a href={routeState.url} />` для лучшего UX и SEO или на случай, если JS отключен в браузере.
 
 ## Кодирование (Encoding)
 
-В Reactive Route роутер обрабатывает процесс кодирования и декодирования следующим образом (представьте, что мы отключили числовую валидацию для `id`):
+В Reactive Route роутер обрабатывает процесс кодирования и декодирования следующим образом (
+представьте, что мы отключили числовую валидацию для `id`):
 
 ```ts
 await router.hydrateFromURL(`/user/with%20space?phone=and%26symbols`);
 
-// "под капотом" вызывается router.createRoutePayload для создания Payload
+// "под капотом" вызывается router.locationToPayload для создания Payload
 // с декодированными значениями
 // {
 //   name: 'user', 
@@ -145,7 +146,7 @@ await router.hydrateFromURL(`/user/with%20space?phone=and%26symbols`);
 //   query: { phone: 'and&symbols' }
 // }
 
-// во время редиректа вызывается router.createRouteState,
+// во время редиректа вызывается router.payloadToState,
 // который кодирует параметры обратно в URL
 console.log(router.state.user)
 // {
@@ -162,4 +163,6 @@ console.log(router.state.user)
 // }
 ```
 
-Таким образом, процесс является двусторонним. `createRoutePayload` проверяет и декодирует, а `createRouteState` проверяет и кодирует для обеспечения безопасности, предотвращения некорректных значений и создания правильных URL-адресов.
+Таким образом, процесс является двусторонним. `locationToPayload` проверяет и декодирует, а
+`payloadToState` проверяет и кодирует для обеспечения безопасности, предотвращения некорректных
+значений и создания правильных URL-адресов.

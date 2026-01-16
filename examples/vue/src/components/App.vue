@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { Router } from 'reactive-route/vue';
 
-import { useRouterStore } from '../router';
+import { useRouter } from '../router';
 
-const { router } = useRouterStore();
+const { router } = useRouter();
 </script>
 
 <template>

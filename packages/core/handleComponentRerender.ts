@@ -10,7 +10,7 @@ export function handleComponentRerender(
   // 1. Wait until redirect is finished
   if (props.router.isRedirecting) return;
 
-  const currentState = props.router.getActiveRouteState();
+  const currentState = props.router.getActiveState();
 
   // 2. Wait activeRouteState is present. It may not be there if the initial redirect is async
   // 3. If the cached route name is the same, that means only dynamic params or query

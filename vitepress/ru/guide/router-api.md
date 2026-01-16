@@ -99,17 +99,17 @@ redirect({ name: 'user', params: { id: '123', a: 'b' } });
 redirect({ name: 'user', params: { id: '123' }, query: { a: 'b' } });
 ```
 
-## router.createRoutePayload
+## router.locationToPayload
 
 Принимает строку pathname+search и возвращает `Payload`. Если подходящая конфигурация `Config` не найдена, будет возвращен `Payload` для `notFound` с пустыми `params` и `query`.
 
 Обратите внимание, что все нерелевантные или невалидные параметры запроса (query) отсекаются.
 
 ```ts
-router.createRoutePayload(`/user/9999?phone=123456&gtm=value`)
+router.locationToPayload(`/user/9999?phone=123456&gtm=value`)
 <!-- @include: ../../snippets/payload-commented.md -->
 
-router.createRoutePayload(`/not-existing/admin?hacker=sql-inject`)
+router.locationToPayload(`/not-existing/admin?hacker=sql-inject`)
 // { 
 //  name: 'notFound', 
 //  params: {}, 
@@ -117,19 +117,19 @@ router.createRoutePayload(`/not-existing/admin?hacker=sql-inject`)
 // }
 ```
 
-## router.createRouteState
+## router.payloadToState
 
 Принимает `Payload` и возвращает `State`. Она отлично типизирована в TS, так же как и `router.redirect`.
 
 ```ts
-router.createRouteState(<!-- @include: ../../snippets/payload.md -->)
+router.payloadToState(<!-- @include: ../../snippets/payload.md -->)
 <!-- @include: ../../snippets/state-commented.md -->
 ```
 
 
 ## router.hydrateFromURL
 
-Просто псевдоним для `router.redirect(router.createRoutePayload(locationString))`.
+Просто псевдоним для `router.redirect(router.locationToPayload(locationString))`.
 Таким образом, она принимает строку pathname+search и возвращает `url` из вновь созданного `State`.
 
 Обратите внимание, что все нерелевантные или невалидные параметры запроса (query) отсекаются.
@@ -256,7 +256,7 @@ function SomeComponent() {
 ```
 :::
 
-## router.getActiveRouteState
+## router.getActiveState
 
 Возвращает текущее состояние `State` активного маршрута, если оно есть. Может быть полезно, когда у вас есть несколько глобальных макетов (layouts) над компонентом Router.
 
@@ -268,7 +268,7 @@ import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
 function App() {
   const { router } = useContext(RouterContext);
   
-  const activeStateName = router.getActiveRouteState()?.name;
+  const activeStateName = router.getActiveState()?.name;
   
   const Layout = ['login', 'restore', 'checkSms'].includes(activeStateName) 
     ? LayoutLogin 
@@ -288,7 +288,7 @@ import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
 function App() {
   const { router } = useContext(RouterContext);
   
-  const activeStateName = router.getActiveRouteState()?.name;
+  const activeStateName = router.getActiveState()?.name;
   
   const Layout = ['login', 'restore', 'checkSms'].includes(activeStateName) 
     ? LayoutLogin 
@@ -308,7 +308,7 @@ import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
 function App() {
   const { router } = useContext(RouterContext);
 
-  const activeStateName = () => router.getActiveRouteState()?.name;
+  const activeStateName = () => router.getActiveState()?.name;
 
   return (
     <Dynamic 
@@ -332,7 +332,7 @@ function App() {
 
   const { router } = useRouterStore();
 
-  const activeStateName = computed(() => router.getActiveRouteState()?.name);
+  const activeStateName = computed(() => router.getActiveState()?.name);
   
   const Layout = computed(() => 
     ['login', 'restore', 'checkSms'].includes(activeStateName.value) 
@@ -353,7 +353,7 @@ function App() {
 
 ```ts
 // используйте аналог autorun в вашей системе реактивности
-autorun(() => console.log(JSON.stringify(router.getActiveRouteState())))
+autorun(() => console.log(JSON.stringify(router.getActiveState())))
 ```
 
 ## router.preloadComponent

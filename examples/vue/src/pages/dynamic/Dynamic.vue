@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useRouterStore } from '../../router';
+import { useRouter } from '../../router';
 
-const { router } = useRouterStore();
+const { router } = useRouter();
 
 const routeState = router.state.dynamic!;
 

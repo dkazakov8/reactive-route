@@ -19,7 +19,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     isRedirecting: false,
 
     historyListener() {
-      const routePayload = this.createRoutePayload(`${location.pathname}${location.search}`);
+      const routePayload = this.locationToPayload(`${location.pathname}${location.search}`);
 
       void this.redirect({ ...routePayload, replace: true });
     },
@@ -34,7 +34,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       return globalArguments;
     },
 
-    createRoutePayload(locationInput) {
+    locationToPayload(locationInput) {
       /**
        * This is the initial step when we only have a URL like `/path?foo=bar`
        *
@@ -145,7 +145,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       return { name: config.name, query, params };
     },
 
-    createRouteState(routePayload) {
+    payloadToState(routePayload) {
       const config = routes[routePayload.name];
 
       const params: Record<string, string> = {};
@@ -198,8 +198,8 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     },
 
     async redirect(nextPayload) {
-      const currentState = this.getActiveRouteState();
-      let nextState = this.createRouteState(nextPayload);
+      const currentState = this.getActiveState();
+      let nextState = this.payloadToState(nextPayload);
 
       const beforeLeave = currentState ? routes[currentState.name]?.beforeLeave : undefined;
       const beforeEnter = routes[nextState.name].beforeEnter;
@@ -231,7 +231,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
           redirect: ((redirectPayload: TypeRoutePayload<TRoutes, keyof TRoutes>) => {
             if (isClient) return redirectPayload;
 
-            const redirectRouteState = this.createRouteState(redirectPayload);
+            const redirectRouteState = this.payloadToState(redirectPayload);
 
             throw new RedirectError(redirectRouteState.url);
           }) as any,
@@ -259,7 +259,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
         console.error(error);
 
-        nextState = this.createRouteState({ name: 'internalError' } as any);
+        nextState = this.payloadToState({ name: 'internalError' } as any);
       }
 
       await this.preloadComponent(nextState.name);
@@ -289,7 +289,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       return nextState.url;
     },
 
-    getActiveRouteState() {
+    getActiveState() {
       return Object.values(this.state).find((currentRoute) => currentRoute?.isActive);
     },
 
@@ -305,7 +305,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     },
 
     hydrateFromURL(locationInput) {
-      return this.redirect(this.createRoutePayload(locationInput));
+      return this.redirect(this.locationToPayload(locationInput));
     },
 
     async hydrateFromState(routerState) {
@@ -313,7 +313,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         Object.assign(this.state, routerState.state);
       });
 
-      const activeRoute = this.getActiveRouteState();
+      const activeRoute = this.getActiveState();
 
       await this.preloadComponent(activeRoute!.name);
     },
@@ -326,11 +326,11 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
   router.redirect = router.redirect.bind(router);
   router.hydrateFromURL = router.hydrateFromURL.bind(router);
   router.preloadComponent = router.preloadComponent.bind(router);
-  router.createRouteState = router.createRouteState.bind(router);
+  router.payloadToState = router.payloadToState.bind(router);
   router.hydrateFromState = router.hydrateFromState.bind(router);
   router.getGlobalArguments = router.getGlobalArguments.bind(router);
-  router.createRoutePayload = router.createRoutePayload.bind(router);
-  router.getActiveRouteState = router.getActiveRouteState.bind(router);
+  router.locationToPayload = router.locationToPayload.bind(router);
+  router.getActiveState = router.getActiveState.bind(router);
 
   router.attachHistoryListener();
 

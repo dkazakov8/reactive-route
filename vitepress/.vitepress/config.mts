@@ -11,50 +11,49 @@ export default defineConfig({
     root: {
       label: 'English',
       lang: 'en',
-      link: '/en/',
       themeConfig: {
         nav: [
-          { text: 'Home', link: '/en/' },
-          { text: 'Guide', link: '/en/guide/', activeMatch: '/en/guide/' },
-          { text: 'Examples', link: '/en/examples/react', activeMatch: '/en/examples/' },
+          { text: 'Home', link: '/' },
+          { text: 'Guide', link: '/guide/', activeMatch: '/guide/' },
+          { text: 'Examples', link: '/examples/react', activeMatch: '/examples/' },
         ],
         sidebar: {
-          '/en/guide/': [
+          '/guide/': [
             {
               text: 'Introduction',
               items: [
-                { text: 'Why Reactive Route?', link: '/en/guide/' },
-                { text: 'Getting Started', link: '/en/guide/getting-started' },
-                { text: 'Core Concepts', link: '/en/guide/core-concepts' },
+                { text: 'Why Reactive Route?', link: '/guide/' },
+                { text: 'Getting Started', link: '/guide/getting-started' },
+                { text: 'Core Concepts', link: '/guide/core-concepts' },
               ],
             },
             {
               text: 'API',
               items: [
-                { text: 'Config', link: '/en/guide/config' },
-                { text: 'State', link: '/en/guide/state' },
-                { text: 'Router API', link: '/en/guide/router-api' },
-                { text: 'SSR', link: '/en/guide/ssr' },
-                { text: 'Advanced', link: '/en/guide/advanced' },
+                { text: 'Config', link: '/guide/config' },
+                { text: 'State', link: '/guide/state' },
+                { text: 'Router API', link: '/guide/router-api' },
+                { text: 'SSR', link: '/guide/ssr' },
+                { text: 'Advanced', link: '/guide/advanced' },
               ],
             },
             {
               text: 'Framework Integration',
               items: [
-                { text: 'React', link: '/en/guide/react' },
-                { text: 'Preact', link: '/en/guide/preact' },
-                { text: 'Solid.js', link: '/en/guide/solid' },
+                { text: 'React', link: '/guide/react' },
+                { text: 'Preact', link: '/guide/preact' },
+                { text: 'Solid.js', link: '/guide/solid' },
               ],
             },
           ],
-          '/en/examples/': [
+          '/examples/': [
             {
               text: 'Examples',
               items: [
-                { text: 'React', link: '/en/examples/react' },
-                { text: 'Preact', link: '/en/examples/preact' },
-                { text: 'Solid.js', link: '/en/examples/solid' },
-                { text: 'Vue', link: '/en/examples/vue' },
+                { text: 'React', link: '/examples/react' },
+                { text: 'Preact', link: '/examples/preact' },
+                { text: 'Solid.js', link: '/examples/solid' },
+                { text: 'Vue', link: '/examples/vue' },
               ],
             },
           ],
@@ -66,9 +65,10 @@ export default defineConfig({
       lang: 'ru',
       link: '/ru/',
       themeConfig: {
+        outlineTitle: 'На этой странице:',
         nav: [
           { text: 'Главная', link: '/ru/' },
-          { text: 'Руководство', link: '/ru/guide/', activeMatch: '/ru/guide/' },
+          { text: 'Документация', link: '/ru/guide/', activeMatch: '/ru/guide/' },
           { text: 'Примеры', link: '/ru/examples/react', activeMatch: '/ru/examples/' },
         ],
         sidebar: {
@@ -76,9 +76,9 @@ export default defineConfig({
             {
               text: 'Введение',
               items: [
-                { text: 'Почему Reactive Route?', link: '/ru/guide/' },
-                { text: 'Начало работы', link: '/ru/guide/getting-started' },
-                { text: 'Основные концепции', link: '/ru/guide/core-concepts' },
+                { text: 'Зачем Reactive Route?', link: '/ru/guide/' },
+                { text: 'Настройка', link: '/ru/guide/getting-started' },
+                { text: 'Основные структуры', link: '/ru/guide/core-concepts' },
               ],
             },
             {

@@ -149,7 +149,7 @@ const routes = createRoutes({
 
 Существует три основных способа работы с динамическими компонентами:
 
-1. Вне компонента Router, как описано в [router.getActiveRouteState](/ru/guide/router-api#router-getactiveroutestate)
+1. Вне компонента Router, как описано в [router.getActiveState](/ru/guide/router-api#router-getactivestate)
 
 2. Внутри компонента страницы, реагируя на динамические параметры
 
@@ -269,7 +269,7 @@ function PageUser() {
   
   useEffect(() => {
     const disposer = autorun(() => {
-      const activeState = router.getActiveRouteState();
+      const activeState = router.getActiveState();
       
       if (activeState?.name === 'dashboard') {
         setLayout(View)
@@ -298,7 +298,7 @@ function PageUser() {
   
   useEffect(() => {
     const disposer = autorun(() => {
-      const activeState = router.getActiveRouteState();
+      const activeState = router.getActiveState();
       
       if (activeState?.name === 'dashboard') {
         setLayout(View)
@@ -324,7 +324,7 @@ function PageUser() {
   const { router } = useContext(RouterContext);
 
   const Layout = createMemo(() => {
-    const activeState = router.getActiveRouteState();
+    const activeState = router.getActiveState();
 
     if (activeState?.name === 'dashboard') return View;
     if (activeState?.name === 'dashboardEdit') return Edit;
@@ -348,7 +348,7 @@ import { useRouterStore } from './router';
 const { router } = useRouterStore();
 
 const Layout = computed(() => {
-  const activeState = router.getActiveRouteState();
+  const activeState = router.getActiveState();
 
   if (activeState?.name === 'dashboard') return View;
   if (activeState?.name === 'dashboardEdit') return Edit;

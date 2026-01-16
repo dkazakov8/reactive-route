@@ -1,11 +1,20 @@
-import { createContext } from 'react';
 import { createRouter, createRoutes } from 'reactive-route';
+import { createContext, useContext } from 'solid-js';
 
 export async function getRouter() {
-  const adapters =
-    REACTIVITY_SYSTEM === 'mobx'
-      ? await import('reactive-route/adapters/mobx-react').then((m) => m.adapters)
-      : await import('reactive-route/adapters/kr-observable-react').then((m) => m.adapters);
+  let adapters: any;
+
+  if (REACTIVITY_SYSTEM === 'solid') {
+    adapters = await import('reactive-route/adapters/solid').then((m) => m.adapters);
+  }
+
+  if (REACTIVITY_SYSTEM === 'kr-observable') {
+    adapters = await import('reactive-route/adapters/kr-observable-solid').then((m) => m.adapters);
+  }
+
+  if (REACTIVITY_SYSTEM === 'mobx') {
+    adapters = await import('reactive-route/adapters/mobx-solid').then((m) => m.adapters);
+  }
 
   return createRouter({
     routes: createRoutes({
@@ -68,3 +77,7 @@ export async function getRouter() {
 export const RouterContext = createContext<{ router: Awaited<ReturnType<typeof getRouter>> }>(
   undefined
 );
+
+export function useRouter() {
+  return useContext(RouterContext);
+}

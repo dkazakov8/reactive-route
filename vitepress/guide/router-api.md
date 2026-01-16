@@ -101,7 +101,7 @@ redirect({ name: 'user', params: { id: '123', a: 'b' } });
 redirect({ name: 'user', params: { id: '123' }, query: { a: 'b' } });
 ```
 
-## router.createRoutePayload
+## router.locationToPayload
 
 Accepts a pathname+search string and returns `Payload`. If no matching `Config` is found,
 the `notFound` `Payload` will be returned with empty `params` and `query`.
@@ -109,10 +109,10 @@ the `notFound` `Payload` will be returned with empty `params` and `query`.
 Note that all irrelevant or invalid query parameters are stripped off.
 
 ```ts
-router.createRoutePayload(`/user/9999?phone=123456&gtm=value`)
+router.locationToPayload(`/user/9999?phone=123456&gtm=value`)
 <!-- @include: ../../snippets/payload-commented.md -->
 
-router.createRoutePayload(`/not-existing/admin?hacker=sql-inject`)
+router.locationToPayload(`/not-existing/admin?hacker=sql-inject`)
 // { 
 //  name: 'notFound', 
 //  params: {}, 
@@ -120,19 +120,19 @@ router.createRoutePayload(`/not-existing/admin?hacker=sql-inject`)
 // }
 ```
 
-## router.createRouteState
+## router.payloadToState
 
 Accepts a `Payload` and returns a `State`. It is perfectly TS-typed just like `router.redirect`.
 
 ```ts
-router.createRouteState(<!-- @include: ../../snippets/payload.md -->)
+router.payloadToState(<!-- @include: ../../snippets/payload.md -->)
 <!-- @include: ../../snippets/state-commented.md -->
 ```
 
 
 ## router.hydrateFromURL
 
-Just an alias for `router.redirect(router.createRoutePayload(locationString))`.
+Just an alias for `router.redirect(router.locationToPayload(locationString))`.
 So, it accepts a pathname+search string and returns a `url` from a newly created `State`.
 
 Note that all irrelevant or invalid query parameters are stripped off.
@@ -265,7 +265,7 @@ function SomeComponent() {
 ```
 :::
 
-## router.getActiveRouteState
+## router.getActiveState
 
 Returns the current `State` of the active route, if any. May be useful when you have several
 global layouts above the Router component.
@@ -278,7 +278,7 @@ import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
 function App() {
   const { router } = useContext(RouterContext);
   
-  const activeStateName = router.getActiveRouteState()?.name;
+  const activeStateName = router.getActiveState()?.name;
   
   const Layout = ['login', 'restore', 'checkSms'].includes(activeStateName) 
     ? LayoutLogin 
@@ -298,7 +298,7 @@ import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
 function App() {
   const { router } = useContext(RouterContext);
   
-  const activeStateName = router.getActiveRouteState()?.name;
+  const activeStateName = router.getActiveState()?.name;
   
   const Layout = ['login', 'restore', 'checkSms'].includes(activeStateName) 
     ? LayoutLogin 
@@ -318,7 +318,7 @@ import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
 function App() {
   const { router } = useContext(RouterContext);
 
-  const activeStateName = () => router.getActiveRouteState()?.name;
+  const activeStateName = () => router.getActiveState()?.name;
 
   return (
     <Dynamic 
@@ -342,7 +342,7 @@ function App() {
 
   const { router } = useRouterStore();
 
-  const activeStateName = computed(() => router.getActiveRouteState()?.name);
+  const activeStateName = computed(() => router.getActiveState()?.name);
   
   const Layout = computed(() => 
     ['login', 'restore', 'checkSms'].includes(activeStateName.value) 
@@ -364,7 +364,7 @@ are provided, but you can effortlessly debug with
 
 ```ts
 // use the analog of autorun in your reactive system
-autorun(() => console.log(JSON.stringify(router.getActiveRouteState())))
+autorun(() => console.log(JSON.stringify(router.getActiveState())))
 ```
 
 ## router.preloadComponent
