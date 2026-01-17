@@ -1,384 +1,71 @@
-# Advanced
+# Use Cases
 
-## Redirects chain
+## Redirect Chains
 
-This library fully supports unlimited redirects in SPA / SSR.
+Reactive Route supports an unlimited number of redirects in both CSR and SSR environments.
 
-```ts [routes.ts]
-const routes = createRoutes({
-  one: {
-    path: '/1',
-    loader: () => import('./pages/one'),
-  },
-  two: {
-    path: '/2',
-    loader: () => import('./pages/two'),
-    async beforeEnter({ redirect }) {
-      return redirect({ name: 'one' });
-    },
-  },
-  three: {
-    path: '/3',
-    loader: () => import('./pages/three'),
-    async beforeEnter({ redirect }) {
-      return redirect({ name: 'two' });
-    },
-  },
-  four: {
-    path: '/4',
-    loader: () => import('./pages/four'),
-    async beforeEnter({ redirect }) {
-      return redirect({ name: 'three' });
-    },
-  },
-  
-  // Other routes
-});
-```
+<!-- @include: @/snippets/redirect-chain.md -->
 
-In this case if user goes to `/4` he will be redirected to `/3` then `/2` then `/1`. The intermediate
-redirects are not reflected in Browser's history. Also, chunks for pages four, three, two will not 
-be loaded if you configured async chunks in your bundler.
+In this example, if a user navigates to `/4`, they will be redirected sequentially:
+`/4` → `/3` → `/2` → `/1`. These intermediate redirects are not recorded in the browser's history,
+and the JS chunks for the intermediate pages will not be loaded.
 
-## Watch and react to params / query changes
+## Reacting to Changes
 
-`router.state` is **reactive**, so you can use it inside autorun / reaction / effect of your stack.
-Here are some examples:
+Since [router.state](/guide/router-api#router-state) is **reactive**, you can easily monitor changes
+using your reactivity system's primitives:
 
-::: code-group
-```tsx [React + MobX]
-import { autorun } from 'mobx'
+<!-- @include: @/snippets/advanced/reactions.md -->
 
-function PageUser() {
-  const { router } = useContext(RouterContext);
+## Nested Routes
 
-  const routeState = router.state.user!;
-  
-  useEffect(() => {
-    const disposer = autorun(() => {
-      console.log(routeState.params.id, routeState.query.phone);
-    })
+Reactive Route does not, and will not, support nested `Config` objects. The library's core
+philosophy is built on type safety and structural simplicity. Consider a configuration like this:
 
-    return () => disposer();
-  }, []);
-}
-```
-```tsx [Preact + Observable]
-import { autorun } from 'kr-observable'
+<!-- @include: @/snippets/advanced/nested.md -->
 
-function PageUser() {
-  const { router } = useContext(RouterContext);
+While it's technically possible to resolve naming and validator collisions by significantly
+complicating the `Payload` structure, doing so in a way that remains type-safe is extremely
+difficult. Furthermore, partial `States` and an ambiguous lifecycle would severely degrade the
+DX.
 
-  const routeState = router.state.user!;
-  
-  useEffect(() => {
-    const disposer = autorun(() => {
-      console.log(routeState.params.id, routeState.query.phone);
-    })
+Nested routes introduce numerous edge cases:
 
-    return () => disposer();
-  }, []);
-}
-```
-```tsx [Solid + Solid]
-import { createRenderEffect } from 'solid-js'
+- Developers must constantly keep the component tree and its logical links in mind.
+- Lifecycle behavior becomes unclear: Should a second-level `beforeEnter` be triggered by a
+  third-level `params` or `query` change? Building a reliable data-fetching and authorization flow
+  becomes much harder.
+- Refactoring becomes a major chore — any change to the route hierarchy requires manual updates to
+  component structures, data-fetching logic, and internal links, all without reliable help from
+  TypeScript.
+- Tooling suffers: limited support for "Find Usages", IDE navigation, autocomplete, and a lack of
+  type safety for string-based redirects.
 
-function PageUser() {
-  const { router } = useContext(RouterContext);
+However, nested routes do excel at automatic breadcrumb generation. If your project relies heavily
+on breadcrumbs, a router with native nesting support might be a better fit. That said, Reactive
+Route handles Layouts — the other primary use case for nesting — with ease, as shown below.
 
-  const routeState = router.state.user!;
+## Layouts
 
-  createRenderEffect(() => {
-    console.log(routeState.params.id, routeState.query.phone);
-  })
-}
-```
-```vue [Vue + Vue]
-<script lang="ts" setup>
-  import { watchEffect } from 'vue';
+There are three primary ways to manage dynamic layouts and components:
 
-  const { router } = useRouterStore();
+1. **Outside the Router Component**: As described in
+   [router.getActiveState](/guide/router-api#router-getactivestate).
 
-  const routeState = router.state.user!;
+2. **Within the Page Component**: By reacting to dynamic parameters.
 
-  watchEffect(() => {
-    console.log(routeState.params.id, routeState.query.phone);
-  });
-</script>
-```
-:::
+<!-- @include: @/snippets/advanced/dashboard.md -->
 
-## Nested routes
+<!-- @include: @/snippets/advanced/dashboard-example.md -->
 
-Reactive Route will never support nested routes. It is built to be type-safe and plain, without
-the pain of imagining how deep nested `Configs` should behave. Imagine this config:
+3. **Shared Loaders**: You can assign the same `loader` to multiple `Config` objects. In this
+   scenario, `beforeComponentChange` is not triggered, and the page component **will not**
+   re-render when navigating between these routes. However, the active `State` will still update,
+   allowing you to reactively change layouts:
 
-```ts
-const routes = createRoutes({
-  home: {
-    path: '/',
-    loader: () => import('./pages/home'),
-  },
-  user: {
-    path: '/user/:id',
-    params: {
-      id: (value) => /^\d+$/.test(value)
-    },
-    loader: () => import('./pages/user'),
-    
-    children: {
-      user: {
-        path: 'view/:id',
-        params: {
-          id: (value) => /[a-z]/.test(value)
-        },
-        loader: () => import('./pages/user/view'),
-      }
-    }
-  },
-});
-```
+<!-- @include: @/snippets/advanced/dashboard-multi.md -->
 
-It is impossible to write a type-safe router for such `Config` because of naming and validators 
-collisions, partial `States` and unclear lifecycle.
+<!-- @include: @/snippets/advanced/dashboard-multi-example.md -->
 
-Nested routes have a lot of edge cases:
-- You have to figure out how the Components tree will be rendered and how they are linked and keep it in mind
-- You spend a lot of time reading docs about how lifecycles will behave. Will 1st level `beforeEnter`
-be called when 3rd level params or query changes? How to write a stable data-fetching flow?
-Multiple redirects become brittle, too
-- Refactoring is a nightmare – you have to rewrite the component structure, change how data is fetched, 
-and update all internal links. Without the help from TS.
-- Poor DX: no support for Find Usages or fast navigation in IDEs, limited support for autocomplete,
-untyped redirects by partial pathname strings, etc.
-
-But nesting also has its advantages, like automatic breadcrumbs generation and layouts scoping.
-Reactive Route is plain, so it can't help with breadcrumbs, but for layouting there are several approaches.
-
-## Layouts and dynamic components
-
-There are three major ways to work with dynamic components:
-
-1. Outside of the Router component as described in [router.getActiveState](/guide/router-api#router-getactivestate)
-
-2. Inside the page component by reacting to dynamic params
-
-
-```ts
-const routes = createRoutes({
-  dashboard: {
-    path: '/dashboard/:tab',
-    params: {
-      tab: (value) => ['table', 'widgets', 'charts'].includes(value)
-    },
-    query: {
-      editMode: (value) => ['0', '1', '2'].includes(value)
-    },
-    loader: () => import('./pages/dashboard'),
-  }
-
-  // Other routes
-});
-```
-
-::: code-group
-```tsx [React]
-export default function PageDashboard() {
-  const { router } = useContext(RouterContext);
-
-  const routeState = router.state.dashboard!;
-  
-  return (
-    <Layout editMode={routeState.query.editMode || '0'}>
-      {routeState.params.tab === 'table' && <Table />}
-      {routeState.params.tab === 'widgets' && <Widgets />}
-      {routeState.params.tab === 'charts' && <Charts />}
-    </Layout>
-  );
-}
-```
-```tsx [Preact]
-export default function PageDashboard() {
-  const { router } = useContext(RouterContext);
-
-  const routeState = router.state.dashboard!;
-  
-  return (
-    <Layout editMode={routeState.query.editMode || '0'}>
-      {routeState.params.tab === 'table' && <Table />}
-      {routeState.params.tab === 'widgets' && <Widgets />}
-      {routeState.params.tab === 'charts' && <Charts />}
-    </Layout>
-  );
-}
-```
-```tsx [Solid]
-export default function PageDashboard() {
-  const { router } = useContext(RouterContext);
-  
-  const routeState = () => router.state.dashboard!;
-
-  return (
-    <Layout editMode={routeState().query.editMode || '0'}>
-      <Switch>
-        <Match when={routeState().params.tab === 'table'}><Table /></Match>
-        <Match when={routeState().params.tab === 'widgets'}><Widgets /></Match>
-        <Match when={routeState().params.tab === 'charts'}><Charts /></Match>
-      </Switch>
-    </Layout>
-  );
-}
-```
-```vue [Vue]
-<script lang="ts" setup>
-import { useRouterStore } from './router';
-
-const { router } = useRouterStore();
-
-const routeState = router.state.dashboard!;
-</script>
-
-<template>
-  <Layout :edit-mode="routeState.query.editMode || '0'">
-    <Table v-if="routeState.params.tab === 'table'" />
-    <Widgets v-else-if="routeState.params.tab === 'widgets'" />
-    <Charts v-else-if="routeState.params.tab === 'charts'" />
-  </Layout>
-</template>
-```
-:::
-
-3. You may also set the same loader for several `Configs`. `beforeComponentChange` will not be 
-called and the page component will **not** rerender when you go between these routes. But the active state will,
-so it may be used for layouting. This example may look like the previous one, but let's choose
-an approach with a reactive function
-
-```ts
-const routes = createRoutes({
-  dashboard: {
-    path: '/dashboard',
-    loader: () => import('./pages/dashboard'),
-  },
-  dashboardEdit: {
-    path: '/dashboard/edit',
-    loader: () => import('./pages/dashboard'),
-  },
-  dashboardAggregate: {
-    path: '/dashboard/aggregate',
-    loader: () => import('./pages/dashboard'),
-  }
-
-  // Other routes
-});
-```
-
-::: code-group
-```tsx [React + MobX]
-import { autorun } from 'mobx'
-
-function PageUser() {
-  const { router } = useContext(RouterContext);
-  
-  const [Layout, setLayout] = useState();
-  
-  useEffect(() => {
-    const disposer = autorun(() => {
-      const activeState = router.getActiveState();
-      
-      if (activeState?.name === 'dashboard') {
-        setLayout(View)
-      } else if (activeState?.name === 'dashboardEdit') {
-        setLayout(Edit)
-      } else if (activeState?.name === 'dashboardAggregate') {
-        setLayout(Aggregate)
-      }
-    })
-
-    return () => disposer();
-  }, []);
-  
-  if (!Layout) return null;
-  
-  return <Layout>Content</Layout>;
-}
-```
-```tsx [Preact + Observable]
-import { autorun } from 'kr-observable'
-
-function PageUser() {
-  const { router } = useContext(RouterContext);
-  
-  const [Layout, setLayout] = useState();
-  
-  useEffect(() => {
-    const disposer = autorun(() => {
-      const activeState = router.getActiveState();
-      
-      if (activeState?.name === 'dashboard') {
-        setLayout(View)
-      } else if (activeState?.name === 'dashboardEdit') {
-        setLayout(Edit)
-      } else if (activeState?.name === 'dashboardAggregate') {
-        setLayout(Aggregate)
-      }
-    })
-
-    return () => disposer();
-  }, []);
-  
-  if (!Layout) return null;
-  
-  return <Layout>Content</Layout>;
-}
-```
-```tsx [Solid + Solid]
-import { createMemo } from 'solid-js'
-
-function PageUser() {
-  const { router } = useContext(RouterContext);
-
-  const Layout = createMemo(() => {
-    const activeState = router.getActiveState();
-
-    if (activeState?.name === 'dashboard') return View;
-    if (activeState?.name === 'dashboardEdit') return Edit;
-    if (activeState?.name === 'dashboardAggregate') return Aggregate;
-    
-    return null;
-  });
-
-  return (
-    <Show when={Layout()}>
-      {(Component) => <Component>Content</Component>}
-    </Show>
-  );
-}
-```
-```vue [Vue + Vue]
-<script lang="ts" setup>
-import { computed } from 'vue';
-import { useRouterStore } from './router';
-
-const { router } = useRouterStore();
-
-const Layout = computed(() => {
-  const activeState = router.getActiveState();
-
-  if (activeState?.name === 'dashboard') return View;
-  if (activeState?.name === 'dashboardEdit') return Edit;
-  if (activeState?.name === 'dashboardAggregate') return Aggregate;
-  
-  return null;
-});
-</script>
-
-<template>
-  <component :is="Layout" v-if="Layout">
-    Content
-  </component>
-</template>
-```
-:::
-
-You may notice that these three approaches solve a bit different problems, but it's just an example
-of how to use Reactive Route in different scenarios.
+These approaches address slightly different needs but demonstrate the flexibility of Reactive
+Route across various scenarios.

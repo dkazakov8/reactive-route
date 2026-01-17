@@ -1,6 +1,6 @@
 # Vue Example
 
-Download the relevant folder from the repository and install deps:
+To get started, clone the example from the repository and install its dependencies:
 
 ```shell
 npx degit dkazakov8/reactive-route/examples/vue vue-example
@@ -8,7 +8,7 @@ cd vue-example
 npm install
 ```
 
-Next, choose the mode and reactivity system to start:
+Then, choose the desired rendering mode and reactivity system:
 
-- `npm run vue` - CSR (Client rendering only) for Vue reactivity
-- `npm run ssr-vue` - SSR for Vue reactivity
+- `npm run vue` — Client-Side Rendering (CSR) with native Vue reactivity
+- `npm run ssr-vue` — Server-Side Rendering (SSR) with native Vue reactivity

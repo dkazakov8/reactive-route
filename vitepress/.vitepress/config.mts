@@ -14,7 +14,7 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: 'Home', link: '/' },
-          { text: 'Guide', link: '/guide/', activeMatch: '/guide/' },
+          { text: 'Documentation', link: '/guide/', activeMatch: '/guide/' },
           { text: 'Examples', link: '/examples/react', activeMatch: '/examples/' },
         ],
         sidebar: {
@@ -34,7 +34,7 @@ export default defineConfig({
                 { text: 'State', link: '/guide/state' },
                 { text: 'Router API', link: '/guide/router-api' },
                 { text: 'SSR', link: '/guide/ssr' },
-                { text: 'Advanced', link: '/guide/advanced' },
+                { text: 'Use Cases', link: '/guide/advanced' },
               ],
             },
             {

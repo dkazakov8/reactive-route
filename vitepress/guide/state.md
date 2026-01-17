@@ -1,6 +1,6 @@
 # State
 
-The basic idea is covered in the [Core Concepts](/guide/core-concepts) section.
+The general purpose is described in the [Core Concepts](/guide/core-concepts) section.
 
 ## Properties
 
@@ -15,27 +15,34 @@ string
 ```
 
 </td>
-<td>Equal to the object key</td>
+<td>Matches the key used in the routes object</td>
 </tr><tr>
 <td><code>params</code></td>
 <td class="table-td">
 
 ```ts
-Record<string, string>
+Record<
+  keyof TConfig['params'], 
+  string
+>
 ```
 
 </td>
-<td>Validated and decoded params values</td>
+<td>Validated and decoded path parameters. All keys defined in the <code>Config</code> validators
+will be present</td>
 </tr><tr>
 <td><code>query</code></td>
 <td class="table-td">
 
 ```ts
-Record<string, string>
+Partial<Record<
+  keyof TConfig['query'], 
+  string
+>>
 ```
 
 </td>
-<td>Validated and decoded query values</td>
+<td>Validated and decoded query parameters. All query parameters are optional</td>
 </tr><tr>
 <td><code>pathname</code></td>
 <td class="table-td">
@@ -45,7 +52,7 @@ string
 ```
 
 </td>
-<td>Encoded string for pathname</td>
+<td>The encoded pathname</td>
 </tr><tr>
 <td><code>search</code></td>
 <td class="table-td">
@@ -55,7 +62,7 @@ string
 ```
 
 </td>
-<td>Encoded string for search</td>
+<td>The encoded search (query) string</td>
 </tr><tr>
 <td><code>url</code></td>
 <td class="table-td">
@@ -65,7 +72,7 @@ string
 ```
 
 </td>
-<td>Encoded string for <code>${pathname}?${search}</code></td>
+<td>The full encoded URL: <code>${pathname}?${search}</code></td>
 </tr><tr>
 <td><code>isActive</code></td>
 <td class="table-td">
@@ -75,17 +82,24 @@ boolean
 ```
 
 </td>
-<td>An indicator that the relevant page component is rendered or will be rendered in the next tick</td>
+<td>Indicates whether this route's page component is currently rendered or scheduled to render in the
+next tick</td>
 </tr><tr>
 <td><code>props?</code></td>
 <td class="table-td">
 
 ```ts
-Record<string, any>
+TConfig['props']
 ```
 
 </td>
-<td>Static props from <code>Config</code></td>
+<td>Static properties defined in the <code>Config</code></td>
 </tr></tbody>
 </table>
+
+## Types
+
+### TypeState
+
+<<< @/../packages/core/types.ts#type-state{typescript}
 

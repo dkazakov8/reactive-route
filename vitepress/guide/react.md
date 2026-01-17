@@ -1,33 +1,35 @@
 # React Integration
 
-## Mobx
+## MobX
 
-The relevant imports are as follows
+Relevant imports:
 
 ```ts
 import { Router } from 'reactive-route/react';
 import { adapters } from 'reactive-route/adapters/mobx-react';
 ```
 
-You should ensure that packages `mobx`, `mobx-react-lite` are installed.
+The `mobx` and `mobx-react-lite` packages must be installed.
 
-If you use `mobx-react` instead of `mobx-react-lite` you may create an alias in your bundler or
-replace `observer`  in adapters to the taken from `mobx-react`.
+If you are using `mobx-react`, you can either create a bundler alias or replace the `observer` in the
+adapters with the one from `mobx-react`.
 
-Be sure to wrap your components which read observable router parameters into `observer` (if you use
-MobX this is presumably already done).
+Reactive Route is **reactive** — don't forget to wrap components that read its properties (such as
+[router.state](/guide/router-api#router-state) or
+[router.isRedirecting](/guide/router-api#router-isredirecting)) in `observer`.
 
 ## Observable
 
-The relevant imports are as follows
+Relevant imports:
 
 ```ts
 import { Router } from 'reactive-route/react';
 import { adapters } from 'reactive-route/adapters/kr-observable-react';
 ```
 
-You should ensure that package `kr-observable` is installed.
+The `kr-observable` package must be installed.
 
-Be sure to wrap your components which read observable router parameters into `observer` (if you use
-Observable this is presumably already done).
+Reactive Route is **reactive** — don't forget to wrap components that read its properties (such as
+[router.state](/guide/router-api#router-state) or
+[router.isRedirecting](/guide/router-api#router-isredirecting)) in `observer`.
 

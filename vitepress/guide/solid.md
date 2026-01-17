@@ -1,64 +1,44 @@
 # Solid.js Integration
 
-## Solid.js native reactivity
+## Native Solid.js Reactivity
 
-The relevant imports are as follows
+Relevant imports:
 
 ```ts
 import { Router } from 'reactive-route/solid';
 import { adapters } from 'reactive-route/adapters/solid';
 ```
 
-No extra packages or configuration needed.
+No additional packages or configuration are required.
 
-## Mobx
+## MobX
 
-The relevant imports are as follows
+Relevant imports:
 
 ```ts
 import { Router } from 'reactive-route/solid';
 import { adapters } from 'reactive-route/adapters/mobx-solid';
 ```
 
-You should ensure that package `mobx` is installed.
+The `mobx` package must be installed.
 
-Actually Solid.js has no native integration with MobX. So if you use MobX with Solid.js you probably
-use something like this:
+Since Solid.js doesn't have native MobX integration, you'll need to include something like this in your
+entry file:
 
-```ts
-import { Reaction } from 'mobx';
-import { enableExternalSource } from 'solid-js';
-
-let id = 0;
-
-enableExternalSource((fn, trigger) => {
-  const reaction = new Reaction(`mobx@${++id}`, trigger);
-
-  return {
-    track: (x) => {
-      let next;
-      reaction.track(() => (next = fn(x)));
-      return next;
-    },
-    dispose: () => reaction.dispose(),
-  };
-});
-```
-
-... or has better alternatives. Anyway, something like this should be included in your entry file.
+<!-- @include: @/snippets/integration/mobx.md -->
 
 ## Observable
 
-The relevant imports are as follows
+Relevant imports:
 
 ```ts
 import { Router } from 'reactive-route/solid';
 import { adapters } from 'reactive-route/adapters/kr-observable-solid';
 ```
 
-You should ensure that package `kr-observable` is installed.
+The `kr-observable` package must be installed.
 
-Be sure to enable integration in your entry file
+Don't forget to enable the integration in your entry file:
 
 ```ts
 import { enableObservable } from 'kr-observable/solidjs';

@@ -21,10 +21,8 @@ function getRouter(api: Api, store: Store) {
       async beforeLeave({ preventRedirect, nextState }) {
         if (nextState.name === 'login') return preventRedirect();
         
-        const isClient = typeof window !== 'undefined';
-        
         // Do not check for unsaved changes on the server
-        if (!isClient) return;
+        if (typeof window === 'undefined') return;
         
         const hasUnsavedChanges = await api.checkForm();
         

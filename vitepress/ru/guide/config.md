@@ -211,7 +211,7 @@ TypeState
 <td class="table-td">
 
 ```ts
-(routePayload: TypeRoutePayload) => 
+(payload: TypePayload) => 
   void
 ```
 

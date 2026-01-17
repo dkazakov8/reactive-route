@@ -8,23 +8,26 @@ hero:
     src: /file.svg
   actions:
     - theme: brand
-      text: Get Started
+      text: Documentation
       link: /guide/
     - theme: alt
-      text: View on GitHub
+      text: GitHub
       link: https://github.com/dkazakov8/reactive-route
 
 features:
-  - title: Agnostic
-    details: Works with React, Preact, Solid.js, Vue. Even Vanilla JS
-  - title: Reactive
-    details: Seamlessly integrates with MobX, Observable, Solid.js signals, Vue reactive
-  - title: Simple
-    details: Define your routes in a concise, declarative configuration with built-in lazy-loading support
-  - title: Controllable
-    details: Loading data on page enter, blocking page leaving, navigation guards, redirect chains, query and dynamic params validation - all included out of the box
-  - title: SSR-Oriented
-    details: Full support for server-side rendering with async data loading. Maybe better suited for your app than some "monster" frameworks
-  - title: Great DX
-    details: Built with TypeScript for type safety, zero dependencies for a minimal footprint, and backed by lots of unit and E2E tests
+  - title: Framework Agnostic
+    details: Works with React, Preact, Solid.js, Vue, or even Vanilla JS
+  - title: Reactive-First
+    details: Seamlessly integrates with MobX, Observable, Solid.js signals, and Vue reactivity
+  - title: Simple & Declarative
+    details: Define your routes in a concise object with built-in support for lazy loading
+  - title: Full Control
+    details: Data prefetching, navigation guards, redirect chains, and robust param
+      validation - everything you need is built in
+  - title: SSR-Ready
+    details: Full server-side rendering support with async data loading. A lightweight alternative
+      to "monolithic" frameworks
+  - title: Exceptional DX
+    details: Fully typed with TypeScript, zero dependencies, extensively tested and has
+      both CJS and ESM versions
 ---

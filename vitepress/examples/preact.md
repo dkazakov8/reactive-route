@@ -1,6 +1,6 @@
 # Preact Example
 
-Download the relevant folder from the repository and install deps:
+To get started, clone the example from the repository and install its dependencies:
 
 ```shell
 npx degit dkazakov8/reactive-route/examples/preact preact-example
@@ -8,12 +8,12 @@ cd preact-example
 npm install
 ```
 
-Next, choose the mode and reactivity system to start:
+Then, choose the desired rendering mode and reactivity system:
 
-- `npm run mobx` - CSR (Client rendering only) for MobX
-- `npm run observable` - CSR (Client rendering only) for Observable
-- `npm run ssr-mobx` - SSR for MobX
-- `npm run ssr-observable` - SSR for Observable
+- `npm run mobx` — Client-Side Rendering (CSR) with MobX
+- `npm run observable` — Client-Side Rendering (CSR) with Observable
+- `npm run ssr-mobx` — Server-Side Rendering (SSR) with MobX
+- `npm run ssr-observable` — Server-Side Rendering (SSR) with Observable
 
-Note, that wrapping of components in `observer` is made by the ESBuild bundler in this example.
-In your own projects, remember to follow the relevant [Framework Integration](/guide/preact).
+Note: In this example, components are automatically wrapped in `observer` via the ESBuild bundler. In
+your own projects, be sure to follow the [Preact Integration](/guide/preact) guide.

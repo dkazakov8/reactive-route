@@ -1,30 +1,32 @@
 # Core Concepts
 
-There are only three structures in the library - `Config`, `Payload` and `State`:
+There are only three core structures in Reactive Route: `Config`, `Payload`, and `State`.
 
 ## Config
 
-Is a configuration object you pass to the `createRoutes` function for route names.
-It usually looks like this:
+The `Config` object is passed to the `createRoutes` function under a specific key:
 
 <!-- @include: @/snippets/core-concepts/config-example.md -->
 
-When you redirect to another route, the library executes `loader` and extends this configuration 
-with some other fields like `name`, `component` and `otherExports`, so they can be used in lifecycle
-methods and for internal caching.
+When the router initializes, it automatically enriches this object with a `name: 'user'` property
+(matching the key). This design prevents typos and ensures route names remain synchronized across all
+structures.
+
+During navigation, the `loader` is executed, adding two more properties: `component` (the `default`
+export) and `otherExports` (all other exports). These are accessible within the
+[beforeComponentChange](/guide/router-api.html#beforecomponentchange).
 
 ## Payload
 
-Is an object containing all the relevant information to detect a `Config`
-and fill it with values. It usually looks like this:
+A `Payload` is a simple object containing the necessary information to identify a `Config` and
+provide it with values:
 
 ```ts
 <!-- @include: @/snippets/payload.md -->
 ```
 
-It can be created from a string with [router.urlToPayload](/guide/router-api#router-urltopayload), 
-but usually you will pass it manually to the [router.redirect](/guide/router-api#router-redirect) 
-function imperatively:
+Typically, you'll write this manually (with full TS autocomplete) and pass it to
+[router.redirect](/guide/router-api#router-redirect):
 
 ```tsx
 button.onclick = () => router.redirect(<!-- @include: @/snippets/payload.md -->)
@@ -32,58 +34,38 @@ button.onclick = () => router.redirect(<!-- @include: @/snippets/payload.md -->)
 
 ## State
 
-Is an object containing additional information compared to `Payload`.
+The `State` object provides a more detailed structure compared to a `Payload`:
 
 ```ts
 <!-- @include: @/snippets/state.md -->
 ```
 
-It is kept in `router.state` in a **reactive** way and can be accessed from any UI component like this:
+You can manually derive a `State` from a `Payload` using
+[router.payloadToState](/guide/router-api#router-payloadtostate). Additionally, the current `State`
+is stored **reactively** in `router.state[name]` and is accessible anywhere the `router` is
+available:
 
 <!-- @include: @/snippets/core-concepts/state-in-components.md -->
 
-Do not worry about the "non-null assertion" operator `!` - the relevant route's state will 
-definitely exist if only one route uses this page component. Otherwise, choose the relevant one
-like `routeState = router.state.userView || router.state.userEdit`, but there are
-better alternatives to this.
+The non-null assertion operator is safe here as long as only one `Config` uses the `loader` for this
+specific page component. If multiple routes share a component, you'll need to handle the logic
+accordingly, e.g., `routeState = router.state.userView || router.state.userEdit`.
 
-This object can also be constructed manually from `Payload` with [router.payloadToState](/guide/router-api#router-payloadtostate).
+## Encoding and Decoding
 
-That is useful for creating `Link` components where you can use `<a href={routeState.url} />` for
-better UX and SEO or when JS is disabled in browser.
-
-## Encoding
-
-In Reactive Route the router handles the process of encoding and decoding in this way
-(imagine we disabled numeric validation for `id`):
+Browsers handle URLs in an [encoded format](https://developers.google.com/maps/url-encoding).
+Reactive Route handles the complexity of encoding and decoding for you.
 
 ```ts
 await router.hydrateFromURL(`/user/with%20space?phone=and%26symbols`);
 
-// under the hood it calls router.urlToPayload to create a Payload
-// with decoded values
-// {
-//   name: 'user', 
-//   params: { id: 'with space' },
-//   query: { phone: 'and&symbols' }
-// }
+// Internally, router.urlToPayload is called to create a decoded Payload:
+<!-- @include: @/snippets/core-concepts/payload-decoded.md -->
 
-// during redirect a router.payloadToState is called
-// which encodes params back to URL
-console.log(router.state.user)
-// {
-//   name: 'test',
-//   params: { id: 'with space' },
-//   query: { phone: 'and&symbols' },
-//
-//   pathname: '/user/with%20space',
-//   search: 'phone=and%26symbols',
-//   url: '/user/with%20space?phone=and%26symbols',
-//
-//   props: undefined,
-//   isActive: true,
-// }
+// Then router.payloadToState is called to generate an encoded State:
+// router.state.user
+<!-- @include: @/snippets/core-concepts/state-decoded.md -->
 ```
 
-So, the process is double-sided. `urlToPayload` validates and decodes, while `payloadToState`
-validates and encodes to ensure safety, prevent malformed values and produce correct URLs.
+Validators from your `Config` are executed during both encoding and decoding. This bidirectional
+process ensures data integrity, prevents malformed values, and guarantees valid URLs.

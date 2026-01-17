@@ -1,6 +1,6 @@
 # Solid.js Example
 
-Download the relevant folder from the repository and install deps:
+To get started, clone the example from the repository and install its dependencies:
 
 ```shell
 npx degit dkazakov8/reactive-route/examples/solid solid-example
@@ -8,11 +8,11 @@ cd solid-example
 npm install
 ```
 
-Next, choose the mode and reactivity system to start:
+Then, choose the desired rendering mode and reactivity system:
 
-- `npm run solid` - CSR (Client rendering only) for Solid.js reactivity
-- `npm run mobx` - CSR (Client rendering only) for MobX
-- `npm run observable` - CSR (Client rendering only) for Observable
-- `npm run ssr-solid` - SSR for Solid.js reactivity
-- `npm run ssr-mobx` - SSR for MobX
-- `npm run ssr-observable` - SSR for Observable
+- `npm run solid` — Client-Side Rendering (CSR) with native Solid.js reactivity
+- `npm run mobx` — Client-Side Rendering (CSR) with MobX
+- `npm run observable` — Client-Side Rendering (CSR) with Observable
+- `npm run ssr-solid` — Server-Side Rendering (SSR) with native Solid.js reactivity
+- `npm run ssr-mobx` — Server-Side Rendering (SSR) with MobX
+- `npm run ssr-observable` — Server-Side Rendering (SSR) with Observable

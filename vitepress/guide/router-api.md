@@ -2,6 +2,9 @@
 
 ## createRouter
 
+The `createRouter` function initializes the `router` instance. It accepts an object with the
+following properties:
+
 <table>
   <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
   <tbody><tr>
@@ -13,7 +16,7 @@ ReturnType<typeof createRoutes>
 ```
 
 </td>
-<td>An object with <code>Configs</code></td>
+<td>A routes object created via <code>createRoutes</code></td>
 </tr><tr>
 <td><code>adapters</code></td>
 <td class="table-td">
@@ -21,7 +24,7 @@ ReturnType<typeof createRoutes>
 [TypeAdapters](#typeadapters)
 
 </td>
-<td>Adapters for the reactivity system</td>
+<td>Adapters for your chosen reactivity system</td>
 </tr><tr>
 <td><code>beforeComponentChange?</code></td>
 <td class="table-td">
@@ -29,90 +32,79 @@ ReturnType<typeof createRoutes>
 ```ts
 (params: {
   prevState?: TypeState;
-  prevConfig?: TypeRouteConfig;
+  prevConfig?: TypeConfig;
+  
   currentState: TypeState;
-  currentConfig: TypeRouteConfig;
+  currentConfig: TypeConfig;
 }) => void
 ```
 
 </td>
-<td>This is a global lifecycle function that executes only when the rendered component changes (not route!)</td>
+<td>A global lifecycle function triggered only when the active page component changes (rather than on
+every route change)</td>
   </tr></tbody>
 </table>
 
-For all the next examples we will use this configuration:
+For the following examples, we'll assume this configuration:
 
-```ts
-createRoutes({
-  home: {
-    path: '/',
-    loader: () => import('./pages/home'),
-  },
-  user: {
-    path: '/user/:id',
-    params: {
-      id: (value) => value.length > 0,
-    },
-    query: {
-      phone: (value) => value.length > 0,
-    },
-    loader: () => import('./pages/user'),
-  },
-  
-  // other Configs
-});
-```
+<!-- @include: @/snippets/router-api/sample-routes.md -->
 
 ## router.redirect
 
-Navigates to a specified `Payload` and returns a `url` from a newly created `State`:
+Identifies the `Config` matching the provided `Payload` and returns the resulting `State.url`. If
+called in a browser environment, it also updates `window.history`.
+
+You can pass `replace: true` in the `Payload` to disable "Go back" in the browser.
 
 ```ts
-const clearedURL = await router.redirect(<!-- @include: @/snippets/payload.md -->)
-// router.state.user was created and returned it's url
-// clearedURL === '/user/9999?phone=123456'
-
-
+const clearedUrl = await router.redirect(<!-- @include: @/snippets/payload.md -->)
+// router.state.user is created and its URL is returned
+// '/user/9999?phone=123456'
 ```
 
-This function is fully typed, and TypeScript hints will be shown for autocomplete.
+This method is fully type-safe, providing autocomplete and validation for route names, parameters,
+and query strings.
 
 ```ts
-// Good
+// Valid redirects
 redirect({ name: 'home' })
-redirect({ name: 'user', params: { id: '123' } })
-redirect({ name: 'user', params: { id: '123' }, query: { phone: '321' } })
+redirect({ name: 'user', params: { id: '123' }})
+redirect({ name: 'user', params: { id: '123'}, query: { phone: '321' }})
 
-// TS errors
+// TypeScript errors:
 
-// no "route" key
+// Missing "name"
 redirect({});
-// no Config with this name
+// Non-existent route name
 redirect({ name: 'nonExisting' });
-// home Config is a static route, params should not be passed
+// "home" is a static route; "params" are not allowed
 redirect({ name: 'home', params: {} });
-// user Config is a dynamic route, params should be present
+// "user" is a dynamic route; "params" are required
 redirect({ name: 'user' });
-// params.id should be present
+// Required "params.id" is missing
 redirect({ name: 'user', params: {} });
-// not existing params.a was passed
-redirect({ name: 'user', params: { id: '123', a: 'b' } });
-// not existing query.a was passed
-redirect({ name: 'user', params: { id: '123' }, query: { a: 'b' } });
+// Unrecognized parameter "foo"
+redirect({ name: 'user', params: { id: '123', foo: 'bar' } });
+// Unrecognized query parameter "foo"
+redirect({ name: 'user', params: { id: '123'}, query: { foo: 'bar' } });
 ```
 
 ## router.urlToPayload
 
-Accepts a pathname+search string and returns `Payload`. If no matching `Config` is found,
-the `notFound` `Payload` will be returned with empty `params` and `query`.
+Converts a URL (pathname + search) into a `Payload`. If no matching `Config` is found, it returns
+the `Payload` for the `notFound` route.
 
-Note that all irrelevant or invalid query parameters are stripped off.
+::: info
+All invalid or unrecognized query parameters are automatically stripped.
+:::
 
 ```ts
-router.urlToPayload(`/user/9999?phone=123456&gtm=value`)
-<!-- @include: @/snippets/payload-commented.md -->
+router.urlToPayload(`/user/9999?phone=123456&gtm=value`);
+  
+<!--@include: @/snippets/payload-commented.md -->
 
-router.urlToPayload(`/not-existing/admin?hacker=sql-inject`)
+router.urlToPayload(`/not-existing/admin?hacker=sql-inject`);
+
 // { 
 //  name: 'notFound', 
 //  params: {}, 
@@ -122,224 +114,140 @@ router.urlToPayload(`/not-existing/admin?hacker=sql-inject`)
 
 ## router.payloadToState
 
-Accepts a `Payload` and returns a `State`. It is perfectly TS-typed just like `router.redirect`.
+Converts a `Payload` into a `State` object. Like `router.redirect`, this method is fully type-safe.
 
 ```ts
-router.payloadToState(<!-- @include: @/snippets/payload.md -->)
-<!-- @include: @/snippets/state-commented.md -->
-```
+router.payloadToState(<!-- @include: @/snippets/payload.md -->);
 
+<!--@include: @/snippets/state-commented.md -->
+```
 
 ## router.hydrateFromURL
 
-Just an alias for `router.redirect(router.urlToPayload(locationString))`.
-So, it accepts a pathname+search string and returns a `url` from a newly created `State`.
+A shorthand for `router.redirect(router.urlToPayload(url))`. It accepts a URL string and returns the
+finalized `State.url`.
 
-Note that all irrelevant or invalid query parameters are stripped off.
+::: info
+All invalid or unrecognized query parameters are automatically stripped.
+:::
 
 ```ts
-const clearedURL = await router.hydrateFromURL(
+const clearedUrl = await router.hydrateFromURL(
   `/user/9999?phone=123456&gtm=value`
 )
-// router.state.user was created and returned it's url
-// clearedURL === '/user/9999?phone=123456'
+// router.state.user is created and its URL is returned
+// '/user/9999?phone=123456'
 
-// in CSR is usually used like this
+// Typical Client-Side (CSR) usage:
 await router.hydrateFromURL(`${location.pathname}${location.search}`)
 
-// in SSR is usually used like this (with Express.js)
+// Typical Server-Side (SSR) usage (e.g., with Express.js):
 const clearedURL = await router.hydrateFromURL(req.originalUrl)
-// if you want to remove irrelevant query params 
-// and unify slashes format
+
+// Optional: Redirect the browser to the 
+// "cleaned" URL to remove irrelevant query params
 if (req.originalUrl !== clearedURL) res.redirect(clearedURL)
 ```
 
 ## router.hydrateFromState
 
-Accepts a `router.state` from an object and makes all the necessary preparations for rendering.
+Initializes the router using a pre-existing state object.
 
 ```ts
 const stateFromServer = window.__ROUTER_STATE__;
 
-// what is expected from the server
+// Expected state structure from the server:
 stateFromServer.user = <!-- @include: @/snippets/state.md -->
-
+  
 await router.hydrateFromState({ state: stateFromServer })
 ```
 
-This function is intended to be used with SSR, so it does not call any lifecycle functions because
-they have already been called on server. So use it only to restore state from the server.
+This method is designed for SSR hydration. It does not trigger lifecycle functions, as they are assumed
+to have already run on the server.
+
+::: tip
+The `props` property is not required for hydration; it will be automatically restored from the
+corresponding `Config` to preserve non-serializable data structures.
+:::
 
 ## router.state
 
-A **reactive** object with route names as keys and `State` as values, for example:
+A **reactive** object where keys correspond to `Config.name` and values are the associated `State`.
 
 ```ts
-console.log(router.state.user)
+console.log(router.state.user);
+
 <!-- @include: @/snippets/state-commented.md -->
 ```
 
-Is intended to be used to show some values in UI or for writing logic in autoruns/effects. When
-you redirect to the same route with different params or query, only the values in `router.state.user`
-will be updated, and no page component will be re-rendered.
+Use this to bind routing data to your UI or to drive logic in effects and reactions. When navigating
+to the same route with different parameters or query, the values within `router.state.user` update
+reactively without re-rendering the entire page component.
 
 ::: tip
-The router **does not** automatically destroy the old `State` when you redirect to another route.
-So, it will be always there, but with `isActive: false` parameter. If you want to save some bytes of memory,
-you can destroy the old `State` manually in [beforeComponentChange](#beforecomponentchange). This is
-made for stability reasons when you have async functions or autoruns attached to some inactive state.
+The router **does not** discard the previous `State` when navigating to a new route. For example, if
+you navigate to `home`, `router.state.user` remains available but its `isActive` property will be
+`false`. This ensures stability for any pending async operations or reactions tied to the previous
+state.
 :::
 
 ## router.isRedirecting
 
-A reactive boolean parameter that helps with showing loaders on redirects.
+A reactive boolean indicating whether a navigation is currently in progress. Useful for displaying
+global or local loading indicators:
 
-::: code-group
-```tsx [React]
-// If you want a global "loading line" on top of page
-// or an overlay on the whole page
-function GlobalLoader() {
-  const { router } = useContext(RouterContext);
-  
-  return router.isRedirecting ? <Loader /> : null;
-}
-
-// If you want a local spinner in some button
-function SomeComponent() {
-  const { router } = useContext(RouterContext);
-
-  return <Button isLoading={router.isRedirecting} />;
-}
-```
-```tsx [Preact]
-// If you want a global "loading line" on top of page
-// or an overlay on the whole page
-function GlobalLoader() {
-  const { router } = useContext(RouterContext);
-  
-  return router.isRedirecting ? <Loader /> : null;
-}
-
-// If you want a local spinner in some button
-function SomeComponent() {
-  const { router } = useContext(RouterContext);
-
-  return <Button isLoading={router.isRedirecting} />;
-}
-```
-```tsx [Solid]
-// If you want a global "loading line" on top of page
-// or an overlay on the whole page
-function GlobalLoader() {
-  const { router } = useContext(RouterContext);
-  
-  return <Show when={router.isRedirecting}><Loader/></Show>;
-}
-
-// If you want a local spinner in some button
-function SomeComponent() {
-  const { router } = useContext(RouterContext);
-
-  return <Button isLoading={router.isRedirecting} />;
-}
-```
-```vue [Vue]
-<script lang="ts" setup>
-  import { useRouterStore } from '../../../router';
-
-  const { router } = useRouterStore();
-</script>
-
-<template>
-  <!-- 
-    If you want a global "loading line" on top of page
-    or an overlay on the whole page 
-  -->
-  <Loader v-if="router.isRedirecting" />
-  
-  <!-- If you want a local spinner in some button -->
-  <Button :is-loading="router.isRedirecting">
-    Submit
-  </Button>
-</template>
-```
-:::
+<!-- @include: @/snippets/router-api/loaders.md -->
 
 ## router.getActiveState
 
-Returns the current `State` of the active route, if any. May be useful when you have several
-global layouts above the Router component.
+Returns the currently active `State`, if one exists. This is useful for switching top-level layouts:
 
+<!-- @include: @/snippets/router-api/active-state.md -->
 
-Or to connect Dev Tools to the router to see all the changes. Currently no built-in Dev Tools
-are provided, but you can effortlessly debug with
+It's also helpful for debugging route changes:
 
 ```ts
-// use the analog of autorun in your reactive system
 autorun(() => console.log(JSON.stringify(router.getActiveState())))
 ```
 
 ## router.preloadComponent
 
-By default, the router will load the component only during redirects. But sometimes you may want
-to preload the component programmatically. This is useful only when code splitting is enabled in
-your bundler.
+By default, the router only loads page components during navigation. `preloadComponent` allows you
+to manually trigger the `loader` (e.g., when the browser is idle) to fetch JS chunks in advance.
 
-```ts
-// initiate as usual
-await router.hydrateFromURL(location.pathname + location.search);
+<!-- @include: @/snippets/router-api/preload.md -->
 
-// preload when the network is idle and the page is fully rendered
-setTimeout(async () => {
-  try {
-    await router.preloadComponent('login')
-    await router.preloadComponent('dashboard')
-  } catch(e) {
-    console.error('Seems like the user lost connection')
-  }
-}, 5000)
-```
+## router.getGlobalArguments
+
+Returns the read-only configuration passed to `createRouter`. This is primarily used internally for
+synchronization and has limited practical use for most applications.
 
 ## beforeComponentChange
 
-This lifecycle function is called only when the rendered component changes (not route!) and is
-intended to be used for modular architectures. For example, if some page exports a modular
-store like `export class PageStore { data: {}, destroy() {} }`
+This function is triggered only when the active page component changes (as opposed to every route
+change). It's particularly useful in modular architectures where pages might export their own
+lifecycle-managed stores.
 
-```ts
-const globalStore = { pages: {} };
+<!-- @include: @/snippets/router-api/before-change.md -->
 
-createRouter({
-  routes,
-  adapters,
-  beforeComponentChange({ prevConfig, currentConfig }) {
-    const ExportedPageStore = currentConfig.otherExports.PageStore;
-    
-    if (ExportedPageStore) {
-      globalStore.pages[currentConfig.name] = new ExportedPageStore();
-    }
-    
-    // now check the previous page store and destroy it if needed
-    globalStore.pages[prevConfig.name]?.destroy();
-      
-    delete globalStore.pages[prevConfig.name];
-  }
-})
-```
-
-Then you just pass `globalStore` to your pages with Context and get code-splitting for modular
-stores. Also, this function may be used for cancelling async functions and API calls.
+By providing the `globalStore` to your components via Context, you can achieve efficient
+code-splitting for both your UI and your business logic (with full SSR support). This function can also
+be used to cancel pending API calls or subscriptions.
 
 ::: tip
-Destroying in most cases should be delayed until all async logic is completed, otherwise it may
-try to read non-existent `globalStore.pages[prevConfig.name]`.
+In most cases, you should delay the destruction of the previous store until any related async logic
+has finished to avoid potential "missing property" errors.
 :::
 
 ## Types
 
+### TypeRouter
+
+<<< @/../packages/core/types.ts#type-router{typescript}
+
 ### TypeAdapters
 
-You may pass your own adapters if they satisfy the exported type.
-This may be useful for integration of your own reactivity system.
+Reactive Route is designed to be extensible. You can integrate custom reactivity systems by
+providing your own adapters.
 
 <<< @/../packages/core/types.ts#type-adapters{typescript}

@@ -1,8 +1,8 @@
 # Config
 
-The basic idea is covered in the [Core Concepts](/guide/core-concepts) section.
+The general purpose is described in the [Core Concepts](/guide/core-concepts) section.
 
-## Properties Configurable
+## Configurable Properties
 
 <table>
   <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
@@ -15,20 +15,22 @@ string
 ```
 
 </td>
-<td>The pathname, should start with <code>/</code> and can include dynamic segments</td>
+<td>The route's path. It must start with <code>/</code> and can include dynamic segments prefixed
+with <code>:</code></td>
 </tr><tr>
 <td><code>loader</code></td>
 <td class="table-td">
 
 ```ts
 () => Promise<{
-  default,
+  default: PageComponent,
   ...otherExports
 }>
 ```
 
 </td>
-<td>A function that returns a Promise resolving to the component (it should be in the <strong>default</strong> export)</td>
+<td>A function that returns a Promise resolving to an object containing the page component in the
+<strong>default</strong> export</td>
 </tr><tr>
 <td><code>props?</code></td>
 <td class="table-td">
@@ -38,20 +40,20 @@ Record<string, any>
 ```
 
 </td>
-<td>Static props to pass to the component</td>
+<td>Static props to be passed to the page component</td>
 </tr><tr>
 <td><code>params?</code></td>
 <td class="table-td">
 
 ```ts
 Record<
-  TypeExtractRouteParams<TPath>,
+  TypeExtractParams<TPath>,
   (value: string) => boolean
 >
 ```
 
 </td>
-<td>Validation functions for path segments (required when the route variant is <em>Dynamic</em> and restricted when <em>Static</em>)</td>
+<td>Validators for dynamic path segments</td>
 </tr><tr>
 <td><code>query?</code></td>
 <td class="table-td">
@@ -64,36 +66,35 @@ Record<
 ```
 
 </td>
-<td>Validation functions for query parameters</td>
+<td>Validators for query parameters</td>
 </tr><tr>
 <td><code>beforeEnter?</code></td>
 <td class="table-td">
 
 ```ts
-(lifecycleConfig: TypeLifecycleConfig) => 
+(data: TypeLifecycleConfig) => 
   Promise<void>
 ```
 
 </td>
-<td>A lifecycle function, called before entering the route</td>
+<td>A lifecycle function called before a navigation to this page</td>
 </tr><tr>
 <td><code>beforeLeave?</code></td>
 <td class="table-td">
 
 ```ts
-(lifecycleConfig: TypeLifecycleConfig) => 
+(data: TypeLifecycleConfig) => 
   Promise<void>
 ```
 
 </td>
-<td>A lifecycle function, called before leaving the route</td>
+<td>A lifecycle function called before navigating away from this page</td>
   </tr></tbody>
 </table>
 
+## Auto Properties
 
-## Properties Internal
-
-These arguments are auto-added by the library and can't be specified manually.
+These are automatically added by the library and should not be specified manually.
 
 <table>
   <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
@@ -106,7 +107,7 @@ string
 ```
 
 </td>
-<td>Equal to the object key</td>
+<td>Matches the key used in the routes object</td>
 </tr><tr>
 <td><code>component?</code></td>
 <td class="table-td">
@@ -116,7 +117,7 @@ any
 ```
 
 </td>
-<td>This is a <code>default</code> export returned from the <code>loader</code> function</td>
+<td>The <code>default</code> export returned by the <code>loader</code></td>
 </tr><tr>
 <td><code>otherExports?</code></td>
 <td class="table-td">
@@ -126,61 +127,58 @@ Record<string, any>
 ```
 
 </td>
-<td>This is all the exports returned from the <code>loader</code> function except <code>default</code></td>
+<td>All exports returned by the <code>loader</code> except for <code>default</code></td>
   </tr></tbody>
 </table>
 
-## Static / Dynamic
+## Static vs. Dynamic Routes
 
-There are only two variants - `Static` and `Dynamic`.
-Dynamic routes have parameters in their paths, indicated by a colon prefix:
+There are two main `Config` variants — `Static` and `Dynamic` (which contain path segments prefixed
+with a colon):
 
-```ts
-home: { // Static
-  path: '/',
-  loader: () => import('./pages/home')
-},
-user: { // Dynamic
-  path: '/user/:id', 
-  params: {
-    id: (value) => /^\d+$/.test(value) // Validation function
-  },
-  loader: () => import('./pages/user')
-}
-```
+<!-- @include: @/snippets/config/static-dynamic.md -->
 
-A validation function is required, and if it's not satisfied in any route, the user will be redirected to the `notFound` route.
-If the page component is rendered, you can be sure that all the params are validated and present in `router.state[routeName].params`.
+Validators for dynamic path segments are **mandatory**. TypeScript automatically extracts these
+keys from your path string to provide accurate autocomplete in the `params` object.
 
-## Query
+If a validator returns `false` (for example, if a numeric ID is expected but `/user/abc` is
+visited) and no other matching route is found, the user will be redirected to the `notFound`
+route.
 
-Both types may have query parameters:
+Once a page component is rendered, you can be certain that all path parameters have been
+validated and are available in `router.state[name].params`.
 
-```ts
-search: {
-  path: '/search',
-  query: {
-    text: (value) => value.length > 1
-  },
-  loader: () => import('./pages/search')
-}
-```
+## Query Parameters
 
-A validation function is required, and if it's not satisfied, the parameter will be inaccessible from the
-`State`. This means that all query parameters are optional and may be `undefined` in `router.state[routeName].query`.
+Both route variants can define expected query parameters:
+
+<!-- @include: @/snippets/config/query.md -->
+
+If a query parameter validator returns `false`, that parameter will be `undefined` in
+`router.state[name].query`. Consequently, all query parameters are treated as optional, and
+their absence or invalidity will not trigger a redirect to `notFound`.
+
+If your application logic requires certain query parameters to be mandatory, you can verify
+them within `beforeEnter` and perform an imperative redirect to `notFound` or another
+appropriate route.
 
 ## Lifecycle Functions
 
-There are two powerful lifecycle functions that allow you to control the navigation flow and 
-perform data loading.
+> [!IMPORTANT]
+> Both lifecycle functions are triggered when navigating to a new `Config` or when dynamic
+> parameters change. They are **not** triggered by query parameter changes within the same route.
+> 
+> Currently, the router does not support automated data loading based solely on query changes. If
+> you need this functionality, you should load data by reacting to changes in
+> `router.state[name].query` within your component or store.
 
-`beforeEnter` is called before entering a route. It can be used to redirect to another route, 
-perform authentication checks, and load data.
+The async `beforeEnter` is ideal for authentication checks, data prefetching, or
+redirecting to a different route.
 
-`beforeLeave` is called before leaving a route. It can be used to prevent navigation or 
-show a confirmation dialog.
+The async `beforeLeave` can be used to interrupt navigation (e.g., to confirm unsaved
+changes).
 
-Both have a first argument with API:
+Both functions receive an object with the following properties as their first argument:
 
 <table>
   <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
@@ -193,7 +191,7 @@ TypeState
 ```
 
 </td>
-<td>Where the router is redirecting</td>
+<td>The intended next <code>State</code></td>
 </tr><tr>
 <td><code>currentState?</code></td>
 <td class="table-td">
@@ -203,7 +201,7 @@ TypeState
 ```
 
 </td>
-<td>Current route state (is <code>undefined</code> until the first redirect)</td>
+<td>The currently active <code>State</code> (<code>undefined</code> during the initial navigation)</td>
 </tr><tr>
 </tr><tr>
 <td><code>preventRedirect</code></td>
@@ -214,33 +212,47 @@ TypeState
 ```
 
 </td>
-<td>A method to stop the redirecting process</td>
+<td>A method to stop the current navigation</td>
 </tr><tr>
 <td><code>redirect</code></td>
 <td class="table-td">
 
 ```ts
-(routePayload: TypeRoutePayload) => 
+(payload: TypePayload) => 
   void
 ```
 
 </td>
-<td>A method to redirect inside the lifecycle. We can't use <code>router.redirect</code> here
-because routes are defined before the router</td>
+<td>A method to perform a redirect from within the lifecycle. Since <code>createRoutes</code> is
+called before the router is initialized, you must use this instead of
+<code>router.redirect</code></td>
   </tr></tbody>
 </table>
 
-Here is a simple demonstration:
+Example usage:
 
 <!-- @include: @/snippets/config/lifecycle.md -->
 
-Always remember to use `return` with `redirect` and `preventRedirect` to ensure proper flow control.
-And be careful with `redirect` function in lifecycle - it has no detailed TS types to avoid circular dependency.
-So, if you refactor your routes, TS errors will not be shown here which may lead to
-incorrect redirects.
+Always use `return` with `redirect` and `preventRedirect` to ensure predictable navigation logic.
 
-Uncaught errors in lifecycle functions will lead to the rendering of the `internalError` route,
-so it's important to handle errors properly using `try-catch` blocks or `Promise.catch()` methods.
+> [!WARNING]
+> The `redirect` method within lifecycle functions does not have full TypeScript coverage for
+> payloads. Use it with care, as TS will not catch errors if you rename routes during
+> refactoring.
 
-Note that `beforeEnter` is called on dynamic parameter changes, but not called on query changes.
-This behavior may become configurable in future versions.
+Uncaught errors in lifecycle functions will trigger the `internalError` route. It is essential to
+handle potential errors using `try-catch` blocks or `Promise.catch()`.
+
+## Types
+
+### TypeConfigConfigurable 
+
+The object structure expected by `createRoutes`.
+
+<<< @/../packages/core/types.ts#type-config-configurable{typescript}
+
+### TypeConfig
+
+The internal enriched object used by the router.
+
+<<< @/../packages/core/types.ts#type-config{typescript}
