@@ -1,6 +1,6 @@
-# Состояние (State)
+# State
 
-Основная идея изложена в разделе [Основные концепции](/ru/guide/core-concepts).
+Общее назначение изложено в разделе [Основные структуры](/ru/guide/core-concepts).
 
 ## Свойства
 
@@ -15,27 +15,33 @@ string
 ```
 
 </td>
-<td>Соответствует ключу объекта в конфигурации маршрутов</td>
+<td>Соответствует ключу объекта</td>
 </tr><tr>
 <td><code>params</code></td>
 <td class="table-td">
 
 ```ts
-Record<string, string>
+Record<
+  keyof TConfig['params'], 
+  string
+>
 ```
 
 </td>
-<td>Проверенные и декодированные значения параметров пути (params)</td>
+<td>Проверенные и декодированные значения params. Все ключи, которые описаны в валидаторах <code>Config</code> будут присутствовать</td>
 </tr><tr>
 <td><code>query</code></td>
 <td class="table-td">
 
 ```ts
-Record<string, string>
+Partial<Record<
+  keyof TConfig['query'], 
+  string
+>>
 ```
 
 </td>
-<td>Проверенные и декодированные значения параметров запроса (query)</td>
+<td>Проверенные и декодированные значения query. Все опциональны</td>
 </tr><tr>
 <td><code>pathname</code></td>
 <td class="table-td">
@@ -45,7 +51,7 @@ string
 ```
 
 </td>
-<td>Закодированная строка пути (pathname)</td>
+<td>Закодированный pathname</td>
 </tr><tr>
 <td><code>search</code></td>
 <td class="table-td">
@@ -55,7 +61,7 @@ string
 ```
 
 </td>
-<td>Закодированная строка параметров запроса (search)</td>
+<td>Закодированный search</td>
 </tr><tr>
 <td><code>url</code></td>
 <td class="table-td">
@@ -65,7 +71,7 @@ string
 ```
 
 </td>
-<td>Закодированная строка вида <code>${pathname}?${search}</code></td>
+<td>Закодированный <code>${pathname}?${search}</code></td>
 </tr><tr>
 <td><code>isActive</code></td>
 <td class="table-td">
@@ -75,17 +81,22 @@ boolean
 ```
 
 </td>
-<td>Индикатор того, что соответствующий компонент страницы отрендерен или будет отрендерен в следующем тике</td>
+<td>Указывает, что компонент страницы этого <code>State</code> отрендерен или будет отрендерен в следующем тике</td>
 </tr><tr>
 <td><code>props?</code></td>
 <td class="table-td">
 
 ```ts
-Record<string, any>
+TConfig['props']
 ```
 
 </td>
-<td>Статические пропсы из <code>Config</code></td>
+<td>Статичный объект из <code>Config</code></td>
 </tr></tbody>
 </table>
 
+## Типы
+
+### TypeState
+
+<<< @/../packages/core/types.ts#type-state{typescript}

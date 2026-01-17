@@ -4,7 +4,7 @@
 
 The relevant imports are as follows
 
-```typescript
+```ts
 import { Router } from 'reactive-route/react';
 import { adapters } from 'reactive-route/adapters/mobx-react';
 ```
@@ -21,7 +21,7 @@ MobX this is presumably already done).
 
 The relevant imports are as follows
 
-```typescript
+```ts
 import { Router } from 'reactive-route/react';
 import { adapters } from 'reactive-route/adapters/kr-observable-react';
 ```

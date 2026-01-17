@@ -22,7 +22,7 @@ and fill it with values. It usually looks like this:
 <!-- @include: @/snippets/payload.md -->
 ```
 
-It can be created from a string with [router.locationToPayload](/guide/router-api#router-locationtopayload), 
+It can be created from a string with [router.urlToPayload](/guide/router-api#router-urltopayload), 
 but usually you will pass it manually to the [router.redirect](/guide/router-api#router-redirect) 
 function imperatively:
 
@@ -60,7 +60,7 @@ In Reactive Route the router handles the process of encoding and decoding in thi
 ```ts
 await router.hydrateFromURL(`/user/with%20space?phone=and%26symbols`);
 
-// under the hood it calls router.locationToPayload to create a Payload
+// under the hood it calls router.urlToPayload to create a Payload
 // with decoded values
 // {
 //   name: 'user', 
@@ -85,5 +85,5 @@ console.log(router.state.user)
 // }
 ```
 
-So, the process is double-sided. `locationToPayload` validates and decodes, while `payloadToState`
+So, the process is double-sided. `urlToPayload` validates and decodes, while `payloadToState`
 validates and encodes to ensure safety, prevent malformed values and produce correct URLs.

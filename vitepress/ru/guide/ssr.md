@@ -1,186 +1,26 @@
-# Серверный рендеринг (SSR)
+# Серверный рендеринг
 
-Для серверного рендеринга вам необходимо инициализировать роутер как на сервере, так и на клиенте. Утилиты `escapeAllStrings` и `unescapeAllStrings` не предоставляются этой библиотекой, так как если вы используете SSR, они у вас, скорее всего, уже есть — например, из `lodash`.
+Для серверного рендеринга необходимо инициализировать роутер на сервере и передать сформированный
+`router.state` браузеру. Утилиты `escapeAllStrings` и `unescapeAllStrings` не включены в библиотеку.
 
-### Сервер (Server)
+### Сервер
 
-::: code-group
-```tsx [React]
-import { renderToString } from 'react-dom/server';
-import { getRouter, RouterContext } from 'router';
+<!-- @include: @/snippets/ssr/server.md -->
 
-<!-- @include: @/snippets/ssr.md -->
+В данном коде в итоговый html не вставляются ссылки на js и css файлы, обычно это делается
+бандлером. Полный код с настройкой бандлера можно посмотреть в [Примерах](/ru/examples/react).
 
-  const htmlMarkup = renderToString(
-    <RouterContext.Provider value={{ router }}>
-      <App />
-    </RouterContext.Provider>
-  );
+Для цепочек редиректов на сервере используется `if (error instanceof RedirectError) return res.redirect(error.message)`. 
+Эта ошибка выбрасывается, когда в `beforeEnter` вернулся редирект на другой `Config`, например, 
+если пользователь не прошел авторизацию и пытается зайти в авторизованную зону.
 
-  const routerJS = JSON.parse(JSON.stringify({ router }));
-
-  res.send(
-    template
-      .replace(`<!-- HTML -->`, htmlMarkup)
-      .replace('<!-- INITIAL_DATA -->', JSON.stringify(
-        escapeAllStrings(storeJS)
-      ))
-  );
-});
-```
-```tsx [Preact]
-import { renderToString } from 'preact-render-to-string';
-import { getRouter, RouterContext } from 'router';
-
-<!-- @include: @/snippets/ssr.md -->
-
-  const htmlMarkup = renderToString(
-    <RouterContext.Provider value={{ router }}>
-      <App />
-    </RouterContext.Provider>
-  );
-
-  const routerJS = JSON.parse(JSON.stringify({ router }));
-
-  res.send(
-    template
-      .replace(`<!-- HTML -->`, htmlMarkup)
-      .replace('<!-- INITIAL_DATA -->', JSON.stringify(
-        escapeAllStrings(storeJS)
-      ))
-  );
-});
-```
-```tsx [Solid]
-import { generateHydrationScript, renderToString } from 'solid-js/web';
-import { getRouter, RouterContext } from 'router';
-
-<!-- @include: @/snippets/ssr.md -->
-
-  const htmlMarkup = renderToString(() => (
-    <RouterContext.Provider value={{ router }}>
-      <App />
-    </RouterContext.Provider>
-  ));
-
-  const routerJS = JSON.parse(JSON.stringify({ router }));
-  
-  res.send(
-    template
-      .replace(`<!-- HTML -->`, htmlMarkup)
-      .replace(`<!-- HYDRATION -->`, generateHydrationScript())
-      .replace('<!-- INITIAL_DATA -->', JSON.stringify(
-        escapeAllStrings(routerJS)
-      ))
-  );
-});
-```
-```ts [Vue]
-import { createSSRApp } from 'vue';
-import { renderToString } from 'vue/server-renderer';
-import { getRouter, routerStoreKey } from './router';
-
-<!-- @include: @/snippets/ssr.md -->
-
-  const htmlMarkup = await renderToString(
-    createSSRApp(App, { router }).provide(routerStoreKey, { router })
-  );
-  const storeJS = JSON.parse(JSON.stringify({ router }));
-
-  res.send(
-    template
-      .replace(`<!-- HTML -->`, htmlMarkup)
-      .replace('<!-- INITIAL_DATA -->', JSON.stringify(
-        escapeAllStrings(storeJS)
-      ))
-  );
-});
-```
+::: tip
+Способ сериализации `JSON.parse(JSON.stringify(router.state))` достаточен, так как `router.state` -
+простая структура. Однако если в `Config.props` переданы сложные данные (классы, объекты с методами, Date и т.п.),
+то лучше перед сериализацией на сервере их удалять. На клиенте они проставятся автоматически при вызове 
+[router.hydrateFromState](/ru/guide/router-api#router-hydratefromstate)
 :::
 
-### Клиент (Client)
+### Клиент
 
-::: code-group
-```tsx [React]
-import { hydrateRoot } from 'react';
-
-import { App } from './App';
-import { getRouter, RouterContext } from './router';
-import { unescapeAllStrings } from './utils/unescapeAllStrings';
-
-const router = getRouter();
-
-await router.hydrateFromState(
-  unescapeAllStrings(window.INITIAL_DATA).router
-);
-
-hydrateRoot(
-  document.getElementById('app')!,
-  <RouterContext.Provider value={{ router }}>
-    <App />
-  </RouterContext.Provider>
-);
-```
-```tsx [Preact]
-import { hydrate } from 'preact';
-
-import { App } from './App';
-import { getRouter, RouterContext } from './router';
-import { unescapeAllStrings } from './utils/unescapeAllStrings';
-
-const router = getRouter();
-
-await router.hydrateFromState(
-  unescapeAllStrings(window.INITIAL_DATA).router
-);
-
-hydrate(
-  <RouterContext.Provider value={{ router }}>
-    <App />
-  </RouterContext.Provider>,
-  document.getElementById('app')!
-);
-```
-
-```tsx [Solid]
-import { hydrate } from 'solid-js/web';
-
-import { App } from './App';
-import { getRouter, RouterContext } from './router';
-import { unescapeAllStrings } from './utils/unescapeAllStrings';
-
-const router = getRouter();
-
-await router.hydrateFromState(
-  unescapeAllStrings(window.INITIAL_DATA).router
-);
-
-hydrate(
-  () => (
-    <RouterContext.Provider value={{ router }}>
-      <App />
-    </RouterContext.Provider>
-  ),
-  document.getElementById('app')!
-);
-```
-
-```ts [Vue]
-import { createSSRApp } from 'vue';
-
-import { App } from './App';
-import { getRouter, RouterContext } from './router';
-import { unescapeAllStrings } from './utils/unescapeAllStrings';
-
-const router = getRouter();
-
-await router.hydrateFromState(
-  unescapeAllStrings(window.INITIAL_DATA).router
-);
-
-createSSRApp(App, { router })
-  .provide(routerStoreKey, { router })
-  .mount('#app');
-```
-:::
-
+<!-- @include: @/snippets/ssr/client.md -->

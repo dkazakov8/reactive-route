@@ -4,7 +4,7 @@
 
 The relevant imports are as follows
 
-```typescript
+```ts
 import { Router } from 'reactive-route/solid';
 import { adapters } from 'reactive-route/adapters/solid';
 ```
@@ -15,7 +15,7 @@ No extra packages or configuration needed.
 
 The relevant imports are as follows
 
-```typescript
+```ts
 import { Router } from 'reactive-route/solid';
 import { adapters } from 'reactive-route/adapters/mobx-solid';
 ```
@@ -25,7 +25,7 @@ You should ensure that package `mobx` is installed.
 Actually Solid.js has no native integration with MobX. So if you use MobX with Solid.js you probably
 use something like this:
 
-```typescript
+```ts
 import { Reaction } from 'mobx';
 import { enableExternalSource } from 'solid-js';
 
@@ -51,7 +51,7 @@ enableExternalSource((fn, trigger) => {
 
 The relevant imports are as follows
 
-```typescript
+```ts
 import { Router } from 'reactive-route/solid';
 import { adapters } from 'reactive-route/adapters/kr-observable-solid';
 ```
@@ -60,7 +60,7 @@ You should ensure that package `kr-observable` is installed.
 
 Be sure to enable integration in your entry file
 
-```typescript
+```ts
 import { enableObservable } from 'kr-observable/solidjs';
 
 enableObservable();

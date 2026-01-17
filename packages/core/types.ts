@@ -26,13 +26,14 @@ export type TypePayloadDefault = {
   replace?: boolean;
 };
 
-export type TypeLifecycleFunction = (lifecycleConfig: {
+export type TypeLifecycleFunction = (data: {
   nextState: TypeState<TypeConfig>;
   currentState?: TypeState<TypeConfig>;
   redirect: (payload: TypePayloadDefault) => void;
   preventRedirect: () => void;
 }) => Promise<any>;
 
+// #region type-config-configurable
 export type TypeConfigConfigurable<TPath extends string> = {
   path: TPath;
   loader: () => Promise<{ default: any }>;
@@ -44,7 +45,9 @@ export type TypeConfigConfigurable<TPath extends string> = {
 } & (TypeExtractParams<TPath> extends never
   ? { params?: never }
   : { params: { [K in keyof TypeExtractParams<TPath>]: TypeValidator } });
+// #endregion type-config-configurable
 
+// #region type-config
 export type TypeConfig = {
   path: string;
   name: string;
@@ -58,17 +61,22 @@ export type TypeConfig = {
   component?: any;
   otherExports?: Record<string, any>;
 };
+// #endregion type-config
 
-export type TypeState<TRoute extends TypeConfig> = {
-  name: TRoute['name'];
-  props: TRoute['props'];
-  query: Partial<Record<keyof TRoute['query'], string>>;
-  params: Record<keyof TRoute['params'], string>;
+// #region type-state
+export type TypeState<TConfig extends TypeConfig> = {
+  name: TConfig['name'];
+  query: Partial<Record<keyof TConfig['query'], string>>;
+  params: Record<keyof TConfig['params'], string>;
+
   url: TypeURL;
   search: string;
   pathname: string;
+
+  props: TConfig['props'];
   isActive: boolean;
 };
+// #endregion type-state
 
 export type TypeRoutesDefault = Record<'notFound' | 'internalError' | string, TypeConfig>;
 
@@ -83,27 +91,27 @@ export type TypeRouterLocalObservable = {
 
 export type TypePayload<
   TRoutes extends TypeRoutesDefault,
-  TRouteName extends keyof TRoutes,
-> = TRoutes[TRouteName]['params'] extends Record<string, TypeValidator>
-  ? TRoutes[TRouteName]['query'] extends Record<string, TypeValidator>
+  TName extends keyof TRoutes,
+> = TRoutes[TName]['params'] extends Record<string, TypeValidator>
+  ? TRoutes[TName]['query'] extends Record<string, TypeValidator>
     ? {
-        name: TRouteName;
-        params: Record<keyof TRoutes[TRouteName]['params'], string>;
-        query?: Partial<Record<keyof TRoutes[TRouteName]['query'], string>>;
+        name: TName;
+        params: Record<keyof TRoutes[TName]['params'], string>;
+        query?: Partial<Record<keyof TRoutes[TName]['query'], string>>;
         replace?: boolean;
       }
     : {
-        name: TRouteName;
-        params: Record<keyof TRoutes[TRouteName]['params'], string>;
+        name: TName;
+        params: Record<keyof TRoutes[TName]['params'], string>;
         replace?: boolean;
       }
-  : TRoutes[TRouteName]['query'] extends Record<string, TypeValidator>
+  : TRoutes[TName]['query'] extends Record<string, TypeValidator>
     ? {
-        name: TRouteName;
-        query?: Partial<Record<keyof TRoutes[TRouteName]['query'], string>>;
+        name: TName;
+        query?: Partial<Record<keyof TRoutes[TName]['query'], string>>;
         replace?: boolean;
       }
-    : { name: TRouteName; replace?: boolean };
+    : { name: TName; replace?: boolean };
 
 export type TypeGlobalArguments<TRoutes extends TypeRoutesDefault> = {
   adapters: TypeAdapters;
@@ -116,35 +124,33 @@ export type TypeGlobalArguments<TRoutes extends TypeRoutesDefault> = {
   }) => void;
 };
 
+// #region type-router
 export type TypeRouter<TRoutes extends TypeRoutesDefault> = {
   state: {
-    [TRouteName in keyof TRoutes | 'notFound' | 'internalError']?: TypeState<TRoutes[TRouteName]>;
+    [TName in keyof TRoutes | 'notFound' | 'internalError']?: TypeState<TRoutes[TName]>;
   };
   isRedirecting: boolean;
 
-  // (internal) the arguments passed to createRouter
   getGlobalArguments(): TypeGlobalArguments<TRoutes>;
 
-  // (internal) handle history back/forward events
   historyListener(): void;
   attachHistoryListener(): void;
   destroyHistoryListener(): void;
 
-  locationToPayload(url: TypeURL): TypePayload<TRoutes, keyof TRoutes>;
+  urlToPayload(url: TypeURL): TypePayload<TRoutes, keyof TRoutes>;
 
-  payloadToState<TRouteName extends keyof TRoutes>(
-    payload: TypePayload<TRoutes, TRouteName>
-  ): TypeState<TRoutes[TRouteName]>;
+  payloadToState<TName extends keyof TRoutes>(
+    payload: TypePayload<TRoutes, TName>
+  ): TypeState<TRoutes[TName]>;
 
-  redirect<TRouteName extends keyof TRoutes>(
-    payload: TypePayload<TRoutes, TRouteName>
-  ): Promise<TypeURL>;
+  redirect<TName extends keyof TRoutes>(payload: TypePayload<TRoutes, TName>): Promise<TypeURL>;
 
   getActiveState(): TypeState<TRoutes[keyof TRoutes]> | undefined;
 
   hydrateFromURL(url: TypeURL): Promise<TypeURL>;
 
-  hydrateFromState(routerState: Partial<Pick<TypeRouter<TRoutes>, 'state'>>): Promise<void>;
+  hydrateFromState(state: Partial<Pick<TypeRouter<TRoutes>, 'state'>>): Promise<void>;
 
   preloadComponent(name: keyof TRoutes): Promise<void>;
 };
+// #endregion type-router

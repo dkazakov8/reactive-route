@@ -4,62 +4,43 @@
 
 Соответствующие импорты:
 
-```typescript
+```ts
 import { Router } from 'reactive-route/solid';
 import { adapters } from 'reactive-route/adapters/solid';
 ```
 
-Никаких дополнительных пакетов или конфигураций не требуется.
+Никаких дополнительных пакетов или конфигурации не требуется.
 
 ## MobX
 
 Соответствующие импорты:
 
-```typescript
+```ts
 import { Router } from 'reactive-route/solid';
 import { adapters } from 'reactive-route/adapters/mobx-solid';
 ```
 
-Убедитесь, что пакет `mobx` установлен.
+Пакет `mobx` должен быть установлен.
 
-На самом деле, у Solid.js нет нативной интеграции с MobX. Поэтому, если вы используете MobX с Solid.js, вы, вероятно, используете что-то вроде этого:
+У Solid.js нет нативной интеграции с MobX. Поэтому соответствующий код должен быть включен в
+entry file, например:
 
-```typescript
-import { Reaction } from 'mobx';
-import { enableExternalSource } from 'solid-js';
-
-let id = 0;
-
-enableExternalSource((fn, trigger) => {
-  const reaction = new Reaction(`mobx@${++id}`, trigger);
-
-  return {
-    track: (x) => {
-      let next;
-      reaction.track(() => (next = fn(x)));
-      return next;
-    },
-    dispose: () => reaction.dispose(),
-  };
-});
-```
-
-... или у вас есть лучшие альтернативы. В любом случае, что-то подобное должно быть включено в ваш входной файл (entry file).
+<!-- @include: @/snippets/integration/mobx.md -->
 
 ## Observable
 
 Соответствующие импорты:
 
-```typescript
+```ts
 import { Router } from 'reactive-route/solid';
 import { adapters } from 'reactive-route/adapters/kr-observable-solid';
 ```
 
-Убедитесь, что пакет `kr-observable` установлен.
+Пакет `kr-observable` должен быть установлен.
 
-Не забудьте включить интеграцию в вашем входном файле (entry file):
+Не забудьте включить интеграцию в entry file:
 
-```typescript
+```ts
 import { enableObservable } from 'kr-observable/solidjs';
 
 enableObservable();

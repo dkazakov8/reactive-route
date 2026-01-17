@@ -4,7 +4,7 @@
 
 This library fully supports unlimited redirects in SPA / SSR.
 
-```typescript [routes.ts]
+```ts [routes.ts]
 const routes = createRoutes({
   one: {
     path: '/1',

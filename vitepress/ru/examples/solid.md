@@ -1,6 +1,6 @@
 # Пример для Solid.js
 
-Чтобы использовать его, выполните следующие шаги:
+Необходимо загрузить папку с примером из репозитория и установить зависимости:
 
 ```shell
 npx degit dkazakov8/reactive-route/examples/solid solid-example

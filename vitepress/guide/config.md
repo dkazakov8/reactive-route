@@ -135,7 +135,7 @@ Record<string, any>
 There are only two variants - `Static` and `Dynamic`.
 Dynamic routes have parameters in their paths, indicated by a colon prefix:
 
-```typescript
+```ts
 home: { // Static
   path: '/',
   loader: () => import('./pages/home')
@@ -156,7 +156,7 @@ If the page component is rendered, you can be sure that all the params are valid
 
 Both types may have query parameters:
 
-```typescript
+```ts
 search: {
   path: '/search',
   query: {

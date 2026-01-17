@@ -43,6 +43,7 @@ export default defineConfig({
                 { text: 'React', link: '/guide/react' },
                 { text: 'Preact', link: '/guide/preact' },
                 { text: 'Solid.js', link: '/guide/solid' },
+                { text: 'Vue', link: '/guide/vue' },
               ],
             },
           ],
@@ -88,15 +89,16 @@ export default defineConfig({
                 { text: 'State', link: '/ru/guide/state' },
                 { text: 'Router API', link: '/ru/guide/router-api' },
                 { text: 'SSR', link: '/ru/guide/ssr' },
-                { text: 'Продвинутое использование', link: '/ru/guide/advanced' },
+                { text: 'Use-cases', link: '/ru/guide/advanced' },
               ],
             },
             {
-              text: 'Интеграция с фреймворками',
+              text: 'Интеграции',
               items: [
                 { text: 'React', link: '/ru/guide/react' },
                 { text: 'Preact', link: '/ru/guide/preact' },
                 { text: 'Solid.js', link: '/ru/guide/solid' },
+                { text: 'Vue', link: '/ru/guide/vue' },
               ],
             },
           ],
@@ -125,7 +127,36 @@ export default defineConfig({
   },
   themeConfig: {
     logo: '/file.svg',
-    search: { provider: 'local' },
+    search: {
+      provider: 'local',
+      options: {
+        locales: {
+          ru: {
+            translations: {
+              button: {
+                buttonText: 'Поиск',
+                buttonAriaLabel: 'Поиск',
+              },
+              modal: {
+                displayDetails: 'Отобразить подробный список',
+                resetButtonTitle: 'Сбросить поиск',
+                backButtonTitle: 'Закрыть поиск',
+                noResultsText: 'Нет результатов по запросу',
+                footer: {
+                  selectText: 'выбрать',
+                  selectKeyAriaLabel: 'выбрать',
+                  navigateText: 'перейти',
+                  navigateUpKeyAriaLabel: 'стрелка вверх',
+                  navigateDownKeyAriaLabel: 'стрелка вниз',
+                  closeText: 'закрыть',
+                  closeKeyAriaLabel: 'esc',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     socialLinks: [{ icon: 'github', link: 'https://github.com/dkazakov8/reactive-route' }],
     footer: {
       message: 'Released under the MIT License',

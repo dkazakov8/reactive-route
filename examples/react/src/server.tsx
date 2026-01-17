@@ -22,7 +22,7 @@ app.get('*', async (req, res) => {
   const template = fs.readFileSync(templatePath, 'utf-8');
 
   if (!SSR_ENABLED) {
-    return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- INITIAL_DATA -->', '{}'));
+    return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- ROUTER_STATE -->', '{}'));
   }
 
   const router = await getRouter();
@@ -42,12 +42,14 @@ app.get('*', async (req, res) => {
       <App />
     </RouterContext.Provider>
   );
-  const storeJS = JSON.parse(JSON.stringify({ router }));
 
   res.send(
     template
       .replace(`<!-- HTML -->`, htmlMarkup)
-      .replace('<!-- INITIAL_DATA -->', JSON.stringify(escapeAllStrings(storeJS)))
+      .replace(
+        '<!-- ROUTER_STATE -->',
+        JSON.stringify(escapeAllStrings(JSON.parse(JSON.stringify(router.state))))
+      )
   );
 });
 

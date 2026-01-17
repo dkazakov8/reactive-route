@@ -4,27 +4,26 @@
 
 Соответствующие импорты:
 
-```typescript
+```ts
 import { Router } from 'reactive-route/preact';
 import { adapters } from 'reactive-route/adapters/mobx-preact';
 ```
 
-Убедитесь, что пакеты `mobx` и `mobx-react-lite` установлены.
+Пакеты `mobx` и `mobx-preact` должны быть установлены.
 
-Если вы используете `mobx-react` вместо `mobx-react-lite`, вы можете создать псевдоним (alias) в своем сборщике или передать собственные адаптеры с похожей реализацией, но с `observer`, взятым из `mobx-react`.
-
-Не забудьте обернуть ваши компоненты, которые читают наблюдаемые (observable) параметры роутера, в `observer` (если вы используете MobX, это, скорее всего, уже сделано).
+Reactive Route — **реактивный**, не забывайте оборачивать в `observer` компоненты, читающие его
+свойства (например, [router.state](/ru/guide/router-api#router-state) или [router.isRedirecting](/ru/guide/router-api#router-isredirecting)).
 
 ## Observable
 
 Соответствующие импорты:
 
-```typescript
+```ts
 import { Router } from 'reactive-route/preact';
 import { adapters } from 'reactive-route/adapters/kr-observable-preact';
 ```
 
-Убедитесь, что пакет `kr-observable` установлен.
+Пакет `kr-observable` должен быть установлен.
 
-Не забудьте обернуть ваши компоненты, которые читают наблюдаемые (observable) параметры роутера, в `observer` (если вы используете Observable, это, скорее всего, уже сделано).
-
+Reactive Route — **реактивный**, не забывайте оборачивать в `observer` компоненты, читающие его
+свойства (например, [router.state](/ru/guide/router-api#router-state) или [router.isRedirecting](/ru/guide/router-api#router-isredirecting)).

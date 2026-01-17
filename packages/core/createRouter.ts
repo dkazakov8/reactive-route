@@ -19,7 +19,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     isRedirecting: false,
 
     historyListener() {
-      const payload = this.locationToPayload(`${location.pathname}${location.search}`);
+      const payload = this.urlToPayload(`${location.pathname}${location.search}`);
 
       void this.redirect({ ...payload, replace: true });
     },
@@ -34,7 +34,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       return globalArguments;
     },
 
-    locationToPayload(url) {
+    urlToPayload(url) {
       /**
        * This is the initial step when we only have a URL like `/path?foo=bar`
        *
@@ -80,6 +80,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         // return a static match instantly, it has the top priority
         if (!testedPathname.includes(':') && testedPathname === pathname) {
           config = testedConfig;
+          params = {};
 
           break;
         }
@@ -121,9 +122,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         }
       }
 
-      if (!config) {
-        return { name: 'notFound', params: {}, query: {} };
-      }
+      if (!config) return { name: 'notFound', params: {}, query: {} };
 
       if (config.query) {
         const urlQuery = new URLSearchParams(search);
@@ -139,8 +138,6 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
           }
         }
       }
-
-      if (!config.params) params = {};
 
       return { name: config.name, query, params };
     },
@@ -202,7 +199,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       const currentState = this.getActiveState();
       let nextState = this.payloadToState(nextPayload);
 
-      const beforeLeave = currentState ? routes[currentState.name]?.beforeLeave : undefined;
+      const beforeLeave = currentState ? routes[currentState.name].beforeLeave : undefined;
       const beforeEnter = routes[nextState.name].beforeEnter;
 
       if (currentState?.url === nextState.url) return currentState.url;
@@ -226,25 +223,25 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       this.isRedirecting = true;
 
       try {
-        const lifecycleConfig: Parameters<TypeLifecycleFunction>[0] = {
-          nextState: nextState,
-          currentState: currentState,
+        const data: Parameters<TypeLifecycleFunction>[0] = {
+          nextState,
+          currentState,
           redirect: ((redirectPayload: TypePayload<TRoutes, keyof TRoutes>) => {
             if (isClient) return redirectPayload;
 
-            const redirectRouteState = this.payloadToState(redirectPayload);
+            const redirectState = this.payloadToState(redirectPayload);
 
-            throw new RedirectError(redirectRouteState.url);
+            throw new RedirectError(redirectState.url);
           }) as any,
           preventRedirect() {
             throw new PreventError(`Redirect to ${nextState.url} was prevented`);
           },
         };
 
-        await beforeLeave?.(lifecycleConfig);
+        await beforeLeave?.(data);
 
         const redirectPayload: TypePayload<TRoutes, keyof TRoutes> | undefined =
-          await beforeEnter?.(lifecycleConfig);
+          await beforeEnter?.(data);
 
         if (redirectPayload) return this.redirect(redirectPayload);
       } catch (error: any) {
@@ -268,7 +265,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       adapters.batch(() => {
         if (!this.state[nextState.name]) {
           this.state[nextState.name] = nextState as any;
-        } else adapters.replaceObject(this.state[nextState.name]!, nextState as any);
+        } else adapters.replaceObject(this.state[nextState.name], nextState as any);
 
         const allStates: Array<TypeState<any>> = Object.values(this.state);
 
@@ -291,11 +288,11 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     },
 
     getActiveState() {
-      return Object.values(this.state).find((currentRoute) => currentRoute?.isActive);
+      return Object.values(this.state).find((state) => state?.isActive);
     },
 
-    async preloadComponent(routeName) {
-      const route = routes[routeName];
+    async preloadComponent(name) {
+      const route = routes[name];
 
       if (!route.component) {
         const { default: component, ...rest } = await route.loader();
@@ -305,18 +302,20 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       }
     },
 
-    hydrateFromURL(locationInput) {
-      return this.redirect(this.locationToPayload(locationInput));
+    hydrateFromURL(url) {
+      return this.redirect(this.urlToPayload(url));
     },
 
-    async hydrateFromState(routerData) {
+    async hydrateFromState({ state }) {
       adapters.batch(() => {
-        Object.assign(this.state, routerData.state);
+        Object.assign(this.state, state);
       });
 
-      const activeRoute = this.getActiveState();
+      const activeState = this.getActiveState();
 
-      await this.preloadComponent(activeRoute!.name);
+      activeState!.props = routes[activeState!.name].props;
+
+      await this.preloadComponent(activeState!.name);
     },
   } as TypeRouter<TRoutes>);
 
@@ -330,7 +329,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
   router.payloadToState = router.payloadToState.bind(router);
   router.hydrateFromState = router.hydrateFromState.bind(router);
   router.getGlobalArguments = router.getGlobalArguments.bind(router);
-  router.locationToPayload = router.locationToPayload.bind(router);
+  router.urlToPayload = router.urlToPayload.bind(router);
   router.getActiveState = router.getActiveState.bind(router);
 
   router.attachHistoryListener();

@@ -54,14 +54,12 @@ button.onclick = () => router.redirect(<!-- @include: @/snippets/payload.md -->)
 
 ```ts
 await router.hydrateFromURL(`/user/with%20space?phone=and%26symbols`);
-// "под капотом" вызывается router.locationToPayload для создания 
-// Payload с декодированными значениями
+
+// вызывается router.urlToPayload, создающий декодированный Payload
 <!-- @include: @/snippets/core-concepts/payload-decoded.md -->
 
-// дальше происходит установка State через router.payloadToState, 
-// который создает закодированные свойства
-
-console.log(router.state.user);
+// вызывается router.payloadToState, создающий закодированный State
+// router.state.user
 <!-- @include: @/snippets/core-concepts/state-decoded.md -->
 ```
 

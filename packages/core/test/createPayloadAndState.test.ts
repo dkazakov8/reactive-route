@@ -13,7 +13,7 @@ import { createRouter } from '../createRouter';
     });
 
     function check(locationInput: string, expected: any) {
-      expect(router.locationToPayload(locationInput)).to.deep.eq(expected);
+      expect(router.urlToPayload(locationInput)).to.deep.eq(expected);
     }
 
     function checkState(routePayload: any, expected: any) {
@@ -500,16 +500,16 @@ import { createRouter } from '../createRouter';
     });
 
     it('Throws an error when no validators', () => {
-      expect(() => router.locationToPayload('/test2/param')).to.throw(
+      expect(() => router.urlToPayload('/test2/param')).to.throw(
         'missing validator for pathname dynamic parameter "param"'
       );
-      expect(() => router.locationToPayload('/test2/param/')).to.throw(
+      expect(() => router.urlToPayload('/test2/param/')).to.throw(
         'missing validator for pathname dynamic parameter "param"'
       );
-      expect(() => router.locationToPayload('test2/param')).to.throw(
+      expect(() => router.urlToPayload('test2/param')).to.throw(
         'missing validator for pathname dynamic parameter "param"'
       );
-      expect(() => router.locationToPayload('test2/param/')).to.throw(
+      expect(() => router.urlToPayload('test2/param/')).to.throw(
         'missing validator for pathname dynamic parameter "param"'
       );
     });

@@ -10,18 +10,10 @@ const app = express();
 
 app.get('*', async (req, res) => {
   const template = `
-<!DOCTYPE html>
 <html>
-<head>
-  <script>window.INITIAL_DATA = <!-- INITIAL_DATA -->;</script>
-</head>
-<body>
-<div id="app"><!-- HTML --></div>
-</body>
+<head><script>window.ROUTER_STATE = <!-- ROUTER_STATE -->;</script></head>
+<body><div id="app"><!-- HTML --></div></body>
 <!-- HYDRATION -->
-<!-- ENTRY_CSS --><!-- /ENTRY_CSS -->
-<!-- ENTRY_JS --><!-- /ENTRY_JS -->
-<!-- HOT_RELOAD --><!-- /HOT_RELOAD -->
 </html>
 `;
 

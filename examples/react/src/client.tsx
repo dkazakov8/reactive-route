@@ -8,12 +8,10 @@ import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
 const router = await getRouter();
 
-const initialData = unescapeAllStrings((window as any).INITIAL_DATA as any);
-
 async function renderSSR() {
   console.log('renderSSR');
 
-  await router.hydrateFromState(initialData.router);
+  await router.hydrateFromState({ state: unescapeAllStrings((window as any).ROUTER_STATE) });
 
   hydrateRoot(
     document.getElementById('app')!,

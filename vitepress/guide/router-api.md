@@ -67,7 +67,7 @@ createRoutes({
 
 Navigates to a specified `Payload` and returns a `url` from a newly created `State`:
 
-```typescript
+```ts
 const clearedURL = await router.redirect(<!-- @include: @/snippets/payload.md -->)
 // router.state.user was created and returned it's url
 // clearedURL === '/user/9999?phone=123456'
@@ -77,7 +77,7 @@ const clearedURL = await router.redirect(<!-- @include: @/snippets/payload.md --
 
 This function is fully typed, and TypeScript hints will be shown for autocomplete.
 
-```typescript
+```ts
 // Good
 redirect({ name: 'home' })
 redirect({ name: 'user', params: { id: '123' } })
@@ -101,7 +101,7 @@ redirect({ name: 'user', params: { id: '123', a: 'b' } });
 redirect({ name: 'user', params: { id: '123' }, query: { a: 'b' } });
 ```
 
-## router.locationToPayload
+## router.urlToPayload
 
 Accepts a pathname+search string and returns `Payload`. If no matching `Config` is found,
 the `notFound` `Payload` will be returned with empty `params` and `query`.
@@ -109,10 +109,10 @@ the `notFound` `Payload` will be returned with empty `params` and `query`.
 Note that all irrelevant or invalid query parameters are stripped off.
 
 ```ts
-router.locationToPayload(`/user/9999?phone=123456&gtm=value`)
+router.urlToPayload(`/user/9999?phone=123456&gtm=value`)
 <!-- @include: @/snippets/payload-commented.md -->
 
-router.locationToPayload(`/not-existing/admin?hacker=sql-inject`)
+router.urlToPayload(`/not-existing/admin?hacker=sql-inject`)
 // { 
 //  name: 'notFound', 
 //  params: {}, 
@@ -132,7 +132,7 @@ router.payloadToState(<!-- @include: @/snippets/payload.md -->)
 
 ## router.hydrateFromURL
 
-Just an alias for `router.redirect(router.locationToPayload(locationString))`.
+Just an alias for `router.redirect(router.urlToPayload(locationString))`.
 So, it accepts a pathname+search string and returns a `url` from a newly created `State`.
 
 Note that all irrelevant or invalid query parameters are stripped off.
@@ -270,94 +270,6 @@ function SomeComponent() {
 Returns the current `State` of the active route, if any. May be useful when you have several
 global layouts above the Router component.
 
-::: code-group
-```tsx [React]
-import { LayoutLogin } from 'layouts/LayoutLogin'
-import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
-
-function App() {
-  const { router } = useContext(RouterContext);
-  
-  const activeStateName = router.getActiveState()?.name;
-  
-  const Layout = ['login', 'restore', 'checkSms'].includes(activeStateName) 
-    ? LayoutLogin 
-    : LayoutAuthZone;
-  
-  return (
-    <Layout>
-      <Router router={router} />
-    </Layout>
-  );
-}
-```
-```tsx [Preact]
-import { LayoutLogin } from 'layouts/LayoutLogin'
-import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
-
-function App() {
-  const { router } = useContext(RouterContext);
-  
-  const activeStateName = router.getActiveState()?.name;
-  
-  const Layout = ['login', 'restore', 'checkSms'].includes(activeStateName) 
-    ? LayoutLogin 
-    : LayoutAuthZone;
-  
-  return (
-    <Layout>
-      <Router router={router} />
-    </Layout>
-  );
-}
-```
-```tsx [Solid]
-import { LayoutLogin } from 'layouts/LayoutLogin'
-import { LayoutAuthZone } from 'layouts/LayoutAuthZone'
-
-function App() {
-  const { router } = useContext(RouterContext);
-
-  const activeStateName = () => router.getActiveState()?.name;
-
-  return (
-    <Dynamic 
-      component={['login', 'restore', 'checkSms'].includes(activeStateName()) 
-        ? LayoutLogin 
-        : LayoutAuthZone
-      }
-    >
-      <Router router={router} />
-    </Dynamic>
-  );
-}
-```
-```vue [Vue]
-<script lang="ts" setup>
-  import { computed } from 'vue';
-  import { useRouterStore } from '../../../router';
-  
-  import LayoutLogin from 'layouts/LayoutLogin.vue'
-  import LayoutAuthZone from 'layouts/LayoutAuthZone.vue'
-
-  const { router } = useRouterStore();
-
-  const activeStateName = computed(() => router.getActiveState()?.name);
-  
-  const Layout = computed(() => 
-    ['login', 'restore', 'checkSms'].includes(activeStateName.value) 
-      ? LayoutLogin 
-      : LayoutAuthZone
-  );
-</script>
-
-<template>
-  <component :is="Layout">
-    <Router :router="router" />
-  </component>
-</template>
-```
-:::
 
 Or to connect Dev Tools to the router to see all the changes. Currently no built-in Dev Tools
 are provided, but you can effortlessly debug with
