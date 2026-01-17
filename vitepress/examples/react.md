@@ -1,6 +1,6 @@
 # React Example
 
-To use it follow these steps:
+Download the relevant folder from the repository and install deps:
 
 ```shell
 npx degit dkazakov8/reactive-route/examples/react react-example
