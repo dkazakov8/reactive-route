@@ -1,9 +1,15 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["."],
   "exclude": [],
+  "references": [
+    { "path": "../core" }
+  ],
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "preact"
+    "jsxImportSource": "preact",
+    "composite": true,
+    "rootDir": ".",
+    "outDir": "../../dist/preact"
   }
 }

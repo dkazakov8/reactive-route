@@ -288,7 +288,9 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     },
 
     getActiveState() {
-      return Object.values(this.state).find((state) => state?.isActive);
+      return Object.values(this.state).find((state) => (state as TypeState<any>)?.isActive) as
+        | TypeState<TRoutes[keyof TRoutes]>
+        | undefined;
     },
 
     async preloadComponent(name) {

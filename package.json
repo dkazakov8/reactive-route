@@ -9,11 +9,12 @@
     "url": "git+https://github.com/dkazakov8/reactive-route.git"
   },
   "scripts": {
-    "upd": "rm -rf ./node_modules&&pnpm i --prefer-offline",
-    "updg": "rm -rf ./node_modules&&pnpm i --prefer-offline --ignore-pnpmfile",
-    "build": "rm -rf ./dist&&node --import tsx ./scripts/build.ts&&tsc -b tsconfig.react.json --noEmit false&&tsc -b ./tsconfig.solid.json --noEmit false",
+    "clear-modules": "rm -rf ./node_modules ./examples/*/node_modules",
+    "upd": "pnpm run clear-modules && pnpm i --prefer-offline",
+    "updg": "pnpm run clear-modules && pnpm i --prefer-offline --ignore-pnpmfile",
+    "build": "rm -rf ./dist && node --import tsx ./scripts/build.ts && vue-tsc -b tsconfig.build.json",
     "npm-publish": "pnpm run build&&cd ./dist&&npm publish --access public --tag latest&&cd ../",
-    "analyze": "biome check --no-errors-on-unmatched .&&tsc --project tsconfig.json&&tsc --project tsconfig.solid.json&&tsc --project examples/react&&tsc --project examples/preact&&tsc --project examples/solid&&vue-tsc --project examples/vue",
+    "analyze": "biome check . && vue-tsc -b tsconfig.build.json && tsc -p examples/react && tsc -p examples/preact && tsc -p examples/solid && vue-tsc -p examples/vue",
     "prepare": "husky",
     "up": "bash -c 'pnpm upgrade -r $@' bash",
     "test": "vitest --clearCache&&vitest run",

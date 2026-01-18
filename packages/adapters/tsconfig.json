@@ -1,13 +1,15 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": [".", "../../declarations.d.ts"],
+  "include": ["."],
   "exclude": [],
   "references": [
     { "path": "../core" }
   ],
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "composite": true,
     "rootDir": ".",
-    "outDir": "../../dist/vue"
+    "outDir": "../../dist/adapters"
   }
 }

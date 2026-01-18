@@ -1,5 +1,5 @@
 {
-  "include": ["scripts", "e2e", "vitepress", "*.mjs", "*.ts", "units"],
+  "include": ["declarations.d.ts"],
   "exclude": [],
   "files": [],
   "references": [
@@ -16,16 +16,17 @@
     "target": "ES2022",
     "outDir": "dist",
     "strict": true,
-    "noEmit": true,
     "declaration": true,
-    "skipLibCheck": true,
     "declarationMap": true,
-    "esModuleInterop": true,
-    "allowArbitraryExtensions": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "composite": true,
     "baseUrl": ".",
+    "skipLibCheck": true,
+    "allowArbitraryExtensions": true,
     "paths": {
       "reactive-route": ["packages/core/index.ts"]
     }
   },
-  "types": ["vite/client", "@testing-library/jest-dom", "vitest/globals"]
+  "types": []
 }

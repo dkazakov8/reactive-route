@@ -11,6 +11,11 @@
     "noEmit": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "reactive-route": ["../../packages/core/index.ts"],
+      "reactive-route/adapters/*": ["../../packages/adapters/*"]
+    }
   }
 }

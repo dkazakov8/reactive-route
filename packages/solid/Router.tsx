@@ -34,7 +34,6 @@ export function Router<TRoutes extends TypeRoutesDefault>(props: PropsRouter<TRo
   }
 
   return (
-    // @ts-ignore
     <Dynamic
       component={localObservable.renderedRouteName ? Component! : undefined}
       {...localObservable.currentProps}

@@ -3,12 +3,11 @@ import {
   handleComponentRerender,
   type PropsRouter,
   type TypeRouterLocalObservable,
-  type TypeRoutesDefault,
 } from 'reactive-route';
 
 defineOptions({ name: 'ReactiveRouteRouter' });
 
-const props = defineProps<PropsRouter<TypeRoutesDefault>>();
+const props = defineProps<PropsRouter<any>>();
 
 const { adapters } = props.router.getGlobalArguments();
 

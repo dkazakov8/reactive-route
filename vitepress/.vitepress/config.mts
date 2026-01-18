@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress';
+// @ts-ignore
 import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons';
 
 export default defineConfig({
