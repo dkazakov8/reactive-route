@@ -4,8 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-pnpmfileChecksum: sha256-ciCeB0LcOmfLLcE4M9GMcgkWJwbGXb85rmlRNHuM5sw=
-
 importers:
 
   .:
@@ -101,8 +99,8 @@ importers:
         specifier: 7.1.0
         version: 7.1.0(@types/node@25.0.5)(esbuild@0.27.2)(tsx@4.21.0)(vue@3.5.26(typescript@5.9.3))(yaml@2.8.1)
       vite-plugin-babel:
-        specifier: 1.3.2
-        version: 1.3.2(@babel/core@7.28.5)(vite@8.0.0-beta.5(@types/node@25.0.5)(esbuild@0.27.2)(tsx@4.21.0)(yaml@2.8.1))
+        specifier: 1.4.1
+        version: 1.4.1(@babel/core@7.28.5)(vite@8.0.0-beta.5(@types/node@25.0.5)(esbuild@0.27.2)(tsx@4.21.0)(yaml@2.8.1))
       vite-tsconfig-paths:
         specifier: 6.0.4
         version: 6.0.4(typescript@5.9.3)(vite@8.0.0-beta.5(@types/node@25.0.5)(esbuild@0.27.2)(tsx@4.21.0)(yaml@2.8.1))
@@ -110,8 +108,8 @@ importers:
         specifier: 2.0.0-alpha.15
         version: 2.0.0-alpha.15(@algolia/client-search@5.37.0)(@types/node@25.0.5)(@types/react@19.2.8)(lightningcss@1.30.2)(postcss@8.5.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(search-insights@2.17.3)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1)
       vitepress-plugin-group-icons:
-        specifier: 1.6.5
-        version: 1.6.5(vite@8.0.0-beta.5(@types/node@25.0.5)(esbuild@0.27.2)(tsx@4.21.0)(yaml@2.8.1))
+        specifier: 1.7.1
+        version: 1.7.1(vite@8.0.0-beta.5(@types/node@25.0.5)(esbuild@0.27.2)(tsx@4.21.0)(yaml@2.8.1))
       vitest:
         specifier: 4.0.16
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@25.0.5)(@vitest/browser-playwright@4.0.16)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1)
@@ -149,8 +147,8 @@ importers:
         specifier: 6.6.5
         version: 6.6.5(preact@10.28.2)
       reactive-route:
-        specifier: link:../../dist
-        version: link:../../dist
+        specifier: 0.0.1-beta.2
+        version: 0.0.1-beta.2(typescript@5.9.3)
       ultimate-express:
         specifier: 2.0.12
         version: 2.0.12
@@ -192,8 +190,8 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
       reactive-route:
-        specifier: link:../../dist
-        version: link:../../dist
+        specifier: 0.0.1-beta.2
+        version: 0.0.1-beta.2(typescript@5.9.3)
       ultimate-express:
         specifier: 2.0.12
         version: 2.0.12
@@ -226,8 +224,8 @@ importers:
         specifier: 6.15.0
         version: 6.15.0
       reactive-route:
-        specifier: link:../../dist
-        version: link:../../dist
+        specifier: 0.0.1-beta.2
+        version: 0.0.1-beta.2(typescript@5.9.3)
       solid-js:
         specifier: 1.9.10
         version: 1.9.10
@@ -266,8 +264,8 @@ importers:
   examples/vue:
     dependencies:
       reactive-route:
-        specifier: link:../../dist
-        version: link:../../dist
+        specifier: 0.0.1-beta.2
+        version: 0.0.1-beta.2(typescript@5.9.3)
       ultimate-express:
         specifier: 2.0.12
         version: 2.0.12
@@ -398,9 +396,6 @@ packages:
 
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==, tarball: https://registry.npmjs.org/@antfu/install-pkg/-/install-pkg-1.1.0.tgz}
-
-  '@antfu/utils@9.2.0':
-    resolution: {integrity: sha512-Oq1d9BGZakE/FyoEtcNeSwM7MpDO2vUBi11RWBZXf75zPsbUVWmUs03EqkRFrcgbXyKTas0BdZWC1wcuSoqSAw==, tarball: https://registry.npmjs.org/@antfu/utils/-/utils-9.2.0.tgz}
 
   '@babel/code-frame@7.27.1':
     resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==, tarball: https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.27.1.tgz}
@@ -842,20 +837,20 @@ packages:
     peerDependencies:
       esbuild: '>=0.23'
 
-  '@iconify-json/logos@1.2.9':
-    resolution: {integrity: sha512-G6VCdFnwZcrT6Eveq3m43oJfLw/CX8plwFcE+2jgv3fiGB64pTmnU7Yd1MNZ/eA+/Re2iEDhuCfSNOWTHwwK8w==, tarball: https://registry.npmjs.org/@iconify-json/logos/-/logos-1.2.9.tgz}
+  '@iconify-json/logos@1.2.10':
+    resolution: {integrity: sha512-qxaXKJ6fu8jzTMPQdHtNxlfx6tBQ0jXRbHZIYy5Ilh8Lx9US9FsAdzZWUR8MXV8PnWTKGDFO4ZZee9VwerCyMA==, tarball: https://registry.npmjs.org/@iconify-json/logos/-/logos-1.2.10.tgz}
 
   '@iconify-json/simple-icons@1.2.65':
     resolution: {integrity: sha512-v/O0UeqrDz6ASuRVE5g2Puo5aWyej4M/CxX6WYDBARgswwxK0mp3VQbGgPFEAAUU9QN02IjTgjMuO021gpWf2w==, tarball: https://registry.npmjs.org/@iconify-json/simple-icons/-/simple-icons-1.2.65.tgz}
 
-  '@iconify-json/vscode-icons@1.2.32':
-    resolution: {integrity: sha512-UzZmL6hF02YGu/qEbpskEVnstlNJG+c+0PNzNYTIBf/dXylWHLUVufhOXqAzuGRjkUZ2q7rPpOEwLUPkhkFHUA==, tarball: https://registry.npmjs.org/@iconify-json/vscode-icons/-/vscode-icons-1.2.32.tgz}
+  '@iconify-json/vscode-icons@1.2.40':
+    resolution: {integrity: sha512-Q7JIWAxENwmcRg4EGRY+u16gBwrAj6mWeuSmuyuPvNvoTJHh8Ss8qoeDhrFYNgtWqNkzH5hSf4b2T9XLK5MsrA==, tarball: https://registry.npmjs.org/@iconify-json/vscode-icons/-/vscode-icons-1.2.40.tgz}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==, tarball: https://registry.npmjs.org/@iconify/types/-/types-2.0.0.tgz}
 
-  '@iconify/utils@3.0.2':
-    resolution: {integrity: sha512-EfJS0rLfVuRuJRn4psJHtK2A9TqVnkxPpHY6lYHiB9+8eSuudsxbwMiavocG45ujOo6FJ+CIRlRnlOGinzkaGQ==, tarball: https://registry.npmjs.org/@iconify/utils/-/utils-3.0.2.tgz}
+  '@iconify/utils@3.1.0':
+    resolution: {integrity: sha512-Zlzem1ZXhI1iHeeERabLNzBHdOa4VhQbqAcOQaMKuTuyZCpwKbC2R4Dd0Zo3g9EAc+Y4fiarO8HIHRAth7+skw==, tarball: https://registry.npmjs.org/@iconify/utils/-/utils-3.1.0.tgz}
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==, tarball: https://registry.npmjs.org/@isaacs/cliui/-/cliui-8.0.2.tgz}
@@ -1578,9 +1573,6 @@ packages:
   confbox@0.1.8:
     resolution: {integrity: sha512-RMtmw0iFkeR4YV+fUOSucriAQNb9g8zFR52MWCtl+cCZOFRNL6zeB395vPzFhEjjn4fMxXudmELnl/KF/WrK6w==, tarball: https://registry.npmjs.org/confbox/-/confbox-0.1.8.tgz}
 
-  confbox@0.2.2:
-    resolution: {integrity: sha512-1NB+BKqhtNipMsov4xI/NnhCKp9XG9NamYp5PVm9klAT0fsrNPjaFICsCFhNhwZJKNh7zB/3q8qXz0E9oaMNtQ==, tarball: https://registry.npmjs.org/confbox/-/confbox-0.2.2.tgz}
-
   config-chain@1.1.13:
     resolution: {integrity: sha512-qj+f8APARXHrM0hraqXYb2/bOVSV4PvJQlNZ/DVj0QrmNM2q2euizkeuVckQ57J+W0mRH6Hvi+k50M4Jul2VRQ==, tarball: https://registry.npmjs.org/config-chain/-/config-chain-1.1.13.tgz}
 
@@ -1752,9 +1744,6 @@ packages:
     resolution: {integrity: sha512-JhFGDVJ7tmDJItKhYgJCGLOWjuK9vPxiXoUFLwLDc99NlmklilbiQJwoctZtt13+xMw91MCk/REan6MWHqDjyA==, tarball: https://registry.npmjs.org/expect-type/-/expect-type-1.2.2.tgz}
     engines: {node: '>=12.0.0'}
 
-  exsolve@1.0.7:
-    resolution: {integrity: sha512-VO5fQUzZtI6C+vx4w/4BWJpg3s/5l+6pRQEHzFRM8WFi4XffSP1Z+4qi7GbjWbvRQEbdIco5mIMq+zX4rPuLrw==, tarball: https://registry.npmjs.org/exsolve/-/exsolve-1.0.7.tgz}
-
   fast-decode-uri-component@1.0.1:
     resolution: {integrity: sha512-WKgKWg5eUxvRZGwW8FvfbaH7AXSh2cL+3j5fMGzUMCxWBJ3dV3a7Wz8y2f/uQ0e3B6WmodD3oS54jTQ9HVTIIg==, tarball: https://registry.npmjs.org/fast-decode-uri-component/-/fast-decode-uri-component-1.0.1.tgz}
 
@@ -1827,10 +1816,6 @@ packages:
   glob@10.4.5:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==, tarball: https://registry.npmjs.org/glob/-/glob-10.4.5.tgz}
     hasBin: true
-
-  globals@15.15.0:
-    resolution: {integrity: sha512-7ACyT3wmyp3I61S4fG682L0VA2RGD9otkqGJIwNUMF1SWUombIIk+af1unuDYgMm082aHYwD+mzJvv9Iu8dsgg==, tarball: https://registry.npmjs.org/globals/-/globals-15.15.0.tgz}
-    engines: {node: '>=18'}
 
   globrex@0.1.2:
     resolution: {integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==, tarball: https://registry.npmjs.org/globrex/-/globrex-0.1.2.tgz}
@@ -2045,10 +2030,6 @@ packages:
   listr2@9.0.5:
     resolution: {integrity: sha512-ME4Fb83LgEgwNw96RKNvKV4VTLuXfoKudAmm2lP8Kk87KaMK0/Xrx/aAkMWmT8mDb+3MlFDspfbCs7adjRxA2g==, tarball: https://registry.npmjs.org/listr2/-/listr2-9.0.5.tgz}
     engines: {node: '>=20.0.0'}
-
-  local-pkg@1.1.2:
-    resolution: {integrity: sha512-arhlxbFRmoQHl33a0Zkle/YWlmNwoyt6QNZEIJcqNbdrsix5Lvc4HyyI3EnwxTYlZYc32EbYrQ8SzEZ7dqgg9A==, tarball: https://registry.npmjs.org/local-pkg/-/local-pkg-1.1.2.tgz}
-    engines: {node: '>=14'}
 
   log-update@6.1.0:
     resolution: {integrity: sha512-9ie8ItPR6tjY5uYJh8K/Zrv/RMZ5VOlOWvtZdEHYSTFKZfIBPQa9tOAEeAWhd+AnIneLJ22w5fjOYtoutpWq5w==, tarball: https://registry.npmjs.org/log-update/-/log-update-6.1.0.tgz}
@@ -2282,9 +2263,6 @@ packages:
   pkg-types@1.3.1:
     resolution: {integrity: sha512-/Jm5M4RvtBFVkKWRu2BLUTNP8/M2a+UwuAX+ae4770q1qVGtfjG+WTCupoZixokjmHiry8uI+dlY8KXYV5HVVQ==, tarball: https://registry.npmjs.org/pkg-types/-/pkg-types-1.3.1.tgz}
 
-  pkg-types@2.3.0:
-    resolution: {integrity: sha512-SIqCzDRg0s9npO5XQ3tNZioRY1uK06lA41ynBC1YmFTmnY6FjUjVt6s4LoADmwoig1qqD0oK8h1p/8mlMx8Oig==, tarball: https://registry.npmjs.org/pkg-types/-/pkg-types-2.3.0.tgz}
-
   playwright-core@1.57.0:
     resolution: {integrity: sha512-agTcKlMw/mjBWOnD6kFZttAAGHgi/Nw0CZ2o6JqWSbMlI219lAFLZZCyqByTsvVAJq5XA5H8cA6PrvBRpBWEuQ==, tarball: https://registry.npmjs.org/playwright-core/-/playwright-core-1.57.0.tgz}
     engines: {node: '>=18'}
@@ -2329,9 +2307,6 @@ packages:
     resolution: {integrity: sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==, tarball: https://registry.npmjs.org/qs/-/qs-6.14.0.tgz}
     engines: {node: '>=0.6'}
 
-  quansync@0.2.11:
-    resolution: {integrity: sha512-AifT7QEbW9Nri4tAwR5M/uzpBuqfZf+zwaEM/QkzEjj7NBuFD2rBuy0K3dE+8wltbezDV7JMA0WfnCPYRSYbXA==, tarball: https://registry.npmjs.org/quansync/-/quansync-0.2.11.tgz}
-
   range-parser@1.2.1:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==, tarball: https://registry.npmjs.org/range-parser/-/range-parser-1.2.1.tgz}
     engines: {node: '>= 0.6'}
@@ -2347,6 +2322,11 @@ packages:
   react@19.2.3:
     resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==, tarball: https://registry.npmjs.org/react/-/react-19.2.3.tgz}
     engines: {node: '>=0.10.0'}
+
+  reactive-route@0.0.1-beta.2:
+    resolution: {integrity: sha512-VufSd2MGFAUMoXBua9qKqSlRCUVA1Bf5rjgw9h1amMTIbtGIO6JvnDsM1ooD3IVb9pvBaCPgQYKbwTHLbjOUkA==, tarball: https://registry.npmjs.org/reactive-route/-/reactive-route-0.0.1-beta.2.tgz}
+    peerDependencies:
+      typescript: '>=5.0'
 
   regex-recursion@6.0.2:
     resolution: {integrity: sha512-0YCaSCq2VRIebiaUviZNs0cBz1kg5kVS2UKUfNIx8YVs1cN3AV7NTctO5FOKBA+UT2BPJIWZauYHPqJODG50cg==, tarball: https://registry.npmjs.org/regex-recursion/-/regex-recursion-6.0.2.tgz}
@@ -2655,8 +2635,8 @@ packages:
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==, tarball: https://registry.npmjs.org/vfile/-/vfile-6.0.3.tgz}
 
-  vite-plugin-babel@1.3.2:
-    resolution: {integrity: sha512-mEld4OVyuNs5+ISN+U5XyTnNcDwln/s2oER2m0PQ32YYPqPR25E3mfnhAA/RkZJxPuwFkprKWV405aZArE6kzA==, tarball: https://registry.npmjs.org/vite-plugin-babel/-/vite-plugin-babel-1.3.2.tgz}
+  vite-plugin-babel@1.4.1:
+    resolution: {integrity: sha512-quO+viHGSv1cjbfhbeiMZ7SZpo8P29NiUh9LJfKhpmIDwy0THRiTRUbanBbkNcZcSyHFgp1n7TByd1C2kanqLQ==, tarball: https://registry.npmjs.org/vite-plugin-babel/-/vite-plugin-babel-1.4.1.tgz}
     peerDependencies:
       '@babel/core': ^7.0.0
       vite: ^2.7.0 || ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
@@ -2754,8 +2734,8 @@ packages:
       yaml:
         optional: true
 
-  vitepress-plugin-group-icons@1.6.5:
-    resolution: {integrity: sha512-+pg4+GKDq2fLqKb1Sat5p1p4SuIZ5tEPxu8HjpwoeecZ/VaXKy6Bdf0wyjedjaTAyZQzXbvyavJegqAcQ+B0VA==, tarball: https://registry.npmjs.org/vitepress-plugin-group-icons/-/vitepress-plugin-group-icons-1.6.5.tgz}
+  vitepress-plugin-group-icons@1.7.1:
+    resolution: {integrity: sha512-3ZPcIqwHNBg1btrOOSecOqv8yJxHdu3W2ugxE5LusclDF005LAm60URMEmBQrkgl4JvM32AqJirqghK6lGIk8g==, tarball: https://registry.npmjs.org/vitepress-plugin-group-icons/-/vitepress-plugin-group-icons-1.7.1.tgz}
     peerDependencies:
       vite: '>=3'
     peerDependenciesMeta:
@@ -3071,8 +3051,6 @@ snapshots:
     dependencies:
       package-manager-detector: 1.3.0
       tinyexec: 1.0.2
-
-  '@antfu/utils@9.2.0': {}
 
   '@babel/code-frame@7.27.1':
     dependencies:
@@ -3561,7 +3539,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@iconify-json/logos@1.2.9':
+  '@iconify-json/logos@1.2.10':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -3569,24 +3547,17 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/vscode-icons@1.2.32':
+  '@iconify-json/vscode-icons@1.2.40':
     dependencies:
       '@iconify/types': 2.0.0
 
   '@iconify/types@2.0.0': {}
 
-  '@iconify/utils@3.0.2':
+  '@iconify/utils@3.1.0':
     dependencies:
       '@antfu/install-pkg': 1.1.0
-      '@antfu/utils': 9.2.0
       '@iconify/types': 2.0.0
-      debug: 4.4.3
-      globals: 15.15.0
-      kolorist: 1.8.0
-      local-pkg: 1.1.2
       mlly: 1.8.0
-    transitivePeerDependencies:
-      - supports-color
 
   '@isaacs/cliui@8.0.2':
     dependencies:
@@ -4336,8 +4307,6 @@ snapshots:
 
   confbox@0.1.8: {}
 
-  confbox@0.2.2: {}
-
   config-chain@1.1.13:
     dependencies:
       ini: 1.3.8
@@ -4499,8 +4468,6 @@ snapshots:
 
   expect-type@1.2.2: {}
 
-  exsolve@1.0.7: {}
-
   fast-decode-uri-component@1.0.1: {}
 
   fast-querystring@1.1.2:
@@ -4572,8 +4539,6 @@ snapshots:
       minipass: 7.1.2
       package-json-from-dist: 1.0.1
       path-scurry: 1.11.1
-
-  globals@15.15.0: {}
 
   globrex@0.1.2: {}
 
@@ -4759,12 +4724,6 @@ snapshots:
       log-update: 6.1.0
       rfdc: 1.4.1
       wrap-ansi: 9.0.2
-
-  local-pkg@1.1.2:
-    dependencies:
-      mlly: 1.8.0
-      pkg-types: 2.3.0
-      quansync: 0.2.11
 
   log-update@6.1.0:
     dependencies:
@@ -4973,12 +4932,6 @@ snapshots:
       mlly: 1.8.0
       pathe: 2.0.3
 
-  pkg-types@2.3.0:
-    dependencies:
-      confbox: 0.2.2
-      exsolve: 1.0.7
-      pathe: 2.0.3
-
   playwright-core@1.57.0: {}
 
   playwright@1.57.0:
@@ -5020,8 +4973,6 @@ snapshots:
     dependencies:
       side-channel: 1.1.0
 
-  quansync@0.2.11: {}
-
   range-parser@1.2.1: {}
 
   react-dom@19.2.3(react@19.2.3):
@@ -5032,6 +4983,10 @@ snapshots:
   react-is@17.0.2: {}
 
   react@19.2.3: {}
+
+  reactive-route@0.0.1-beta.2(typescript@5.9.3):
+    dependencies:
+      typescript: 5.9.3
 
   regex-recursion@6.0.2:
     dependencies:
@@ -5411,7 +5366,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vite-plugin-babel@1.3.2(@babel/core@7.28.5)(vite@8.0.0-beta.5(@types/node@25.0.5)(esbuild@0.27.2)(tsx@4.21.0)(yaml@2.8.1)):
+  vite-plugin-babel@1.4.1(@babel/core@7.28.5)(vite@8.0.0-beta.5(@types/node@25.0.5)(esbuild@0.27.2)(tsx@4.21.0)(yaml@2.8.1)):
     dependencies:
       '@babel/core': 7.28.5
       vite: 8.0.0-beta.5(@types/node@25.0.5)(esbuild@0.27.2)(tsx@4.21.0)(yaml@2.8.1)
@@ -5468,15 +5423,13 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.1
 
-  vitepress-plugin-group-icons@1.6.5(vite@8.0.0-beta.5(@types/node@25.0.5)(esbuild@0.27.2)(tsx@4.21.0)(yaml@2.8.1)):
+  vitepress-plugin-group-icons@1.7.1(vite@8.0.0-beta.5(@types/node@25.0.5)(esbuild@0.27.2)(tsx@4.21.0)(yaml@2.8.1)):
     dependencies:
-      '@iconify-json/logos': 1.2.9
-      '@iconify-json/vscode-icons': 1.2.32
-      '@iconify/utils': 3.0.2
+      '@iconify-json/logos': 1.2.10
+      '@iconify-json/vscode-icons': 1.2.40
+      '@iconify/utils': 3.1.0
     optionalDependencies:
       vite: 8.0.0-beta.5(@types/node@25.0.5)(esbuild@0.27.2)(tsx@4.21.0)(yaml@2.8.1)
-    transitivePeerDependencies:
-      - supports-color
 
   vitepress@2.0.0-alpha.15(@algolia/client-search@5.37.0)(@types/node@25.0.5)(@types/react@19.2.8)(lightningcss@1.30.2)(postcss@8.5.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(search-insights@2.17.3)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1):
     dependencies:

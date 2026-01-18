@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { getAdapters } from '../../../testHelpers/getAdapters';
-import { getRoutes } from '../../../testHelpers/getRoutes';
-import { allPossibleOptions } from '../../../testHelpers/types';
-import { createRouter } from '../createRouter';
+import { createRouter } from '../packages/core/createRouter';
+import { getAdapters } from './helpers/getAdapters';
+import { getRoutes } from './helpers/getRoutes';
+import { allPossibleOptions } from './helpers/types';
 
 [allPossibleOptions[0]].forEach((options) => {
   describe(`createPayloadAndState [${options.renderer}+${options.reactivity}]`, async () => {

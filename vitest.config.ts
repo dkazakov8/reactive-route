@@ -7,7 +7,10 @@ import babel from 'vite-plugin-babel';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig, TestProjectConfiguration } from 'vitest/config';
 
-import { VitestReporter } from './scripts/vitestReporter';
+import type { TypeOptions } from './units/helpers/types';
+import { VitestReporter } from './units/vitestReporter';
+
+process.setMaxListeners(20);
 
 const solidPlugin = babel({
   filter: /\.tsx?$/,
@@ -20,24 +23,37 @@ const preactPlugin = preact({
   reactAliasesEnabled: false,
 });
 
-function createProjectConfig(name: string, plugins: Array<any>): TestProjectConfiguration {
-  return {
-    plugins: [tsconfigPaths(), ...plugins],
-    extends: true,
-    test: {
-      name,
-      include: [`packages/${name.split('-')[0]}/test/*.{test,spec}.?(c|m)[jt]s?(x)`],
-      browser: name.split('-')[1]
-        ? undefined
-        : {
-            enabled: true,
-            headless: true,
-            screenshotFailures: false,
-            provider: playwright(),
-            instances: [{ browser: 'chromium' }],
-          },
+function createProject(
+  plugins: Array<any>,
+  options?: TypeOptions
+): Array<TestProjectConfiguration> {
+  return [
+    {
+      plugins: [tsconfigPaths(), ...plugins],
+      extends: true,
+      define: { OPTIONS: options },
+      test: {
+        name: options ? `${options.renderer}-${options.reactivity}` : `core`,
+        include: [options ? `units/Router.test.tsx` : `units/*.test.ts`],
+        browser: {
+          enabled: true,
+          headless: true,
+          screenshotFailures: false,
+          provider: playwright(),
+          instances: [{ browser: 'chromium' }],
+        },
+      },
     },
-  };
+    {
+      plugins: [tsconfigPaths(), ...plugins],
+      extends: true,
+      define: { OPTIONS: options },
+      test: {
+        name: options ? `${options.renderer}-${options.reactivity}-ssr` : `core-ssr`,
+        include: [options ? `units/Router.test.tsx` : `units/*.test.ts`],
+      },
+    },
+  ];
 }
 
 export default defineConfig({
@@ -62,16 +78,15 @@ export default defineConfig({
   resolve: { alias: { 'reactive-route': path.resolve('packages/core/index.ts') } },
   test: {
     projects: [
-      createProjectConfig('core', [vue.vite()]),
-      createProjectConfig('core-ssr', [vue.vite()]),
-      createProjectConfig('solid', [solidPlugin]),
-      createProjectConfig('solid-ssr', [solidPlugin]),
-      createProjectConfig('preact', [preactPlugin]),
-      createProjectConfig('preact-ssr', [preactPlugin]),
-      createProjectConfig('react', []),
-      createProjectConfig('react-ssr', []),
-      createProjectConfig('vue', [vue.vite()]),
-      createProjectConfig('vue-ssr', [vue.vite()]),
+      ...createProject([vue.vite()]),
+      ...createProject([], { renderer: 'react', reactivity: 'mobx' }),
+      ...createProject([], { renderer: 'react', reactivity: 'kr-observable' }),
+      ...createProject([preactPlugin], { renderer: 'preact', reactivity: 'mobx' }),
+      ...createProject([preactPlugin], { renderer: 'preact', reactivity: 'kr-observable' }),
+      ...createProject([solidPlugin], { renderer: 'solid', reactivity: 'mobx' }),
+      ...createProject([solidPlugin], { renderer: 'solid', reactivity: 'solid' }),
+      ...createProject([solidPlugin], { renderer: 'solid', reactivity: 'kr-observable' }),
+      ...createProject([vue.vite()], { renderer: 'vue', reactivity: 'vue' }),
     ],
     reporters: [new VitestReporter()],
     coverage: {
@@ -81,12 +96,7 @@ export default defineConfig({
       reporter: ['text'],
       reportsDirectory: './test-results',
       include: ['packages/*'],
-      exclude: [
-        'packages/*/test/*',
-        'packages/testHelpers',
-        'packages/*/index.ts',
-        'packages/declarations.d.ts',
-      ],
+      exclude: ['packages/*/index.ts', 'packages/declarations.d.ts'],
     },
     onConsoleLog(log) {
       if (log.includes('a is not defined')) {

@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { getAdapters } from '../../../testHelpers/getAdapters';
-import { getRoutes } from '../../../testHelpers/getRoutes';
-import { allPossibleOptions } from '../../../testHelpers/types';
-import { isClient, RedirectError } from '../constants';
-import { createRouter } from '../createRouter';
-import { createRoutes } from '../createRoutes';
-import { TypeRouter } from '../types';
+import { isClient, RedirectError } from '../packages/core/constants';
+import { createRouter } from '../packages/core/createRouter';
+import { createRoutes } from '../packages/core/createRoutes';
+import { TypeRouter } from '../packages/core/types';
+import { getAdapters } from './helpers/getAdapters';
+import { getRoutes } from './helpers/getRoutes';
+import { allPossibleOptions } from './helpers/types';
 
 function check(router: TypeRouter<any>, redirectParams: any, url?: string) {
   const currentRoute = router.getActiveState()!;

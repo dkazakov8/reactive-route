@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-import globalAfter from './globalAfter';
+import globalAfter from './e2e/globalAfter';
 
 type TypeVariant = { folder: string; script: string; port?: number; name?: string };
 
@@ -33,14 +33,14 @@ const variants: Array<TypeVariant> = [...csrVariants, ...ssrVariants].map((varia
 }));
 
 export default defineConfig({
-  testDir: './',
+  testDir: './e2e',
   fullyParallel: true,
   forbidOnly: false,
   retries: 0,
-  reporter: [['list'], ['./playwrightReporter.ts']],
+  reporter: [['list'], ['./e2e/playwrightReporter.ts']],
   webServer: variants.map((variant) => ({
     name: variant.name,
-    command: `pnpm --filter ../examples/${variant.folder} ${variant.script} ${variant.port} test`,
+    command: `pnpm --filter ./examples/${variant.folder} ${variant.script} ${variant.port} test`,
     port: variant.port,
     reuseExistingServer: false,
     timeout: 10000,
@@ -55,7 +55,7 @@ export default defineConfig({
       ...devices['Desktop Chrome'],
     },
   })),
-  globalTeardown: require.resolve('./globalAfter'),
+  globalTeardown: require.resolve('./e2e/globalAfter'),
 });
 
 process.on('SIGINT', () => {

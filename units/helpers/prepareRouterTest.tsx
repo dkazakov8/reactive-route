@@ -1,6 +1,6 @@
+import { createRouter } from 'reactive-route';
 import { expect, vi } from 'vitest';
 
-import { createRouter } from '../packages/core';
 import { getAdapters } from './getAdapters';
 import { getRender } from './getRender';
 import { getRouterComponent } from './getRouterComponent';

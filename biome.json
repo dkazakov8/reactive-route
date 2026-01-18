@@ -7,7 +7,7 @@
       "packages/**/*.{ts,tsx,mts,vue,css,cjs}",
       "scripts/**/*.{ts,tsx,mts,vue,css,cjs}",
       "examples/**/*.{ts,tsx,mts,vue,css,cjs}",
-      "testHelpers/**/*.{ts,tsx,mts,vue,css,cjs}",
+      "units/**/*.{ts,tsx,mts,vue,css,cjs}",
       "!!**/dist_*",
       "vitepress/**/*.{ts,tsx,mts,css,cjs}",
       "!vitepress/**/modulesMap.ts",

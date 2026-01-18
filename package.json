@@ -18,7 +18,7 @@
     "up": "bash -c 'pnpm upgrade -r $@' bash",
     "test": "vitest --clearCache&&vitest run",
     "test-watch": "vitest --clearCache&&vitest --coverage=false --reporter=default",
-    "e2e": "playwright test --config ./e2e/runner.ts",
+    "e2e": "playwright test",
     "docs:dev": "vitepress dev vitepress",
     "docs:build": "vitepress build vitepress --outDir docs"
   },
@@ -57,7 +57,7 @@
     "vue-tsc": "3.2.2",
 
     "vitepress": "2.0.0-alpha.15",
-    "vitepress-plugin-group-icons": "1.6.5",
+    "vitepress-plugin-group-icons": "1.7.1",
 
     "vitest": "4.0.16",
     "@vitest/coverage-v8": "4.0.16",
@@ -68,7 +68,7 @@
     "@solidjs/testing-library": "0.8.10",
     "playwright": "1.57.0",
     "@playwright/test": "1.57.0",
-    "vite-plugin-babel": "1.3.2",
+    "vite-plugin-babel": "1.4.1",
     "vite-tsconfig-paths": "6.0.4",
     "preact-render-to-string": "6.6.5",
     "@preact/preset-vite": "2.10.2"

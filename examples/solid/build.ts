@@ -67,13 +67,6 @@ function generateSolidModifier(ssr: boolean): Parameters<typeof pluginReplace>[0
 async function watch() {
   let reloadSocket: WebSocket;
 
-  if (!IS_E2E) {
-    // start a websocket server to reload browser on changes
-    express()
-      .uwsApp.ws('/*', { open: (ws) => (reloadSocket = ws as any) })
-      .listen(watchPort, () => undefined);
-  }
-
   const activeProcesses = new Set<'server' | 'client'>();
 
   const configServer: BuildOptions = {
@@ -180,6 +173,11 @@ async function watch() {
   await Promise.all([ctxClient.rebuild(), ctxServer.rebuild()]);
 
   if (!IS_E2E) {
+    // start a websocket server to reload browser on changes
+    express()
+      .uwsApp.ws('/*', { open: (ws) => (reloadSocket = ws as any) })
+      .listen(watchPort, () => undefined);
+
     await Promise.all([ctxClient.watch(), ctxServer.watch()]);
   }
 

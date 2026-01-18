@@ -1,4 +1,4 @@
-import { createRoutes } from '../packages/core';
+import { createRoutes } from 'reactive-route';
 
 export function createTestRoutes(imports: Record<string, any>) {
   return createRoutes({

@@ -1,7 +1,6 @@
-import { TestModule } from 'vitest/node';
 import { DefaultReporter } from 'vitest/reporters';
 
-import { saveMetrics } from './saveMetrics';
+import { saveMetrics } from '../scripts/saveMetrics';
 
 const toArray = (arr: any) => (arr == null ? [] : Array.isArray(arr) ? arr : [arr]);
 
@@ -90,10 +89,8 @@ export class VitestReporter extends DefaultReporter {
 
     saveMetrics({ key: 'coverage', value: `${average(Object.values(summary)).toFixed(2)} %` });
   }
-  async onTestRunEnd(testModules: ReadonlyArray<TestModule>) {
-    const files = testModules.map((testModule) => (testModule as any).task);
-
-    const tests = getTests(files);
+  async onTestRunEnd(testModules: any) {
+    const tests = getTests(testModules.map((testModule: any) => testModule.task));
     const numPassedTests = tests.filter((t) => t.result?.state === 'pass').length;
 
     saveMetrics({ key: 'tests', value: numPassedTests });

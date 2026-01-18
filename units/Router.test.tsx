@@ -1,27 +1,13 @@
-// @ts-ignore
-import { enableObservable } from 'kr-observable/solidjs';
-import { Reaction } from 'mobx';
-import { enableExternalSource } from 'solid-js';
+import { routerTests } from './helpers/routerTests';
+import type { TypeOptions } from './helpers/types';
 
-import { routerTests } from '../../../testHelpers/routerTests';
-
-routerTests(
-  [
-    {
-      renderer: 'solid',
-      reactivity: 'mobx',
-    },
-    {
-      renderer: 'solid',
-      reactivity: 'solid',
-    },
-    {
-      renderer: 'solid',
-      reactivity: 'kr-observable',
-    },
-  ],
-  (options) => {
+// biome-ignore lint/correctness/noUndeclaredVariables: false
+routerTests(OPTIONS as TypeOptions, async (options) => {
+  if (options.renderer === 'solid') {
     if (options.reactivity === 'mobx') {
+      const { enableExternalSource } = await import('solid-js');
+      const { Reaction } = await import('mobx');
+
       let id = 0;
 
       enableExternalSource((fn, trigger) => {
@@ -41,7 +27,10 @@ routerTests(
     }
 
     if (options.reactivity === 'kr-observable') {
+      // @ts-ignore
+      const { enableObservable } = await import('kr-observable/solidjs');
+
       enableObservable();
     }
   }
-);
+});
