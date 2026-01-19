@@ -7,6 +7,6 @@
     "jsxImportSource": "react",
     "composite": true,
     "rootDir": ".",
-    "outDir": "../../dist/core"
+    "outDir": "../../dist"
   }
 }

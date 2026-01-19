@@ -11,16 +11,10 @@ import pluginVue from 'unplugin-vue';
 import { getCompressedSize } from './getCompressedSize';
 import { saveMetrics } from './saveMetrics';
 
-async function generateBuild(folderName: string) {
-  const [, packageName, fileName] = folderName.split('/');
-  const startTime = performance.now();
-
-  const outFolder = path.resolve(packageName === 'core' ? `./dist` : `./dist/${packageName}`);
-  const outfile = path.resolve(outFolder, `${fileName || 'index'}`);
-
+function getPlugins(framework: 'vue' | 'solid') {
   const plugins: Array<Plugin> = [];
 
-  if (packageName === 'solid') {
+  if (framework === 'solid') {
     plugins.push(
       pluginReplace([
         {
@@ -42,79 +36,96 @@ async function generateBuild(folderName: string) {
     );
   }
 
-  if (packageName === 'vue') {
+  if (framework === 'vue') {
     plugins.push(pluginVue.esbuild({ include: [/\.vue$/] }));
   }
+
+  return plugins;
+}
+
+async function generateBuild(folderName: string) {
+  const fileName = folderName.split('/')[1] || 'index';
+
+  const startTime = performance.now();
+
+  const entryFile_path = path.resolve('packages', folderName);
+  const entryFolder_path = path.resolve(
+    'packages',
+    folderName.includes('adapters') ? path.dirname(folderName) : folderName
+  );
+  const entryTsconfig = JSON.parse(
+    fs.readFileSync(path.resolve(entryFolder_path, 'tsconfig.json'), 'utf8')
+  );
+
+  const outFolder_path = path.resolve(entryFolder_path, entryTsconfig.compilerOptions.outDir);
+  const outFile_path = path.resolve(outFolder_path, fileName);
 
   const buildOptions: BuildOptions = {
     bundle: true,
     metafile: true,
-    sourcemap: false,
+    sourcemap: true,
     target: 'es2022',
     packages: 'external',
     write: true,
     minify: false,
     treeShaking: true,
     external: ['reactive-route'],
-    format: 'esm',
-    entryPoints: [path.resolve(process.cwd(), folderName)],
-    outfile: `${outfile}.mjs`,
-    plugins,
+    entryPoints: [entryFile_path],
+    plugins: getPlugins(folderName as any),
   };
 
   await Promise.all([
-    esbuild.build(buildOptions),
-    esbuild.build({ ...buildOptions, format: 'cjs', outfile: `${outfile}.cjs` }),
+    esbuild.build({ ...buildOptions, format: 'esm', outfile: `${outFile_path}.mjs` }),
+    esbuild.build({ ...buildOptions, format: 'cjs', outfile: `${outFile_path}.cjs` }),
   ]);
+
+  fs.readdirSync(outFolder_path)
+    .filter((file) => file.endsWith('.tsbuildinfo'))
+    .forEach((file) => {
+      fs.rmSync(path.resolve(outFolder_path, file), { force: true });
+    });
 
   const endTime = performance.now();
 
   console.log(
-    `\x1b[32m[${packageName}${fileName ? `/${fileName}` : ''}]\x1b[0m built in \x1b[33m${(endTime - startTime).toFixed(2)}ms\x1b[0m`
+    `\x1b[32m[${folderName}]\x1b[0m built in \x1b[33m${(endTime - startTime).toFixed(2)}ms\x1b[0m`
   );
 
   return {
-    fileName,
-    packageName,
-    compressedSize: packageName === 'core' ? await getCompressedSize(`${outfile}.mjs`) : null,
+    relativePath: `./${path.relative(path.resolve('dist'), outFile_path)}`,
+    compressedSize: folderName.includes('core')
+      ? await getCompressedSize(`${outFile_path}.mjs`)
+      : null,
   };
 }
 
 void Promise.all([
-  generateBuild('packages/core'),
-  generateBuild('packages/solid'),
-  generateBuild('packages/react'),
-  generateBuild('packages/preact'),
-  generateBuild('packages/vue'),
-  generateBuild('packages/adapters/mobx-react'),
-  generateBuild('packages/adapters/mobx-preact'),
-  generateBuild('packages/adapters/mobx-solid'),
-  generateBuild('packages/adapters/solid'),
-  generateBuild('packages/adapters/kr-observable-react'),
-  generateBuild('packages/adapters/kr-observable-preact'),
-  generateBuild('packages/adapters/kr-observable-solid'),
-  generateBuild('packages/adapters/vue'),
+  generateBuild('core'),
+  generateBuild('solid'),
+  generateBuild('react'),
+  generateBuild('preact'),
+  generateBuild('vue'),
+  generateBuild('adapters/mobx-react'),
+  generateBuild('adapters/mobx-preact'),
+  generateBuild('adapters/mobx-solid'),
+  generateBuild('adapters/solid'),
+  generateBuild('adapters/kr-observable-react'),
+  generateBuild('adapters/kr-observable-preact'),
+  generateBuild('adapters/kr-observable-solid'),
+  generateBuild('adapters/vue'),
 ]).then(async (builtPackages) => {
   const globalPkg = JSON.parse(fs.readFileSync(path.resolve('./package.json'), 'utf8'));
 
   const exports: Record<string, { types: string; require: string; import: string }> = {};
 
-  builtPackages.forEach(({ packageName, fileName, compressedSize }) => {
+  builtPackages.forEach(({ compressedSize, relativePath }) => {
     if (compressedSize) saveMetrics({ key: 'size', value: compressedSize });
 
-    if (packageName === 'core') {
-      exports[`.`] = {
-        types: `./${packageName}/${fileName || 'index'}.d.ts`,
-        require: `./${fileName || 'index'}.cjs`,
-        import: `./${fileName || 'index'}.mjs`,
-      };
-    } else {
-      exports[`./${packageName}${fileName ? `/${fileName}` : ''}`] = {
-        types: `./${packageName}/${fileName || 'index'}.d.ts`,
-        require: `./${packageName}/${fileName || 'index'}.cjs`,
-        import: `./${packageName}/${fileName || 'index'}.mjs`,
-      };
-    }
+    exports[relativePath.replace('/index', '')] = {
+      types: `${relativePath}.d.ts`,
+      require: `${relativePath}.cjs`,
+      import: `${relativePath}.mjs`,
+    };
   });
 
   const releasePkg = {
@@ -137,18 +148,17 @@ void Promise.all([
     'utf8'
   );
 
-  fs.writeFileSync(path.resolve('./dist/.npmignore'), `*.tsbuildinfo\n`, 'utf8');
-
   const modulesMap = builtPackages
     .map((item) => {
-      if (item.packageName === 'core')
-        return `import { createRoutes, createRouter } from '${globalPkg.name}'`;
+      const importPath = `${globalPkg.name}${item.relativePath.replace('/index', '').replace('.', '')}`;
 
-      if (!item.fileName) return `import { Router } from '${globalPkg.name}/${item.packageName}'`;
+      if (importPath.includes('adapters')) return `import { adapters } from '${importPath}'`;
+      if (importPath.includes('/')) return `import { Router } from '${importPath}'`;
 
-      return `import { adapters } from '${globalPkg.name}/${item.packageName}/${item.fileName}'`;
+      return `import { createRoutes, createRouter } from '${importPath}'`;
     })
-    .join('\n');
+    .join(';\n');
 
-  fs.writeFileSync(path.resolve('./vitepress/modulesMap.ts'), modulesMap, 'utf8');
+  fs.writeFileSync(path.resolve('vitepress/modulesMap.ts'), modulesMap, 'utf8');
+  fs.cpSync(path.resolve('README.md'), path.resolve('dist/README.md'));
 });

@@ -11,21 +11,19 @@
     { "path": "./packages/vue" }
   ],
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "module": "commonjs",
-    "target": "ES2022",
+    "jsx": "preserve",
     "outDir": "dist",
+    "target": "ES2022",
+    "module": "commonjs",
     "strict": true,
-    "noEmit": true,
+    "noEmit": false,
+    "baseUrl": ".",
     "declaration": true,
     "skipLibCheck": true,
     "declarationMap": true,
     "esModuleInterop": true,
-    "allowArbitraryExtensions": true,
-    "baseUrl": ".",
-    "paths": {
-      "reactive-route": ["packages/core/index.ts"]
-    }
+    "emitDeclarationOnly": true,
+    "allowArbitraryExtensions": true
   },
   "types": ["vite/client", "@testing-library/jest-dom", "vitest/globals"]
 }
