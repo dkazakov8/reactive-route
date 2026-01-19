@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-import globalAfter from './e2e/globalAfter';
+import globalAfter from './e2e/addons/globalAfter';
 
 type TypeVariant = { folder: string; script: string; port?: number; name?: string };
 
@@ -37,7 +37,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: false,
   retries: 0,
-  reporter: [['list'], ['./e2e/playwrightReporter.ts']],
+  reporter: [['list'], ['./e2e/addons/playwrightReporter.ts']],
   webServer: variants.map((variant) => ({
     name: variant.name,
     command: `pnpm --filter ./examples/${variant.folder} ${variant.script} ${variant.port} test`,
@@ -55,7 +55,7 @@ export default defineConfig({
       ...devices['Desktop Chrome'],
     },
   })),
-  globalTeardown: require.resolve('./e2e/globalAfter'),
+  globalTeardown: require.resolve('./e2e/addons/globalAfter'),
 });
 
 process.on('SIGINT', () => {

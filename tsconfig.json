@@ -11,7 +11,7 @@
     { "path": "./packages/vue" }
   ],
   "compilerOptions": {
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "outDir": "dist",
     "target": "ES2022",
     "module": "commonjs",

@@ -3,8 +3,6 @@
   "include": ["."],
   "exclude": [],
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
     "composite": true,
     "rootDir": ".",
     "outDir": "../../dist"

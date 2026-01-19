@@ -1,6 +1,6 @@
 import { DefaultReporter } from 'vitest/reporters';
 
-import { saveMetrics } from '../scripts/saveMetrics';
+import { saveMetrics } from '../../scripts/saveMetrics';
 
 const toArray = (arr: any) => (arr == null ? [] : Array.isArray(arr) ? arr : [arr]);
 

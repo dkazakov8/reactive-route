@@ -1,6 +1,6 @@
 import type { FullConfig, Reporter, Suite } from '@playwright/test/reporter';
 
-import { saveMetrics } from '../scripts/saveMetrics';
+import { saveMetrics } from '../../scripts/saveMetrics';
 
 let totalTests = 0;
 

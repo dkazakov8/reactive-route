@@ -2,7 +2,7 @@
   "name": "reactive-route",
   "author": "Dmitry Kazakov",
   "license": "MIT",
-  "version": "0.0.1-beta.2",
+  "version": "0.0.1-beta.3",
   "description": "Reactive Router for different frameworks",
   "repository": {
     "type": "git",
@@ -60,9 +60,9 @@
     "vitepress": "2.0.0-alpha.15",
     "vitepress-plugin-group-icons": "1.7.1",
 
-    "vitest": "4.0.16",
-    "@vitest/coverage-v8": "4.0.16",
-    "@vitest/browser-playwright": "4.0.16",
+    "vitest": "4.0.17",
+    "@vitest/coverage-v8": "4.0.17",
+    "@vitest/browser-playwright": "4.0.17",
     "vitest-browser-react": "2.0.2",
     "vitest-browser-preact": "1.0.0",
     "vitest-browser-vue": "2.0.1",
@@ -70,7 +70,6 @@
     "playwright": "1.57.0",
     "@playwright/test": "1.57.0",
     "vite-plugin-babel": "1.4.1",
-    "vite-tsconfig-paths": "6.0.4",
     "preact-render-to-string": "6.6.5",
     "@preact/preset-vite": "2.10.2"
   },
