@@ -26,6 +26,7 @@ export default defineConfig({
                 { text: 'Why Reactive Route?', link: '/guide/' },
                 { text: 'Getting Started', link: '/guide/getting-started' },
                 { text: 'Core Concepts', link: '/guide/core-concepts' },
+                { text: 'Limitations', link: '/guide/limitations' },
               ],
             },
             {
@@ -81,6 +82,7 @@ export default defineConfig({
                 { text: 'Зачем Reactive Route?', link: '/ru/guide/' },
                 { text: 'Настройка', link: '/ru/guide/getting-started' },
                 { text: 'Основные структуры', link: '/ru/guide/core-concepts' },
+                { text: 'Ограничения', link: '/ru/guide/limitations' },
               ],
             },
             {
