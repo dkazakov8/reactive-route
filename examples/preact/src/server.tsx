@@ -6,7 +6,7 @@ import { RedirectError } from 'reactive-route';
 import express from 'ultimate-express';
 
 import { App } from './components/App';
-import { getRouterStore, RouterContext } from './router';
+import { getRouter, RouterContext } from './router';
 import { escapeAllStrings } from './utils/escapeAllStrings';
 
 const publicPath = path.resolve(import.meta.dirname, 'public');
@@ -25,7 +25,7 @@ app.get('*', async (req, res) => {
     return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- ROUTER_STATE -->', '{}'));
   }
 
-  const router = await getRouterStore();
+  const router = await getRouter();
 
   try {
     const clearedUrl = await router.hydrateFromURL(req.originalUrl);

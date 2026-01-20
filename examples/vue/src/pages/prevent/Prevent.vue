@@ -1,10 +1,5 @@
 <script lang="ts" setup>
-import { useRouter } from '../../router';
-
-const { router } = useRouter();
-async function toQuery() {
-  await router.redirect({ name: 'query', query: { foo: 'example' } });
-}
+import LinkPayload from '../../components/LinkPayload.vue';
 </script>
 
 <template>
@@ -39,9 +34,16 @@ async function toQuery() {
 
     <div class="navigation">
       <h2>Navigation</h2>
-      <button @click="router.redirect({ name: 'static' })" class="nav-button">Go to Static Page</button>
-      <button @click="router.redirect({ name: 'dynamic', params: { foo: 'example' } })" class="nav-button">Go to Dynamic Page</button>
-      <button @click="toQuery" class="nav-button nav-button-blocked">Try to go to Query Page (will be blocked)</button>
+      <LinkPayload :payload="{ name: 'static' }" class="nav-button">Go to Static Page</LinkPayload>
+      <LinkPayload :payload="{ name: 'dynamic', params: { foo: 'example' } }" class="nav-button">
+        Go to Dynamic Page
+      </LinkPayload>
+      <LinkPayload
+        :payload="{ name: 'query', query: { foo: 'example' } }"
+        class="nav-button nav-button-blocked"
+      >
+        Try to go to Query Page (will be blocked)
+      </LinkPayload>
     </div>
   </div>
 </template>

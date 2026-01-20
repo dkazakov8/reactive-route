@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import LinkPayload from '../../components/LinkPayload.vue';
 import { useRouter } from '../../router';
 
 const { router } = useRouter();
@@ -60,9 +61,13 @@ function goRandom() {
 
     <div class="navigation">
       <h2>Navigation</h2>
-      <button @click="router.redirect({ name: 'static' })" class="nav-button">Go to Static Page</button>
-      <button @click="router.redirect({ name: 'query', query: { foo: 'example' } })" class="nav-button">Go to Query Page</button>
-      <button @click="router.redirect({ name: 'preventRedirect' })" class="nav-button">Go to Prevent Page (will redirect to Static)</button>
+      <LinkPayload :payload="{ name: 'static' }" class="nav-button">Go to Static Page</LinkPayload>
+      <LinkPayload :payload="{ name: 'query', query: { foo: 'example' } }" class="nav-button">
+        Go to Query Page
+      </LinkPayload>
+      <LinkPayload :payload="{ name: 'preventRedirect' }" class="nav-button">
+        Go to Prevent Page (will redirect to Static)
+      </LinkPayload>
     </div>
   </div>
 </template>

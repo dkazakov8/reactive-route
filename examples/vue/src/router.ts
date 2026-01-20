@@ -60,8 +60,10 @@ export async function getRouter() {
   });
 }
 
-export const routerStoreKey: InjectionKey<{
-  router: Awaited<ReturnType<typeof getRouter>>;
-}> = Symbol();
+export type TypeRouterProject = Awaited<ReturnType<typeof getRouter>>;
+
+export type TypeRoutesProject = ReturnType<TypeRouterProject['getGlobalArguments']>['routes'];
+
+export const routerStoreKey: InjectionKey<{ router: TypeRouterProject }> = Symbol();
 
 export const useRouter = () => inject(routerStoreKey)!;

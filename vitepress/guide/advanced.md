@@ -1,5 +1,17 @@
 # Use Cases
 
+## Link
+
+Reactive Route does not provide a built-in `Link` component for every framework, as it would significantly limit customization. You can create your own component using the approach that best suits your project while maintaining full type safety, just like [router.redirect](/guide/router-api#router-redirect).
+
+To simplify component creation, you can export a helper type for the redirect arguments in your `router.ts` file.
+
+<!-- @include: @/snippets/advanced/link.md -->
+
+In the examples above, two components were created: `Link` and `LinkPayload`. The first one accepts props as a flat structure, while the second one uses a `payload` object. Both are fully type-safe and easily extendable.
+
+<!-- @include: @/snippets/advanced/link-usage.md -->
+
 ## Redirect Chains
 
 Reactive Route supports an unlimited number of redirects in both CSR and SSR environments.

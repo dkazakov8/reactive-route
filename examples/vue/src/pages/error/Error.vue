@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { useRouter } from '../../router';
+import LinkPayload from '../../components/LinkPayload.vue';
 
 const props = defineProps<{ errorCode: number }>();
-
-const { router } = useRouter();
 </script>
 
 <template>
@@ -15,9 +13,16 @@ const { router } = useRouter();
 
     <div class="navigation">
       <h2>Navigation</h2>
-      <button @click="router.redirect({ name: 'dynamic', params: { foo: 'example' } })" class="nav-button">Go to Dynamic Page</button>
-      <button @click="router.redirect({ name: 'query', query: { foo: 'example' } })" class="nav-button">Go to Query Page</button>
-      <button @click="router.redirect({ name: 'preventRedirect' })" class="nav-button">Go to Prevent Page</button>
+      <LinkPayload :payload="{ name: 'static' }" class="nav-button">Go to Static Page</LinkPayload>
+      <LinkPayload :payload="{ name: 'dynamic', params: { foo: 'example' } }" class="nav-button">
+        Go to Dynamic Page
+      </LinkPayload>
+      <LinkPayload :payload="{ name: 'query', query: { foo: 'example' } }" class="nav-button">
+        Go to Query Page
+      </LinkPayload>
+      <LinkPayload :payload="{ name: 'preventRedirect' }" class="nav-button">
+        Go to Prevent Page
+      </LinkPayload>
     </div>
   </div>
 </template>

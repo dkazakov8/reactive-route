@@ -1,8 +1,6 @@
-import { useRouter } from '../../router';
+import { LinkPayload } from '../../components/LinkPayload';
 
 export default function Error(props: { errorCode: number }) {
-  const { router } = useRouter();
-
   return (
     <div className="page-container">
       <div className="error-container">
@@ -52,24 +50,18 @@ export default function Error(props: { errorCode: number }) {
 
       <div className="navigation">
         <h2>Navigation</h2>
-        <button onClick={() => router.redirect({ name: 'static' })} className="nav-button">
+        <LinkPayload payload={{ name: 'static' }} class="nav-button">
           Go to Static Page
-        </button>
-        <button
-          onClick={() => router.redirect({ name: 'dynamic', params: { foo: 'example' } })}
-          className="nav-button"
-        >
+        </LinkPayload>
+        <LinkPayload payload={{ name: 'dynamic', params: { foo: 'example' } }} class="nav-button">
           Go to Dynamic Page
-        </button>
-        <button
-          onClick={() => router.redirect({ name: 'query', query: { foo: 'example' } })}
-          className="nav-button"
-        >
+        </LinkPayload>
+        <LinkPayload payload={{ name: 'query', query: { foo: 'example' } }} class="nav-button">
           Go to Query Page
-        </button>
-        <button onClick={() => router.redirect({ name: 'preventRedirect' })} className="nav-button">
+        </LinkPayload>
+        <LinkPayload payload={{ name: 'preventRedirect' }} class="nav-button">
           Go to Prevent Page
-        </button>
+        </LinkPayload>
       </div>
     </div>
   );

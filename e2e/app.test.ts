@@ -103,9 +103,7 @@ test.describe('App routing E2E', () => {
 
     await expect(page.locator(h1)).toHaveText('Dynamic Page');
 
-    await page
-      .getByRole('button', { name: 'Go to Prevent Page (will redirect to Static)' })
-      .click();
+    await page.getByText('Go to Prevent Page (will redirect to Static)').click();
     await page.waitForLoadState('networkidle');
 
     await expect(page.locator(h1)).toHaveText('Static Page');
@@ -120,7 +118,7 @@ test.describe('App routing E2E', () => {
 
     await expect(page.locator(h1)).toHaveText('Prevent Redirect Page');
 
-    await page.getByRole('button', { name: 'Try to go to Query Page (will be blocked)' }).click();
+    await page.getByText('Try to go to Query Page (will be blocked)').click();
 
     await page.waitForTimeout(100);
 

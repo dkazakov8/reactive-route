@@ -2,7 +2,7 @@ import { createContext } from 'preact';
 import { useContext } from 'preact/hooks';
 import { createRouter, createRoutes } from 'reactive-route';
 
-export async function getRouterStore() {
+export async function getRouter() {
   const adapters =
     REACTIVITY_SYSTEM === 'mobx'
       ? await import('reactive-route/adapters/mobx-preact').then((m) => m.adapters)
@@ -66,9 +66,11 @@ export async function getRouterStore() {
   });
 }
 
-export const RouterContext = createContext<{ router: Awaited<ReturnType<typeof getRouterStore>> }>(
-  undefined
-);
+export type TypeRouterProject = Awaited<ReturnType<typeof getRouter>>;
+
+export type TypeRoutesProject = ReturnType<TypeRouterProject['getGlobalArguments']>['routes'];
+
+export const RouterContext = createContext<{ router: TypeRouterProject }>(undefined);
 
 export function useRouter() {
   return useContext(RouterContext);

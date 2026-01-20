@@ -3,10 +3,10 @@ import { hydrate, render } from 'preact';
 import './style.css';
 
 import { App } from './components/App';
-import { getRouterStore, RouterContext } from './router';
+import { getRouter, RouterContext } from './router';
 import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
-const router = await getRouterStore();
+const router = await getRouter();
 
 async function renderSSR() {
   console.log('renderSSR');

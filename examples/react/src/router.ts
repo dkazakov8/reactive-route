@@ -65,9 +65,11 @@ export async function getRouter() {
   });
 }
 
-export const RouterContext = createContext<{ router: Awaited<ReturnType<typeof getRouter>> }>(
-  undefined
-);
+export type TypeRouterProject = Awaited<ReturnType<typeof getRouter>>;
+
+export type TypeRoutesProject = ReturnType<TypeRouterProject['getGlobalArguments']>['routes'];
+
+export const RouterContext = createContext<{ router: TypeRouterProject }>(undefined);
 
 export function useRouter() {
   return useContext(RouterContext);

@@ -1,8 +1,6 @@
-import { useRouter } from '../../router';
+import { LinkPayload } from '../../components/LinkPayload';
 
 export default function Prevent() {
-  const { router } = useRouter();
-
   return (
     <div className="page-container prevent-page">
       <h1>Prevent Redirect Page</h1>
@@ -64,21 +62,21 @@ export default function Prevent() {
 
       <div className="navigation">
         <h2>Navigation</h2>
-        <button onClick={() => router.redirect({ name: 'static' })} className="nav-button">
+        <LinkPayload payload={{ name: 'static' }} className="nav-button">
           Go to Static Page
-        </button>
-        <button
-          onClick={() => router.redirect({ name: 'dynamic', params: { foo: 'example' } })}
+        </LinkPayload>
+        <LinkPayload
+          payload={{ name: 'dynamic', params: { foo: 'example' } }}
           className="nav-button"
         >
           Go to Dynamic Page
-        </button>
-        <button
-          onClick={() => router.redirect({ name: 'query', query: { foo: 'example' } })}
+        </LinkPayload>
+        <LinkPayload
+          payload={{ name: 'query', query: { foo: 'example' } }}
           className="nav-button nav-button-blocked"
         >
           Try to go to Query Page (will be blocked)
-        </button>
+        </LinkPayload>
       </div>
     </div>
   );

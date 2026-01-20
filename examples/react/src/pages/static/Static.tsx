@@ -1,8 +1,6 @@
-import { useRouter } from '../../router';
+import { LinkPayload } from '../../components/LinkPayload';
 
 export default function Static() {
-  const { router } = useRouter();
-
   return (
     <div className="page-container static-page">
       <h1>Static Page</h1>
@@ -28,21 +26,18 @@ export default function Static() {
 
       <div className="navigation">
         <h2>Navigation</h2>
-        <button
-          onClick={() => router.redirect({ name: 'dynamic', params: { foo: 'example' } })}
+        <LinkPayload
           className="nav-button"
+          payload={{ name: 'dynamic', params: { foo: 'example' } }}
         >
           Go to Dynamic Page
-        </button>
-        <button
-          onClick={() => router.redirect({ name: 'query', query: { foo: 'example' } })}
-          className="nav-button"
-        >
+        </LinkPayload>
+        <LinkPayload className="nav-button" payload={{ name: 'query', query: { foo: 'example' } }}>
           Go to Query Page
-        </button>
-        <button onClick={() => router.redirect({ name: 'preventRedirect' })} className="nav-button">
+        </LinkPayload>
+        <LinkPayload className="nav-button" payload={{ name: 'preventRedirect' }}>
           Go to Prevent Page
-        </button>
+        </LinkPayload>
       </div>
     </div>
   );
