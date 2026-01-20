@@ -23,7 +23,8 @@
     "declarationMap": true,
     "esModuleInterop": true,
     "emitDeclarationOnly": true,
-    "allowArbitraryExtensions": true
+    "allowArbitraryExtensions": true,
+    "paths": { "reactive-route": ["packages/core/index.ts"] }
   },
   "types": ["vite/client", "@testing-library/jest-dom", "vitest/globals"]
 }

@@ -2,6 +2,10 @@ import { createRoutes } from 'reactive-route';
 
 export function createTestRoutes(imports: Record<string, any>) {
   return createRoutes({
+    home: {
+      path: '/',
+      loader: imports.staticRoute,
+    },
     dynamicRoute: {
       path: '/test/:static',
       params: { static: (value) => value.length > 2 },

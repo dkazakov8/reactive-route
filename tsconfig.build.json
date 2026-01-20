@@ -8,8 +8,5 @@
     { "path": "./packages/solid" },
     { "path": "./packages/preact" },
     { "path": "./packages/vue" }
-  ],
-  "compilerOptions": {
-    "paths": { "reactive-route": ["packages/core/index.ts"] }
-  }
+  ]
 }

@@ -498,6 +498,54 @@ describe(`payloadAndState`, async () => {
     });
   });
 
+  it('Clears hash from url', () => {
+    let expected = {
+      name: 'staticRoute',
+      params: {},
+      query: { q: 'value' },
+    } as any;
+
+    checkPayload('/test/static?q=value#hash', expected);
+    checkPayload('/test/static/?q=value#hash', expected);
+    checkPayload('test/static?q=value#hash', expected);
+    checkPayload('test/static/?q=value#hash', expected);
+
+    expected = {
+      name: 'dynamicRoute',
+      params: { static: 'value-for-static' },
+      query: {},
+    };
+
+    checkPayload('/test/value-for-static#hash', expected);
+    checkPayload('/test/value-for-static/#hash', expected);
+    checkPayload('test/value-for-static#hash', expected);
+    checkPayload('test/value-for-static/#hash', expected);
+  });
+
+  it('Clears protocol and host from url', () => {
+    let expected = {
+      name: 'staticRoute',
+      params: {},
+      query: { q: 'value' },
+    } as any;
+
+    checkPayload('http://localhost:3000/test/static?q=value', expected);
+    checkPayload('https://example.com/test/static?q=value', expected);
+    checkPayload('//example.com/test/static?q=value', expected);
+    checkPayload('http://localhost:3000/test/static?q=value#hash', expected);
+    checkPayload('https://example.com/test/static?q=value#hash', expected);
+    checkPayload('//example.com/test/static?q=value#hash', expected);
+
+    expected = {
+      name: 'home',
+      params: {},
+      query: {},
+    };
+
+    checkPayload('http://localhost:3000', expected);
+    checkPayload('http://localhost:3000/', expected);
+  });
+
   it('Throws an error when no validators', () => {
     expect(() => router.urlToPayload('/test2/param')).to.throw(
       'missing validator for pathname dynamic parameter "param"'

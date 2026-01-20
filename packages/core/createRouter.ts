@@ -44,7 +44,18 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
        *
        */
 
-      let [pathname = '', search = ''] = url.split('?');
+      let urlCleared = url.indexOf('#') !== -1 ? url.slice(0, url.indexOf('#')) : url;
+      let pathStart: number | null = null;
+
+      if (urlCleared.indexOf('://') !== -1) {
+        pathStart = urlCleared.indexOf('/', urlCleared.indexOf('://') + 3);
+      } else if (urlCleared.startsWith('//')) {
+        pathStart = urlCleared.indexOf('/', 2);
+      }
+
+      if (pathStart !== null) urlCleared = pathStart !== -1 ? urlCleared.slice(pathStart) : '/';
+
+      let [pathname = '', search = ''] = urlCleared.split('?');
 
       const pathnameParts: Array<string> = [];
 
