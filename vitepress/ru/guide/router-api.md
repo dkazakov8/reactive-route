@@ -92,7 +92,8 @@ redirect({ name: 'user', params: { id: '123'}, query: { foo: 'bar' } });
 найден, будет возвращен `Payload` для `notFound` с пустыми `params` и `query`.
 
 ::: info
-Все нерелевантные или невалидные query убираются
+Все неописанные или не соответствующие валидатору query убираются, также очищаются `protocol`,
+`host`, `port` и `hash`, если они переданы
 :::
 
 ```ts
@@ -126,7 +127,8 @@ Alias для `router.redirect(router.urlToPayload(url))`.
 Принимает строку pathname+search и возвращает `State.url`.
 
 ::: info
-Все нерелевантные или невалидные query убираются
+Все неописанные или не соответствующие валидатору query убираются, также очищаются `protocol`,
+`host`, `port` и `hash`, если они переданы
 :::
 
 ```ts

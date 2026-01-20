@@ -95,7 +95,8 @@ Converts a URL (pathname + search) into a `Payload`. If no matching `Config` is 
 the `Payload` for the `notFound` route.
 
 ::: info
-All invalid or unrecognized query parameters are automatically stripped.
+All unrecognized or non-compliant query parameters are stripped. Additionally, `protocol`,
+`host`, `port`, and `hash` are cleared if provided.
 :::
 
 ```ts
@@ -128,7 +129,8 @@ A shorthand for `router.redirect(router.urlToPayload(url))`. It accepts a URL st
 finalized `State.url`.
 
 ::: info
-All invalid or unrecognized query parameters are automatically stripped.
+All unrecognized or non-compliant query parameters are stripped. Additionally, `protocol`,
+`host`, `port`, and `hash` are cleared if provided.
 :::
 
 ```ts

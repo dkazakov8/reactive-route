@@ -8,6 +8,11 @@ To simplify component creation, you can export a helper type for the redirect ar
 
 <!-- @include: @/snippets/advanced/link.md -->
 
+::: warning
+These examples are not an official implementation. You will likely need to refine
+memoization, handle errors, and adapt them to your specific reactivity system.
+:::
+
 In the examples above, two components were created: `Link` and `LinkPayload`. The first one accepts props as a flat structure, while the second one uses a `payload` object. Both are fully type-safe and easily extendable.
 
 <!-- @include: @/snippets/advanced/link-usage.md -->
