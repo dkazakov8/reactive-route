@@ -28,3 +28,9 @@ However, nested routes do excel at automatic breadcrumb generation. If your proj
 on breadcrumbs, a router with native nesting support might be a better fit. That said, Reactive
 Route handles Layouts — the other primary use case for nesting — with ease, as shown in
 [Use Cases](/guide/advanced#layouts).
+
+## Hash
+
+Hash parameters are not supported and are automatically stripped during redirects. Reactive Route is built around modern browser History API standards and is not suitable for applications that require hash-based routing (e.g., older versions of Electron).
+
+The library provides two powerful mechanisms for dynamic parameters: `query` and `params`. They are fully type-safe, integrated into route lifecycles, and validated. These mechanisms can effectively handle use cases where hashes were traditionally used, such as scrolling to an `#anchor` or managing UI state. Adding a third mechanism would only complicate the design and lead to a fragmented application state.

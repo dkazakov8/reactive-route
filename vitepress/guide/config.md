@@ -164,13 +164,14 @@ appropriate route.
 
 ## Lifecycle Functions
 
-> [!IMPORTANT]
-> Both lifecycle functions are triggered when navigating to a new `Config` or when dynamic
-> parameters change. They are **not** triggered by query parameter changes within the same route.
-> 
-> Currently, the router does not support automated data loading based solely on query changes. If
-> you need this functionality, you should load data by reacting to changes in
-> `router.state[name].query` within your component or store.
+::: warning
+Both lifecycle functions are triggered when navigating to a new `Config` or when dynamic
+parameters change. They are **not** triggered by query parameter changes within the same route.
+
+Currently, the router does not support automated data loading based solely on query changes. If
+you need this functionality, you should load data by reacting to changes in
+`router.state[name].query` within your component or store.
+:::
 
 The async `beforeEnter` is ideal for authentication checks, data prefetching, or
 redirecting to a different route.
@@ -235,10 +236,11 @@ Example usage:
 
 Always use `return` with `redirect` and `preventRedirect` to ensure predictable navigation logic.
 
-> [!WARNING]
-> The `redirect` method within lifecycle functions does not have full TypeScript coverage for
-> payloads. Use it with care, as TS will not catch errors if you rename routes during
-> refactoring.
+::: warning
+The `redirect` method within lifecycle functions does not have full TypeScript coverage for
+payloads. Use it with care, as TS will not catch errors if you rename routes during
+refactoring.
+:::
 
 Uncaught errors in lifecycle functions will trigger the `internalError` route. It is essential to
 handle potential errors using `try-catch` blocks or `Promise.catch()`.

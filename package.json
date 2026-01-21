@@ -24,7 +24,7 @@
     "docs:build": "vitepress build vitepress --outDir docs"
   },
   "lint-staged": {
-    "(*.js|*.ts|*.tsx|*.mjs)": [
+    "(*.js|*.ts|*.tsx|*.mjs|*.mts|*.css)": [
       "biome check --no-errors-on-unmatched --write"
     ]
   },
@@ -47,6 +47,7 @@
     "lint-staged": "16.2.7",
     "typescript": "5.9.3",
 
+    "@types/markdown-it": "14.1.2",
     "@types/node": "25.0.5",
     "esbuild": "0.27.2",
     "@espcom/esbuild-plugin-replace": "1.3.2",

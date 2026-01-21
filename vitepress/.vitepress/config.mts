@@ -2,6 +2,8 @@ import { defineConfig } from 'vitepress';
 // @ts-ignore
 import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons';
 
+import { labelsPlugin } from './theme/labelsPlugin';
+
 export default defineConfig({
   title: 'Reactive Route',
   description: 'Config-based routing for different frameworks',
@@ -123,6 +125,7 @@ export default defineConfig({
   markdown: {
     config(md) {
       md.use(groupIconMdPlugin);
+      labelsPlugin(md);
     },
   },
   vite: {
