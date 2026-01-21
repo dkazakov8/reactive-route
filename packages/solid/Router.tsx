@@ -11,8 +11,8 @@ export function Router<TRoutes extends TypeRoutesDefault>(props: PropsRouter<TRo
   const { adapters } = props.router.getGlobalArguments();
 
   const localObservable: TypeRouterLocalObservable = adapters.makeObservable({
-    renderedRouteName: undefined,
-    currentProps: {},
+    renderedName: undefined,
+    props: {},
   });
 
   let Component: ValidComponent;
@@ -35,8 +35,8 @@ export function Router<TRoutes extends TypeRoutesDefault>(props: PropsRouter<TRo
 
   return (
     <Dynamic
-      component={localObservable.renderedRouteName ? Component! : undefined}
-      {...localObservable.currentProps}
+      component={localObservable.renderedName ? Component! : undefined}
+      {...localObservable.props}
     />
   );
 }

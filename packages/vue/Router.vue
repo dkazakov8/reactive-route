@@ -15,8 +15,8 @@ const { adapters } = props.router.getGlobalArguments();
 let Component: any;
 
 const localObservable: TypeRouterLocalObservable = adapters.makeObservable({
-  renderedRouteName: undefined,
-  currentProps: {},
+  renderedName: undefined,
+  props: {},
 });
 
 adapters.autorun(() =>
@@ -27,5 +27,5 @@ adapters.autorun(() =>
 </script>
 
 <template>
-  <component :is="Component" v-if="localObservable.renderedRouteName" v-bind="localObservable.currentProps" />
+  <component :is="Component" v-if="localObservable.renderedName" v-bind="localObservable.props" />
 </template>

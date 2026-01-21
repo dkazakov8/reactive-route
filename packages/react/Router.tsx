@@ -14,8 +14,8 @@ function RouterInner<TRoutes extends TypeRoutesDefault>(props: PropsRouter<TRout
 
   const [localObservable] = useState<TypeRouterLocalObservable>(() =>
     adapters.makeObservable({
-      renderedRouteName: undefined,
-      currentProps: {},
+      renderedName: undefined,
+      props: {},
     })
   );
 
@@ -38,9 +38,9 @@ function RouterInner<TRoutes extends TypeRoutesDefault>(props: PropsRouter<TRout
     []
   );
 
-  if (!localObservable.renderedRouteName || !ComponentRef.current) return null;
+  if (!localObservable.renderedName || !ComponentRef.current) return null;
 
-  return <ComponentRef.current {...localObservable.currentProps} />;
+  return <ComponentRef.current {...localObservable.props} />;
 }
 
 export function Router<TRoutes extends TypeRoutesDefault>(props: PropsRouter<TRoutes>) {

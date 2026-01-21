@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { isClient, RedirectError } from '../packages/core/constants';
+import { RedirectError } from '../packages/core/constants';
 import { createRouter } from '../packages/core/createRouter';
 import { createRoutes } from '../packages/core/createRoutes';
 import { TypeRouter } from '../packages/core/types';
@@ -125,7 +125,7 @@ allPossibleOptions.forEach((options) => {
             params: {
               static: (value) => value.length > 2,
             },
-            loader: routesDefault.dynamicRoute.loader,
+            loader: routesDefault.dynamicOneParam.loader,
             async beforeEnter(config) {
               spyOne();
             },
@@ -233,7 +233,7 @@ allPossibleOptions.forEach((options) => {
             params: {
               static: (value) => value.length > 2,
             },
-            loader: routesDefault.dynamicRoute.loader,
+            loader: routesDefault.dynamicOneParam.loader,
             async beforeEnter(config) {
               spyOne();
             },
@@ -266,7 +266,7 @@ allPossibleOptions.forEach((options) => {
         routes: createRoutes({
           buggyCode: {
             path: '/test/static4',
-            loader: routesDefault.dynamicRoute.loader,
+            loader: routesDefault.dynamicOneParam.loader,
             async beforeEnter() {
               // @ts-ignore
               // biome-ignore lint/correctness/noUndeclaredVariables: false
@@ -333,7 +333,7 @@ allPossibleOptions.forEach((options) => {
             params: {
               static: (value) => value.length > 2,
             },
-            loader: routesDefault.dynamicRoute.loader,
+            loader: routesDefault.dynamicOneParam.loader,
           },
           ...getDefaultRoutes(routesDefault),
         }),
@@ -366,7 +366,7 @@ allPossibleOptions.forEach((options) => {
             params: {
               static: (value) => value.length > 2,
             },
-            loader: routesDefault.dynamicRoute.loader,
+            loader: routesDefault.dynamicOneParam.loader,
             async beforeLeave(config) {
               spyOne();
             },
@@ -400,7 +400,7 @@ allPossibleOptions.forEach((options) => {
             params: {
               static: (value) => value.length > 2,
             },
-            loader: routesDefault.dynamicRoute.loader,
+            loader: routesDefault.dynamicOneParam.loader,
             async beforeLeave(config) {
               spyOne();
             },
@@ -440,11 +440,11 @@ allPossibleOptions.forEach((options) => {
             params: {
               static: (value) => value.length > 2,
             },
-            loader: routesDefault.dynamicRoute.loader,
+            loader: routesDefault.dynamicOneParam.loader,
           },
           preventRedirect: {
             path: '/test/prevent-redirect',
-            loader: routesDefault.dynamicRoute.loader,
+            loader: routesDefault.dynamicOneParam.loader,
             async beforeLeave(config) {
               spyOne();
 
@@ -491,7 +491,7 @@ allPossibleOptions.forEach((options) => {
           },
           buggyCode: {
             path: '/test/buggy-code',
-            loader: routesDefault.dynamicRoute.loader,
+            loader: routesDefault.dynamicOneParam.loader,
             async beforeLeave() {
               // @ts-ignore
               // biome-ignore lint/correctness/noUndeclaredVariables: false
@@ -570,192 +570,198 @@ allPossibleOptions.forEach((options) => {
     });
   });
 
-  describe.runIf(isClient)(`redirect Client [${options.renderer}+${options.reactivity}]`, () => {
-    it('beforeEnter: redirects are made silently and call lifecycle', async () => {
-      const { spyOne, spyTwo, counter, checkSpy } = createCounters();
+  describe.runIf(typeof window !== 'undefined')(
+    `redirect Client [${options.renderer}+${options.reactivity}]`,
+    () => {
+      it('beforeEnter: redirects are made silently and call lifecycle', async () => {
+        const { spyOne, spyTwo, counter, checkSpy } = createCounters();
 
-      const router = createRouter({
-        routes: createRoutes({
-          spyOne: {
-            path: '/test/static',
-            loader: routesDefault.staticRoute.loader,
-            async beforeEnter(config) {
-              spyOne();
+        const router = createRouter({
+          routes: createRoutes({
+            spyOne: {
+              path: '/test/static',
+              loader: routesDefault.staticRoute.loader,
+              async beforeEnter(config) {
+                spyOne();
+              },
             },
-          },
-          redirectSpyOne: {
-            path: '/test/static3',
-            loader: routesDefault.dynamicRoute.loader,
-            async beforeEnter(config) {
-              spyTwo();
+            redirectSpyOne: {
+              path: '/test/static3',
+              loader: routesDefault.dynamicOneParam.loader,
+              async beforeEnter(config) {
+                spyTwo();
 
-              return config.redirect({ name: 'spyOne' });
+                return config.redirect({ name: 'spyOne' });
+              },
             },
-          },
-          ...getDefaultRoutes(routesDefault),
-        }),
-        adapters: await getAdapters(options),
+            ...getDefaultRoutes(routesDefault),
+          }),
+          adapters: await getAdapters(options),
+        });
+        const { routes } = router.getGlobalArguments();
+
+        const url = await router.redirect({ name: 'redirectSpyOne' });
+
+        counter.spyOne += 1;
+        counter.spyTwo += 1;
+
+        checkSpy();
+
+        check(router, { route: routes.spyOne }, url);
       });
-      const { routes } = router.getGlobalArguments();
 
-      const url = await router.redirect({ name: 'redirectSpyOne' });
-
-      counter.spyOne += 1;
-      counter.spyTwo += 1;
-
-      checkSpy();
-
-      check(router, { route: routes.spyOne }, url);
-    });
-
-    it('beforeEnter: multiple redirects are not registered in history', async () => {
-      const router = createRouter({
-        routes: createRoutes({
-          one: {
-            path: '/1',
-            loader: routesDefault.dynamicRoute.loader,
-          },
-          two: {
-            path: '/2',
-            loader: routesDefault.dynamicRoute.loader,
-            async beforeEnter(config) {
-              return config.redirect({ name: 'one' });
+      it('beforeEnter: multiple redirects are not registered in history', async () => {
+        const router = createRouter({
+          routes: createRoutes({
+            one: {
+              path: '/1',
+              loader: routesDefault.dynamicOneParam.loader,
             },
-          },
-          three: {
-            path: '/3',
-            loader: routesDefault.dynamicRoute.loader,
-            async beforeEnter(config) {
-              return config.redirect({ name: 'two' });
+            two: {
+              path: '/2',
+              loader: routesDefault.dynamicOneParam.loader,
+              async beforeEnter(config) {
+                return config.redirect({ name: 'one' });
+              },
             },
-          },
-          four: {
-            path: '/4',
-            loader: routesDefault.dynamicRoute.loader,
-            async beforeEnter(config) {
-              return config.redirect({ name: 'three' });
+            three: {
+              path: '/3',
+              loader: routesDefault.dynamicOneParam.loader,
+              async beforeEnter(config) {
+                return config.redirect({ name: 'two' });
+              },
             },
-          },
-          ...getDefaultRoutes(routesDefault),
-        }),
-        adapters: await getAdapters(options),
+            four: {
+              path: '/4',
+              loader: routesDefault.dynamicOneParam.loader,
+              async beforeEnter(config) {
+                return config.redirect({ name: 'three' });
+              },
+            },
+            ...getDefaultRoutes(routesDefault),
+          }),
+          adapters: await getAdapters(options),
+        });
+        const { routes } = router.getGlobalArguments();
+
+        const url = await router.redirect({ name: 'four' });
+
+        check(router, { route: routes.one }, url);
       });
-      const { routes } = router.getGlobalArguments();
+    }
+  );
 
-      const url = await router.redirect({ name: 'four' });
+  describe.runIf(typeof window === 'undefined')(
+    `redirect SSR [${options.renderer}+${options.reactivity}]`,
+    () => {
+      it('beforeEnter: redirects throw exception and not call next lifecycle', async () => {
+        const { spyOne, spyTwo, counter, checkSpy } = createCounters();
 
-      check(router, { route: routes.one }, url);
-    });
-  });
-
-  describe.runIf(!isClient)(`redirect SSR [${options.renderer}+${options.reactivity}]`, () => {
-    it('beforeEnter: redirects throw exception and not call next lifecycle', async () => {
-      const { spyOne, spyTwo, counter, checkSpy } = createCounters();
-
-      const router = createRouter({
-        routes: createRoutes({
-          spyOne: {
-            path: '/test/:dynamic',
-            params: { dynamic: (v) => true },
-            query: { a: () => true },
-            loader: routesDefault.staticRoute.loader,
-            async beforeEnter(config) {
-              spyOne();
+        const router = createRouter({
+          routes: createRoutes({
+            spyOne: {
+              path: '/test/:dynamic',
+              params: { dynamic: (v) => true },
+              query: { a: () => true },
+              loader: routesDefault.staticRoute.loader,
+              async beforeEnter(config) {
+                spyOne();
+              },
             },
-          },
-          redirectSpyOne: {
-            path: '/test/static3',
-            loader: routesDefault.dynamicRoute.loader,
-            async beforeEnter(config) {
-              spyTwo();
+            redirectSpyOne: {
+              path: '/test/static3',
+              loader: routesDefault.dynamicOneParam.loader,
+              async beforeEnter(config) {
+                spyTwo();
 
-              return config.redirect({
-                name: 'spyOne',
-                params: { dynamic: 'bar' },
-                query: { a: 'test' },
-              });
+                return config.redirect({
+                  name: 'spyOne',
+                  params: { dynamic: 'bar' },
+                  query: { a: 'test' },
+                });
+              },
             },
-          },
-          ...getDefaultRoutes(routesDefault),
-        }),
-        adapters: await getAdapters(options),
+            ...getDefaultRoutes(routesDefault),
+          }),
+          adapters: await getAdapters(options),
+        });
+        const { routes } = router.getGlobalArguments();
+
+        const url = await router.redirect({ name: 'spyOne', params: { dynamic: 'foo' } });
+
+        counter.spyOne += 1;
+
+        check(router, { route: routes.spyOne, params: { dynamic: 'foo' } }, url);
+
+        checkSpy();
+
+        await expect(async () => {
+          await router.redirect({ name: 'redirectSpyOne' });
+        }).rejects.toThrowError(new RedirectError('/test/bar?a=test'));
+
+        counter.spyTwo += 1;
+
+        check(router, { route: routes.spyOne, params: { dynamic: 'foo' } }, url);
+
+        checkSpy();
       });
-      const { routes } = router.getGlobalArguments();
 
-      const url = await router.redirect({ name: 'spyOne', params: { dynamic: 'foo' } });
-
-      counter.spyOne += 1;
-
-      check(router, { route: routes.spyOne, params: { dynamic: 'foo' } }, url);
-
-      checkSpy();
-
-      await expect(async () => {
-        await router.redirect({ name: 'redirectSpyOne' });
-      }).rejects.toThrowError(new RedirectError('/test/bar?a=test'));
-
-      counter.spyTwo += 1;
-
-      check(router, { route: routes.spyOne, params: { dynamic: 'foo' } }, url);
-
-      checkSpy();
-    });
-
-    it('beforeEnter: multiple redirects are not registered in history', async () => {
-      const router = createRouter({
-        routes: createRoutes({
-          one: {
-            path: '/1',
-            loader: routesDefault.dynamicRoute.loader,
-          },
-          two: {
-            path: '/2',
-            loader: routesDefault.dynamicRoute.loader,
-            async beforeEnter(config) {
-              return config.redirect({ name: 'one' });
+      it('beforeEnter: multiple redirects are not registered in history', async () => {
+        const router = createRouter({
+          routes: createRoutes({
+            one: {
+              path: '/1',
+              loader: routesDefault.dynamicOneParam.loader,
             },
-          },
-          three: {
-            path: '/3',
-            loader: routesDefault.dynamicRoute.loader,
-            async beforeEnter(config) {
-              return config.redirect({ name: 'two' });
+            two: {
+              path: '/2',
+              loader: routesDefault.dynamicOneParam.loader,
+              async beforeEnter(config) {
+                return config.redirect({ name: 'one' });
+              },
             },
-          },
-          four: {
-            path: '/4',
-            loader: routesDefault.dynamicRoute.loader,
-            async beforeEnter(config) {
-              return config.redirect({ name: 'three' });
+            three: {
+              path: '/3',
+              loader: routesDefault.dynamicOneParam.loader,
+              async beforeEnter(config) {
+                return config.redirect({ name: 'two' });
+              },
             },
-          },
-          ...getDefaultRoutes(routesDefault),
-        }),
-        adapters: await getAdapters(options),
+            four: {
+              path: '/4',
+              loader: routesDefault.dynamicOneParam.loader,
+              async beforeEnter(config) {
+                return config.redirect({ name: 'three' });
+              },
+            },
+            ...getDefaultRoutes(routesDefault),
+          }),
+          adapters: await getAdapters(options),
+        });
+        const { routes } = router.getGlobalArguments();
+
+        const redirectThree = new RedirectError(routes.three.path);
+
+        await expect(async () => {
+          await router.hydrateFromURL(routes.four.path);
+        }).rejects.toThrowError(redirectThree);
+
+        const redirectTwo = new RedirectError(routes.two.path);
+
+        await expect(async () => {
+          await router.hydrateFromURL(redirectThree.message);
+        }).rejects.toThrowError(redirectTwo);
+
+        const redirectOne = new RedirectError(routes.one.path);
+
+        await expect(async () => {
+          await router.hydrateFromURL(redirectTwo.message);
+        }).rejects.toThrowError(redirectOne);
+
+        const url = await router.hydrateFromURL(redirectOne.message);
+
+        check(router, { route: routes.one }, url);
       });
-      const { routes } = router.getGlobalArguments();
-
-      const redirectThree = new RedirectError(routes.three.path);
-
-      await expect(async () => {
-        await router.hydrateFromURL(routes.four.path);
-      }).rejects.toThrowError(redirectThree);
-
-      const redirectTwo = new RedirectError(routes.two.path);
-
-      await expect(async () => {
-        await router.hydrateFromURL(redirectThree.message);
-      }).rejects.toThrowError(redirectTwo);
-
-      const redirectOne = new RedirectError(routes.one.path);
-
-      await expect(async () => {
-        await router.hydrateFromURL(redirectTwo.message);
-      }).rejects.toThrowError(redirectOne);
-
-      const url = await router.hydrateFromURL(redirectOne.message);
-
-      check(router, { route: routes.one }, url);
-    });
-  });
+    }
+  );
 });

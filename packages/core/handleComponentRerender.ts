@@ -15,15 +15,15 @@ export function handleComponentRerender(
   // 2. Wait activeRouteState is present. It may not be there if the initial redirect is async
   // 3. If the cached route name is the same, that means only dynamic params or query
   // changed. No need to call router lifecycle or update props
-  if (!currentState || localObservable.renderedRouteName === currentState.name) return;
+  if (!currentState || localObservable.renderedName === currentState.name) return;
 
   const currentConfig: TypeConfig = routes[currentState.name];
-  const prevConfig: TypeConfig | undefined = routes[localObservable.renderedRouteName];
-  const prevState = props.router.state[localObservable.renderedRouteName];
+  const prevConfig: TypeConfig | undefined = routes[localObservable.renderedName];
+  const prevState = props.router.state[localObservable.renderedName];
 
   adapters.batch(() => {
-    localObservable.currentProps = currentConfig.props || {};
-    localObservable.renderedRouteName = currentConfig.name;
+    localObservable.props = currentConfig.props || {};
+    localObservable.renderedName = currentConfig.name;
 
     if (currentConfig.component !== prevConfig?.component) {
       beforeComponentChange?.({ prevState, prevConfig, currentState, currentConfig });

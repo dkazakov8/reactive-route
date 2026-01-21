@@ -2,18 +2,15 @@ import { createRoutes } from 'reactive-route';
 
 export function createTestRoutes(imports: Record<string, any>) {
   return createRoutes({
-    home: {
-      path: '/',
-      loader: imports.staticRoute,
-    },
-    dynamicRoute: {
+    home: { path: '/', loader: imports.staticRoute },
+    dynamicOneParam: {
       path: '/test/:static',
       params: { static: (value) => value.length > 2 },
       query: {
         q: (value) => value.length > 2,
         s: (value) => value.length > 2,
       },
-      loader: imports.dynamicRoute,
+      loader: imports.dynamicOneParam,
     },
     staticRoute: {
       path: '/test/static',

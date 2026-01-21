@@ -1,4 +1,4 @@
-import { isClient, PreventError, RedirectError } from './constants';
+import { PreventError, RedirectError } from './constants';
 import {
   TypeConfig,
   TypeGlobalArguments,
@@ -14,6 +14,8 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 ): TypeRouter<TRoutes> {
   const { adapters, routes } = globalArguments;
 
+  const w = typeof window !== 'undefined' ? window : null;
+
   const router = adapters.makeObservable({
     state: {},
     isRedirecting: false,
@@ -24,10 +26,10 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       void this.redirect({ ...payload, replace: true });
     },
     attachHistoryListener() {
-      if (isClient) window.addEventListener('popstate', this.historyListener);
+      w?.addEventListener('popstate', this.historyListener);
     },
     destroyHistoryListener() {
-      if (isClient) window.removeEventListener('popstate', this.historyListener);
+      w?.removeEventListener('popstate', this.historyListener);
     },
 
     getGlobalArguments() {
@@ -158,23 +160,15 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       const params: Record<string, string> = {};
       const query: Record<string, string> = {};
 
-      // fill the route path with passed params
-      // and fill params with relevant values (omitting not required in a path)
-      const pathname =
-        'params' in payload
-          ? config.path.replace(/:([^/]+)/g, (_, pathPart: string) => {
-              const value = payload.params[pathPart];
+      const pathname = config.path.replace(/:([^/]+)/g, (_, pathPart: string) => {
+        const value = (payload as any).params?.[pathPart];
 
-              if (!value)
-                throw new Error(
-                  `no dynamic parameter "${pathPart}" passed for route ${config.name}`
-                );
+        if (!value) throw new Error(`payload missing value for ${config.name}.params.${pathPart}`);
 
-              params[pathPart] = value;
+        params[pathPart] = value;
 
-              return encodeURIComponent(value);
-            })
-          : config.path;
+        return encodeURIComponent(value);
+      });
 
       if (config.query && 'query' in payload && payload.query) {
         for (const key in config.query) {
@@ -219,13 +213,11 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         if (currentState?.search !== nextState.search) {
           adapters.batch(() => adapters.replaceObject(currentState, nextState));
 
-          if (isClient) {
-            window.history[nextPayload.replace ? 'replaceState' : 'pushState'](
-              null,
-              '',
-              currentState.url
-            );
-          }
+          w?.history[nextPayload.replace ? 'replaceState' : 'pushState'](
+            null,
+            '',
+            currentState.url
+          );
         }
 
         return currentState.url;
@@ -238,7 +230,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
           nextState,
           currentState,
           redirect: ((redirectPayload: TypePayload<TRoutes, keyof TRoutes>) => {
-            if (isClient) return redirectPayload;
+            if (w) return redirectPayload;
 
             const redirectState = this.payloadToState(redirectPayload);
 
@@ -284,12 +276,8 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
           if (state?.name !== nextState.name) state.isActive = false;
         }
 
-        if (isClient && nextState.name !== 'internalError') {
-          window.history[nextPayload.replace ? 'replaceState' : 'pushState'](
-            null,
-            '',
-            nextState.url
-          );
+        if (nextState.name !== 'internalError') {
+          w?.history[nextPayload.replace ? 'replaceState' : 'pushState'](null, '', nextState.url);
         }
 
         this.isRedirecting = false;
@@ -332,18 +320,15 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     },
   } as TypeRouter<TRoutes>);
 
-  router.historyListener = router.historyListener.bind(router);
-  router.attachHistoryListener = router.attachHistoryListener.bind(router);
-  router.destroyHistoryListener = router.destroyHistoryListener.bind(router);
+  for (const key in router) {
+    if (!router.hasOwnProperty(key)) continue;
 
-  router.redirect = router.redirect.bind(router);
-  router.hydrateFromURL = router.hydrateFromURL.bind(router);
-  router.preloadComponent = router.preloadComponent.bind(router);
-  router.payloadToState = router.payloadToState.bind(router);
-  router.hydrateFromState = router.hydrateFromState.bind(router);
-  router.getGlobalArguments = router.getGlobalArguments.bind(router);
-  router.urlToPayload = router.urlToPayload.bind(router);
-  router.getActiveState = router.getActiveState.bind(router);
+    const fn = router[key as keyof TypeRouter<TRoutes>];
+
+    if (typeof fn === 'function') {
+      (router as any)[key] = fn.bind(router);
+    }
+  }
 
   router.attachHistoryListener();
 

@@ -85,8 +85,8 @@ export type PropsRouter<TRoutes extends TypeRoutesDefault> = {
 };
 
 export type TypeRouterLocalObservable = {
-  renderedRouteName?: any;
-  currentProps: Record<string, any>;
+  renderedName?: any;
+  props: Record<string, any>;
 };
 
 export type TypePayload<

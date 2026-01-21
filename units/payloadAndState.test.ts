@@ -97,7 +97,7 @@ describe(`payloadAndState`, async () => {
 
   it('Recognizes dynamic route', () => {
     let expected = {
-      name: 'dynamicRoute',
+      name: 'dynamicOneParam',
       params: { static: 'value-for-static' },
       query: {},
     };
@@ -111,7 +111,7 @@ describe(`payloadAndState`, async () => {
 
     checkState(expected, {
       isActive: true,
-      name: 'dynamicRoute',
+      name: 'dynamicOneParam',
       params: { static: 'value-for-static' },
       pathname: '/test/value-for-static',
       props: undefined,
@@ -145,7 +145,7 @@ describe(`payloadAndState`, async () => {
 
   it('Recognizes dynamic route + query params', () => {
     let expected = {
-      name: 'dynamicRoute',
+      name: 'dynamicOneParam',
       params: { static: 'value-for-static' },
       query: { q: 'value-for-q' },
     };
@@ -160,7 +160,7 @@ describe(`payloadAndState`, async () => {
 
     checkState(expected, {
       isActive: true,
-      name: 'dynamicRoute',
+      name: 'dynamicOneParam',
       params: { static: 'value-for-static' },
       pathname: '/test/value-for-static',
       props: undefined,
@@ -170,7 +170,7 @@ describe(`payloadAndState`, async () => {
     });
 
     expected = {
-      name: 'dynamicRoute',
+      name: 'dynamicOneParam',
       params: { static: 'value-for-static' },
       query: {},
     } as any;
@@ -187,7 +187,7 @@ describe(`payloadAndState`, async () => {
 
     checkState(expected, {
       isActive: true,
-      name: 'dynamicRoute',
+      name: 'dynamicOneParam',
       params: { static: 'value-for-static' },
       pathname: '/test/value-for-static',
       props: undefined,
@@ -197,7 +197,7 @@ describe(`payloadAndState`, async () => {
     });
 
     expected = {
-      name: 'dynamicRoute',
+      name: 'dynamicOneParam',
       params: { static: 'value-for-static' },
       query: { q: 'value-for-q', s: 'value-for-s' },
     } as any;
@@ -209,7 +209,7 @@ describe(`payloadAndState`, async () => {
 
     checkState(expected, {
       isActive: true,
-      name: 'dynamicRoute',
+      name: 'dynamicOneParam',
       params: { static: 'value-for-static' },
       pathname: '/test/value-for-static',
       props: undefined,
@@ -395,13 +395,13 @@ describe(`payloadAndState`, async () => {
 
     checkState(
       {
-        name: 'dynamicRoute',
+        name: 'dynamicOneParam',
         params: { static: 'value' },
         query: { q: '1', s: 'valid' },
       },
       {
         isActive: true,
-        name: 'dynamicRoute',
+        name: 'dynamicOneParam',
         params: { static: 'value' },
         pathname: '/test/value',
         props: undefined,
@@ -413,13 +413,13 @@ describe(`payloadAndState`, async () => {
 
     checkState(
       {
-        name: 'dynamicRoute',
+        name: 'dynamicOneParam',
         params: { static: 'value' },
         query: { q: 123 },
       },
       {
         isActive: true,
-        name: 'dynamicRoute',
+        name: 'dynamicOneParam',
         params: { static: 'value' },
         pathname: '/test/value',
         props: undefined,
@@ -573,7 +573,7 @@ describe(`payloadAndState`, async () => {
     checkPayload('test/static/?q=value#hash', expected);
 
     expected = {
-      name: 'dynamicRoute',
+      name: 'dynamicOneParam',
       params: { static: 'value-for-static' },
       query: {},
     };
@@ -626,24 +626,19 @@ describe(`payloadAndState`, async () => {
 
   it('Throws validation errors for payloadToState', () => {
     expect(() => {
-      router.payloadToState({
-        name: 'dynamicRoute',
-        params: {} as any,
-      });
-    }).to.throw(`no dynamic parameter "static" passed for route dynamicRoute`);
+      router.payloadToState({ name: 'dynamicOneParam', params: {} as any });
+    }).to.throw(`payload missing value for dynamicOneParam.params.static`);
 
     expect(() => {
-      router.payloadToState({
-        name: 'dynamicRoute',
-        params: { static: '' } as any,
-      });
-    }).to.throw(`no dynamic parameter "static" passed for route dynamicRoute`);
+      router.payloadToState({ name: 'dynamicOneParam', params: { static: '' } as any });
+    }).to.throw(`payload missing value for dynamicOneParam.params.static`);
 
     expect(() => {
-      router.payloadToState({
-        name: 'dynamicRouteMultiple',
-        params: { param: 'dynamic' } as any,
-      });
-    }).to.throw(`no dynamic parameter "param2" passed for route dynamicRouteMultiple`);
+      router.payloadToState({ name: 'dynamicOneParam' } as any);
+    }).to.throw(`payload missing value for dynamicOneParam.params.static`);
+
+    expect(() => {
+      router.payloadToState({ name: 'dynamicRouteMultiple', params: { param: 'dynamic' } as any });
+    }).to.throw(`payload missing value for dynamicRouteMultiple.params.param2`);
   });
 });
