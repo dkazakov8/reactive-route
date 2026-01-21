@@ -39,23 +39,23 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
        * This is the initial step when we only have a URL like `/path?foo=bar`
        *
        * 1. Try to find a relevant route from createRoutes
-       * 2. Fill the query object with validated decoded values from queryPart
-       * 3. Fill the params object with validated decoded values from pathnamePart
+       * 2. Fill the query object with validated decoded values from search
+       * 3. Fill the params object with validated decoded values from pathname
        *
        */
 
-      let urlCleared = url.indexOf('#') !== -1 ? url.slice(0, url.indexOf('#')) : url;
-      let pathStart: number | null = null;
+      url = url.indexOf('#') !== -1 ? url.slice(0, url.indexOf('#')) : url;
 
-      if (urlCleared.indexOf('://') !== -1) {
-        pathStart = urlCleared.indexOf('/', urlCleared.indexOf('://') + 3);
-      } else if (urlCleared.startsWith('//')) {
-        pathStart = urlCleared.indexOf('/', 2);
+      if (url.includes('://') || url.startsWith('//')) {
+        url = url.replace(/^.*\/\/[^?/]+/, '');
       }
 
-      if (pathStart !== null) urlCleared = pathStart !== -1 ? urlCleared.slice(pathStart) : '/';
+      if (url[0] !== '/') url = `/${url}`;
 
-      let [pathname = '', search = ''] = urlCleared.split('?');
+      const qIndex = url.indexOf('?') + 1;
+
+      let pathname = qIndex ? url.slice(0, qIndex - 1) : url;
+      const search = qIndex ? url.slice(qIndex) : '';
 
       const pathnameParts: Array<string> = [];
 

@@ -115,7 +115,7 @@
         "useNodejsImportProtocol": "error",
         "noInferrableTypes": "error",
         "noNamespace": "error",
-        "noParameterAssign": "error",
+        "noParameterAssign": "off",
         "noRestrictedImports": "error",
         "noYodaExpression": "error",
         "useArrayLiterals": "error",

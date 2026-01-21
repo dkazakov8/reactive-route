@@ -31,6 +31,9 @@ describe(`payloadAndState`, async () => {
     checkPayload('test/static', expected);
     checkPayload('test/static/', expected);
 
+    checkPayload('/test//static//', expected);
+    checkPayload('/test/static///', expected);
+
     checkState(expected, {
       isActive: true,
       name: 'staticRoute',
@@ -103,6 +106,8 @@ describe(`payloadAndState`, async () => {
     checkPayload('/test/value-for-static/', expected);
     checkPayload('test/value-for-static', expected);
     checkPayload('test/value-for-static/', expected);
+
+    checkPayload('/test//value-for-static//', expected);
 
     checkState(expected, {
       isActive: true,
@@ -368,6 +373,61 @@ describe(`payloadAndState`, async () => {
       search: 'q=and%26symbols',
       url: '/test/static?q=and%26symbols',
     });
+
+    expected = {
+      name: 'staticRoute',
+      params: {},
+      query: { q: 'val?ue' },
+    };
+
+    checkPayload('/test/static?q=val?ue', expected);
+
+    checkState(expected, {
+      isActive: true,
+      name: 'staticRoute',
+      params: {},
+      pathname: '/test/static',
+      props: undefined,
+      query: { q: 'val?ue' },
+      search: 'q=val%3Fue',
+      url: '/test/static?q=val%3Fue',
+    });
+
+    checkState(
+      {
+        name: 'dynamicRoute',
+        params: { static: 'value' },
+        query: { q: '1', s: 'valid' },
+      },
+      {
+        isActive: true,
+        name: 'dynamicRoute',
+        params: { static: 'value' },
+        pathname: '/test/value',
+        props: undefined,
+        query: { s: 'valid' },
+        search: 's=valid',
+        url: '/test/value?s=valid',
+      }
+    );
+
+    checkState(
+      {
+        name: 'dynamicRoute',
+        params: { static: 'value' },
+        query: { q: 123 },
+      },
+      {
+        isActive: true,
+        name: 'dynamicRoute',
+        params: { static: 'value' },
+        pathname: '/test/value',
+        props: undefined,
+        query: {},
+        search: '',
+        url: '/test/value',
+      }
+    );
   });
 
   it('Deserializes dynamic pathname parts', () => {
@@ -486,6 +546,8 @@ describe(`payloadAndState`, async () => {
     checkPayload('test/p', expected);
     checkPayload('test/p/', expected);
 
+    checkPayload('/other/value', expected);
+
     checkState(expected, {
       isActive: true,
       name: 'notFound',
@@ -544,6 +606,7 @@ describe(`payloadAndState`, async () => {
 
     checkPayload('http://localhost:3000', expected);
     checkPayload('http://localhost:3000/', expected);
+    checkPayload('http://localhost:3000?q=value', expected);
   });
 
   it('Throws an error when no validators', () => {
