@@ -8,6 +8,7 @@ type TypeExtractParams<T extends string> = string extends T
 
 export type TypeURL = string;
 export type TypeValidator = (param: string) => boolean;
+export type TypeReason = 'unmodified' | 'new_query' | 'new_params' | 'new_config';
 
 // #region type-adapters
 export type TypeAdapters = {
@@ -27,6 +28,7 @@ export type TypePayloadDefault = {
 };
 
 export type TypeLifecycleFunction = (data: {
+  reason: TypeReason;
   nextState: TypeState<TypeConfig>;
   currentState?: TypeState<TypeConfig>;
   redirect: (payload: TypePayloadDefault) => void;

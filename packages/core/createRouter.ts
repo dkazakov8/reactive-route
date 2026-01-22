@@ -4,6 +4,7 @@ import {
   TypeGlobalArguments,
   TypeLifecycleFunction,
   TypePayload,
+  TypeReason,
   TypeRouter,
   TypeRoutesDefault,
   TypeState,
@@ -14,7 +15,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 ): TypeRouter<TRoutes> {
   const { adapters, routes } = globalArguments;
 
-  const w = typeof window !== 'undefined' ? window : null;
+  const win = typeof window !== 'undefined' ? window : null;
 
   const router = adapters.makeObservable({
     state: {},
@@ -26,10 +27,10 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       void this.redirect({ ...payload, replace: true });
     },
     attachHistoryListener() {
-      w?.addEventListener('popstate', this.historyListener);
+      win?.addEventListener('popstate', this.historyListener);
     },
     destroyHistoryListener() {
-      w?.removeEventListener('popstate', this.historyListener);
+      win?.removeEventListener('popstate', this.historyListener);
     },
 
     getGlobalArguments() {
@@ -46,18 +47,9 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
        *
        */
 
-      url = url.indexOf('#') !== -1 ? url.slice(0, url.indexOf('#')) : url;
+      url = url.replace(/#.+/s, '').replace(/^(.*:\/\/|\/\/)[^?/]+/s, '');
 
-      if (url.includes('://') || url.startsWith('//')) {
-        url = url.replace(/^.*\/\/[^?/]+/, '');
-      }
-
-      if (url[0] !== '/') url = `/${url}`;
-
-      const qIndex = url.indexOf('?') + 1;
-
-      let pathname = qIndex ? url.slice(0, qIndex - 1) : url;
-      const search = qIndex ? url.slice(qIndex) : '';
+      let [pathname, search] = [url.replace(/\?.+/s, ''), url.replace(/^[^?]+\?/s, '')];
 
       const pathnameParts: Array<string> = [];
 
@@ -207,30 +199,27 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       const beforeLeave = currentState ? routes[currentState.name].beforeLeave : undefined;
       const beforeEnter = routes[nextState.name].beforeEnter;
 
-      if (currentState?.url === nextState.url) return currentState.url;
+      let reason: TypeReason = 'unmodified';
 
-      if (currentState?.pathname === nextState.pathname) {
-        if (currentState?.search !== nextState.search) {
-          adapters.batch(() => adapters.replaceObject(currentState, nextState));
-
-          w?.history[nextPayload.replace ? 'replaceState' : 'pushState'](
-            null,
-            '',
-            currentState.url
-          );
-        }
-
-        return currentState.url;
+      if (currentState?.name !== nextState.name) {
+        reason = 'new_config';
+      } else if (currentState?.pathname !== nextState.pathname) {
+        reason = 'new_params';
+      } else if (currentState?.search !== nextState.search) {
+        reason = 'new_query';
       }
+
+      if (reason === 'unmodified') return currentState!.url;
 
       this.isRedirecting = true;
 
       try {
         const data: Parameters<TypeLifecycleFunction>[0] = {
+          reason,
           nextState,
           currentState,
           redirect: ((redirectPayload: TypePayload<TRoutes, keyof TRoutes>) => {
-            if (w) return redirectPayload;
+            if (win) return redirectPayload;
 
             const redirectState = this.payloadToState(redirectPayload);
 
@@ -243,8 +232,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
         await beforeLeave?.(data);
 
-        const redirectPayload: TypePayload<TRoutes, keyof TRoutes> | undefined =
-          await beforeEnter?.(data);
+        const redirectPayload: TypePayload<TRoutes, keyof TRoutes> = await beforeEnter?.(data);
 
         if (redirectPayload) return this.redirect(redirectPayload);
       } catch (error: any) {
@@ -277,7 +265,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         }
 
         if (nextState.name !== 'internalError') {
-          w?.history[nextPayload.replace ? 'replaceState' : 'pushState'](null, '', nextState.url);
+          win?.history[nextPayload.replace ? 'replaceState' : 'pushState'](null, '', nextState.url);
         }
 
         this.isRedirecting = false;

@@ -12,7 +12,10 @@ describe(`payloadAndState`, async () => {
   });
 
   function checkPayload(url: string, expectedPayload: TypePayloadDefault) {
-    expect(router.urlToPayload(url)).to.deep.eq(expectedPayload);
+    expect(router.urlToPayload(url)).to.deep.eq(
+      expectedPayload,
+      `${url} should have payload ${JSON.stringify(expectedPayload)} but has ${JSON.stringify(router.urlToPayload(url))}\n`
+    );
   }
 
   function checkState(payload: any, expectedState: TypeState<any>) {

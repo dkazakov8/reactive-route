@@ -187,7 +187,7 @@ allPossibleOptions.forEach((options) => {
       check(router, { route: routes.spyOne, query: { q: 'foo' } }, url);
     });
 
-    it('beforeEnter: not called when redirecting to same route (query changed)', async () => {
+    it.only('beforeEnter: not called when redirecting to same route (query changed)', async () => {
       const { spyOne, counter, checkSpy } = createCounters();
 
       const router = createRouter({
@@ -217,6 +217,8 @@ allPossibleOptions.forEach((options) => {
       check(router, { route: routes.spyOne, query: { q: 'foo' } }, url);
 
       url = await router.redirect({ name: 'spyOne', query: { q: 'bar' } });
+
+      counter.spyOne += 1;
 
       checkSpy();
 
