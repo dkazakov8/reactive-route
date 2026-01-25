@@ -92,7 +92,7 @@ async function generateBuild(folderName: string) {
   );
 
   return {
-    relativePath: `./${path.relative(path.resolve('dist'), outFile_path)}`,
+    relativePath: `./${path.relative(path.resolve('dist'), outFile_path).replaceAll('\\', '/')}`,
     compressedSize: folderName.includes('core')
       ? await getCompressedSize(`${outFile_path}.mjs`)
       : null,
