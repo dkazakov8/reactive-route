@@ -47,16 +47,13 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
        *
        */
 
-      url = url.replace(/#.+/s, '').replace(/^(.*:\/\/|\/\/)[^?/]+/s, '');
-
-      let [pathname, search] = [url.replace(/\?.+/s, ''), url.replace(/^[^?]+\?/s, '')];
+      const parsed = new URL(url, 'http://www.example.com');
 
       const pathnameParts: Array<string> = [];
 
-      pathname = pathname
-        .split('/')
-        .filter(Boolean)
-        .map((str) => {
+      const pathname = parsed.pathname
+        .replace(/\/+/g, '/')
+        .replace(/([^/]+)/g, (_, str) => {
           let deserializedPart = str;
 
           try {
@@ -68,9 +65,9 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
           pathnameParts.push(deserializedPart);
 
-          return str;
+          return _;
         })
-        .join('/');
+        .replace(/(^\/|\/$)/g, '');
 
       let config: TypeConfig | undefined;
       const query: Record<string, string> = {};
@@ -130,12 +127,10 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       if (!config) return { name: 'notFound', params: {}, query: {} };
 
       if (config.query) {
-        const urlQuery = new URLSearchParams(search);
-
         for (const key in config.query) {
           if (!config.query.hasOwnProperty(key)) continue;
 
-          const value = urlQuery.get(key);
+          const value = parsed.searchParams.get(key);
           const validator = config.query[key];
 
           if (typeof validator === 'function' && typeof value === 'string' && validator(value)) {

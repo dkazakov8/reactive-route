@@ -1,13 +1,68 @@
 import { describe, expect, it } from 'vitest';
 
-import { createRouter, TypeState } from '../packages/core';
+import { createRouter, createRoutes, TypeState } from '../packages/core';
 import { TypePayloadDefault } from '../packages/core/types';
 import { getAdapters } from './helpers/getAdapters';
-import { getRoutes } from './helpers/getRoutes';
 
 describe(`payloadAndState`, async () => {
   const router = createRouter({
-    routes: getRoutes({ renderer: 'react', reactivity: 'mobx' }),
+    routes: createRoutes({
+      home: {
+        path: '/',
+        query: {
+          one: (value) => value.length > 2,
+          two: (value) => value.length > 2,
+          three: (value) => value.length > 2,
+          four: (value) => value.length > 2,
+        },
+        loader: () => Promise.resolve({ default: '' }),
+      },
+      dynamicOneParam: {
+        path: '/test/:one',
+        params: { one: (value) => value.length > 2 },
+        query: {
+          q: (value) => value.length > 2,
+          s: (value) => value.length > 2,
+        },
+        loader: () => Promise.resolve({ default: '' }),
+      },
+      static: {
+        path: '/test/static',
+        query: { q: (value) => value.length > 2 },
+        loader: () => Promise.resolve({ default: '' }),
+      },
+      dynamicOneParamStrangeSyntax: {
+        path: '/strange-syntax/::static',
+        params: {
+          ':static': (value) => value.length > 2,
+        },
+        loader: () => Promise.resolve({ default: '' }),
+      },
+      dynamicTwoParams: {
+        path: '/dynamicTwoParams/:one/:two',
+        params: { one: (value) => value.length > 2, two: (value) => value.length > 2 },
+        loader: () => Promise.resolve({ default: '' }),
+      },
+      dynamicRouteNoValidators: {
+        path: '/test2/:param',
+        params: undefined as any,
+        loader: () => Promise.resolve({ default: '' }),
+      },
+      specialCharsPathname: {
+        path: '/special/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B%3Fx%3Dtest',
+        loader: () => Promise.resolve({ default: '' }),
+      },
+      notFound: {
+        path: '/error404',
+        props: { errorNumber: 404 },
+        loader: () => Promise.resolve({ default: '' }),
+      },
+      internalError: {
+        path: '/error500',
+        props: { errorNumber: 500 },
+        loader: () => Promise.resolve({ default: '' }),
+      },
+    }),
     adapters: await getAdapters({ renderer: 'react', reactivity: 'mobx' }),
   });
 
@@ -18,41 +73,31 @@ describe(`payloadAndState`, async () => {
     );
   }
 
-  function checkState(payload: any, expectedState: TypeState<any>) {
-    expect(router.payloadToState(payload)).to.deep.eq(expectedState);
+  function checkState(payload: any, expectedState: Omit<TypeState<any>, 'isActive'>) {
+    expect(router.payloadToState(payload)).to.deep.eq(
+      Object.assign(expectedState, { isActive: true })
+    );
   }
 
   it('Recognizes static route + prevails over dynamic routes', () => {
-    let expected = {
-      name: 'staticRoute',
-      params: {},
-      query: {},
-    };
+    let expected = { name: 'static', params: {}, query: {} } as any;
 
     checkPayload('/test/static', expected);
     checkPayload('/test/static/', expected);
     checkPayload('test/static', expected);
     checkPayload('test/static/', expected);
-
     checkPayload('/test//static//', expected);
     checkPayload('/test/static///', expected);
 
     checkState(expected, {
-      isActive: true,
-      name: 'staticRoute',
-      params: {},
+      ...expected,
       pathname: '/test/static',
       props: undefined,
-      query: {},
       search: '',
       url: '/test/static',
     });
 
-    expected = {
-      name: 'specialCharsPathname',
-      params: {},
-      query: {},
-    } as any;
+    expected = { name: 'specialCharsPathname', params: {}, query: {} };
 
     checkPayload('/special/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B%3Fx%3Dtest', expected);
     checkPayload('/special/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B%3Fx%3Dtest/', expected);
@@ -60,50 +105,40 @@ describe(`payloadAndState`, async () => {
     checkPayload('special/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B%3Fx%3Dtest/', expected);
 
     checkState(expected, {
-      isActive: true,
-      name: 'specialCharsPathname',
-      params: {},
+      ...expected,
       pathname: '/special/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B%3Fx%3Dtest',
       props: undefined,
-      query: {},
       search: '',
       url: '/special/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B%3Fx%3Dtest',
     });
   });
 
   it('Recognizes static route + query params', () => {
-    const expected = {
-      name: 'staticRoute',
-      params: {},
-      query: { q: 'value-for-q' },
-    };
+    const expected = { name: 'static', params: {}, query: { q: 'value-for-q' } };
 
     checkPayload('/test/static?q=value-for-q&bar=non', expected);
     checkPayload('/test/static/?q=value-for-q&bar=non', expected);
     checkPayload('test/static?q=value-for-q&bar=non', expected);
     checkPayload('test/static/?q=value-for-q&bar=non', expected);
 
-    // @ts-ignore
-    expected.query.bar = 'non';
-
-    checkState(expected, {
-      isActive: true,
-      name: 'staticRoute',
-      params: {},
-      pathname: '/test/static',
-      props: undefined,
-      query: { q: 'value-for-q' },
-      search: 'q=value-for-q',
-      url: '/test/static?q=value-for-q',
-    });
+    checkState(
+      { ...expected, query: { q: 'value-for-q', bar: 'non' } },
+      {
+        ...expected,
+        pathname: '/test/static',
+        props: undefined,
+        search: 'q=value-for-q',
+        url: '/test/static?q=value-for-q',
+      }
+    );
   });
 
   it('Recognizes dynamic route', () => {
     let expected = {
       name: 'dynamicOneParam',
-      params: { static: 'value-for-static' },
+      params: { one: 'value-for-static' },
       query: {},
-    };
+    } as any;
 
     checkPayload('/test/value-for-static', expected);
     checkPayload('/test/value-for-static/', expected);
@@ -113,97 +148,83 @@ describe(`payloadAndState`, async () => {
     checkPayload('/test//value-for-static//', expected);
 
     checkState(expected, {
-      isActive: true,
-      name: 'dynamicOneParam',
-      params: { static: 'value-for-static' },
+      ...expected,
       pathname: '/test/value-for-static',
       props: undefined,
-      query: {},
       search: '',
       url: '/test/value-for-static',
     });
 
     expected = {
-      name: 'dynamicRoute3',
+      name: 'dynamicOneParamStrangeSyntax',
       params: { ':static': 'value-for-:static' },
       query: {},
-    } as any;
+    };
 
-    checkPayload('/test4/value-for-%3Astatic', expected);
-    checkPayload('/test4/value-for-%3Astatic/', expected);
-    checkPayload('test4/value-for-%3Astatic', expected);
-    checkPayload('test4/value-for-%3Astatic/', expected);
+    checkPayload('/strange-syntax/value-for-%3Astatic', expected);
+    checkPayload('/strange-syntax/value-for-%3Astatic/', expected);
+    checkPayload('strange-syntax/value-for-%3Astatic', expected);
+    checkPayload('strange-syntax/value-for-%3Astatic/', expected);
 
     checkState(expected, {
-      isActive: true,
-      name: 'dynamicRoute3',
-      params: { ':static': 'value-for-:static' },
-      pathname: '/test4/value-for-%3Astatic',
+      ...expected,
+      pathname: '/strange-syntax/value-for-%3Astatic',
       props: undefined,
-      query: {},
       search: '',
-      url: '/test4/value-for-%3Astatic',
+      url: '/strange-syntax/value-for-%3Astatic',
     });
   });
 
   it('Recognizes dynamic route + query params', () => {
     let expected = {
       name: 'dynamicOneParam',
-      params: { static: 'value-for-static' },
+      params: { one: 'value-for-static' },
       query: { q: 'value-for-q' },
-    };
+    } as any;
 
     checkPayload('/test/value-for-static?q=value-for-q&bar=non', expected);
     checkPayload('/test/value-for-static/?q=value-for-q&bar=non', expected);
     checkPayload('test/value-for-static?q=value-for-q&bar=non', expected);
     checkPayload('test/value-for-static/?q=value-for-q&bar=non', expected);
 
-    // @ts-ignore
-    expected.query.bar = 'non';
-
-    checkState(expected, {
-      isActive: true,
-      name: 'dynamicOneParam',
-      params: { static: 'value-for-static' },
-      pathname: '/test/value-for-static',
-      props: undefined,
-      query: { q: 'value-for-q' },
-      search: 'q=value-for-q',
-      url: '/test/value-for-static?q=value-for-q',
-    });
+    checkState(
+      { ...expected, query: { q: 'value-for-q', bar: 'non' } },
+      {
+        ...expected,
+        pathname: '/test/value-for-static',
+        props: undefined,
+        search: 'q=value-for-q',
+        url: '/test/value-for-static?q=value-for-q',
+      }
+    );
 
     expected = {
       name: 'dynamicOneParam',
-      params: { static: 'value-for-static' },
+      params: { one: 'value-for-static' },
       query: {},
-    } as any;
+    };
 
     checkPayload('/test/value-for-static?q=t&bar=non', expected);
     checkPayload('/test/value-for-static/?q=t&bar=non', expected);
     checkPayload('test/value-for-static?q=t&bar=non', expected);
     checkPayload('test/value-for-static/?q=t&bar=non', expected);
 
-    // @ts-ignore
-    expected.query.q = 't';
-    // @ts-ignore
-    expected.query.bar = 'non';
-
-    checkState(expected, {
-      isActive: true,
-      name: 'dynamicOneParam',
-      params: { static: 'value-for-static' },
-      pathname: '/test/value-for-static',
-      props: undefined,
-      query: {},
-      search: '',
-      url: '/test/value-for-static',
-    });
+    checkState(
+      { ...expected, query: { q: 't', bar: 'non' } },
+      {
+        ...expected,
+        pathname: '/test/value-for-static',
+        props: undefined,
+        search: '',
+        url: '/test/value-for-static',
+      }
+    );
 
     expected = {
       name: 'dynamicOneParam',
-      params: { static: 'value-for-static' },
+      params: { one: 'value-for-static' },
       query: { q: 'value-for-q', s: 'value-for-s' },
-    } as any;
+    };
 
     checkPayload('/test/value-for-static?q=value-for-q&s=value-for-s', expected);
     checkPayload('/test/value-for-static/?q=value-for-q&s=value-for-s', expected);
@@ -211,12 +232,9 @@ describe(`payloadAndState`, async () => {
     checkPayload('test/value-for-static/?q=value-for-q&s=value-for-s', expected);
 
     checkState(expected, {
-      isActive: true,
-      name: 'dynamicOneParam',
-      params: { static: 'value-for-static' },
+      ...expected,
       pathname: '/test/value-for-static',
       props: undefined,
-      query: { q: 'value-for-q', s: 'value-for-s' },
       search: 'q=value-for-q&s=value-for-s',
       url: '/test/value-for-static?q=value-for-q&s=value-for-s',
     });
@@ -224,311 +242,128 @@ describe(`payloadAndState`, async () => {
 
   it('Deserializes query parts', () => {
     let expected = {
-      name: 'staticRoute',
+      name: 'home',
       params: {},
-      query: { q: 'шеллы' },
+      query: { one: 'шеллы', two: '?x=test', three: 'malformed%2' },
     } as any;
 
-    checkPayload('/test/static?q=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B', expected);
-
-    checkState(expected, {
-      isActive: true,
-      name: 'staticRoute',
-      params: {},
-      pathname: '/test/static',
-      props: undefined,
-      query: { q: 'шеллы' },
-      search: 'q=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B',
-      url: '/test/static?q=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B',
-    });
-
-    expected = {
-      name: 'staticRoute',
-      params: {},
-      query: { q: '?x=test' },
-    };
-
-    checkPayload('/test/static?q=%3Fx%3Dtest', expected);
-
-    checkState(expected, {
-      isActive: true,
-      name: 'staticRoute',
-      params: {},
-      pathname: '/test/static',
-      props: undefined,
-      query: { q: '?x=test' },
-      search: 'q=%3Fx%3Dtest',
-      url: '/test/static?q=%3Fx%3Dtest',
-    });
-
-    expected = {
-      name: 'staticRoute',
-      params: {},
-      query: { q: 'malformed%2' },
-    };
-
-    checkPayload('/test/static?q=malformed%2', expected);
-
-    checkState(expected, {
-      isActive: true,
-      name: 'staticRoute',
-      params: {},
-      pathname: '/test/static',
-      props: undefined,
-      query: { q: 'malformed%2' },
-      search: 'q=malformed%252',
-      // do not propagate malformed values further, replace '%2' with '%252'
-      url: '/test/static?q=malformed%252',
-    });
-
-    expected = {
-      name: 'staticRoute',
-      params: {},
-      query: { q: 'malformed%2' },
-    };
-
-    checkPayload('/test/static?q=malformed%252', expected);
-
-    checkState(expected, {
-      isActive: true,
-      name: 'staticRoute',
-      params: {},
-      pathname: '/test/static',
-      props: undefined,
-      query: { q: 'malformed%2' },
-      search: 'q=malformed%252',
-      // do not propagate malformed values further, replace '%2' with '%252'
-      url: '/test/static?q=malformed%252',
-    });
-
-    expected = {
-      name: 'staticRoute',
-      params: {},
-      query: { q: 'foo\0bar' },
-    };
-
-    checkPayload('/test/static?q=foo%00bar', expected);
-
-    checkState(expected, {
-      isActive: true,
-      name: 'staticRoute',
-      params: {},
-      pathname: '/test/static',
-      props: undefined,
-      query: { q: 'foo\0bar' },
-      search: 'q=foo%00bar',
-      url: '/test/static?q=foo%00bar',
-    });
-
-    expected = {
-      name: 'staticRoute',
-      params: {},
-      query: { q: '../../etc/passwd' },
-    };
-
-    checkPayload('/test/static?q=..%2F..%2Fetc%2Fpasswd', expected);
-
-    checkState(expected, {
-      isActive: true,
-      name: 'staticRoute',
-      params: {},
-      pathname: '/test/static',
-      props: undefined,
-      query: { q: '../../etc/passwd' },
-      search: 'q=..%2F..%2Fetc%2Fpasswd',
-      url: '/test/static?q=..%2F..%2Fetc%2Fpasswd',
-    });
-
-    expected = {
-      name: 'staticRoute',
-      params: {},
-      query: { q: 'with space' },
-    };
-
-    checkPayload('/test/static?q=with%20space', expected);
-
-    checkState(expected, {
-      isActive: true,
-      name: 'staticRoute',
-      params: {},
-      pathname: '/test/static',
-      props: undefined,
-      query: { q: 'with space' },
-      search: 'q=with%20space',
-      url: '/test/static?q=with%20space',
-    });
-
-    expected = {
-      name: 'staticRoute',
-      params: {},
-      query: { q: 'and&symbols' },
-    };
-
-    checkPayload('/test/static?q=and%26symbols', expected);
-
-    checkState(expected, {
-      isActive: true,
-      name: 'staticRoute',
-      params: {},
-      pathname: '/test/static',
-      props: undefined,
-      query: { q: 'and&symbols' },
-      search: 'q=and%26symbols',
-      url: '/test/static?q=and%26symbols',
-    });
-
-    expected = {
-      name: 'staticRoute',
-      params: {},
-      query: { q: 'val?ue' },
-    };
-
-    checkPayload('/test/static?q=val?ue', expected);
-
-    checkState(expected, {
-      isActive: true,
-      name: 'staticRoute',
-      params: {},
-      pathname: '/test/static',
-      props: undefined,
-      query: { q: 'val?ue' },
-      search: 'q=val%3Fue',
-      url: '/test/static?q=val%3Fue',
-    });
-
-    checkState(
-      {
-        name: 'dynamicOneParam',
-        params: { static: 'value' },
-        query: { q: '1', s: 'valid' },
-      },
-      {
-        isActive: true,
-        name: 'dynamicOneParam',
-        params: { static: 'value' },
-        pathname: '/test/value',
-        props: undefined,
-        query: { s: 'valid' },
-        search: 's=valid',
-        url: '/test/value?s=valid',
-      }
+    checkPayload(
+      '/?one=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B&two=%3Fx%3Dtest&three=malformed%2',
+      expected
+    );
+    checkPayload('?one=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B&two=%3Fx%3Dtest&three=malformed%2', expected);
+    checkPayload(
+      '?one=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B&two=%3Fx%3Dtest&three=malformed%252',
+      expected
     );
 
+    checkState(expected, {
+      ...expected,
+      pathname: '/',
+      props: undefined,
+      search: 'one=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B&two=%3Fx%3Dtest&three=malformed%252',
+      url: '/?one=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B&two=%3Fx%3Dtest&three=malformed%252',
+      // do not propagate malformed values further, replace '%2' with '%252'
+    });
+
+    expected = {
+      name: 'home',
+      params: {},
+      query: { one: 'foo\0bar', two: '../../etc/passwd', three: 'with space-and&symbols' },
+    };
+
+    checkPayload(
+      '/?one=foo%00bar&two=..%2F..%2Fetc%2Fpasswd&three=with%20space-and%26symbols',
+      expected
+    );
+
+    checkState(expected, {
+      ...expected,
+      pathname: '/',
+      props: undefined,
+      search: 'one=foo%00bar&two=..%2F..%2Fetc%2Fpasswd&three=with%20space-and%26symbols',
+      url: '/?one=foo%00bar&two=..%2F..%2Fetc%2Fpasswd&three=with%20space-and%26symbols',
+    });
+
+    expected = {
+      name: 'home',
+      params: {},
+      query: { one: 'val?ue' },
+    };
+
+    // "params.two" does not pass validator so not filled
+    checkPayload('/?one=val?ue&two=1', expected);
+
+    checkState(expected, {
+      ...expected,
+      pathname: '/',
+      props: undefined,
+      search: 'one=val%3Fue',
+      url: '/?one=val%3Fue',
+    });
+
+    // "params.two" & "params.three" do not pass validator so not filled
     checkState(
+      { ...expected, query: { one: 'val?ue', two: '1', three: 123 } },
       {
-        name: 'dynamicOneParam',
-        params: { static: 'value' },
-        query: { q: 123 },
-      },
-      {
-        isActive: true,
-        name: 'dynamicOneParam',
-        params: { static: 'value' },
-        pathname: '/test/value',
+        ...expected,
+        pathname: '/',
         props: undefined,
-        query: {},
-        search: '',
-        url: '/test/value',
+        search: 'one=val%3Fue',
+        url: '/?one=val%3Fue',
       }
     );
   });
 
   it('Deserializes dynamic pathname parts', () => {
     let expected = {
-      name: 'noPageName2',
-      params: { foo: 'шеллы', bar: '?x=test' },
+      name: 'dynamicTwoParams',
+      params: { one: 'шеллы', two: '?x=test' },
       query: {},
     } as any;
 
-    checkPayload('/test/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B/%3Fx%3Dtest', expected);
+    checkPayload('/dynamicTwoParams/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B/%3Fx%3Dtest', expected);
 
     checkState(expected, {
-      isActive: true,
-      name: 'noPageName2',
-      params: { foo: 'шеллы', bar: '?x=test' },
-      pathname: '/test/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B/%3Fx%3Dtest',
+      ...expected,
+      pathname: '/dynamicTwoParams/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B/%3Fx%3Dtest',
       props: undefined,
-      query: {},
       search: '',
-      url: '/test/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B/%3Fx%3Dtest',
+      url: '/dynamicTwoParams/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B/%3Fx%3Dtest',
     });
 
     expected = {
-      name: 'noPageName2',
-      params: { foo: 'malformed%2', bar: 'percent' },
+      name: 'dynamicTwoParams',
+      params: { one: 'malformed%2', two: 'foo\0bar' },
       query: {},
     };
 
-    checkPayload('/test/malformed%2/percent', expected);
-    checkPayload('/test/malformed%252/percent', expected);
+    checkPayload('/dynamicTwoParams/malformed%2/foo%00bar', expected);
+    checkPayload('/dynamicTwoParams/malformed%252/foo%00bar', expected);
 
     checkState(expected, {
-      isActive: true,
-      name: 'noPageName2',
-      params: { foo: 'malformed%2', bar: 'percent' },
-      pathname: '/test/malformed%252/percent',
+      ...expected,
+      pathname: '/dynamicTwoParams/malformed%252/foo%00bar',
       props: undefined,
-      query: {},
       search: '',
       // do not propagate malformed values further, replace '%2' with '%252'
-      url: '/test/malformed%252/percent',
+      url: '/dynamicTwoParams/malformed%252/foo%00bar',
     });
 
     expected = {
-      name: 'noPageName2',
-      params: { foo: 'foo\0bar', bar: 'baz' },
+      name: 'dynamicTwoParams',
+      params: { one: '../../etc/passwd', two: 'with space-and&symbols' },
       query: {},
     };
 
-    checkPayload('/test/foo%00bar/baz', expected);
+    checkPayload('/dynamicTwoParams/..%2F..%2Fetc%2Fpasswd/with%20space-and%26symbols', expected);
 
     checkState(expected, {
-      isActive: true,
-      name: 'noPageName2',
-      params: { foo: 'foo\0bar', bar: 'baz' },
-      pathname: '/test/foo%00bar/baz',
+      ...expected,
+      pathname: '/dynamicTwoParams/..%2F..%2Fetc%2Fpasswd/with%20space-and%26symbols',
       props: undefined,
-      query: {},
       search: '',
-      url: '/test/foo%00bar/baz',
-    });
-
-    expected = {
-      name: 'noPageName2',
-      params: { foo: '../../etc/passwd', bar: 'bar' },
-      query: {},
-    };
-
-    checkPayload('/test/..%2F..%2Fetc%2Fpasswd/bar', expected);
-
-    checkState(expected, {
-      isActive: true,
-      name: 'noPageName2',
-      params: { foo: '../../etc/passwd', bar: 'bar' },
-      pathname: '/test/..%2F..%2Fetc%2Fpasswd/bar',
-      props: undefined,
-      query: {},
-      search: '',
-      url: '/test/..%2F..%2Fetc%2Fpasswd/bar',
-    });
-
-    expected = {
-      name: 'noPageName2',
-      params: { foo: 'with space', bar: 'and&symbols' },
-      query: {},
-    };
-
-    checkPayload('/test/with%20space/and%26symbols', expected);
-
-    checkState(expected, {
-      isActive: true,
-      name: 'noPageName2',
-      params: { foo: 'with space', bar: 'and&symbols' },
-      pathname: '/test/with%20space/and%26symbols',
-      props: undefined,
-      query: {},
-      search: '',
-      url: '/test/with%20space/and%26symbols',
+      url: '/dynamicTwoParams/..%2F..%2Fetc%2Fpasswd/with%20space-and%26symbols',
     });
   });
 
@@ -552,12 +387,9 @@ describe(`payloadAndState`, async () => {
     checkPayload('/other/value', expected);
 
     checkState(expected, {
-      isActive: true,
-      name: 'notFound',
-      params: {},
+      ...expected,
       pathname: '/error404',
       props: { errorNumber: 404 },
-      query: {},
       search: '',
       url: '/error404',
     });
@@ -565,7 +397,7 @@ describe(`payloadAndState`, async () => {
 
   it('Clears hash from url', () => {
     let expected = {
-      name: 'staticRoute',
+      name: 'static',
       params: {},
       query: { q: 'value' },
     } as any;
@@ -577,7 +409,7 @@ describe(`payloadAndState`, async () => {
 
     expected = {
       name: 'dynamicOneParam',
-      params: { static: 'value-for-static' },
+      params: { one: 'value-for-static' },
       query: {},
     };
 
@@ -589,7 +421,7 @@ describe(`payloadAndState`, async () => {
 
   it('Clears protocol and host from url', () => {
     let expected = {
-      name: 'staticRoute',
+      name: 'static',
       params: {},
       query: { q: 'value' },
     } as any;
@@ -630,18 +462,18 @@ describe(`payloadAndState`, async () => {
   it('Throws validation errors for payloadToState', () => {
     expect(() => {
       router.payloadToState({ name: 'dynamicOneParam', params: {} as any });
-    }).to.throw(`payload missing value for dynamicOneParam.params.static`);
+    }).to.throw(`payload missing value for dynamicOneParam.params.one`);
 
     expect(() => {
       router.payloadToState({ name: 'dynamicOneParam', params: { static: '' } as any });
-    }).to.throw(`payload missing value for dynamicOneParam.params.static`);
+    }).to.throw(`payload missing value for dynamicOneParam.params.one`);
 
     expect(() => {
       router.payloadToState({ name: 'dynamicOneParam' } as any);
-    }).to.throw(`payload missing value for dynamicOneParam.params.static`);
+    }).to.throw(`payload missing value for dynamicOneParam.params.one`);
 
     expect(() => {
-      router.payloadToState({ name: 'dynamicRouteMultiple', params: { param: 'dynamic' } as any });
-    }).to.throw(`payload missing value for dynamicRouteMultiple.params.param2`);
+      router.payloadToState({ name: 'dynamicTwoParams', params: { one: 'dynamic' } as any });
+    }).to.throw(`payload missing value for dynamicTwoParams.params.two`);
   });
 });
