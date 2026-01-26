@@ -15,6 +15,9 @@ export async function getCompressedSize(outFile: string) {
     external: ['react', 'mobx', 'mobx-react-lite', 'vue', 'zod', 'reactive-route', 'react-dom'],
     entryPoints: [outFile],
     format: 'esm',
+    define: {
+      'process.env.NODE_ENV': JSON.stringify('production'),
+    },
   });
 
   const contentBuffer = result.outputFiles[0].contents;
