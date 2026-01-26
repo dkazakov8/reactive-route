@@ -7,52 +7,54 @@ import express from 'ultimate-express';
 
 import { App } from './components/App';
 import { getRouter, RouterContext } from './router';
-import { escapeAllStrings } from './utils/escapeAllStrings';
 
 const publicPath = path.resolve(import.meta.dirname, 'public');
 const templatePath = path.resolve(import.meta.dirname, 'template.html');
 
-const app = express();
+express()
+  .use(express.static(publicPath, { index: false, etag: true }))
+  .get('*', async (req, res) => {
+    if (req.originalUrl.includes('.')) return res.sendStatus(404);
 
-app.use(express.static(publicPath, { index: false, etag: true }));
+    const template = fs.readFileSync(templatePath, 'utf-8');
 
-app.get('*', async (req, res) => {
-  if (req.originalUrl.includes('.')) return res.sendStatus(404);
+    if (!SSR_ENABLED) {
+      return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- ROUTER_STATE -->', '{}'));
+    }
 
-  const template = fs.readFileSync(templatePath, 'utf-8');
+    const router = await getRouter();
 
-  if (!SSR_ENABLED) {
-    return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- ROUTER_STATE -->', '{}'));
-  }
+    try {
+      const clearedUrl = await router.init(req.originalUrl);
 
-  const router = await getRouter();
+      if (req.originalUrl !== clearedUrl) {
+        console.log(
+          `Reactive Route cleared irrelevant query and redirected from ${req.originalUrl} to ${clearedUrl}`
+        );
 
-  try {
-    const clearedUrl = await router.hydrateFromURL(req.originalUrl);
+        return res.redirect(clearedUrl);
+      }
+    } catch (error: any) {
+      if (error instanceof RedirectError) {
+        console.log(
+          `Some Config.beforeEnter redirected from ${req.originalUrl} to ${error.message}`
+        );
 
-    if (req.originalUrl !== clearedUrl) return res.redirect(clearedUrl);
-  } catch (error: any) {
-    if (error instanceof RedirectError) return res.redirect(error.message);
+        return res.redirect(error.message);
+      }
 
-    return res.status(500).send('Unexpected error');
-  }
+      return res.status(500).send('Unexpected error');
+    }
 
-  const htmlMarkup = renderToString(
-    <RouterContext.Provider value={{ router }}>
-      <App />
-    </RouterContext.Provider>
-  );
-
-  res.send(
-    template
-      .replace(`<!-- HTML -->`, htmlMarkup)
-      .replace(
-        '<!-- ROUTER_STATE -->',
-        JSON.stringify(escapeAllStrings(JSON.parse(JSON.stringify(router.state))))
+    res.send(
+      template.replace(
+        `<!-- HTML -->`,
+        renderToString(
+          <RouterContext.Provider value={{ router }}>
+            <App />
+          </RouterContext.Provider>
+        )
       )
-  );
-});
-
-app.listen(PORT, () => {
-  console.log(`started on`, `http://localhost:${PORT}`);
-});
+    );
+  })
+  .listen(PORT, () => console.log(`started on`, `http://localhost:${PORT}`));

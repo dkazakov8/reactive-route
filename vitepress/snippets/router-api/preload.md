@@ -1,5 +1,5 @@
 ```ts
-await router.hydrateFromURL(location.pathname + location.search);
+await router.init(location.pathname + location.search);
 
 setTimeout(async () => {
   try {

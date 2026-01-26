@@ -57,7 +57,7 @@ Browsers handle URLs in an [encoded format](https://developers.google.com/maps/u
 Reactive Route handles the complexity of encoding and decoding for you.
 
 ```ts
-await router.hydrateFromURL(`/user/with%20space?phone=and%26symbols`);
+await router.init(`/user/with%20space?phone=and%26symbols`);
 
 // Internally, router.urlToPayload is called to create a decoded Payload:
 <!-- @include: @/snippets/core-concepts/payload-decoded.md -->

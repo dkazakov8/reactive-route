@@ -121,7 +121,7 @@ router.payloadToState(<!-- @include: @/snippets/payload.md -->);
 <!--@include: @/snippets/state-commented.md -->
 ```
 
-## router.hydrateFromURL
+## router.init
 
 Alias для `router.redirect(router.urlToPayload(url))`.
 Принимает строку pathname+search и возвращает `State.url`.
@@ -132,44 +132,22 @@ Alias для `router.redirect(router.urlToPayload(url))`.
 :::
 
 ```ts
-const clearedUrl = await router.hydrateFromURL(
+const clearedUrl = await router.init(
   `/user/9999?phone=123456&gtm=value`
 )
 // был создан router.state.user и возвращен его url
 // '/user/9999?phone=123456'
 
 // в CSR обычно используется так:
-await router.hydrateFromURL(`${location.pathname}${location.search}`)
+await router.init(`${location.pathname}${location.search}`)
 
 // в SSR обычно используется так (с Express.js):
-const clearedURL = await router.hydrateFromURL(req.originalUrl)
+const clearedURL = await router.init(req.originalUrl)
 
 // если вы хотите удалить на сервере нерелевантные query и перенаправить
 // браузер на унифицированный URL
 if (req.originalUrl !== clearedURL) res.redirect(clearedURL)
 ```
-
-## router.hydrateFromState
-
-Принимает `router.state` и инициализирует роутер.
-
-```ts
-const stateFromServer = window.__ROUTER_STATE__;
-
-// Ожидается, что сервер передал в этом объекте
-stateFromServer.user = <!-- @include: @/snippets/state.md -->
-  
-await router.hydrateFromState({ state: stateFromServer })
-```
-
-Эта функция предназначена для использования с SSR, поэтому она не вызывает функции
-жизненного цикла, так как они уже были вызваны на сервере. Используйте ее только для восстановления
-состояния с сервера.
-
-::: tip
-`props` не обязательно должны присутствовать — они восстановятся из соответствующего `Config` для
-поддержки несериализуемых структур данных
-:::
 
 ## router.state
 

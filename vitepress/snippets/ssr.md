@@ -20,7 +20,7 @@ app.get('*', async (req, res) => {
   const router = getRouter();
 
   try {
-    const clearedUrl = await router.hydrateFromURL(req.originalUrl);
+    const clearedUrl = await router.init(req.originalUrl);
 
     if (req.originalUrl !== clearedUrl) return res.redirect(clearedUrl);
   } catch (error: any) {

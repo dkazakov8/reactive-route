@@ -123,7 +123,7 @@ router.payloadToState(<!-- @include: @/snippets/payload.md -->);
 <!--@include: @/snippets/state-commented.md -->
 ```
 
-## router.hydrateFromURL
+## router.init
 
 A shorthand for `router.redirect(router.urlToPayload(url))`. It accepts a URL string and returns the
 finalized `State.url`.
@@ -134,43 +134,22 @@ All unrecognized or non-compliant query parameters are stripped. Additionally, `
 :::
 
 ```ts
-const clearedUrl = await router.hydrateFromURL(
+const clearedUrl = await router.init(
   `/user/9999?phone=123456&gtm=value`
 )
 // router.state.user is created and its URL is returned
 // '/user/9999?phone=123456'
 
 // Typical Client-Side (CSR) usage:
-await router.hydrateFromURL(`${location.pathname}${location.search}`)
+await router.init(`${location.pathname}${location.search}`)
 
 // Typical Server-Side (SSR) usage (e.g., with Express.js):
-const clearedURL = await router.hydrateFromURL(req.originalUrl)
+const clearedURL = await router.init(req.originalUrl)
 
 // Optional: Redirect the browser to the 
 // "cleaned" URL to remove irrelevant query params
 if (req.originalUrl !== clearedURL) res.redirect(clearedURL)
 ```
-
-## router.hydrateFromState
-
-Initializes the router using a pre-existing state object.
-
-```ts
-const stateFromServer = window.__ROUTER_STATE__;
-
-// Expected state structure from the server:
-stateFromServer.user = <!-- @include: @/snippets/state.md -->
-  
-await router.hydrateFromState({ state: stateFromServer })
-```
-
-This method is designed for SSR hydration. It does not trigger lifecycle functions, as they are assumed
-to have already run on the server.
-
-::: tip
-The `props` property is not required for hydration; it will be automatically restored from the
-corresponding `Config` to preserve non-serializable data structures.
-:::
 
 ## router.state
 

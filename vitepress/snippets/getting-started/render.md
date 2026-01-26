@@ -21,7 +21,7 @@ import { getRouter, RouterContext } from './router';
 
 const router = getRouter();
 
-await router.hydrateFromURL(location.pathname + location.search);
+await router.init(location.pathname + location.search);
 
 createRoot(document.getElementById('app')!).render(
   <RouterContext.Provider value={{ router }}>
@@ -54,7 +54,7 @@ import { getRouter, RouterContext } from './router';
 
 const router = getRouter();
 
-await router.hydrateFromURL(location.pathname + location.search);
+await router.init(location.pathname + location.search);
 
 render(
   <RouterContext.Provider value={{ router }}>
@@ -88,7 +88,7 @@ import { getRouter, RouterContext } from './router';
 
 const router = getRouter();
 
-await router.hydrateFromURL(location.pathname + location.search);
+await router.init(location.pathname + location.search);
 
 render(
   () => (
@@ -126,7 +126,7 @@ import { getRouter, routerStoreKey } from './router';
 
 const router = getRouter();
 
-await router.hydrateFromURL(location.pathname + location.search);
+await router.init(location.pathname + location.search);
 
 createApp(App, { router })
   .provide(routerStoreKey, { router })

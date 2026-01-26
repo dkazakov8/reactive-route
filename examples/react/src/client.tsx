@@ -4,34 +4,26 @@ import './style.css';
 
 import { App } from './components/App';
 import { getRouter, RouterContext } from './router';
-import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
 const router = await getRouter();
 
-async function renderSSR() {
-  console.log('renderSSR');
+await router.init(location.pathname + location.search, { skipLifecycle: Boolean(SSR_ENABLED) });
 
-  await router.hydrateFromState({ state: unescapeAllStrings((window as any).ROUTER_STATE) });
-
+if (SSR_ENABLED) {
   hydrateRoot(
     document.getElementById('app')!,
     <RouterContext.Provider value={{ router }}>
       <App />
     </RouterContext.Provider>
   );
-}
 
-async function renderCSR() {
-  console.log('renderCSR');
-
-  await router.hydrateFromURL(location.pathname + location.search);
-
+  console.log('SSR: App has been hydrated, no lifecycle called');
+} else {
   createRoot(document.getElementById('app')!).render(
     <RouterContext.Provider value={{ router }}>
       <App />
     </RouterContext.Provider>
   );
-}
 
-if (SSR_ENABLED) void renderSSR();
-else void renderCSR();
+  console.log('CSR: App has been rendered and lifecycle called');
+}

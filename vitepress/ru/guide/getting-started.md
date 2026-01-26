@@ -36,7 +36,7 @@ TS автоматически поймет, что здесь присутств
 ## Рендеринг и проброс контекста
 
 Для примера используется CSR (client-only rendering) с помощью
-[router.hydrateFromURL](/ru/guide/router-api.html#router-hydratefromurl). Версия для [SSR](/ru/guide/ssr) очень похожа, но использует 
+[router.init](/ru/guide/router-api.html#router-init). Версия для [SSR](/ru/guide/ssr) очень похожа, но использует 
 соответствующий фреймворкам метод `hydrate`.
 
 <!-- @include: @/snippets/getting-started/render.md -->

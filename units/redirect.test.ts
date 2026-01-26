@@ -69,7 +69,7 @@ allPossibleOptions.forEach((options) => {
     it('restoreFromURL: sets initial route', async () => {
       const router = createRouter({ routes: routesDefault, adapters: await getAdapters(options) });
 
-      const url = await router.hydrateFromURL('/test/static');
+      const url = await router.init('/test/static');
 
       check(router, { route: routesDefault.staticRoute }, url);
     });
@@ -77,7 +77,7 @@ allPossibleOptions.forEach((options) => {
     it('restoreFromURL: sets initial route not found', async () => {
       const router = createRouter({ routes: routesDefault, adapters: await getAdapters(options) });
 
-      const url = await router.hydrateFromURL('/testX/static');
+      const url = await router.init('/testX/static');
 
       check(router, { route: routesDefault.notFound }, url);
     });
@@ -745,22 +745,22 @@ allPossibleOptions.forEach((options) => {
         const redirectThree = new RedirectError(routes.three.path);
 
         await expect(async () => {
-          await router.hydrateFromURL(routes.four.path);
+          await router.init(routes.four.path);
         }).rejects.toThrowError(redirectThree);
 
         const redirectTwo = new RedirectError(routes.two.path);
 
         await expect(async () => {
-          await router.hydrateFromURL(redirectThree.message);
+          await router.init(redirectThree.message);
         }).rejects.toThrowError(redirectTwo);
 
         const redirectOne = new RedirectError(routes.one.path);
 
         await expect(async () => {
-          await router.hydrateFromURL(redirectTwo.message);
+          await router.init(redirectTwo.message);
         }).rejects.toThrowError(redirectOne);
 
-        const url = await router.hydrateFromURL(redirectOne.message);
+        const url = await router.init(redirectOne.message);
 
         check(router, { route: routes.one }, url);
       });

@@ -4,25 +4,17 @@ import './style.css';
 
 import App from './components/App.vue';
 import { getRouter, routerStoreKey } from './router';
-import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
 const router = await getRouter();
 
-async function renderSSR() {
-  console.log('renderSSR');
+await router.init(location.pathname + location.search, { skipLifecycle: Boolean(SSR_ENABLED) });
 
-  await router.hydrateFromState({ state: unescapeAllStrings((window as any).ROUTER_STATE) });
-
+if (SSR_ENABLED) {
   createSSRApp(App, { router }).provide(routerStoreKey, { router }).mount('#app');
-}
 
-async function renderCSR() {
-  console.log('renderCSR');
-
-  await router.hydrateFromURL(location.pathname + location.search);
-
+  console.log('SSR: App has been hydrated, no lifecycle called');
+} else {
   createApp(App, { router }).provide(routerStoreKey, { router }).mount('#app');
-}
 
-if (SSR_ENABLED) void renderSSR();
-else void renderCSR();
+  console.log('CSR: App has been rendered and lifecycle called');
+}

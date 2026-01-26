@@ -35,7 +35,7 @@ creating the appropriate validator.
 ## Rendering and Context Providing
 
 For this example, we'll use Client-Side Rendering (CSR) with
-[router.hydrateFromURL](/guide/router-api.html#router-hydratefromurl). The [SSR](/guide/ssr) version
+[router.init](/guide/router-api.html#router-init). The [SSR](/guide/ssr) version
 is very similar but uses the framework-appropriate `hydrate` method.
 
 <!-- @include: @/snippets/getting-started/render.md -->

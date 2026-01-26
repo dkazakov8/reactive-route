@@ -59,36 +59,6 @@ export async function routerTests(
         router.destroyHistoryListener();
       });
 
-      it('Restored from server renders correctly', async () => {
-        const { router, checkSpy, calls, render } = await prepareRouterTest(options);
-
-        await router.hydrateFromState({
-          // @ts-ignore
-          state: {
-            staticRoute: {
-              name: 'staticRoute',
-              props: {},
-              query: {},
-              params: {},
-              pathname: '/test/static',
-              url: '/test/static',
-              search: '',
-              isActive: true,
-            },
-          },
-        });
-
-        const container = (await render()).container;
-
-        calls.beforeComponentChange += 1;
-
-        expect(container.innerHTML).to.eq('Static');
-
-        checkSpy();
-
-        router.destroyHistoryListener();
-      });
-
       it('No lifecycle if only params changed (with page name)', async () => {
         const { router, render, checkSpy, calls } = await prepareRouterTest(options);
 

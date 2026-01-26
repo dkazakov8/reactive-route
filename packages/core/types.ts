@@ -9,6 +9,9 @@ type TypeExtractParams<T extends string> = string extends T
 export type TypeURL = string;
 export type TypeValidator = (param: string) => boolean;
 export type TypeReason = 'unmodified' | 'new_query' | 'new_params' | 'new_config';
+export type TypeRedirectOptions = {
+  skipLifecycle?: boolean;
+};
 
 // #region type-adapters
 export type TypeAdapters = {
@@ -145,13 +148,14 @@ export type TypeRouter<TRoutes extends TypeRoutesDefault> = {
     payload: TypePayload<TRoutes, TName>
   ): TypeState<TRoutes[TName]>;
 
-  redirect<TName extends keyof TRoutes>(payload: TypePayload<TRoutes, TName>): Promise<TypeURL>;
+  redirect<TName extends keyof TRoutes>(
+    payload: TypePayload<TRoutes, TName>,
+    options?: TypeRedirectOptions
+  ): Promise<TypeURL>;
 
   getActiveState(): TypeState<TRoutes[keyof TRoutes]> | undefined;
 
-  hydrateFromURL(url: TypeURL): Promise<TypeURL>;
-
-  hydrateFromState(state: Partial<Pick<TypeRouter<TRoutes>, 'state'>>): Promise<void>;
+  init(url: TypeURL, options?: TypeRedirectOptions): Promise<TypeURL>;
 
   preloadComponent(name: keyof TRoutes): Promise<void>;
 };

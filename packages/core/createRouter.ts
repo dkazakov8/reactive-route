@@ -192,9 +192,9 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       };
     },
 
-    async redirect(nextPayload) {
+    async redirect(payload, options) {
       const currentState = this.getActiveState();
-      let nextState = this.payloadToState(nextPayload);
+      let nextState = this.payloadToState(payload);
 
       const beforeLeave = currentState ? routes[currentState.name].beforeLeave : undefined;
       const beforeEnter = routes[nextState.name].beforeEnter;
@@ -230,11 +230,13 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
           },
         };
 
-        await beforeLeave?.(data);
+        if (!options?.skipLifecycle) {
+          await beforeLeave?.(data);
 
-        const redirectPayload: TypePayload<TRoutes, keyof TRoutes> = await beforeEnter?.(data);
+          const redirectPayload: TypePayload<TRoutes, keyof TRoutes> = await beforeEnter?.(data);
 
-        if (redirectPayload) return this.redirect(redirectPayload);
+          if (redirectPayload) return this.redirect(redirectPayload);
+        }
       } catch (error: any) {
         if (error instanceof PreventError || error instanceof RedirectError) {
           adapters.batch(() => {
@@ -265,7 +267,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         }
 
         if (nextState.name !== 'internalError') {
-          win?.history[nextPayload.replace ? 'replaceState' : 'pushState'](null, '', nextState.url);
+          win?.history[payload.replace ? 'replaceState' : 'pushState'](null, '', nextState.url);
         }
 
         this.isRedirecting = false;
@@ -291,20 +293,10 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       }
     },
 
-    hydrateFromURL(url) {
-      return this.redirect(this.urlToPayload(url));
-    },
+    init(url, options) {
+      const payload = this.urlToPayload(url);
 
-    async hydrateFromState({ state }) {
-      adapters.batch(() => {
-        Object.assign(this.state, state);
-      });
-
-      const activeState = this.getActiveState();
-
-      activeState!.props = routes[activeState!.name].props;
-
-      await this.preloadComponent(activeState!.name);
+      return this.redirect(payload, options);
     },
   } as TypeRouter<TRoutes>);
 

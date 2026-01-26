@@ -53,7 +53,7 @@ button.onclick = () => router.redirect(<!-- @include: @/snippets/payload.md -->)
 поэтому Reactive Route имеет встроенные механизмы кодирования и декодирования.
 
 ```ts
-await router.hydrateFromURL(`/user/with%20space?phone=and%26symbols`);
+await router.init(`/user/with%20space?phone=and%26symbols`);
 
 // вызывается router.urlToPayload, создающий декодированный Payload
 <!-- @include: @/snippets/core-concepts/payload-decoded.md -->

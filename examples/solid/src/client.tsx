@@ -8,7 +8,6 @@ import { enableExternalSource } from 'solid-js';
 
 import { App } from './components/App';
 import { getRouter, RouterContext } from './router';
-import { unescapeAllStrings } from './utils/unescapeAllStrings';
 
 if (REACTIVITY_SYSTEM === 'kr-observable') {
   enableObservable(false);
@@ -35,11 +34,9 @@ if (REACTIVITY_SYSTEM === 'mobx') {
 
 const router = await getRouter();
 
-async function renderSSR() {
-  console.log('renderSSR');
+await router.init(location.pathname + location.search, { skipLifecycle: Boolean(SSR_ENABLED) });
 
-  await router.hydrateFromState({ state: unescapeAllStrings((window as any).ROUTER_STATE) });
-
+if (SSR_ENABLED) {
   hydrate(
     () => (
       <RouterContext.Provider value={{ router }}>
@@ -48,13 +45,9 @@ async function renderSSR() {
     ),
     document.getElementById('app')!
   );
-}
 
-async function renderCSR() {
-  console.log('renderCSR');
-
-  await router.hydrateFromURL(location.pathname + location.search);
-
+  console.log('SSR: App has been hydrated, no lifecycle called');
+} else {
   render(
     () => (
       <RouterContext.Provider value={{ router }}>
@@ -63,7 +56,6 @@ async function renderCSR() {
     ),
     document.getElementById('app')!
   );
-}
 
-if (SSR_ENABLED) void renderSSR();
-else void renderCSR();
+  console.log('CSR: App has been rendered and lifecycle called');
+}
