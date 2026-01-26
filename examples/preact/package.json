@@ -10,7 +10,7 @@
     "ssr-observable": "tsx build.ts kr-observable ssr"
   },
   "dependencies": {
-    "kr-observable": "3.1.12",
+    "kr-observable": "3.1.14",
     "mobx": "6.15.0",
     "mobx-preact": "3.0.0",
     "preact": "10.28.2",

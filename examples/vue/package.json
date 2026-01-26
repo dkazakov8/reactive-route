@@ -10,7 +10,7 @@
   "dependencies": {
     "reactive-route": "0.0.1-beta.3",
     "ultimate-express": "2.0.12",
-    "vue": "3.5.26"
+    "vue": "3.5.27"
   },
   "devDependencies": {
     "@espcom/esbuild-plugin-inject-preload": "1.0.1",

@@ -12,10 +12,10 @@
     "ssr-mobx": "tsx build.ts mobx ssr"
   },
   "dependencies": {
-    "kr-observable": "3.1.12",
+    "kr-observable": "3.1.14",
     "mobx": "6.15.0",
     "reactive-route": "0.0.1-beta.3",
-    "solid-js": "1.9.10",
+    "solid-js": "1.9.11",
     "ultimate-express": "2.0.12"
   },
   "devDependencies": {
