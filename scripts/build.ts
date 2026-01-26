@@ -9,6 +9,7 @@ import esbuild, { BuildOptions, Plugin } from 'esbuild';
 import pluginVue from 'unplugin-vue';
 
 import { getCompressedSize } from './getCompressedSize';
+import { measureOtherLibs } from './measureOtherLibs';
 import { saveMetrics } from './saveMetrics';
 
 function getPlugins(framework: 'vue' | 'solid') {
@@ -93,9 +94,6 @@ async function generateBuild(folderName: string) {
 
   return {
     relativePath: `./${path.relative(path.resolve('dist'), outFile_path).replaceAll('\\', '/')}`,
-    compressedSize: folderName.includes('core')
-      ? await getCompressedSize(`${outFile_path}.mjs`)
-      : null,
   };
 }
 
@@ -118,9 +116,7 @@ void Promise.all([
 
   const exports: Record<string, { types: string; require: string; import: string }> = {};
 
-  builtPackages.forEach(({ compressedSize, relativePath }) => {
-    if (compressedSize) saveMetrics({ key: 'size', value: compressedSize });
-
+  builtPackages.forEach(({ relativePath }) => {
     exports[relativePath.replace('/index', '')] = {
       types: `${relativePath}.d.ts`,
       require: `${relativePath}.cjs`,
@@ -161,4 +157,6 @@ void Promise.all([
 
   fs.writeFileSync(path.resolve('vitepress/modulesMap.ts'), modulesMap, 'utf8');
   fs.cpSync(path.resolve('README.md'), path.resolve('dist/README.md'));
+
+  await measureOtherLibs();
 });

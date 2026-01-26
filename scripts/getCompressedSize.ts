@@ -9,8 +9,10 @@ export async function getCompressedSize(outFile: string) {
     write: false,
     metafile: false,
     sourcemap: false,
+    treeShaking: false,
     target: 'es2022',
     packages: 'bundle',
+    external: ['react', 'mobx', 'mobx-react-lite', 'vue', 'zod', 'reactive-route', 'react-dom'],
     entryPoints: [outFile],
     format: 'esm',
   });
@@ -22,5 +24,8 @@ export async function getCompressedSize(outFile: string) {
     [zlib.constants.BROTLI_PARAM_SIZE_HINT]: contentBuffer.length,
   });
 
-  return `${(compressedBuffer.byteLength / 1024).toFixed(2)} KB`;
+  return {
+    minified: `${(contentBuffer.byteLength / 1024).toFixed(2)} KB`,
+    compressed: `${(compressedBuffer.byteLength / 1024).toFixed(2)} KB`,
+  };
 }

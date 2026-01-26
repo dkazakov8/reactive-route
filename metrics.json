@@ -1,6 +1,18 @@
 {
-  "size": "1.56 KB",
+  "size": "1.96 KB",
   "tests": 406,
   "coverage": "96.50 %",
-  "e2e": 144
+  "e2e": 144,
+  "size_reactive_route_full": "5.09 KB",
+  "size_kitbag_full": "112.16 KB",
+  "size_vue_router_full": "38.00 KB",
+  "size_mobx_router_full": "25.71 KB",
+  "size_reactive_route_full_br": "1.96 KB",
+  "size_kitbag_full_br": "30.45 KB",
+  "size_vue_router_full_br": "13.22 KB",
+  "size_mobx_router_full_br": "7.87 KB",
+  "size_react_router_full": "184.46 KB",
+  "size_react_router_full_br": "51.49 KB",
+  "size_tanstack_router_full": "151.71 KB",
+  "size_tanstack_router_full_br": "40.93 KB"
 }

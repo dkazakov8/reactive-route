@@ -16,6 +16,7 @@ export default {
       version: globalPkg.version,
       coverage: metrics.coverage,
       passedTests,
+      metrics,
     };
   },
 };

@@ -1,7 +1,23 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-type TypeKey = 'size' | 'coverage' | 'tests' | 'e2e';
+type TypeKey =
+  | 'size'
+  | 'coverage'
+  | 'tests'
+  | 'e2e'
+  | 'size_reactive_route_full'
+  | 'size_reactive_route_full_br'
+  | 'size_react_router_full'
+  | 'size_react_router_full_br'
+  | 'size_vue_router_full'
+  | 'size_vue_router_full_br'
+  | 'size_mobx_router_full'
+  | 'size_mobx_router_full_br'
+  | 'size_tanstack_router_full'
+  | 'size_tanstack_router_full_br'
+  | 'size_kitbag_full'
+  | 'size_kitbag_full_br';
 
 export function saveMetrics({ key, value }: { key: TypeKey; value: string | number }) {
   const metricsPath = path.resolve(process.cwd(), 'metrics.json');

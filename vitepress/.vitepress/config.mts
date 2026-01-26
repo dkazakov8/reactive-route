@@ -106,6 +106,10 @@ export default defineConfig({
                 { text: 'Vue', link: '/ru/guide/vue' },
               ],
             },
+            {
+              text: 'Другое',
+              items: [{ text: 'Сравнение', link: '/ru/guide/size-compare' }],
+            },
           ],
           '/ru/examples/': [
             {

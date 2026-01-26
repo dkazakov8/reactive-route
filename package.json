@@ -29,6 +29,11 @@
     ]
   },
   "devDependencies": {
+    "@tanstack/react-router": "latest",
+    "react-router": "latest",
+    "mobx-router": "latest",
+    "vue-router": "latest",
+    "@kitbag/router": "latest",
     "@babel/core": "7.28.6",
     "@babel/preset-typescript": "7.28.5",
     "@biomejs/biome": "2.3.10",
