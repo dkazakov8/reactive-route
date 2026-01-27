@@ -6,7 +6,7 @@ import { data } from '../dynamic.data'
 
 <br>
 <Badge type="warning">{{ data.version }}</Badge>
-<Badge type="info">Size: <span style="color:var(--docsearch-focus-color)">{{ data.size }}</span></Badge>
+<Badge type="info">Size: <span style="color:var(--docsearch-focus-color)">{{ data.metrics.sizes['reactive-route'].compressed }} KB</span></Badge>
 <Badge type="info">Coverage: <span style="color:var(--docsearch-focus-color)">{{ data.coverage }}</span> in <span style="color:var(--docsearch-focus-color)">{{ data.passedTests }}</span> tests</Badge>
 
 When using a reactive state management library (based on Signals or Proxy), integrating existing

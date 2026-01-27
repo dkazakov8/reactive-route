@@ -1,18 +1,37 @@
 {
-  "size": "1.96 KB",
-  "tests": 406,
   "coverage": "96.50 %",
+  "units": 406,
   "e2e": 144,
-  "size_reactive_route_full": "5.09 KB",
-  "size_kitbag_full": "112.16 KB",
-  "size_vue_router_full": "38.00 KB",
-  "size_mobx_router_full": "25.71 KB",
-  "size_reactive_route_full_br": "1.96 KB",
-  "size_kitbag_full_br": "30.45 KB",
-  "size_vue_router_full_br": "13.22 KB",
-  "size_mobx_router_full_br": "7.87 KB",
-  "size_react_router_full": "184.46 KB",
-  "size_react_router_full_br": "51.49 KB",
-  "size_tanstack_router_full": "151.71 KB",
-  "size_tanstack_router_full_br": "40.93 KB"
+  "sizes": {
+    "reactive-route": {
+      "minified": 5.11,
+      "compressed": 1.99,
+      "version": "0.0.1-beta.4"
+    },
+    "@kitbag/router": {
+      "minified": 112.16,
+      "compressed": 30.45,
+      "version": "0.22.0"
+    },
+    "mobx-router": {
+      "minified": 25.71,
+      "compressed": 7.87,
+      "version": "1.0.0"
+    },
+    "react-router": {
+      "minified": 184.46,
+      "compressed": 51.49,
+      "version": "7.13.0"
+    },
+    "@tanstack/react-router": {
+      "minified": 151.71,
+      "compressed": 40.93,
+      "version": "1.157.15"
+    },
+    "vue-router": {
+      "minified": 38,
+      "compressed": 13.22,
+      "version": "4.6.4"
+    }
+  }
 }

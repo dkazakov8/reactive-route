@@ -3,3 +3,4 @@ ignoredBuiltDependencies:
 
 packages:
   - 'examples/*'
+  - 'scripts/sizeComparison'

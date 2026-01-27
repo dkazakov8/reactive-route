@@ -8,7 +8,7 @@
     "ssr-vue": "tsx build.ts vue ssr"
   },
   "dependencies": {
-    "reactive-route": "0.0.1-beta.3",
+    "reactive-route": "0.0.1-beta.4",
     "ultimate-express": "2.0.12",
     "vue": "3.5.27"
   },

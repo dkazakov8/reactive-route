@@ -8,9 +8,7 @@ import { pluginReplace } from '@espcom/esbuild-plugin-replace';
 import esbuild, { BuildOptions, Plugin } from 'esbuild';
 import pluginVue from 'unplugin-vue';
 
-import { getCompressedSize } from './getCompressedSize';
 import { measureOtherLibs } from './measureOtherLibs';
-import { saveMetrics } from './saveMetrics';
 
 function getPlugins(framework: 'vue' | 'solid') {
   const plugins: Array<Plugin> = [];

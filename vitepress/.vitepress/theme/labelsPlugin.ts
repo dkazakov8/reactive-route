@@ -3,7 +3,7 @@ import Markdown from 'markdown-it';
 import { Options, Renderer, Token } from 'markdown-it/dist/index.cjs';
 
 export function labelsPlugin(md: Markdown) {
-  const labels = {
+  const labels: Record<string, Record<string, string>> = {
     ru: {
       tip: 'Совет',
       info: 'Дополнительно',

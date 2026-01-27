@@ -93,6 +93,6 @@ export class VitestReporter extends DefaultReporter {
     const tests = getTests(testModules.map((testModule: any) => testModule.task));
     const numPassedTests = tests.filter((t) => t.result?.state === 'pass').length;
 
-    saveMetrics({ key: 'tests', value: numPassedTests });
+    saveMetrics({ key: 'units', value: numPassedTests });
   }
 }

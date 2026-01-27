@@ -129,6 +129,7 @@ export default defineConfig({
   markdown: {
     config(md) {
       md.use(groupIconMdPlugin);
+      // @ts-ignore
       labelsPlugin(md);
     },
   },

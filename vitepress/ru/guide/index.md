@@ -6,7 +6,7 @@ import { data } from '../../dynamic.data'
 
 <br>
 <Badge type="warning">{{ data.version }}</Badge>
-<Badge type="info">Размер: <span style="color:var(--docsearch-focus-color)">{{ data.size }}</span></Badge>
+<Badge type="info">Размер: <span style="color:var(--docsearch-focus-color)">{{ data.metrics.sizes['reactive-route'].compressed }} KB</span></Badge>
 <Badge type="info">Покрытие: <span style="color:var(--docsearch-focus-color)">{{ data.coverage }}</span> в <span style="color:var(--docsearch-focus-color)">{{ data.passedTests }}</span> тестах</Badge>
 
 Когда в проекте используется реактивная библиотека управления состоянием (на основе сигналов или Proxy), 

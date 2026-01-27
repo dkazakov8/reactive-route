@@ -1,75 +1,27 @@
+import fs from 'node:fs';
 import path from 'node:path';
 
 import { getCompressedSize } from './getCompressedSize';
-import { saveMetrics } from './saveMetrics';
+import { libsMapper, saveMetrics, TypeLibData } from './saveMetrics';
 
 export async function measureOtherLibs() {
-  saveMetrics({
-    key: 'size',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/reactive-route.ts')))
-      .compressed,
-  });
+  const versions: Record<keyof typeof libsMapper, string> = JSON.parse(
+    fs.readFileSync(path.resolve('./scripts/sizeComparison/package.json'), 'utf8')
+  ).dependencies;
+
+  const entries = Object.entries(libsMapper) as Array<[keyof typeof libsMapper, string]>;
+
+  const pairs = await Promise.all(
+    entries.map(async ([libName, entryPath]) => {
+      return [
+        libName,
+        { ...(await getCompressedSize(entryPath)), version: versions[libName] || '?' },
+      ] as const;
+    })
+  );
 
   saveMetrics({
-    key: 'size_reactive_route_full',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/reactive-route.ts')))
-      .minified,
-  });
-  saveMetrics({
-    key: 'size_reactive_route_full_br',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/reactive-route.ts')))
-      .compressed,
-  });
-
-  saveMetrics({
-    key: 'size_kitbag_full',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/kitbag.ts'))).minified,
-  });
-  saveMetrics({
-    key: 'size_kitbag_full_br',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/kitbag.ts'))).compressed,
-  });
-
-  saveMetrics({
-    key: 'size_vue_router_full',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/vue-router.ts')))
-      .minified,
-  });
-  saveMetrics({
-    key: 'size_vue_router_full_br',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/vue-router.ts')))
-      .compressed,
-  });
-
-  saveMetrics({
-    key: 'size_mobx_router_full',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/mobx-router.ts')))
-      .minified,
-  });
-  saveMetrics({
-    key: 'size_mobx_router_full_br',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/mobx-router.ts')))
-      .compressed,
-  });
-
-  saveMetrics({
-    key: 'size_react_router_full',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/react-router.ts')))
-      .minified,
-  });
-  saveMetrics({
-    key: 'size_react_router_full_br',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/react-router.ts')))
-      .compressed,
-  });
-
-  saveMetrics({
-    key: 'size_tanstack_router_full',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/tanstack.ts'))).minified,
-  });
-  saveMetrics({
-    key: 'size_tanstack_router_full_br',
-    value: (await getCompressedSize(path.resolve('./scripts/sizeComparison/tanstack.ts')))
-      .compressed,
+    key: 'sizes',
+    value: Object.fromEntries(pairs) as Record<keyof typeof libsMapper, TypeLibData>,
   });
 }

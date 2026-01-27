@@ -1,3 +1,4 @@
+import path from 'node:path';
 import * as zlib from 'node:zlib';
 
 import * as esbuild from 'esbuild';
@@ -12,12 +13,13 @@ export async function getCompressedSize(outFile: string) {
     treeShaking: false,
     target: 'es2022',
     packages: 'bundle',
-    external: ['react', 'mobx', 'mobx-react-lite', 'vue', 'zod', 'reactive-route', 'react-dom'],
+    external: ['react', 'mobx', 'mobx-react-lite', 'vue', 'zod', 'react-dom'],
     entryPoints: [outFile],
     format: 'esm',
     define: {
       'process.env.NODE_ENV': JSON.stringify('production'),
     },
+    tsconfig: path.resolve('./scripts/sizeComparison/tsconfig.json'),
   });
 
   const contentBuffer = result.outputFiles[0].contents;
@@ -28,7 +30,7 @@ export async function getCompressedSize(outFile: string) {
   });
 
   return {
-    minified: `${(contentBuffer.byteLength / 1024).toFixed(2)} KB`,
-    compressed: `${(compressedBuffer.byteLength / 1024).toFixed(2)} KB`,
+    minified: Number((contentBuffer.byteLength / 1024).toFixed(2)),
+    compressed: Number((compressedBuffer.byteLength / 1024).toFixed(2)),
   };
 }

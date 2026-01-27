@@ -1,0 +1,13 @@
+{
+  "name": "size-comparison",
+  "author": "Dmitry Kazakov",
+  "license": "MIT",
+  "dependencies": {
+    "@kitbag/router": "0.22.0",
+    "@tanstack/react-router": "1.157.15",
+    "mobx-router": "1.0.0",
+    "react-router": "7.13.0",
+    "reactive-route": "0.0.1-beta.4",
+    "vue-router": "4.6.4"
+  }
+}

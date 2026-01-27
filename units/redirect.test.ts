@@ -22,7 +22,6 @@ function check(router: TypeRouter<any>, redirectParams: any, url?: string) {
   expect(currentRoute.params).to.deep.eq(expectedCurrentRoute.params || {});
   expect(currentRoute.query).to.deep.eq(expectedCurrentRoute.query);
   expect(currentRoute.url).to.deep.eq(expectedCurrentRoute.url);
-
   if (url) {
     expect(url).to.eq(expectedCurrentRoute.url);
   }

@@ -1,6 +1,15 @@
 {
-  "include": ["scripts", "e2e", "vitepress", "*.mjs", "*.ts", "units"],
-  "exclude": [],
+  "include": [
+    "scripts",
+    "e2e",
+    "vitepress",
+    "vitepress/.vitepress/*",
+    "*.mjs",
+    "*.ts",
+    "*.mts",
+    "units"
+  ],
+  "exclude": ["vitepress/modulesMap.ts"],
   "files": [],
   "references": [
     { "path": "./packages/adapters" },
