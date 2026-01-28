@@ -17,6 +17,7 @@ export default {
       .map(([key, info]) => ({
         name: key,
         color: '',
+        link: info.link,
         version: info.version,
         minified: info.minified,
         compressed: info.compressed,
@@ -25,7 +26,7 @@ export default {
       }))
       .sort((a, b) => a.minified - b.minified);
 
-    const referenceLib = libs.find((lib) => lib.reference)!;
+    const referenceLib = libs[0];
 
     if (libs.length > 0) {
       const minSize = libs[0].minified;
@@ -41,17 +42,11 @@ export default {
           lib.multiplier = (lib.compressed / referenceLib.compressed).toFixed(1);
         }
 
-        if (sizeRange === 0) {
-          lib.color = '#ffb300';
-
-          return;
-        }
-
         const ratio = (lib.minified - minSize) / sizeRange;
         // From Yellow (#ffb300 -> 255, 179, 0) to Red (#ca4245 -> 202, 66, 69)
         const r = Math.round(255 + (202 - 255) * ratio);
         const g = Math.round(179 + (66 - 179) * ratio);
-        const b = Math.round(0 + (69 - 0) * ratio);
+        const b = Math.round(69 * ratio);
 
         lib.color = `rgb(${r}, ${g}, ${b})`;
       });

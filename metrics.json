@@ -6,32 +6,38 @@
     "reactive-route": {
       "minified": 5.11,
       "compressed": 1.99,
-      "version": "0.0.1-beta.4"
+      "version": "0.0.1-beta.4",
+      "link": "https://github.com/m-dmitry/reactive-route"
     },
     "@kitbag/router": {
       "minified": 112.16,
       "compressed": 30.45,
-      "version": "0.22.0"
+      "version": "0.22.0",
+      "link": "https://router.kitbag.dev/"
     },
     "mobx-router": {
       "minified": 25.71,
       "compressed": 7.87,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "link": "https://github.com/kitze/mobx-router"
     },
     "react-router": {
       "minified": 184.46,
       "compressed": 51.49,
-      "version": "7.13.0"
+      "version": "7.13.0",
+      "link": "https://reactrouter.com/"
     },
     "@tanstack/react-router": {
       "minified": 151.71,
       "compressed": 40.93,
-      "version": "1.157.15"
+      "version": "1.157.15",
+      "link": "https://tanstack.com/router"
     },
     "vue-router": {
       "minified": 38,
       "compressed": 13.22,
-      "version": "4.6.4"
+      "version": "4.6.4",
+      "link": "https://router.vuejs.org/"
     }
   }
 }

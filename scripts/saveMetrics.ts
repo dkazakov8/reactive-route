@@ -3,18 +3,37 @@ import * as path from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 
 export const libsMapper = {
-  'reactive-route': path.resolve('./scripts/sizeComparison/reactive-route.ts'),
-  '@kitbag/router': path.resolve('./scripts/sizeComparison/kitbag.ts'),
-  'mobx-router': path.resolve('./scripts/sizeComparison/mobx-router.ts'),
-  'react-router': path.resolve('./scripts/sizeComparison/react-router.ts'),
-  '@tanstack/react-router': path.resolve('./scripts/sizeComparison/tanstack.ts'),
-  'vue-router': path.resolve('./scripts/sizeComparison/vue-router.ts'),
+  'reactive-route': {
+    entryPath: path.resolve('./scripts/sizeComparison/reactive-route.ts'),
+    link: 'https://github.com/m-dmitry/reactive-route',
+  },
+  '@kitbag/router': {
+    entryPath: path.resolve('./scripts/sizeComparison/kitbag.ts'),
+    link: 'https://router.kitbag.dev/',
+  },
+  'mobx-router': {
+    entryPath: path.resolve('./scripts/sizeComparison/mobx-router.ts'),
+    link: 'https://github.com/kitze/mobx-router',
+  },
+  'react-router': {
+    entryPath: path.resolve('./scripts/sizeComparison/react-router.ts'),
+    link: 'https://reactrouter.com/',
+  },
+  '@tanstack/react-router': {
+    entryPath: path.resolve('./scripts/sizeComparison/tanstack.ts'),
+    link: 'https://tanstack.com/router',
+  },
+  'vue-router': {
+    entryPath: path.resolve('./scripts/sizeComparison/vue-router.ts'),
+    link: 'https://router.vuejs.org/',
+  },
 } as const;
 
 export type TypeLibData = {
   minified: number;
   compressed: number;
   version: string;
+  link: string;
 };
 
 export type TypeMetrics = {

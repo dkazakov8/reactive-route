@@ -8,7 +8,7 @@ import { pluginReplace } from '@espcom/esbuild-plugin-replace';
 import esbuild, { BuildOptions, Plugin } from 'esbuild';
 import pluginVue from 'unplugin-vue';
 
-import { measureOtherLibs } from './measureOtherLibs';
+import { measureLibs } from './measureLibs';
 
 function getPlugins(framework: 'vue' | 'solid') {
   const plugins: Array<Plugin> = [];
@@ -156,5 +156,5 @@ void Promise.all([
   fs.writeFileSync(path.resolve('vitepress/modulesMap.ts'), modulesMap, 'utf8');
   fs.cpSync(path.resolve('README.md'), path.resolve('dist/README.md'));
 
-  await measureOtherLibs();
+  await measureLibs();
 });
