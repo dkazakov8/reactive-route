@@ -34,7 +34,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Install dependencies
-        run: pnpm install --prefer-offline --ignore-pnpmfile --no-package-lock
+        run: pnpm install --prefer-offline --ignore-pnpmfile --no-lockfile --filter . --workspace-root
       - name: Build with VitePress
         run: pnpm docs:build
       - name: Upload artifact
