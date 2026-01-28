@@ -19,7 +19,7 @@ const StaticAutorun = observer(
       });
     });
 
-    return 'StaticAutorun';
+    return <>StaticAutorun</>;
   }
 );
 

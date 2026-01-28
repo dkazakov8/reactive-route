@@ -1,6 +1,4 @@
-// @ts-ignore
 import Markdown from 'markdown-it';
-import { Options, Renderer, Token } from 'markdown-it/dist/index.cjs';
 
 export function labelsPlugin(md: Markdown) {
   const labels: Record<string, Record<string, string>> = {
@@ -19,11 +17,11 @@ export function labelsPlugin(md: Markdown) {
     if (!rule) continue;
 
     md.renderer.rules[`container_${name}_open`] = (
-      tokens: Array<Token>,
+      tokens: Array<any>,
       idx: number,
-      options: Options,
+      options: any,
       env: any,
-      self: Renderer
+      self: any
     ) => {
       const token = tokens[idx];
       const info = token.info.trim().slice(name.length).trim();

@@ -1,8 +1,11 @@
 import { defineConfig } from 'vitepress';
-// @ts-ignore
-import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons';
+import {
+  groupIconMdPlugin,
+  groupIconVitePlugin,
+  localIconLoader,
+} from 'vitepress-plugin-group-icons';
 
-import { labelsPlugin } from './theme/labelsPlugin';
+import { labelsPlugin } from './theme/labelsPlugin.js';
 
 export default defineConfig({
   title: 'Reactive Route',
@@ -134,7 +137,16 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [groupIconVitePlugin()],
+    plugins: [
+      // @ts-ignore
+      groupIconVitePlugin({
+        customIcon: {
+          'mobx-router': 'vscode-icons:file-type-reactjs',
+          'reactive-route': localIconLoader(import.meta.url, '../public/file.svg'),
+          //'mobx-router': 'https://unplugin.unjs.io/logo_light.svg',
+        },
+      }),
+    ],
   },
   themeConfig: {
     logo: '/file.svg',

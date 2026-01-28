@@ -9,7 +9,7 @@
       "examples/**/*.{ts,tsx,mts,vue,css,cjs}",
       "units/**/*.{ts,tsx,mts,vue,css,cjs}",
       "!!**/dist_*",
-      "vitepress/**/*.{ts,tsx,mts,css,cjs}",
+      "vitepress/**/*.{ts,tsx,mts,vue,css,cjs}",
       "!vitepress/**/modulesMap.ts",
       "./*.{ts,tsx,mts,vue,css,cjs,json}"
     ]

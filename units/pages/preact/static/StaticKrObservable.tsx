@@ -5,7 +5,7 @@ export const store = '';
 export const actions = '';
 
 const Static = observer(() => {
-  return 'Static';
+  return <>Static</>;
 });
 
 export default Static;
