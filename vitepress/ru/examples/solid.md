@@ -1,6 +1,22 @@
+---
+aside: false
+outline: false
+---
+
+<script setup>
+import examplesTree from '../../tree.json'
+</script>
+
 # Пример для Solid.js
 
-Необходимо загрузить папку с примером из репозитория и установить зависимости:
+Так как библиотека роутинга — сложный интеграционный пакет, требующий сервера для SSR и работы
+с History API, Live Preview недоступно. Однако вы можете загрузить готовые примеры.
+
+### Предпросмотр
+
+<CodeView framework="solid" :tree="examplesTree" />
+
+### Скачивание
 
 ```shell
 npx degit dkazakov8/reactive-route/examples/solid solid-example

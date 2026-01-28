@@ -1,6 +1,22 @@
+---
+aside: false
+outline: false
+---
+
+<script setup>
+import examplesTree from '../../tree.json'
+</script>
+
 # Пример для Preact
 
-Необходимо загрузить папку с примером из репозитория и установить зависимости:
+Так как библиотека роутинга — сложный интеграционный пакет, требующий сервера для SSR и работы
+с History API, Live Preview недоступно. Однако вы можете загрузить готовые примеры.
+
+### Предпросмотр
+
+<CodeView framework="preact" :tree="examplesTree" />
+
+### Скачивание
 
 ```shell
 npx degit dkazakov8/reactive-route/examples/preact preact-example

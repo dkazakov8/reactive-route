@@ -27,6 +27,10 @@ export const libsMapper = {
     entryPath: path.resolve('./scripts/sizeComparison/vue-router.ts'),
     link: 'https://router.vuejs.org/',
   },
+  '@solidjs/router': {
+    entryPath: path.resolve('./scripts/sizeComparison/solid-router.ts'),
+    link: 'https://docs.solidjs.com/solid-router/',
+  },
 } as const;
 
 export type TypeLibData = {

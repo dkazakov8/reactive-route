@@ -1,7 +1,7 @@
 import Theme from 'vitepress/theme';
-import 'virtual:group-icons.css';
 import './custom.css';
 
+import CodeView from './components/CodeView.vue';
 import ComparisonTable from './components/ComparisonTable.vue';
 import FrameworkSelect from './components/FrameworkSelect.vue';
 import SizeComparisonChart from './components/SizeComparisonChart.vue';
@@ -16,5 +16,6 @@ export default {
     params.app.component('Tabs', Tabs);
     params.app.component('ComparisonTable', ComparisonTable);
     params.app.component('SizeComparisonChart', SizeComparisonChart);
+    params.app.component('CodeView', CodeView);
   },
 };

@@ -8,6 +8,7 @@ import { pluginReplace } from '@espcom/esbuild-plugin-replace';
 import esbuild, { BuildOptions, Plugin } from 'esbuild';
 import pluginVue from 'unplugin-vue';
 
+import { createExamplesTree } from './createExamplesTree';
 import { measureLibs } from './measureLibs';
 
 function getPlugins(framework: 'vue' | 'solid') {
@@ -157,4 +158,6 @@ void Promise.all([
   fs.cpSync(path.resolve('README.md'), path.resolve('dist/README.md'));
 
   await measureLibs();
+
+  await createExamplesTree();
 });

@@ -9,7 +9,7 @@ stack-specific peer dependencies.
 
 ## Module Map
 
-<<< @/modulesMap.ts
+<<< @/../vitepress/modulesMap.ts
 
 ## Creating the Router and Routes
 

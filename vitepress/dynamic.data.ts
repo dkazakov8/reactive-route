@@ -24,7 +24,7 @@ export default {
         reference: key === 'reactive-route',
         multiplier: '',
       }))
-      .sort((a, b) => a.minified - b.minified);
+      .sort((a, b) => a.compressed - b.compressed);
 
     const referenceLib = libs[0];
 

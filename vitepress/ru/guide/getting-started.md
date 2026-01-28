@@ -9,7 +9,7 @@
 
 ## Карта модулей
 
-<<< @/modulesMap.ts
+<<< @/../vitepress/modulesMap.ts
 
 ## Создание роутера и маршрутов
 

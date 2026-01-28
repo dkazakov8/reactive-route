@@ -1,9 +1,4 @@
 import { defineConfig } from 'vitepress';
-import {
-  groupIconMdPlugin,
-  groupIconVitePlugin,
-  localIconLoader,
-} from 'vitepress-plugin-group-icons';
 
 import { labelsPlugin } from './theme/labelsPlugin.js';
 
@@ -133,30 +128,8 @@ export default defineConfig({
   },
   markdown: {
     config(md) {
-      md.use(groupIconMdPlugin);
-      // @ts-ignore
-      labelsPlugin(md);
+      labelsPlugin(md as any);
     },
-  },
-  vite: {
-    plugins: [
-      // https://icon-sets.iconify.design/
-      // @ts-ignore
-      groupIconVitePlugin({
-        customIcon: {
-          react: 'logos:react',
-          preact: 'logos:preact',
-          vue: 'logos:vue',
-          solid: 'logos:solidjs-icon',
-          'mobx-router': 'vscode-icons:file-type-reactjs',
-          'vue-router': 'vscode-icons:file-type-vue',
-          'react-router': 'logos:react-router',
-          '@tanstack/react-router': 'logos:react',
-          '@kitbag/router': 'vscode-icons:file-type-vue',
-          'reactive-route': localIconLoader(import.meta.url, '../public/file.svg'),
-        },
-      }),
-    ],
   },
   themeConfig: {
     logo: '/file.svg',

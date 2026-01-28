@@ -39,145 +39,133 @@ const templatePath = path.resolve(outdirPath, 'template.html');
 const watchPort = PORT + 100;
 const analyzerPort = PORT + 101;
 
-async function watch() {
-  let reloadSocket: WebSocket;
+let reloadSocket: WebSocket;
 
-  const activeProcesses = new Set<'server' | 'client'>();
+const activeProcesses = new Set<'server' | 'client'>();
 
-  const configServer: BuildOptions = {
-    entryPoints: ['src/server.ts'],
-    bundle: true,
-    write: true,
-    metafile: true,
-    treeShaking: true,
-    sourcemap: false,
-    outdir: outdirPath,
-    platform: 'node',
-    packages: 'external',
-    format: 'esm',
-    target: 'node22',
-    define: {
-      'process.env.NODE_ENV': JSON.stringify('development'),
-      PORT: JSON.stringify(PORT),
-      SSR_ENABLED: JSON.stringify(SSR_ENABLED),
-      REACTIVITY_SYSTEM: JSON.stringify(REACTIVITY_SYSTEM),
+const configServer: BuildOptions = {
+  entryPoints: ['src/server.ts'],
+  bundle: true,
+  write: true,
+  metafile: true,
+  treeShaking: true,
+  sourcemap: false,
+  outdir: outdirPath,
+  platform: 'node',
+  packages: 'external',
+  format: 'esm',
+  target: 'node22',
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('development'),
+    PORT: JSON.stringify(PORT),
+    SSR_ENABLED: JSON.stringify(SSR_ENABLED),
+    REACTIVITY_SYSTEM: JSON.stringify(REACTIVITY_SYSTEM),
+  },
+  resolveExtensions: ['.js', '.ts', '.vue'],
+  plugins: [
+    pluginVue.esbuild({ include: [/\.vue$/] }),
+    {
+      name: 'plugin-parallel',
+      setup(build) {
+        build.onStart(() => {
+          activeProcesses.add('server');
+        });
+      },
     },
-    resolveExtensions: ['.js', '.ts', '.vue'],
-    plugins: [
-      pluginVue.esbuild({ include: [/\.vue$/] }),
-      {
-        name: 'plugin-parallel',
-        setup(build) {
-          build.onStart(() => {
-            activeProcesses.add('server');
-          });
-        },
+  ],
+};
+
+const configClient: BuildOptions = {
+  ...configServer,
+  entryPoints: ['src/client.ts'],
+  outdir: publicPath,
+  publicPath: '/',
+  splitting: false,
+  platform: 'browser',
+  target: 'es2022',
+  packages: 'bundle',
+  plugins: [
+    pluginVue.esbuild({ include: [/\.vue$/] }),
+    {
+      name: 'plugin-parallel',
+      setup(build) {
+        build.onStart(() => {
+          activeProcesses.add('client');
+        });
+        build.onEnd(() => {
+          activeProcesses.delete('client');
+
+          if (activeProcesses.size === 0) {
+            setTimeout(() => reloadSocket?.send('reload'), 0);
+          }
+        });
       },
-    ],
-  };
-
-  const configClient: BuildOptions = {
-    ...configServer,
-    entryPoints: ['src/client.ts'],
-    outdir: publicPath,
-    publicPath: '/',
-    splitting: false,
-    platform: 'browser',
-    target: 'es2022',
-    packages: 'bundle',
-    plugins: [
-      pluginVue.esbuild({ include: [/\.vue$/] }),
+    },
+    pluginInjectPreload([
       {
-        name: 'plugin-parallel',
-        setup(build) {
-          build.onStart(() => {
-            activeProcesses.add('client');
-          });
-          build.onEnd(() => {
-            activeProcesses.delete('client');
-
-            if (activeProcesses.size === 0) {
-              setTimeout(() => reloadSocket?.send('reload'), 0);
-            }
-          });
-        },
+        templatePath,
+        replace: '<!-- ENTRY_CSS --><!-- /ENTRY_CSS -->',
+        as: (filePath) =>
+          /client([^.]+)?\.css$/.test(filePath)
+            ? `<link rel="stylesheet" type="text/css" href="${filePath}" />`
+            : undefined,
       },
-      pluginInjectPreload([
-        {
-          templatePath,
-          replace: '<!-- ENTRY_CSS --><!-- /ENTRY_CSS -->',
-          as: (filePath) =>
-            /client([^.]+)?\.css$/.test(filePath)
-              ? `<link rel="stylesheet" type="text/css" href="${filePath}" />`
-              : undefined,
-        },
-        {
-          templatePath,
-          replace: '<!-- ENTRY_JS --><!-- /ENTRY_JS -->',
-          as: (filePath) =>
-            /client([^.]+)?\.js$/.test(filePath)
-              ? `<script src="${filePath}" type="module"></script>`
-              : undefined,
-        },
-        {
-          templatePath,
-          replace: '<!-- HOT_RELOAD --><!-- /HOT_RELOAD -->',
-          as: (filePath) =>
-            /client([^.]+)?\.js$/.test(filePath)
-              ? `<script>${reloadScript(watchPort)}</script>`
-              : undefined,
-        },
-      ]),
-      !IS_E2E &&
-        pluginWebpackAnalyzer({
-          port: analyzerPort,
-          open: false,
-          extensions: ['.js', '.cjs', '.mjs', '.ts', '.vue', '.json'],
-        }),
-    ].filter(Boolean),
-  };
+      {
+        templatePath,
+        replace: '<!-- ENTRY_JS --><!-- /ENTRY_JS -->',
+        as: (filePath) =>
+          /client([^.]+)?\.js$/.test(filePath)
+            ? `<script src="${filePath}" type="module"></script><script>${reloadScript(watchPort)}</script>`
+            : undefined,
+      },
+    ]),
+    !IS_E2E &&
+      pluginWebpackAnalyzer({
+        port: analyzerPort,
+        open: false,
+        extensions: ['.js', '.cjs', '.mjs', '.ts', '.vue', '.json'],
+      }),
+  ].filter(Boolean),
+};
 
-  fs.rmSync(outdirPath, { recursive: true, force: true });
-  fs.mkdirSync(outdirPath);
-  fs.mkdirSync(publicPath);
-  fs.cpSync(path.resolve(__dirname, './src/template.html'), templatePath, { force: true });
+fs.rmSync(outdirPath, { recursive: true, force: true });
+fs.mkdirSync(outdirPath);
+fs.mkdirSync(publicPath);
+fs.cpSync(path.resolve(__dirname, './src/template.html'), templatePath, { force: true });
 
-  const ctxClient = await context(configClient);
-  const ctxServer = await context(configServer);
+const ctxClient = await context(configClient);
+const ctxServer = await context(configServer);
 
-  await Promise.all([ctxClient.rebuild(), ctxServer.rebuild()]);
+await Promise.all([ctxClient.rebuild(), ctxServer.rebuild()]);
 
-  if (!IS_E2E) {
-    // start a websocket server to reload browser on changes
-    express()
-      .uwsApp.ws('/*', { open: (ws) => (reloadSocket = ws as any) })
-      .listen(watchPort, () => undefined);
+if (!IS_E2E) {
+  // start a websocket server to reload browser on changes
+  express()
+    .uwsApp.ws('/*', { open: (ws) => (reloadSocket = ws as any) })
+    .listen(watchPort, () => undefined);
 
-    await Promise.all([ctxClient.watch(), ctxServer.watch()]);
-  }
-
-  const serverProcess = spawn('node', ['--watch', `./dist_${PORT}/server.js`], {
-    stdio: ['pipe', 'pipe', 'pipe'],
-  });
-
-  serverProcess.stdout?.on('data', (msg: Buffer) => {
-    const message = msg.toString().trim();
-
-    console.log('[server]', message);
-
-    if (message.includes('started on')) {
-      activeProcesses.delete('server');
-
-      if (activeProcesses.size === 0) {
-        setTimeout(() => reloadSocket?.send('reload'), 0);
-      }
-    }
-  });
-  serverProcess.stderr?.on('data', (msg: Buffer) => console.error(msg.toString().trim()));
-
-  process.on('exit', () => serverProcess?.kill());
-  process.on('SIGINT', () => process.exit(0));
-  process.on('SIGTERM', () => process.exit(0));
+  await Promise.all([ctxClient.watch(), ctxServer.watch()]);
 }
 
-void watch();
+const serverProcess = spawn('node', ['--watch', `./dist_${PORT}/server.js`], {
+  stdio: ['pipe', 'pipe', 'pipe'],
+});
+
+serverProcess.stdout?.on('data', (msg: Buffer) => {
+  const message = msg.toString().trim();
+
+  console.log('[server]', message);
+
+  if (message.includes('started on')) {
+    activeProcesses.delete('server');
+
+    if (activeProcesses.size === 0) {
+      setTimeout(() => reloadSocket?.send('reload'), 0);
+    }
+  }
+});
+serverProcess.stderr?.on('data', (msg: Buffer) => console.error(msg.toString().trim()));
+
+process.on('exit', () => serverProcess?.kill());
+process.on('SIGINT', () => process.exit(0));
+process.on('SIGTERM', () => process.exit(0));

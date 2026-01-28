@@ -33,6 +33,7 @@ tree shaking в реальных проектах размеры будут ме
 <<< ../../../scripts/sizeComparison/kitbag.ts [@kitbag/router]
 <<< ../../../scripts/sizeComparison/tanstack.ts [@tanstack/react-router]
 <<< ../../../scripts/sizeComparison/react-router.ts [react-router]
+<<< ../../../scripts/sizeComparison/solid-router.ts [@solidjs/router]
 :::
 
 &nbsp;

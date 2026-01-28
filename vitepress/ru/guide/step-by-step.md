@@ -22,7 +22,7 @@ shaking в бандлере.
 
 Полная карта модулей:
 
-<<< @/modulesMap.ts
+<<< @/../vitepress/modulesMap.ts
 
 ## Создание Configs
 

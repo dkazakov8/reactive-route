@@ -93,7 +93,7 @@ onMounted(() => {
   // Initial sync
   setTimeout(() => {
     updateCodeGroups(activeFramework.value);
-  }, 0);
+  }, 100);
 });
 
 // Re-sync on route change
@@ -102,7 +102,7 @@ watch(
   () => {
     setTimeout(() => {
       updateCodeGroups(activeFramework.value);
-    }, 0);
+    }, 100);
   }
 );
 
@@ -150,7 +150,7 @@ onUnmounted(() => {
   color: var(--vp-c-text-1);
   cursor: pointer;
   width: 100px;
-  height: 32px;
+  height: 40px;
 
   label {
     cursor: pointer;

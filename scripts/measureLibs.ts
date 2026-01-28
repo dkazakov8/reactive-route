@@ -16,7 +16,7 @@ async function getCompressedSize(outFile: string) {
     treeShaking: false,
     target: 'es2022',
     packages: 'bundle',
-    external: ['react', 'mobx', 'mobx-react-lite', 'vue', 'zod', 'react-dom'],
+    external: ['react', 'mobx', 'mobx-react-lite', 'vue', 'zod', 'react-dom', 'solid-js'],
     entryPoints: [outFile],
     format: 'esm',
     define: {

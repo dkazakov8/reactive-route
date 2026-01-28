@@ -1,5 +1,7 @@
 ::: code-group
-```tsx [React + MobX]
+```tsx [React]
+// with mobx adapter
+
 import { autorun } from 'mobx'
 
 function PageUser() {
@@ -28,7 +30,9 @@ function PageUser() {
   return <Layout>Content</Layout>;
 }
 ```
-```tsx [Preact + Observable]
+```tsx [Preact]
+// with kr-observable adapter
+
 import { autorun } from 'kr-observable'
 
 function PageUser() {
@@ -57,7 +61,9 @@ function PageUser() {
   return <Layout>Content</Layout>;
 }
 ```
-```tsx [Solid + Solid]
+```tsx [Solid]
+// with solid adapter
+
 import { createMemo } from 'solid-js'
 
 function PageUser() {
@@ -80,8 +86,10 @@ function PageUser() {
   );
 }
 ```
-```vue [Vue + Vue]
+```vue [Vue]
 <script lang="ts" setup>
+// with vue adapter
+  
 import { computed } from 'vue';
 import { useRouterStore } from './router';
 

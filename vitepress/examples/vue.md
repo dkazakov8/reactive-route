@@ -1,3 +1,8 @@
+---
+aside: false
+outline: false
+---
+
 # Vue Example
 
 To get started, clone the example from the repository and install its dependencies:
