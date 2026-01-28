@@ -1,18 +1,7 @@
-<Tabs :frameworks="['react', 'preact', 'solid', 'vue']">
-<template #react>
+<Tabs :frameworks="['React', 'Preact', 'Solid', 'Vue']">
+<template #React>
 
 ::: code-group
-```tsx [App.tsx]
-import { Router } from 'reactive-route/react';
-
-import { useRouter } from './router';
-
-export function App() {
-  const { router } = useRouter();
-
-  return <Router router={router} />;
-}
-```
 ```tsx [entry.tsx]
 import { createRoot } from 'react-dom/client';
 
@@ -29,14 +18,8 @@ createRoot(document.getElementById('app')!).render(
   </RouterContext.Provider>
 );
 ```
-:::
-
-</template>
-<template #preact>
-
-::: code-group
 ```tsx [App.tsx]
-import { Router } from 'reactive-route/preact';
+import { Router } from 'reactive-route/react';
 
 import { useRouter } from './router';
 
@@ -46,6 +29,12 @@ export function App() {
   return <Router router={router} />;
 }
 ```
+:::
+
+</template>
+<template #Preact>
+
+::: code-group
 ```tsx [entry.tsx]
 import { render } from 'preact';
 
@@ -63,14 +52,8 @@ render(
   document.getElementById('app')!
 );
 ```
-:::
-
-</template>
-<template #solid>
-
-::: code-group
 ```tsx [App.tsx]
-import { Router } from 'reactive-route/solid';
+import { Router } from 'reactive-route/preact';
 
 import { useRouter } from './router';
 
@@ -80,6 +63,12 @@ export function App() {
   return <Router router={router} />;
 }
 ```
+:::
+
+</template>
+<template #Solid>
+
+::: code-group
 ```tsx [entry.tsx]
 import { render } from 'solid-js/web';
 
@@ -99,25 +88,23 @@ render(
   document.getElementById('app')!
 );
 ```
+```tsx [App.tsx]
+import { Router } from 'reactive-route/solid';
+
+import { useRouter } from './router';
+
+export function App() {
+  const { router } = useRouter();
+
+  return <Router router={router} />;
+}
+```
 :::
 
 </template>
-<template #vue>
+<template #Vue>
 
 ::: code-group
-```vue [App.vue]
-<script lang="ts" setup>
-  import { Router } from 'reactive-route/vue';
-
-  import { useRouter } from './router';
-
-  const { router } = useRouter();
-</script>
-
-<template>
-  <Router :router="router" />
-</template>
-```
 ```ts [entry.ts]
 import { createApp } from 'vue';
 
@@ -131,6 +118,19 @@ await router.init(location.pathname + location.search);
 createApp(App, { router })
   .provide(routerStoreKey, { router })
   .mount('#app');
+```
+```vue [App.vue]
+<script lang="ts" setup>
+  import { Router } from 'reactive-route/vue';
+
+  import { useRouter } from './router';
+
+  const { router } = useRouter();
+</script>
+
+<template>
+  <Router :router="router" />
+</template>
 ```
 :::
 

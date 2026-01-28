@@ -142,6 +142,10 @@ export default defineConfig({
       groupIconVitePlugin({
         customIcon: {
           'mobx-router': 'vscode-icons:file-type-reactjs',
+          'vue-router': 'vscode-icons:file-type-vue',
+          'react-router': 'vscode-icons:file-type-reactjs',
+          '@tanstack/react-router': 'vscode-icons:file-type-reactjs',
+          '@kitbag/router': 'vscode-icons:file-type-vue',
           'reactive-route': localIconLoader(import.meta.url, '../public/file.svg'),
           //'mobx-router': 'https://unplugin.unjs.io/logo_light.svg',
         },
