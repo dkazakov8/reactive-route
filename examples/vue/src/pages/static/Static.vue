@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import LinkPayload from '../../components/LinkPayload.vue';
+import Link from '../../components/Link.vue';
 </script>
 
 <template>
@@ -25,15 +25,15 @@ import LinkPayload from '../../components/LinkPayload.vue';
 
     <div class="navigation">
       <h2>Navigation</h2>
-      <LinkPayload :payload="{ name: 'dynamic', params: { foo: 'example' } }" class="nav-button">
+      <Link :payload="{ name: 'dynamic', params: { foo: 'example' } }" class="nav-button">
         Go to Dynamic Page
-      </LinkPayload>
-      <LinkPayload :payload="{ name: 'query', query: { foo: 'example' } }" class="nav-button">
+      </Link>
+      <Link :payload="{ name: 'query', query: { foo: 'example' } }" class="nav-button">
         Go to Query Page
-      </LinkPayload>
-      <LinkPayload :payload="{ name: 'preventRedirect' }" class="nav-button">
+      </Link>
+      <Link :payload="{ name: 'preventRedirect' }" class="nav-button">
         Go to Prevent Page
-      </LinkPayload>
+      </Link>
     </div>
   </div>
 </template>

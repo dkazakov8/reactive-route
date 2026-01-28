@@ -6,8 +6,8 @@ export type TypeRoutesProject = ReturnType<
 >['routes'];
 ```
 
-<Tabs :frameworks="['react', 'preact', 'solid', 'vue']">
-<template #react>
+<Tabs :frameworks="['React', 'Preact', 'Solid', 'Vue']">
+<template #React>
 
 ::: code-group
 ```tsx [Link.tsx]
@@ -15,7 +15,36 @@ import { TypePayload } from 'reactive-route';
 
 import { TypeRoutesProject, useRouter } from '../router';
 
-export function Link<TName extends keyof TypeRoutesProject>(
+export function Link<TName extends keyof TypeRoutesProject>(props: {
+  payload: TypePayload<TypeRoutesProject, TName>;
+  className?: string;
+  children?: any;
+}) {
+  const { router } = useRouter();
+
+  const state = router.payloadToState(props.payload);
+
+  return (
+    <a
+      href={state.url}
+      className={props.className}
+      onClick={(event) => {
+        event.preventDefault();
+
+        router.redirect(props.payload);
+      }}
+    >
+      {props.children}
+    </a>
+  );
+}
+```
+```tsx [LinkProps.tsx]
+import { TypePayload } from 'reactive-route';
+
+import { TypeRoutesProject, useRouter } from '../router';
+
+export function LinkProps<TName extends keyof TypeRoutesProject>(
   props: TypePayload<TypeRoutesProject, TName> & {
     className?: string;
     children?: any;
@@ -46,12 +75,18 @@ export function Link<TName extends keyof TypeRoutesProject>(
   );
 }
 ```
-```tsx [LinkPayload.tsx]
+:::
+
+</template>
+<template #Preact>
+
+::: code-group
+```tsx [Link.tsx]
 import { TypePayload } from 'reactive-route';
 
 import { TypeRoutesProject, useRouter } from '../router';
 
-export function LinkPayload<TName extends keyof TypeRoutesProject>(props: {
+export function Link<TName extends keyof TypeRoutesProject>(props: {
   payload: TypePayload<TypeRoutesProject, TName>;
   className?: string;
   children?: any;
@@ -75,18 +110,12 @@ export function LinkPayload<TName extends keyof TypeRoutesProject>(props: {
   );
 }
 ```
-:::
-
-</template>
-<template #preact>
-
-::: code-group
-```tsx [Link.tsx]
+```tsx [LinkProps.tsx]
 import { TypePayload } from 'reactive-route';
 
 import { TypeRoutesProject, useRouter } from '../router';
 
-export function Link<TName extends keyof TypeRoutesProject>(
+export function LinkProps<TName extends keyof TypeRoutesProject>(
   props: TypePayload<TypeRoutesProject, TName> & {
     className?: string;
     children?: any;
@@ -117,39 +146,10 @@ export function Link<TName extends keyof TypeRoutesProject>(
   );
 }
 ```
-```tsx [LinkPayload.tsx]
-import { TypePayload } from 'reactive-route';
-
-import { TypeRoutesProject, useRouter } from '../router';
-
-export function LinkPayload<TName extends keyof TypeRoutesProject>(props: {
-  payload: TypePayload<TypeRoutesProject, TName>;
-  className?: string;
-  children?: any;
-}) {
-  const { router } = useRouter();
-
-  const state = router.payloadToState(props.payload);
-
-  return (
-    <a
-      href={state.url}
-      className={props.className}
-      onClick={(event) => {
-        event.preventDefault();
-
-        router.redirect(props.payload);
-      }}
-    >
-      {props.children}
-    </a>
-  );
-}
-```
 :::
 
 </template>
-<template #solid>
+<template #Solid>
 
 ::: code-group
 ```tsx [Link.tsx]
@@ -158,7 +158,37 @@ import { createMemo } from 'solid-js';
 
 import { TypeRoutesProject, useRouter } from '../router';
 
-export function Link<TName extends keyof TypeRoutesProject>(
+export function Link<TName extends keyof TypeRoutesProject>(props: {
+  payload: TypePayload<TypeRoutesProject, TName>;
+  class?: string;
+  children?: any;
+}) {
+  const { router } = useRouter();
+
+  const state = createMemo(() => router.payloadToState(props.payload));
+
+  return (
+    <a
+      href={state().url}
+      class={props.class}
+      onClick={(event) => {
+        event.preventDefault();
+
+        router.redirect(props.payload);
+      }}
+    >
+      {props.children}
+    </a>
+  );
+}
+```
+```tsx [LinkProps.tsx]
+import { TypePayload } from 'reactive-route';
+import { createMemo } from 'solid-js';
+
+import { TypeRoutesProject, useRouter } from '../router';
+
+export function LinkProps<TName extends keyof TypeRoutesProject>(
   props: TypePayload<TypeRoutesProject, TName> & {
     class?: string;
     children?: any;
@@ -191,43 +221,41 @@ export function Link<TName extends keyof TypeRoutesProject>(
   );
 }
 ```
-```tsx [LinkPayload.tsx]
-import { TypePayload } from 'reactive-route';
-import { createMemo } from 'solid-js';
-
-import { TypeRoutesProject, useRouter } from '../router';
-
-export function LinkPayload<TName extends keyof TypeRoutesProject>(props: {
-  payload: TypePayload<TypeRoutesProject, TName>;
-  class?: string;
-  children?: any;
-}) {
-  const { router } = useRouter();
-
-  const state = createMemo(() => router.payloadToState(props.payload));
-
-  return (
-    <a
-      href={state().url}
-      class={props.class}
-      onClick={(event) => {
-        event.preventDefault();
-
-        router.redirect(props.payload);
-      }}
-    >
-      {props.children}
-    </a>
-  );
-}
-```
 :::
 
 </template>
-<template #vue>
+<template #Vue>
 
 ::: code-group
 ```vue [Link.vue]
+<script setup lang="ts" generic="TName extends keyof TypeRoutesProject">
+import { TypePayload } from 'reactive-route';
+import { computed } from 'vue';
+
+import { TypeRoutesProject, useRouter } from '../router';
+
+const props = defineProps<{
+  payload: TypePayload<TypeRoutesProject, TName>;
+}>();
+
+const { router } = useRouter();
+
+const state = computed(() => router.payloadToState(props.payload));
+
+const handleClick = (event: MouseEvent) => {
+  event.preventDefault();
+  
+  void router.redirect(props.payload);
+};
+</script>
+
+<template>
+  <a :href="state.url" @click="handleClick">
+    <slot />
+  </a>
+</template>
+```
+```vue [LinkProps.vue]
 <script setup lang="ts" generic="TName extends keyof TypeRoutesProject">
 import { TypePayload } from 'reactive-route';
 import { computed } from 'vue';
@@ -261,35 +289,6 @@ const handleClick = (event: MouseEvent) => {
   </a>
 </template>
 ```
-```vue [LinkPayload.vue]
-<script setup lang="ts" generic="TName extends keyof TypeRoutesProject">
-import { TypePayload } from 'reactive-route';
-import { computed } from 'vue';
-
-import { TypeRoutesProject, useRouter } from '../router';
-
-const props = defineProps<{
-  payload: TypePayload<TypeRoutesProject, TName>;
-}>();
-
-const { router } = useRouter();
-
-const state = computed(() => router.payloadToState(props.payload));
-
-const handleClick = (event: MouseEvent) => {
-  event.preventDefault();
-  
-  void router.redirect(props.payload);
-};
-</script>
-
-<template>
-  <a :href="state.url" @click="handleClick">
-    <slot />
-  </a>
-</template>
-```
 :::
-
 </template>
 </Tabs>

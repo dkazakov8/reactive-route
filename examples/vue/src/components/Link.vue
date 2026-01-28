@@ -4,24 +4,18 @@ import { computed } from 'vue';
 
 import { TypeRoutesProject, useRouter } from '../router';
 
-const props = defineProps<TypePayload<TypeRoutesProject, TName>>();
+const props = defineProps<{
+  payload: TypePayload<TypeRoutesProject, TName>;
+}>();
 
 const { router } = useRouter();
 
-const payload = computed(() => {
-  return {
-    name: props.name,
-    query: (props as any).query,
-    params: (props as any).params,
-  } as TypePayload<TypeRoutesProject, TName>;
-});
-
-const state = computed(() => router.payloadToState(payload.value));
+const state = computed(() => router.payloadToState(props.payload));
 
 const handleClick = (event: MouseEvent) => {
   event.preventDefault();
 
-  void router.redirect(payload.value);
+  void router.redirect(props.payload);
 };
 </script>
 

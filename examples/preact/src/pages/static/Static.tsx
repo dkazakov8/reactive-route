@@ -1,4 +1,4 @@
-import { LinkPayload } from '../../components/LinkPayload';
+import { Link } from '../../components/Link';
 
 export default function Static() {
   return (
@@ -26,18 +26,15 @@ export default function Static() {
 
       <div className="navigation">
         <h2>Navigation</h2>
-        <LinkPayload
-          className="nav-button"
-          payload={{ name: 'dynamic', params: { foo: 'example' } }}
-        >
+        <Link className="nav-button" payload={{ name: 'dynamic', params: { foo: 'example' } }}>
           Go to Dynamic Page
-        </LinkPayload>
-        <LinkPayload className="nav-button" payload={{ name: 'query', query: { foo: 'example' } }}>
+        </Link>
+        <Link className="nav-button" payload={{ name: 'query', query: { foo: 'example' } }}>
           Go to Query Page
-        </LinkPayload>
-        <LinkPayload className="nav-button" payload={{ name: 'preventRedirect' }}>
+        </Link>
+        <Link className="nav-button" payload={{ name: 'preventRedirect' }}>
           Go to Prevent Page
-        </LinkPayload>
+        </Link>
       </div>
     </div>
   );

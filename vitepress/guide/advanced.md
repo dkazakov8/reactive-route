@@ -13,7 +13,7 @@ These examples are not an official implementation. You will likely need to refin
 memoization, handle errors, and adapt them to your specific reactivity system.
 :::
 
-In the examples above, two components were created: `Link` and `LinkPayload`. The first one accepts props as a flat structure, while the second one uses a `payload` object. Both are fully type-safe and easily extendable.
+In the examples above, two components were created: `Link` and `LinkProps`. The first one uses a `payload` object, while the second one accepts props as a flat structure. Both are fully type-safe and easily extendable.
 
 <!-- @include: @/snippets/advanced/link-usage.md -->
 
