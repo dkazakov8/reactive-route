@@ -32,7 +32,7 @@ if (REACTIVITY_SYSTEM === 'mobx') {
   });
 }
 
-const router = await getRouter();
+const router = getRouter();
 
 await router.init(location.pathname + location.search, { skipLifecycle: Boolean(SSR_ENABLED) });
 

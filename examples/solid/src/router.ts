@@ -1,21 +1,15 @@
 import { createRouter, createRoutes } from 'reactive-route';
 import { createContext, useContext } from 'solid-js';
 
-export async function getRouter() {
-  let adapters: any;
+// Use a static import in your project instead of dynamic
+const { adapters } =
+  REACTIVITY_SYSTEM === 'mobx'
+    ? await import('reactive-route/adapters/mobx-solid')
+    : REACTIVITY_SYSTEM === 'kr-observable'
+      ? await import('reactive-route/adapters/kr-observable-solid')
+      : await import('reactive-route/adapters/solid');
 
-  if (REACTIVITY_SYSTEM === 'solid') {
-    adapters = await import('reactive-route/adapters/solid').then((m) => m.adapters);
-  }
-
-  if (REACTIVITY_SYSTEM === 'kr-observable') {
-    adapters = await import('reactive-route/adapters/kr-observable-solid').then((m) => m.adapters);
-  }
-
-  if (REACTIVITY_SYSTEM === 'mobx') {
-    adapters = await import('reactive-route/adapters/mobx-solid').then((m) => m.adapters);
-  }
-
+export function getRouter() {
   return createRouter({
     routes: createRoutes({
       home: {
@@ -74,7 +68,7 @@ export async function getRouter() {
   });
 }
 
-export type TypeRouterProject = Awaited<ReturnType<typeof getRouter>>;
+export type TypeRouterProject = ReturnType<typeof getRouter>;
 
 export type TypeRoutesProject = ReturnType<TypeRouterProject['getGlobalArguments']>['routes'];
 

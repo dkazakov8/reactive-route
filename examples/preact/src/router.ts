@@ -2,12 +2,13 @@ import { createContext } from 'preact';
 import { useContext } from 'preact/hooks';
 import { createRouter, createRoutes } from 'reactive-route';
 
-export async function getRouter() {
-  const adapters =
-    REACTIVITY_SYSTEM === 'mobx'
-      ? await import('reactive-route/adapters/mobx-preact').then((m) => m.adapters)
-      : await import('reactive-route/adapters/kr-observable-preact').then((m) => m.adapters);
+// Use a static import in your project instead of dynamic
+const { adapters } =
+  REACTIVITY_SYSTEM === 'mobx'
+    ? await import('reactive-route/adapters/mobx-preact')
+    : await import('reactive-route/adapters/kr-observable-preact');
 
+export function getRouter() {
   return createRouter({
     routes: createRoutes({
       home: {
@@ -66,7 +67,7 @@ export async function getRouter() {
   });
 }
 
-export type TypeRouterProject = Awaited<ReturnType<typeof getRouter>>;
+export type TypeRouterProject = ReturnType<typeof getRouter>;
 
 export type TypeRoutesProject = ReturnType<TypeRouterProject['getGlobalArguments']>['routes'];
 

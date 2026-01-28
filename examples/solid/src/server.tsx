@@ -48,7 +48,7 @@ express()
       return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- ROUTER_STATE -->', '{}'));
     }
 
-    const router = await getRouter();
+    const router = getRouter();
 
     try {
       const clearedUrl = await router.init(req.originalUrl);

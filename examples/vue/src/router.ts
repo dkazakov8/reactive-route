@@ -1,9 +1,10 @@
 import { createRouter, createRoutes } from 'reactive-route';
 import { InjectionKey, inject } from 'vue';
 
-export async function getRouter() {
-  const adapters = await import('reactive-route/adapters/vue').then((m) => m.adapters);
+// Use a static import in your project instead of dynamic
+const { adapters } = await import('reactive-route/adapters/vue');
 
+export function getRouter() {
   return createRouter({
     routes: createRoutes({
       home: {
@@ -60,7 +61,7 @@ export async function getRouter() {
   });
 }
 
-export type TypeRouterProject = Awaited<ReturnType<typeof getRouter>>;
+export type TypeRouterProject = ReturnType<typeof getRouter>;
 
 export type TypeRoutesProject = ReturnType<TypeRouterProject['getGlobalArguments']>['routes'];
 

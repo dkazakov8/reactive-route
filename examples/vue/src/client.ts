@@ -5,7 +5,7 @@ import './style.css';
 import App from './components/App.vue';
 import { getRouter, routerStoreKey } from './router';
 
-const router = await getRouter();
+const router = getRouter();
 
 await router.init(location.pathname + location.search, { skipLifecycle: Boolean(SSR_ENABLED) });
 
