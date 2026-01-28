@@ -19,6 +19,7 @@ export default defineConfig({
       lang: 'en',
       themeConfig: {
         nav: [
+          { component: 'FrameworkSelect' },
           { text: 'Home', link: '/' },
           { text: 'Documentation', link: '/guide/', activeMatch: '/guide/' },
           { text: 'Examples', link: '/examples/react', activeMatch: '/examples/' },
@@ -75,6 +76,7 @@ export default defineConfig({
       themeConfig: {
         outlineTitle: 'На этой странице:',
         nav: [
+          { component: 'FrameworkSelect' },
           { text: 'Главная', link: '/ru/' },
           { text: 'Документация', link: '/ru/guide/', activeMatch: '/ru/guide/' },
           { text: 'Примеры', link: '/ru/examples/react', activeMatch: '/ru/examples/' },
@@ -138,16 +140,20 @@ export default defineConfig({
   },
   vite: {
     plugins: [
+      // https://icon-sets.iconify.design/
       // @ts-ignore
       groupIconVitePlugin({
         customIcon: {
+          react: 'logos:react',
+          preact: 'logos:preact',
+          vue: 'logos:vue',
+          solid: 'logos:solidjs-icon',
           'mobx-router': 'vscode-icons:file-type-reactjs',
           'vue-router': 'vscode-icons:file-type-vue',
-          'react-router': 'vscode-icons:file-type-reactjs',
-          '@tanstack/react-router': 'vscode-icons:file-type-reactjs',
+          'react-router': 'logos:react-router',
+          '@tanstack/react-router': 'logos:react',
           '@kitbag/router': 'vscode-icons:file-type-vue',
           'reactive-route': localIconLoader(import.meta.url, '../public/file.svg'),
-          //'mobx-router': 'https://unplugin.unjs.io/logo_light.svg',
         },
       }),
     ],

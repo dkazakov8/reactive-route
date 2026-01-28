@@ -1,7 +1,5 @@
 <script setup>
 import { data } from '../../dynamic.data';
-import SizeComparisonChart from '../../.vitepress/components/SizeComparisonChart.vue';
-import ComparisonTable from '../../.vitepress/components/ComparisonTable.vue';
 </script>
 
 # Сравнение размеров

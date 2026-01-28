@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, useId } from 'vue';
+import { ref, useId } from 'vue';
 
 const props = defineProps<{
   frameworks: Array<string>;
@@ -8,35 +8,8 @@ const props = defineProps<{
 const id = useId();
 const activeTab = ref(props.frameworks[0]);
 
-onMounted(() => {
-  const saved = localStorage.getItem('vitepress-framework-preference');
-  if (saved && props.frameworks.includes(saved)) {
-    activeTab.value = saved;
-  }
-});
-
 function select(framework: string) {
   activeTab.value = framework;
-  localStorage.setItem('vitepress-framework-preference', framework);
-
-  window.dispatchEvent(
-    new StorageEvent('storage', {
-      key: 'vitepress-framework-preference',
-      newValue: framework,
-    })
-  );
-}
-
-if (typeof window !== 'undefined') {
-  window.addEventListener('storage', (e) => {
-    if (
-      e.key === 'vitepress-framework-preference' &&
-      e.newValue &&
-      props.frameworks.includes(e.newValue)
-    ) {
-      activeTab.value = e.newValue;
-    }
-  });
 }
 </script>
 
