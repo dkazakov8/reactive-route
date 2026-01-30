@@ -30,7 +30,14 @@ function select(framework: string) {
       </template>
     </div>
     <div class="blocks">
-      <slot :name="activeTab" />
+      <div
+        v-for="f in frameworks"
+        :key="f"
+        class="block"
+        :class="{ active: activeTab === f }"
+      >
+        <slot :name="f" />
+      </div>
     </div>
   </div>
 </template>
@@ -42,5 +49,13 @@ function select(framework: string) {
 
 :deep(.vp-code-group > .blocks) {
   border: none !important;
+}
+
+.block {
+  display: none;
+}
+
+.block.active {
+  display: block;
 }
 </style>

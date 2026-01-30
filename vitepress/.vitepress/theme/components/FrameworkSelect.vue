@@ -25,7 +25,26 @@ function updateCodeGroups(framework: string) {
 
         if (input && !input.checked) {
           input.checked = true;
-          input.dispatchEvent(new Event('change', { bubbles: true }));
+          const group = input.parentElement?.parentElement;
+          if (group) {
+            const i = Array.from(group.querySelectorAll('input')).indexOf(input);
+            if (i >= 0) {
+              const blocks = group.querySelector('.blocks');
+              if (blocks && blocks.children.length > i) {
+                const current = Array.from(blocks.children).find((child) =>
+                  child.classList.contains('active')
+                );
+                const next = blocks.children[i];
+                if (next && current !== next) {
+                  current?.classList.remove('active');
+                  next.classList.add('active');
+                  window.dispatchEvent(
+                    new CustomEvent('vitepress:codeGroupTabActivate', { detail: next })
+                  );
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -60,6 +79,17 @@ const onStorage = (e: StorageEvent) => {
 
 const onClick = (e: MouseEvent) => {
   const target = e.target as HTMLElement;
+
+  if (target.matches('.vp-code-group input')) {
+    const group = target.parentElement?.parentElement;
+    if (group && !container.value?.contains(group)) {
+      const label = group.querySelector(`label[for="${target.id}"]`);
+      if (label) {
+        select(label.textContent?.trim() || '');
+      }
+    }
+  }
+
   const labelElement = target.closest('.vp-code-group label');
   const dropdown = container.value?.querySelector('.dropdown');
 
@@ -93,7 +123,7 @@ onMounted(() => {
   // Initial sync
   setTimeout(() => {
     updateCodeGroups(activeFramework.value);
-  }, 100);
+  }, 1);
 });
 
 // Re-sync on route change
@@ -102,7 +132,7 @@ watch(
   () => {
     setTimeout(() => {
       updateCodeGroups(activeFramework.value);
-    }, 100);
+    }, 1);
   }
 );
 
