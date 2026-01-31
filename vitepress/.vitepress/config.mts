@@ -1,8 +1,19 @@
+import path from 'node:path';
+
 import { defineConfig } from 'vitepress';
 
 import { labelsPlugin } from './theme/labelsPlugin.js';
 
 export default defineConfig({
+  vite: {
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, '..'),
+        '@snippets': path.resolve(__dirname, '../snippets'),
+        '@scripts': path.resolve(__dirname, '../../scripts'),
+      },
+    },
+  },
   title: 'Reactive Route',
   description: 'Config-based routing for different frameworks',
   base: '/reactive-route/',
@@ -12,52 +23,53 @@ export default defineConfig({
     root: {
       label: 'English',
       lang: 'en',
+      link: '/en/',
       themeConfig: {
         nav: [
           { component: 'FrameworkSelect' },
-          { text: 'Home', link: '/' },
-          { text: 'Documentation', link: '/guide/', activeMatch: '/guide/' },
-          { text: 'Examples', link: '/examples/react', activeMatch: '/examples/' },
+          { text: 'Home', link: '/en/' },
+          { text: 'Documentation', link: '/en/guide/', activeMatch: '/en/guide/' },
+          { text: 'Examples', link: '/en/examples/react', activeMatch: '/en/examples/' },
         ],
         sidebar: {
-          '/guide/': [
+          '/en/guide/': [
             {
               text: 'Introduction',
               items: [
-                { text: 'Why Reactive Route?', link: '/guide/' },
-                { text: 'Getting Started', link: '/guide/getting-started' },
-                { text: 'Core Concepts', link: '/guide/core-concepts' },
-                { text: 'Limitations', link: '/guide/limitations' },
+                { text: 'Why Reactive Route?', link: '/en/guide/' },
+                { text: 'Getting Started', link: '/en/guide/getting-started' },
+                { text: 'Core Concepts', link: '/en/guide/core-concepts' },
+                { text: 'Limitations', link: '/en/guide/limitations' },
               ],
             },
             {
               text: 'API',
               items: [
-                { text: 'Config', link: '/guide/config' },
-                { text: 'State', link: '/guide/state' },
-                { text: 'Router API', link: '/guide/router-api' },
-                { text: 'SSR', link: '/guide/ssr' },
-                { text: 'Use Cases', link: '/guide/advanced' },
+                { text: 'Config', link: '/en/guide/config' },
+                { text: 'State', link: '/en/guide/state' },
+                { text: 'Router API', link: '/en/guide/router-api' },
+                { text: 'SSR', link: '/en/guide/ssr' },
+                { text: 'Use Cases', link: '/en/guide/advanced' },
               ],
             },
             {
               text: 'Framework Integration',
               items: [
-                { text: 'React', link: '/guide/react' },
-                { text: 'Preact', link: '/guide/preact' },
-                { text: 'Solid.js', link: '/guide/solid' },
-                { text: 'Vue', link: '/guide/vue' },
+                { text: 'React', link: '/en/guide/react' },
+                { text: 'Preact', link: '/en/guide/preact' },
+                { text: 'Solid.js', link: '/en/guide/solid' },
+                { text: 'Vue', link: '/en/guide/vue' },
               ],
             },
           ],
-          '/examples/': [
+          '/en/examples/': [
             {
               text: 'Examples',
               items: [
-                { text: 'React', link: '/examples/react' },
-                { text: 'Preact', link: '/examples/preact' },
-                { text: 'Solid.js', link: '/examples/solid' },
-                { text: 'Vue', link: '/examples/vue' },
+                { text: 'React', link: '/en/examples/react' },
+                { text: 'Preact', link: '/en/examples/preact' },
+                { text: 'Solid.js', link: '/en/examples/solid' },
+                { text: 'Vue', link: '/en/examples/vue' },
               ],
             },
           ],

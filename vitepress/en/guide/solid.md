@@ -25,7 +25,7 @@ The `mobx` package must be installed.
 Since Solid.js doesn't have native MobX integration, you'll need to include something like this in your
 entry file:
 
-<!-- @include: @/snippets/integration/mobx.md -->
+<!-- @include: @snippets/integration/mobx.md -->
 
 ## Observable
 

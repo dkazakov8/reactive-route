@@ -6,7 +6,7 @@
 
 Это объект, который передается в функцию `createRoutes` с определенным ключом:
 
-<!-- @include: @/snippets/core-concepts/config-example.md -->
+<!-- @include: @snippets/core-concepts/config-example.md -->
 
 При инициализации роутера этот объект дополняется свойством `name: 'user'` (значение равно ключу), вручную его указывать
 не нужно. Это сделано для защиты от опечаток и синхронизации имен между всеми структурами.
@@ -21,13 +21,13 @@
 значениями:
 
 ```ts
-<!-- @include: @/snippets/payload.md -->
+<!-- @include: @snippets/payload.md -->
 ```
 
 Обычно он пишется вручную (с подсказками от TS) и передается в [router.redirect](/ru/guide/router-api#router-redirect):
 
 ```tsx
-button.onclick = () => router.redirect(<!-- @include: @/snippets/payload.md -->)
+button.onclick = () => router.redirect(<!-- @include: @snippets/payload.md -->)
 ```
 
 ## State
@@ -35,13 +35,13 @@ button.onclick = () => router.redirect(<!-- @include: @/snippets/payload.md -->)
 Это объект, содержащий расширенную информацию по сравнению с `Payload`:
 
 ```ts
-<!-- @include: @/snippets/state.md -->
+<!-- @include: @snippets/state.md -->
 ```
 
 Его можно сконструировать вручную из `Payload` с помощью [router.payloadToState](/ru/guide/router-api#router-payloadtostate), а также
 он хранится в `router.state[name]` **реактивно** и доступен везде, где есть доступ к `router`:
 
-<!-- @include: @/snippets/core-concepts/state-in-components.md -->
+<!-- @include: @snippets/core-concepts/state-in-components.md -->
 
 Оператор "non-null assertion" безопасен, если только один `Config` использует `loader`, загружающий 
 этот компонент страницы. В противном случае нужно писать соответствующую логику, 
@@ -56,11 +56,11 @@ button.onclick = () => router.redirect(<!-- @include: @/snippets/payload.md -->)
 await router.init(`/user/with%20space?phone=and%26symbols`);
 
 // вызывается router.urlToPayload, создающий декодированный Payload
-<!-- @include: @/snippets/core-concepts/payload-decoded.md -->
+<!-- @include: @snippets/core-concepts/payload-decoded.md -->
 
 // вызывается router.payloadToState, создающий закодированный State
 // router.state.user
-<!-- @include: @/snippets/core-concepts/state-decoded.md -->
+<!-- @include: @snippets/core-concepts/state-decoded.md -->
 ```
 
 Также при двустороннем процессе кодирования и декодирования вызываются валидаторы из `Config`.

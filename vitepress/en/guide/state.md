@@ -1,6 +1,6 @@
 # State
 
-The general purpose is described in the [Core Concepts](/guide/core-concepts) section.
+The general purpose is described in the [Core Concepts](/en/guide/core-concepts) section.
 
 ## Properties
 

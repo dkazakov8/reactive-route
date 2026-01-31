@@ -5,11 +5,11 @@
 A single package includes everything you need to get started. See the integration sections for
 stack-specific peer dependencies.
 
-<!-- @include: @/snippets/getting-started/install.md -->
+<!-- @include: @snippets/getting-started/install.md -->
 
 ## Module Map
 
-<<< @/../vitepress/modulesMap.ts
+<<< @/modulesMap.ts
 
 ## Creating the Router and Routes
 
@@ -21,7 +21,7 @@ dependencies, avoids multiple instances, and enables SSR.
 
 Example `router.ts` (this can be combined with other contexts if needed):
 
-<!-- @include: @/snippets/getting-started/router.md -->
+<!-- @include: @snippets/getting-started/router.md -->
 
 The `loader` expects the page component to be the `default` export. You can also use named exports or
 pass components directly via `loader: () => Promise.resolve({ default: MyComponent })` if you aren't
@@ -35,9 +35,9 @@ creating the appropriate validator.
 ## Rendering and Context Providing
 
 For this example, we'll use Client-Side Rendering (CSR) with
-[router.init](/guide/router-api.html#router-init). The [SSR](/guide/ssr) version
+[router.init](/en/guide/router-api.html#router-init). The [SSR](/en/guide/ssr) version
 is very similar but uses the framework-appropriate `hydrate` method.
 
-<!-- @include: @/snippets/getting-started/render.md -->
+<!-- @include: @snippets/getting-started/render.md -->
 
 You're all set! From here, you'll mainly be adding or editing your route configurations.

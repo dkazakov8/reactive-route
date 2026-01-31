@@ -5,7 +5,7 @@
 Reactive Route does not, and will not, support nested `Config` objects. The library's core
 philosophy is built on type safety and structural simplicity. Consider a configuration like this:
 
-<!-- @include: @/snippets/advanced/nested.md -->
+<!-- @include: @snippets/advanced/nested.md -->
 
 While it's technically possible to resolve naming and validator collisions by significantly
 complicating the `Payload` structure, doing so in a way that remains type-safe is extremely
@@ -27,7 +27,7 @@ Nested routes introduce numerous edge cases:
 However, nested routes do excel at automatic breadcrumb generation. If your project relies heavily
 on breadcrumbs, a router with native nesting support might be a better fit. That said, Reactive
 Route handles Layouts — the other primary use case for nesting — with ease, as shown in
-[Use Cases](/guide/advanced#layouts).
+[Use Cases](/en/guide/advanced#layouts).
 
 ## Hash
 

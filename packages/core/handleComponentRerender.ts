@@ -1,7 +1,7 @@
-import { PropsRouter, TypeConfig, TypeRouterLocalObservable } from './types';
+import { TypeConfig, TypePropsRouter, TypeRouterLocalObservable } from './types';
 
 export function handleComponentRerender(
-  props: PropsRouter<any>,
+  props: TypePropsRouter<any>,
   localObservable: TypeRouterLocalObservable,
   setComponent: (component: any) => void
 ) {

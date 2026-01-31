@@ -25,7 +25,7 @@ import { adapters } from 'reactive-route/adapters/mobx-solid';
 У Solid.js нет нативной интеграции с MobX. Поэтому соответствующий код должен быть включен в
 entry file, например:
 
-<!-- @include: @/snippets/integration/mobx.md -->
+<!-- @include: @snippets/integration/mobx.md -->
 
 ## Observable
 

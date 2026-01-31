@@ -15,8 +15,8 @@ If you are using `mobx-react`, you can either create a bundler alias or replace 
 adapters with the one from `mobx-react`.
 
 Reactive Route is **reactive** — don't forget to wrap components that read its properties (such as
-[router.state](/guide/router-api#router-state) or
-[router.isRedirecting](/guide/router-api#router-isredirecting)) in `observer`.
+[router.state](/en/guide/router-api#router-state) or
+[router.isRedirecting](/en/guide/router-api#router-isredirecting)) in `observer`.
 
 ## Observable
 
@@ -30,6 +30,6 @@ import { adapters } from 'reactive-route/adapters/kr-observable-react';
 The `kr-observable` package must be installed.
 
 Reactive Route is **reactive** — don't forget to wrap components that read its properties (such as
-[router.state](/guide/router-api#router-state) or
-[router.isRedirecting](/guide/router-api#router-isredirecting)) in `observer`.
+[router.state](/en/guide/router-api#router-state) or
+[router.isRedirecting](/en/guide/router-api#router-isredirecting)) in `observer`.
 

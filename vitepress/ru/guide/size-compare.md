@@ -1,5 +1,5 @@
 <script setup>
-import { data } from '../../dynamic.data';
+import { data } from '@/dynamic.data';
 </script>
 
 # Сравнение размеров

@@ -2,7 +2,7 @@
 
 ## Установка
 
-<!-- @include: @/snippets/getting-started/install.md -->
+<!-- @include: @snippets/getting-started/install.md -->
 
 Reactive Route - это единый npm-пакет без каких-либо dependencies с независимыми
 интеграционными модулями. Ядро для всех вариантов интеграций одинаковое с 
@@ -22,7 +22,7 @@ shaking в бандлере.
 
 Полная карта модулей:
 
-<<< @/../vitepress/modulesMap.ts
+<<< @/modulesMap.ts
 
 ## Создание Configs
 
@@ -221,7 +221,7 @@ SSR.
 
 Пример файла `router.ts` (при необходимости можно объединить с другими контекстами, если они используются):
 
-<!-- @include: @/snippets/getting-started/router.md -->
+<!-- @include: @snippets/getting-started/router.md -->
 
 `notFound` и `internalError` обязательны для обработки ошибок в библиотеке, 
 в их конфигурации не допускаются `params` и `query`.
@@ -289,7 +289,7 @@ export const router = createRouter(routes, {
 распространенный, хотя версия для [SSR](/ru/guide/ssr) отличается только способом
 рендеринга в DOM (`hydrate` вместо `render`). 
 
-<!-- @include: @/snippets/getting-started/render.md -->
+<!-- @include: @snippets/getting-started/render.md -->
 
 Всё настроено и готово к использованию. В дальнейшем потребуется только добавлять или редактировать
 конфигурацию маршрутов.

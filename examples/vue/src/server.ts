@@ -20,7 +20,7 @@ express()
     const template = fs.readFileSync(templatePath, 'utf-8');
 
     if (!SSR_ENABLED) {
-      return res.send(template.replace(`<!-- HTML -->`, '').replace('<!-- ROUTER_STATE -->', '{}'));
+      return res.send(template.replace(`<!-- HTML -->`, ''));
     }
 
     const router = getRouter();

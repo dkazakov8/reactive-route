@@ -85,7 +85,7 @@ export type TypeState<TConfig extends TypeConfig> = {
 
 export type TypeRoutesDefault = Record<'notFound' | 'internalError' | string, TypeConfig>;
 
-export type PropsRouter<TRoutes extends TypeRoutesDefault> = {
+export type TypePropsRouter<TRoutes extends TypeRoutesDefault> = {
   router: TypeRouter<TRoutes>;
 };
 

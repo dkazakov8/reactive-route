@@ -3,7 +3,7 @@
 import { renderToString } from 'react-dom/server';
 import { getRouter, RouterContext } from 'router';
 
-<!-- @include: @/snippets/ssr.md -->
+<!-- @include: @snippets/ssr.md -->
 
   res.send(
     template
@@ -28,7 +28,7 @@ import { getRouter, RouterContext } from 'router';
 import { renderToString } from 'preact-render-to-string';
 import { getRouter, RouterContext } from 'router';
 
-<!-- @include: @/snippets/ssr.md -->
+<!-- @include: @snippets/ssr.md -->
 
   res.send(
     template
@@ -53,7 +53,7 @@ import { getRouter, RouterContext } from 'router';
 import { generateHydrationScript, renderToString } from 'solid-js/web';
 import { getRouter, RouterContext } from 'router';
 
-<!-- @include: @/snippets/ssr.md -->
+<!-- @include: @snippets/ssr.md -->
   
   res.send(
     template
@@ -80,7 +80,7 @@ import { createSSRApp } from 'vue';
 import { renderToString } from 'vue/server-renderer';
 import { getRouter, routerStoreKey } from './router';
 
-<!-- @include: @/snippets/ssr.md -->
+<!-- @include: @snippets/ssr.md -->
 
   const html = await renderToString(
     createSSRApp(App, { router }).provide(routerStoreKey, { router })

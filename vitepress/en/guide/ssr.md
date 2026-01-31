@@ -6,11 +6,11 @@ For server-side rendering (SSR), you must initialize the router on the server an
 
 ### Server
 
-<!-- @include: @/snippets/ssr/server.md -->
+<!-- @include: @snippets/ssr/server.md -->
 
 This example focuses on the router logic and doesn't include the injection of JS/CSS assets, which is
 typically handled by your bundler. For a complete setup including bundler configuration, refer to
-the [examples](/examples/react).
+the [examples](/en/examples/react).
 
 To handle redirect chains on the server, we use
 `if (error instanceof RedirectError) return res.redirect(error.message)`. This error is thrown when
@@ -22,10 +22,10 @@ a protected route.
 `router.state` is a flat, simple structure. However, if your `Config.props` contain complex or
 non-serializable data (such as class instances, functions, or `Date` objects), you should remove
 them before server-side serialization. They will be automatically restored on the client when
-[router.hydrateFromState](/guide/router-api#router-hydratefromstate) is called.
+[router.hydrateFromState](/en/guide/router-api#router-hydratefromstate) is called.
 :::
 
 ### Client
 
-<!-- @include: @/snippets/ssr/client.md -->
+<!-- @include: @snippets/ssr/client.md -->
 

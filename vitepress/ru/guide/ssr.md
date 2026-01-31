@@ -5,7 +5,7 @@
 
 ### Сервер
 
-<!-- @include: @/snippets/ssr/server.md -->
+<!-- @include: @snippets/ssr/server.md -->
 
 В данном коде в итоговый html не вставляются ссылки на js и css файлы, обычно это делается
 бандлером. Полный код с настройкой бандлера можно посмотреть в [Примерах](/ru/examples/react).
@@ -23,4 +23,4 @@
 
 ### Клиент
 
-<!-- @include: @/snippets/ssr/client.md -->
+<!-- @include: @snippets/ssr/client.md -->

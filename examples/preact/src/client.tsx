@@ -25,5 +25,6 @@ if (SSR_ENABLED) {
     </RouterContext.Provider>,
     document.getElementById('app')!
   );
+
   console.log('CSR: App has been rendered and lifecycle called');
 }

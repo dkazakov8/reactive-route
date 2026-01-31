@@ -1,7 +1,7 @@
 ::: code-group
 ```tsx [React]
 import { createContext, useContext } from 'react';
-<!-- @include: @/snippets/get-router.md -->
+<!-- @include: @snippets/get-router.md -->
 
 export const RouterContext = createContext<{
   router: ReturnType<typeof getRouter>
@@ -14,7 +14,7 @@ export function useRouter() {
 ```tsx [Preact]
 import { createContext } from 'preact';
 import { useContext } from 'preact/hooks';
-<!-- @include: @/snippets/get-router.md -->
+<!-- @include: @snippets/get-router.md -->
 
 export const RouterContext = createContext<{
   router: ReturnType<typeof getRouter>
@@ -26,7 +26,7 @@ export function useRouter() {
 ```
 ```tsx [Solid]
 import { createContext, useContext } from 'solid-js';
-<!-- @include: @/snippets/get-router.md -->
+<!-- @include: @snippets/get-router.md -->
 
 export const RouterContext = createContext<{
   router: ReturnType<typeof getRouter>
@@ -38,7 +38,7 @@ export function useRouter() {
 ```
 ```ts [Vue]
 import { InjectionKey, inject } from 'vue';
-<!-- @include: @/snippets/get-router.md -->
+<!-- @include: @snippets/get-router.md -->
 
 export const routerStoreKey: InjectionKey<{
   router: ReturnType<typeof getRouter>

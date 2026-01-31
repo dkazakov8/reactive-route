@@ -21,4 +21,4 @@ Then, choose the desired rendering mode and reactivity system:
 - `npm run ssr-observable` — Server-Side Rendering (SSR) with Observable
 
 Note: In this example, components are automatically wrapped in `observer` via the ESBuild bundler. In
-your own projects, be sure to follow the [Preact Integration](/guide/preact) guide.
+your own projects, be sure to follow the [Preact Integration](/en/guide/preact) guide.

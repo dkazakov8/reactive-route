@@ -1,6 +1,6 @@
 # Config
 
-The general purpose is described in the [Core Concepts](/guide/core-concepts) section.
+The general purpose is described in the [Core Concepts](/en/guide/core-concepts) section.
 
 ## Configurable Properties
 
@@ -136,7 +136,7 @@ Record<string, any>
 There are two main `Config` variants — `Static` and `Dynamic` (which contain path segments prefixed
 with a colon):
 
-<!-- @include: @/snippets/config/static-dynamic.md -->
+<!-- @include: @snippets/config/static-dynamic.md -->
 
 Validators for dynamic path segments are **mandatory**. TypeScript automatically extracts these
 keys from your path string to provide accurate autocomplete in the `params` object.
@@ -152,7 +152,7 @@ validated and are available in `router.state[name].params`.
 
 Both route variants can define expected query parameters:
 
-<!-- @include: @/snippets/config/query.md -->
+<!-- @include: @snippets/config/query.md -->
 
 If a query parameter validator returns `false`, that parameter will be `undefined` in
 `router.state[name].query`. Consequently, all query parameters are treated as optional, and
@@ -232,7 +232,7 @@ called before the router is initialized, you must use this instead of
 
 Example usage:
 
-<!-- @include: @/snippets/config/lifecycle.md -->
+<!-- @include: @snippets/config/lifecycle.md -->
 
 Always use `return` with `redirect` and `preventRedirect` to ensure predictable navigation logic.
 

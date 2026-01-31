@@ -5,11 +5,11 @@
 Один пакет включает всё необходимое для использования Reactive Route. В
 секции "Интеграция" описаны необходимые peer dependencies в зависимости от стека.
 
-<!-- @include: @/snippets/getting-started/install.md -->
+<!-- @include: @snippets/getting-started/install.md -->
 
 ## Карта модулей
 
-<<< @/../vitepress/modulesMap.ts
+<<< @/modulesMap.ts
 
 ## Создание роутера и маршрутов
 
@@ -22,7 +22,7 @@ SSR.
 
 Пример файла `router.ts` (при необходимости можно объединить с другими контекстами, если они используются):
 
-<!-- @include: @/snippets/getting-started/router.md -->
+<!-- @include: @snippets/getting-started/router.md -->
 
 `loader` ожидает, что компонент страницы будет в экспорте `default`. При необходимости можно
 использовать и именованные экспорты или сразу передавать компоненты `loader: () => Promise.resolve({ default: MyComponent })`,
@@ -39,7 +39,7 @@ TS автоматически поймет, что здесь присутств
 [router.init](/ru/guide/router-api.html#router-init). Версия для [SSR](/ru/guide/ssr) очень похожа, но использует 
 соответствующий фреймворкам метод `hydrate`.
 
-<!-- @include: @/snippets/getting-started/render.md -->
+<!-- @include: @snippets/getting-started/render.md -->
 
 Всё настроено и готово к использованию. В дальнейшем потребуется только добавлять или редактировать
 конфигурацию маршрутов.

@@ -1,5 +1,5 @@
 <script setup>
-import { data } from '../dynamic.data'
+import { data } from '@/dynamic.data'
 </script>
 
 # Why Reactive Route?
@@ -88,5 +88,5 @@ support older browsers.
 | **IE**      | **No**             |                                                                                                                                            |
 | **Node.js** | **> 10**           |                                                                                                                                            |
 
-Ready to dive in? If you're an experienced developer, check out the [examples](/examples/react)
+Ready to dive in? If you're an experienced developer, check out the [examples](/en/examples/react)
 for your stack. Otherwise, follow the step-by-step guide in the next section.

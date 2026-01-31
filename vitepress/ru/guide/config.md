@@ -133,7 +133,7 @@ Record<string, any>
 
 Существует всего два варианта `Config` - `Static` и `Dynamic` (имеют части в `path` с префиксом в виде двоеточия):
 
-<!-- @include: @/snippets/config/static-dynamic.md -->
+<!-- @include: @snippets/config/static-dynamic.md -->
 
 Валидаторы для динамических частей `path` обязательны, TS автоматически извлекает ключи из строки и подсказывает,
 как описать в `params`.
@@ -148,7 +148,7 @@ Record<string, any>
 
 Оба варианта `Config` могут иметь query параметры:
 
-<!-- @include: @/snippets/config/query.md -->
+<!-- @include: @snippets/config/query.md -->
 
 Если валидатор вернет `false`, данный параметр будет `undefined` в `router.state[name].query`. Таким образом, все
 query параметры являются необязательными, и их отсутствие не приводит к редиректу на `notFound`.
@@ -223,7 +223,7 @@ TypeState
 
 Пример использования:
 
-<!-- @include: @/snippets/config/lifecycle.md -->
+<!-- @include: @snippets/config/lifecycle.md -->
 
 Всегда используйте `return` с `redirect` и `preventRedirect` для стабильной логики редиректов.
 
