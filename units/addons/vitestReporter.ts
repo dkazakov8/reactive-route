@@ -84,12 +84,16 @@ export function generateV8CoverageSummary(coverage: any): any {
 
 export class VitestReporter extends DefaultReporter {
   onCoverage(coverage: any) {
+    (DefaultReporter.prototype as any).onCoverage?.call(this, coverage);
     const average = (arr: Array<any>) => arr.reduce((a, b) => a + b) / arr.length;
     const summary = generateV8CoverageSummary(coverage);
 
     saveMetrics({ key: 'coverage', value: `${average(Object.values(summary)).toFixed(2)} %` });
   }
-  async onTestRunEnd(testModules: any) {
+
+  async onTestRunEnd(testModules: any, unhandledErrors: any) {
+    super.onTestRunEnd(testModules, unhandledErrors, 'test-run-end' as any);
+
     const tests = getTests(testModules.map((testModule: any) => testModule.task));
     const numPassedTests = tests.filter((t) => t.result?.state === 'pass').length;
 

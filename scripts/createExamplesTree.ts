@@ -40,7 +40,7 @@ async function traverse(
       } else {
         const content = fs.readFileSync(entryPath, 'utf8');
         const lang = path.extname(entry.name).toLowerCase().replace('.', '');
-        const renderedContent = await md.renderAsync(`\`\`\`${lang}\n${content}\n\`\`\``);
+        const renderedContent = await md.renderAsync(`\`\`\`${lang} \n${content}\n\`\`\``);
 
         const treeNode: TypeTreeNode = {
           lang,

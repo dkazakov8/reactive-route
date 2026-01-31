@@ -130,6 +130,7 @@ export default defineConfig({
     config(md) {
       labelsPlugin(md as any);
     },
+    theme: { dark: 'github-dark', light: 'github-light' },
   },
   themeConfig: {
     logo: '/file.svg',

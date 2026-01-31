@@ -33,7 +33,8 @@ function createProject(
       define: { OPTIONS: options },
       test: {
         name: options ? `${options.renderer}-${options.reactivity}` : `core`,
-        include: [options ? `units/Router.test.tsx` : `units/*.test.ts`],
+        include: [options ? `units/component.test.ts` : `units/*.test.ts`],
+        exclude: [options ? '' : `units/component.test.ts`],
         browser: {
           enabled: true,
           headless: true,
@@ -49,7 +50,8 @@ function createProject(
       define: { OPTIONS: options },
       test: {
         name: options ? `${options.renderer}-${options.reactivity}-ssr` : `core-ssr`,
-        include: [options ? `units/Router.test.tsx` : `units/*.test.ts`],
+        include: [options ? `units/component.test.ts` : `units/*.test.ts`],
+        exclude: [options ? '' : `units/component.test.ts`],
       },
     },
   ];
