@@ -94,6 +94,7 @@ export default defineConfig({
               text: 'Введение',
               items: [
                 { text: 'Зачем Reactive Route?', link: '/ru/guide/' },
+                { text: 'Философия', link: '/ru/guide/philosophy' },
                 { text: 'Пошаговая настройка', link: '/ru/guide/step-by-step' },
                 { text: 'Основные структуры', link: '/ru/guide/core-concepts' },
                 { text: 'Ограничения', link: '/ru/guide/limitations' },
