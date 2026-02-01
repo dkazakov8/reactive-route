@@ -9,7 +9,7 @@ import esbuild, { BuildOptions, Plugin } from 'esbuild';
 import pluginVue from 'unplugin-vue';
 
 import { createExamplesTree } from './createExamplesTree';
-import { measureLibs } from './measureLibs';
+import { measure } from './measure';
 
 function getPlugins(framework: 'vue' | 'solid') {
   const plugins: Array<Plugin> = [];
@@ -66,6 +66,7 @@ async function generateBuild(folderName: string) {
     sourcemap: true,
     target: 'es2022',
     packages: 'external',
+    legalComments: 'none',
     write: true,
     minify: false,
     treeShaking: true,
@@ -157,7 +158,7 @@ void Promise.all([
   fs.writeFileSync(path.resolve('vitepress/modulesMap.ts'), modulesMap, 'utf8');
   fs.cpSync(path.resolve('README.md'), path.resolve('dist/README.md'));
 
-  await measureLibs();
+  await measure();
 
   await createExamplesTree();
 });

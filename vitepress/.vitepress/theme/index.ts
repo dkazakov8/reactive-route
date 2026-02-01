@@ -1,6 +1,7 @@
 import Theme from 'vitepress/theme';
 import './custom.css';
 
+import Accordion from './components/Accordion.vue';
 import CodeView from './components/CodeView.vue';
 import ComparisonTable from './components/ComparisonTable.vue';
 import FrameworkSelect from './components/FrameworkSelect.vue';
@@ -12,6 +13,7 @@ export default {
   enhanceApp(params: any) {
     Theme.enhanceApp(params);
 
+    params.app.component('Accordion', Accordion);
     params.app.component('FrameworkSelect', FrameworkSelect);
     params.app.component('Tabs', Tabs);
     params.app.component('ComparisonTable', ComparisonTable);

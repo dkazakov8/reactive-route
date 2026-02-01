@@ -1,5 +1,5 @@
 {
-  "coverage": "96.50 %",
+  "coverage": "96.97 %",
   "units": 406,
   "e2e": 144,
   "sizes": {
@@ -45,5 +45,6 @@
       "version": "0.15.4",
       "link": "https://docs.solidjs.com/solid-router/"
     }
-  }
+  },
+  "localSize": "1.89kb"
 }

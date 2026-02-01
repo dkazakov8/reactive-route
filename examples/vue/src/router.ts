@@ -1,7 +1,7 @@
 import { createRouter, createRoutes } from 'reactive-route';
 import { InjectionKey, inject } from 'vue';
 
-// Use a static import in your project instead of dynamic
+// Use a static import in your project instead of a dynamic
 const { adapters } = await import('reactive-route/adapters/vue');
 
 export function getRouter() {
@@ -10,8 +10,8 @@ export function getRouter() {
       home: {
         path: '/',
         loader: () => import('./pages/home'),
-        async beforeEnter(config) {
-          return config.redirect({ name: 'static' });
+        async beforeEnter({ redirect }) {
+          return redirect({ name: 'static' });
         },
       },
       static: {
@@ -34,14 +34,14 @@ export function getRouter() {
       },
       preventRedirect: {
         path: '/prevent',
-        async beforeEnter(config) {
-          if (config.currentState?.name === 'dynamic') {
-            return config.redirect({ name: 'static' });
+        async beforeEnter({ currentState, redirect }) {
+          if (currentState?.name === 'dynamic') {
+            return redirect({ name: 'static' });
           }
         },
-        async beforeLeave(config) {
-          if (config.nextState.name === 'query') {
-            return config.preventRedirect();
+        async beforeLeave({ nextState, preventRedirect }) {
+          if (nextState.name === 'query') {
+            return preventRedirect();
           }
         },
         loader: () => import('./pages/prevent'),

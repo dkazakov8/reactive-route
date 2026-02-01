@@ -4,34 +4,36 @@ import { isDeepStrictEqual } from 'node:util';
 
 export const libsMapper = {
   'reactive-route': {
-    entryPath: path.resolve('./scripts/sizeComparison/reactive-route.ts'),
+    entryPath: path.resolve('./scripts/measureApps/reactive-route.ts'),
     link: 'https://github.com/m-dmitry/reactive-route',
   },
   '@kitbag/router': {
-    entryPath: path.resolve('./scripts/sizeComparison/kitbag.ts'),
+    entryPath: path.resolve('./scripts/measureApps/kitbag.ts'),
     link: 'https://router.kitbag.dev/',
   },
   'mobx-router': {
-    entryPath: path.resolve('./scripts/sizeComparison/mobx-router.ts'),
+    entryPath: path.resolve('./scripts/measureApps/mobx-router.ts'),
     link: 'https://github.com/kitze/mobx-router',
   },
   'react-router': {
-    entryPath: path.resolve('./scripts/sizeComparison/react-router.ts'),
+    entryPath: path.resolve('./scripts/measureApps/react-router.ts'),
     link: 'https://reactrouter.com/',
   },
   '@tanstack/react-router': {
-    entryPath: path.resolve('./scripts/sizeComparison/tanstack.ts'),
+    entryPath: path.resolve('./scripts/measureApps/tanstack.ts'),
     link: 'https://tanstack.com/router',
   },
   'vue-router': {
-    entryPath: path.resolve('./scripts/sizeComparison/vue-router.ts'),
+    entryPath: path.resolve('./scripts/measureApps/vue-router.ts'),
     link: 'https://router.vuejs.org/',
   },
   '@solidjs/router': {
-    entryPath: path.resolve('./scripts/sizeComparison/solid-router.ts'),
+    entryPath: path.resolve('./scripts/measureApps/solid-router.ts'),
     link: 'https://docs.solidjs.com/solid-router/',
   },
 } as const;
+
+export type TypeLibs = keyof typeof libsMapper;
 
 export type TypeLibData = {
   minified: number;
@@ -44,23 +46,25 @@ export type TypeMetrics = {
   coverage?: string;
   units?: number;
   e2e?: number;
+  localSize?: string;
   sizes?: { [K in keyof typeof libsMapper]: TypeLibData };
 };
 
 const logPrefix = '\x1b[32m[metrics]\x1b[0m';
 
+function formatSize(libData?: TypeLibData) {
+  if (!libData) return 'undefined';
+
+  return `\x1b[33m${libData.minified}kb (${libData.compressed}kb)\x1b[0m`;
+}
+
 function getSizeChanges(prevMetrics?: TypeMetrics['sizes'], nextMetrics?: TypeMetrics['sizes']) {
-  function formatSize(libData?: TypeLibData) {
-    if (!libData) return 'undefined';
-    return `\x1b[33m${libData.minified}kb (${libData.compressed}kb)\x1b[0m`;
-  }
+  return (Object.keys(libsMapper) as Array<TypeLibs>)
+    .map((lib) => {
+      const libDataPrev = prevMetrics?.[lib];
+      const libDataNext = nextMetrics?.[lib];
 
-  return (Object.keys(libsMapper) as Array<keyof typeof libsMapper>)
-    .map((libName) => {
-      const libDataPrev = prevMetrics?.[libName];
-      const libDataNext = nextMetrics?.[libName];
-
-      let logString = ` \x1b[36m${libName}\x1b[0m: ${formatSize(libDataPrev)}`;
+      let logString = ` \x1b[36m${lib}\x1b[0m: ${formatSize(libDataPrev)}`;
 
       if (libDataNext && !isDeepStrictEqual(libDataPrev, libDataNext)) {
         logString += ` -> ${formatSize(libDataNext)}`;

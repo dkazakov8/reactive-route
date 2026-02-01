@@ -7,10 +7,10 @@ export default function Dynamic() {
   const routeState = router.state.dynamic!;
 
   return (
-    <div className="page-container dynamic-page">
+    <div className="pageContainer dynamicPage">
       <h1>Dynamic Page</h1>
 
-      <div className="route-info">
+      <div className="routeInfo">
         <h2>Route Configuration</h2>
         <pre>
           {`dynamic: {
@@ -23,12 +23,12 @@ export default function Dynamic() {
         </pre>
       </div>
 
-      <div className="route-info">
+      <div className="routeInfo">
         <h2>Current Parameters</h2>
         <pre>{JSON.stringify(routeState.params, null, 2)}</pre>
       </div>
 
-      <div className="route-description">
+      <div className="routeDescription">
         <h2>How it works</h2>
         <p>
           This is a dynamic route with a parameter <code>:foo</code> in the path. The parameter is
@@ -48,7 +48,7 @@ export default function Dynamic() {
         <h2>Actions</h2>
         <button
           type="button"
-          className="nav-button"
+          className="navButton"
           onClick={() => {
             void router.redirect({
               name: 'dynamic',
@@ -66,13 +66,13 @@ export default function Dynamic() {
 
       <div className="navigation">
         <h2>Navigation</h2>
-        <Link payload={{ name: 'static' }} className="nav-button">
+        <Link payload={{ name: 'static' }} className="navButton">
           Go to Static Page
         </Link>
-        <Link payload={{ name: 'query', query: { foo: 'example' } }} className="nav-button">
+        <Link payload={{ name: 'query', query: { foo: 'example' } }} className="navButton">
           Go to Query Page
         </Link>
-        <Link payload={{ name: 'preventRedirect' }} className="nav-button">
+        <Link payload={{ name: 'preventRedirect' }} className="navButton">
           Go to Prevent Page (will redirect to Static)
         </Link>
       </div>

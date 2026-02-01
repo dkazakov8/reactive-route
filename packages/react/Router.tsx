@@ -1,12 +1,12 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import {
   handleComponentRerender,
-  type TypePropsRouter,
+  type PropsRouter,
   type TypeRouterLocalObservable,
   type TypeRoutesDefault,
 } from 'reactive-route';
 
-function RouterInner<TRoutes extends TypeRoutesDefault>(props: TypePropsRouter<TRoutes>) {
+function RouterInner<TRoutes extends TypeRoutesDefault>(props: PropsRouter<TRoutes>) {
   const [{ adapters }] = useState(() => props.router.getGlobalArguments());
 
   const disposerRef = useRef<() => void>(null);
@@ -43,7 +43,7 @@ function RouterInner<TRoutes extends TypeRoutesDefault>(props: TypePropsRouter<T
   return <ComponentRef.current {...localObservable.props} />;
 }
 
-export function Router<TRoutes extends TypeRoutesDefault>(props: TypePropsRouter<TRoutes>) {
+export function Router<TRoutes extends TypeRoutesDefault>(props: PropsRouter<TRoutes>) {
   const [Component] = useState(() =>
     props.router.getGlobalArguments().adapters.observer!(RouterInner)
   );

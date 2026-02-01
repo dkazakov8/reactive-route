@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 import { createRouter, createRoutes } from 'reactive-route';
 
-// Use a static import in your project instead of dynamic
+// Use a static import in your project instead of a dynamic
 const { adapters } =
   REACTIVITY_SYSTEM === 'mobx'
     ? await import('reactive-route/adapters/mobx-react')
@@ -13,8 +13,8 @@ export function getRouter() {
       home: {
         path: '/',
         loader: () => import('./pages/home'),
-        async beforeEnter(config) {
-          return config.redirect({ name: 'static' });
+        async beforeEnter({ redirect }) {
+          return redirect({ name: 'static' });
         },
       },
       static: {
@@ -37,25 +37,23 @@ export function getRouter() {
       },
       preventRedirect: {
         path: '/prevent',
-        async beforeEnter(config) {
-          if (config.currentState?.name === 'dynamic') {
-            return config.redirect({ name: 'static' });
+        async beforeEnter({ currentState, redirect }) {
+          if (currentState?.name === 'dynamic') {
+            return redirect({ name: 'static' });
           }
         },
-        async beforeLeave(config) {
-          if (config.nextState.name === 'query') {
-            return config.preventRedirect();
+        async beforeLeave({ nextState, preventRedirect }) {
+          if (nextState.name === 'query') {
+            return preventRedirect();
           }
         },
         loader: () => import('./pages/prevent'),
       },
-      // this page is necessary
       notFound: {
         path: '/error404',
         props: { errorCode: 404 },
         loader: () => import('./pages/error'),
       },
-      // this page is necessary
       internalError: {
         path: '/error500',
         props: { errorCode: 500 },

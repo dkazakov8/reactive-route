@@ -7,11 +7,11 @@ import { labelsPlugin } from './theme/labelsPlugin.js';
 export default defineConfig({
   vite: {
     resolve: {
-      alias: {
-        '@': path.resolve(__dirname, '..'),
-        '@snippets': path.resolve(__dirname, '../snippets'),
-        '@scripts': path.resolve(__dirname, '../../scripts'),
-      },
+      alias: [
+        { find: '@', replacement: path.resolve(__dirname, '..') },
+        { find: '@snippets', replacement: path.resolve(__dirname, '../snippets') },
+        { find: '@scripts', replacement: path.resolve(__dirname, '../../scripts') },
+      ],
     },
   },
   title: 'Reactive Route',

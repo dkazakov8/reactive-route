@@ -2,10 +2,10 @@ import { Link } from '../../components/Link';
 
 export default function Static() {
   return (
-    <div className="page-container static-page">
+    <div className="pageContainer staticPage">
       <h1>Static Page</h1>
 
-      <div className="route-info">
+      <div className="routeInfo">
         <h2>Route Configuration</h2>
         <pre>
           {`static: {
@@ -15,7 +15,7 @@ export default function Static() {
         </pre>
       </div>
 
-      <div className="route-description">
+      <div className="routeDescription">
         <h2>How it works</h2>
         <p>
           This is a simple static route with a fixed path. When you navigate to '/static', the
@@ -26,13 +26,13 @@ export default function Static() {
 
       <div className="navigation">
         <h2>Navigation</h2>
-        <Link className="nav-button" payload={{ name: 'dynamic', params: { foo: 'example' } }}>
+        <Link className="navButton" payload={{ name: 'dynamic', params: { foo: 'example' } }}>
           Go to Dynamic Page
         </Link>
-        <Link className="nav-button" payload={{ name: 'query', query: { foo: 'example' } }}>
+        <Link className="navButton" payload={{ name: 'query', query: { foo: 'example' } }}>
           Go to Query Page
         </Link>
-        <Link className="nav-button" payload={{ name: 'preventRedirect' }}>
+        <Link className="navButton" payload={{ name: 'preventRedirect' }}>
           Go to Prevent Page
         </Link>
       </div>

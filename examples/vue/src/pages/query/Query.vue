@@ -15,10 +15,10 @@ function goRandom() {
 </script>
 
 <template>
-  <div class="page-container query-page">
+  <div class="pageContainer queryPage">
     <h1>Query Page</h1>
 
-    <div class="route-info">
+    <div class="routeInfo">
       <h2>Route Configuration</h2>
       <pre>query: {
   path: '/query',
@@ -29,14 +29,14 @@ function goRandom() {
 }</pre>
     </div>
 
-    <div class="route-info">
+    <div class="routeInfo">
       <h2>Current Query</h2>
       <pre>{{ JSON.stringify(routeState.query, null, 2) }}</pre>
     </div>
 
     <div class="actions">
       <h2>Actions</h2>
-      <button type="button" class="nav-button" @click="goRandom">Go to random query value</button>
+      <button type="button" class="navButton" @click="goRandom">Go to random query value</button>
       <p class="note">
         Update query parameter and observe route changes.
       </p>
@@ -44,11 +44,11 @@ function goRandom() {
 
     <div class="navigation">
       <h2>Navigation</h2>
-      <Link :payload="{ name: 'static' }" class="nav-button">Go to Static Page</Link>
-      <Link :payload="{ name: 'dynamic', params: { foo: 'example' } }" class="nav-button">
+      <Link :payload="{ name: 'static' }" class="navButton">Go to Static Page</Link>
+      <Link :payload="{ name: 'dynamic', params: { foo: 'example' } }" class="navButton">
         Go to Dynamic Page
       </Link>
-      <Link :payload="{ name: 'preventRedirect' }" class="nav-button">
+      <Link :payload="{ name: 'preventRedirect' }" class="navButton">
         Go to Prevent Page
       </Link>
     </div>

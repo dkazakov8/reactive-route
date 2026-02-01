@@ -2,12 +2,12 @@
 </script>
 
 <template>
-  <div class="page-container">
+  <div class="pageContainer homePage">
     <h1>Home Page</h1>
 
-    <div class="redirect-notice">
-      <div class="redirect-icon">⏱️</div>
-      <div class="redirect-message">
+    <div class="redirectNotice">
+      <div class="redirectIcon">⏱️</div>
+      <div class="redirectMessage">
         <p>This page will automatically redirect to the Static page</p>
         <p>
           This is because of the <code>beforeEnter</code> hook in the route configuration.
@@ -15,12 +15,18 @@
       </div>
     </div>
 
-    <div class="route-info">
+    <div class="routeInfo">
       <h2>Route Configuration</h2>
-      <pre>home: {\n  path: '/',\n  loader: () => import('./pages/home'),\n  async beforeEnter(config) {\n    return config.redirect({ name: 'static' });\n  },\n}</pre>
+      <pre>home: {
+  path: '/',
+  loader: () => import('./pages/home'),
+  async beforeEnter({ redirect }) {
+    return redirect({ name: 'static' });
+  },
+}</pre>
     </div>
 
-    <div class="route-description">
+    <div class="routeDescription">
       <h2>How it works</h2>
       <p>
         This is the home page with the path '/'. However, it has a <code>beforeEnter</code> hook

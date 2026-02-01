@@ -5,10 +5,10 @@ export default function Query() {
   const { router } = useRouter();
 
   return (
-    <div className="page-container query-page">
+    <div class="pageContainer queryPage">
       <h1>Query Page</h1>
 
-      <div className="route-info">
+      <div class="routeInfo">
         <h2>Route Configuration</h2>
         <pre>
           {`query: {
@@ -21,12 +21,12 @@ export default function Query() {
         </pre>
       </div>
 
-      <div className="current-query">
+      <div class="currentQuery">
         <h2>Current Query Parameters</h2>
         <pre>{JSON.stringify(router.state.query!.query, null, 2)}</pre>
       </div>
 
-      <div className="route-description">
+      <div class="routeDescription">
         <h2>How it works</h2>
         <p>
           This route demonstrates query parameter validation. The route has a fixed path '/query',
@@ -46,11 +46,11 @@ export default function Query() {
         </p>
       </div>
 
-      <div className="actions">
+      <div class="actions">
         <h2>Actions</h2>
         <button
           type="button"
-          className="action-button"
+          class="actionButton"
           onClick={() => {
             void router.redirect({
               name: 'query',
@@ -60,21 +60,21 @@ export default function Query() {
         >
           Go to random query value
         </button>
-        <p className="note">
+        <p class="note">
           Click button and see the page update with new query parameters. With SSR we don't even
           look at URL on frontend during hydration, just restore from the server.
         </p>
       </div>
 
-      <div className="navigation">
+      <div class="navigation">
         <h2>Navigation</h2>
-        <Link payload={{ name: 'static' }} class="nav-button">
+        <Link payload={{ name: 'static' }} class="navButton">
           Go to Static Page
         </Link>
-        <Link payload={{ name: 'dynamic', params: { foo: 'example' } }} class="nav-button">
+        <Link payload={{ name: 'dynamic', params: { foo: 'example' } }} class="navButton">
           Go to Dynamic Page
         </Link>
-        <Link payload={{ name: 'preventRedirect' }} class="nav-button">
+        <Link payload={{ name: 'preventRedirect' }} class="navButton">
           Go to Prevent Page
         </Link>
       </div>

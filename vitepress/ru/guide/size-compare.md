@@ -27,13 +27,13 @@ tree shaking в реальных проектах размеры будут ме
 будет незначительно отличаться по размеру):
 
 ::: code-group
-<<< ../../../scripts/sizeComparison/reactive-route.ts [reactive-route]
-<<< ../../../scripts/sizeComparison/mobx-router.ts [mobx-router]
-<<< ../../../scripts/sizeComparison/vue-router.ts [vue-router]
-<<< ../../../scripts/sizeComparison/kitbag.ts [@kitbag/router]
-<<< ../../../scripts/sizeComparison/tanstack.ts [@tanstack/react-router]
-<<< ../../../scripts/sizeComparison/react-router.ts [react-router]
-<<< ../../../scripts/sizeComparison/solid-router.ts [@solidjs/router]
+<<< ../../../scripts/measureApps/reactive-route.ts [reactive-route]
+<<< ../../../scripts/measureApps/mobx-router.ts [mobx-router]
+<<< ../../../scripts/measureApps/vue-router.ts [vue-router]
+<<< ../../../scripts/measureApps/kitbag.ts [@kitbag/router]
+<<< ../../../scripts/measureApps/tanstack.ts [@tanstack/react-router]
+<<< ../../../scripts/measureApps/react-router.ts [react-router]
+<<< ../../../scripts/measureApps/solid-router.ts [@solidjs/router]
 :::
 
 &nbsp;

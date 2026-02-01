@@ -85,7 +85,7 @@ export type TypeState<TConfig extends TypeConfig> = {
 
 export type TypeRoutesDefault = Record<'notFound' | 'internalError' | string, TypeConfig>;
 
-export type TypePropsRouter<TRoutes extends TypeRoutesDefault> = {
+export type PropsRouter<TRoutes extends TypeRoutesDefault> = {
   router: TypeRouter<TRoutes>;
 };
 
@@ -138,9 +138,9 @@ export type TypeRouter<TRoutes extends TypeRoutesDefault> = {
 
   getGlobalArguments(): TypeGlobalArguments<TRoutes>;
 
-  historyListener(): void;
-  attachHistoryListener(): void;
-  destroyHistoryListener(): void;
+  listener(): void;
+  historySyncStart(): void;
+  historySyncStop(): void;
 
   urlToPayload(url: TypeURL): TypePayload<TRoutes, keyof TRoutes>;
 

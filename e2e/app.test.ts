@@ -30,11 +30,10 @@ test.describe('App routing E2E', () => {
     await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL('/page/example');
 
-    const preLocator = page.locator('.dynamic-page pre').nth(1);
+    const preLocator = page.locator('.dynamicPage pre').nth(1);
 
     await expect(page.locator(h1)).toHaveText('Dynamic Page');
     await expect(preLocator).toContainText('"foo": "example"');
-
     await page.getByText('Go to random dynamic value').click();
 
     const randomFoo = ((await preLocator.textContent()) || '').match(/foo": "(\d+)"/)?.[1];
@@ -62,7 +61,7 @@ test.describe('App routing E2E', () => {
     await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL('/query');
 
-    const preLocator = page.locator('.query-page pre').nth(1);
+    const preLocator = page.locator('.queryPage pre').nth(1);
 
     await expect(page.locator(h1)).toHaveText('Query Page');
     await expect(preLocator).toContainText('{}');
@@ -83,14 +82,14 @@ test.describe('App routing E2E', () => {
     await page.goto('/page/ab');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.locator('.error-code')).toHaveText('404');
+    await expect(page.locator('.errorCode')).toHaveText('404');
     await expect(page.locator(h1)).toHaveText('Page Not Found');
     await expect(page).toHaveURL('/error404');
 
     await page.goto('/ab');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.locator('.error-code')).toHaveText('404');
+    await expect(page.locator('.errorCode')).toHaveText('404');
     await expect(page.locator(h1)).toHaveText('Page Not Found');
     await expect(page).toHaveURL('/error404');
   });
@@ -137,7 +136,7 @@ test.describe('App routing E2E', () => {
     await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL('/page/example');
 
-    const preLocator = page.locator('.dynamic-page pre').nth(1);
+    const preLocator = page.locator('.dynamicPage pre').nth(1);
 
     await expect(page.locator(h1)).toHaveText('Dynamic Page');
     await expect(preLocator).toContainText('"foo": "example"');

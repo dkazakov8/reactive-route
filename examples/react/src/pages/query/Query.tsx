@@ -7,10 +7,10 @@ export default function Query() {
   const routeState = router.state.query!;
 
   return (
-    <div className="page-container query-page">
+    <div className="pageContainer queryPage">
       <h1>Query Page</h1>
 
-      <div className="route-info">
+      <div className="routeInfo">
         <h2>Route Configuration</h2>
         <pre>
           {`query: {
@@ -23,12 +23,12 @@ export default function Query() {
         </pre>
       </div>
 
-      <div className="current-query">
+      <div className="currentQuery">
         <h2>Current Query Parameters</h2>
         <pre>{JSON.stringify(routeState.query, null, 2)}</pre>
       </div>
 
-      <div className="route-description">
+      <div className="routeDescription">
         <h2>How it works</h2>
         <p>
           This route demonstrates query parameter validation. The route has a fixed path '/query',
@@ -52,7 +52,7 @@ export default function Query() {
         <h2>Actions</h2>
         <button
           type="button"
-          className="action-button"
+          className="actionButton"
           onClick={() => {
             void router.redirect({
               name: 'query',
@@ -70,13 +70,13 @@ export default function Query() {
 
       <div className="navigation">
         <h2>Navigation</h2>
-        <Link payload={{ name: 'static' }} className="nav-button">
+        <Link payload={{ name: 'static' }} className="navButton">
           Go to Static Page
         </Link>
-        <Link payload={{ name: 'dynamic', params: { foo: 'example' } }} className="nav-button">
+        <Link payload={{ name: 'dynamic', params: { foo: 'example' } }} className="navButton">
           Go to Dynamic Page
         </Link>
-        <Link payload={{ name: 'preventRedirect' }} className="nav-button">
+        <Link payload={{ name: 'preventRedirect' }} className="navButton">
           Go to Prevent Page
         </Link>
       </div>

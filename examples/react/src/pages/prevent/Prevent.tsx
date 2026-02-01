@@ -2,22 +2,22 @@ import { Link } from '../../components/Link';
 
 export default function Prevent() {
   return (
-    <div className="page-container prevent-page">
+    <div className="pageContainer preventPage">
       <h1>Prevent Redirect Page</h1>
 
-      <div className="route-info">
+      <div className="routeInfo">
         <h2>Route Configuration</h2>
         <pre>
           {`preventRedirect: {
   path: '/prevent',
-  async beforeEnter(config) {
-    if (config.currentState?.name === 'dynamic') {
-      return config.redirect({ name: 'static' });
+  async beforeEnter({ currentState, redirect }) {
+    if (currentState?.name === 'dynamic') {
+      return redirect({ name: 'static' });
     }
   },
-  async beforeLeave(config) {
-    if (config.nextState.name === 'query') {
-      return config.preventRedirect();
+  async beforeLeave({ nextState, preventRedirect }) {
+    if (nextState.name === 'query') {
+      return preventRedirect();
     }
   },
   loader: () => import('./pages/prevent'),
@@ -25,7 +25,7 @@ export default function Prevent() {
         </pre>
       </div>
 
-      <div className="route-description">
+      <div className="routeDescription">
         <h2>How it works</h2>
         <p>
           This page demonstrates navigation guards using <code>beforeEnter</code> and{' '}
@@ -44,17 +44,17 @@ export default function Prevent() {
         </p>
       </div>
 
-      <div className="navigation-rules">
+      <div className="navigationRules">
         <h2>Navigation Rules</h2>
         <div className="rule">
-          <div className="rule-icon">⚠️</div>
-          <div className="rule-text">
+          <div className="ruleIcon">⚠️</div>
+          <div className="ruleText">
             <strong>Coming from Dynamic page:</strong> You will be redirected to Static page.
           </div>
         </div>
         <div className="rule">
-          <div className="rule-icon">🚫</div>
-          <div className="rule-text">
+          <div className="ruleIcon">🚫</div>
+          <div className="ruleText">
             <strong>Trying to go to Query page:</strong> Navigation will be prevented.
           </div>
         </div>
@@ -62,15 +62,15 @@ export default function Prevent() {
 
       <div className="navigation">
         <h2>Navigation</h2>
-        <Link payload={{ name: 'static' }} className="nav-button">
+        <Link payload={{ name: 'static' }} className="navButton">
           Go to Static Page
         </Link>
-        <Link payload={{ name: 'dynamic', params: { foo: 'example' } }} className="nav-button">
+        <Link payload={{ name: 'dynamic', params: { foo: 'example' } }} className="navButton">
           Go to Dynamic Page
         </Link>
         <Link
           payload={{ name: 'query', query: { foo: 'example' } }}
-          className="nav-button nav-button-blocked"
+          className="navButton navButtonBlocked"
         >
           Try to go to Query Page (will be blocked)
         </Link>

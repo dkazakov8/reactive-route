@@ -3,28 +3,28 @@ import Link from '../../components/Link.vue';
 </script>
 
 <template>
-  <div class="page-container prevent-page">
+  <div class="pageContainer preventPage">
     <h1>Prevent Redirect Page</h1>
 
-    <div class="route-info">
+    <div class="routeInfo">
       <h2>Route Configuration</h2>
       <pre>preventRedirect: {
   path: '/prevent',
-  async beforeEnter(config) {
-    if (config.currentState?.name === 'dynamic') {
-      return config.redirect({ name: 'static' });
+  async beforeEnter({ currentState, redirect }) {
+    if (currentState?.name === 'dynamic') {
+      return redirect({ name: 'static' });
     }
   },
-  async beforeLeave(config) {
-    if (config.nextState.name === 'query') {
-      return config.preventRedirect();
+  async beforeLeave({ nextState, preventRedirect }) {
+    if (nextState.name === 'query') {
+      return preventRedirect();
     }
   },
   loader: () => import('./pages/prevent'),
 }</pre>
     </div>
 
-    <div class="route-description">
+    <div class="routeDescription">
       <h2>How it works</h2>
       <p>
         This page demonstrates route guards: navigating here from Dynamic redirects to Static;
@@ -34,13 +34,13 @@ import Link from '../../components/Link.vue';
 
     <div class="navigation">
       <h2>Navigation</h2>
-      <Link :payload="{ name: 'static' }" class="nav-button">Go to Static Page</Link>
-      <Link :payload="{ name: 'dynamic', params: { foo: 'example' } }" class="nav-button">
+      <Link :payload="{ name: 'static' }" class="navButton">Go to Static Page</Link>
+      <Link :payload="{ name: 'dynamic', params: { foo: 'example' } }" class="navButton">
         Go to Dynamic Page
       </Link>
       <Link
         :payload="{ name: 'query', query: { foo: 'example' } }"
-        class="nav-button nav-button-blocked"
+        class="navButton navButtonBlocked"
       >
         Try to go to Query Page (will be blocked)
       </Link>

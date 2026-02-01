@@ -43,19 +43,19 @@ function select(framework: string) {
 </template>
 
 <style scoped>
-:deep(.vp-code-group) {
+.vp-code-group {
   margin-top: 0 !important;
-}
 
-:deep(.vp-code-group > .blocks) {
-  border: none !important;
-}
+  & :deep(.blocks) {
+    border: none !important;
+  }
 
-.block {
-  display: none;
-}
+  & .block {
+    display: none;
 
-.block.active {
-  display: block;
+    &.active {
+      display: block;
+    }
+  }
 }
 </style>

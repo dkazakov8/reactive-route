@@ -48,52 +48,55 @@ const processedRows = computed(() => {
 <style scoped>
 .comparison-container {
   overflow-x: auto;
-}
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
+  & table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
 
-th, td {
-  padding: 12px 16px;
-  border: 1px solid var(--vp-c-divider);
+    & th,
+    & td {
+      padding: 12px 16px;
+      border: 1px solid var(--vp-c-divider);
 
-  &:nth-child(2) {
-    width: 40%;
+      &:nth-child(2) {
+        width: 40%;
+      }
+
+      &:nth-child(3) {
+        width: 40%;
+      }
+    }
+
+    & th {
+      background-color: var(--vp-c-bg-soft);
+      font-weight: 600;
+
+      &:nth-child(2) {
+        color: var(--vp-c-brand-1);
+      }
+    }
+
+    & tr:nth-child(even) {
+      background-color: var(--vp-c-bg-soft);
+    }
   }
 
-  &:nth-child(3) {
-    width: 40%;
+  & :deep(code) {
+    padding: 3px 6px;
+    border-radius: 4px;
+    background-color: var(--vp-c-bg-soft);
+    font-size: 0.9em;
   }
-}
-
-th:nth-child(2) {
-  color: var(--vp-c-brand-1);
-}
-
-
-:deep(code) {
-  padding: 3px 6px;
-  border-radius: 4px;
-  background-color: var(--vp-c-bg-soft);
-  font-size: 0.9em;
-}
-
-th {
-  background-color: var(--vp-c-bg-soft);
-  font-weight: 600;
-}
-
-tr:nth-child(even) {
-  background-color: var(--vp-c-bg-soft);
 }
 
 @media (max-width: 640px) {
-  th, td {
-    padding: 8px 12px;
-    font-size: 14px;
+  .comparison-container {
+    & th,
+    & td {
+      padding: 8px 12px;
+      font-size: 14px;
+    }
   }
 }
 </style>

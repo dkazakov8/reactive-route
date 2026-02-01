@@ -1,14 +1,14 @@
 <script lang="ts" setup generic="TRoutes extends TypeRoutesDefault">
 import {
   handleComponentRerender,
-  type TypePropsRouter,
+  type PropsRouter,
   type TypeRouterLocalObservable,
   type TypeRoutesDefault,
 } from 'reactive-route';
 
 defineOptions({ name: 'ReactiveRouteRouter' });
 
-const props = defineProps<TypePropsRouter<TRoutes>>();
+const props = defineProps<PropsRouter<TRoutes>>();
 
 const { adapters } = props.router.getGlobalArguments();
 

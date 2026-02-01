@@ -67,7 +67,7 @@ describe.runIf(typeof window !== 'undefined')(
 
       checkSpy();
 
-      router.destroyHistoryListener();
+      router.historySyncStop();
     });
 
     it('Only beforeSetPageComponent called on first render', async () => {
@@ -83,7 +83,7 @@ describe.runIf(typeof window !== 'undefined')(
 
       checkSpy();
 
-      router.destroyHistoryListener();
+      router.historySyncStop();
     });
 
     it('No lifecycle if only params changed (with page name)', async () => {
@@ -105,7 +105,7 @@ describe.runIf(typeof window !== 'undefined')(
 
       checkSpy();
 
-      router.destroyHistoryListener();
+      router.historySyncStop();
     });
 
     it('No lifecycle if only params changed (without page name)', async () => {
@@ -127,7 +127,7 @@ describe.runIf(typeof window !== 'undefined')(
 
       checkSpy();
 
-      router.destroyHistoryListener();
+      router.historySyncStop();
     });
 
     it('No router lifecycle (same component)', async () => {
@@ -149,7 +149,7 @@ describe.runIf(typeof window !== 'undefined')(
 
       checkSpy();
 
-      router.destroyHistoryListener();
+      router.historySyncStop();
     });
 
     it('No router lifecycle (same component) 2', async () => {
@@ -171,7 +171,7 @@ describe.runIf(typeof window !== 'undefined')(
 
       checkSpy();
 
-      router.destroyHistoryListener();
+      router.historySyncStop();
     });
 
     it('No rerender and lifecycle on props change', async () => {
@@ -193,7 +193,7 @@ describe.runIf(typeof window !== 'undefined')(
 
       checkSpy();
 
-      router.destroyHistoryListener();
+      router.historySyncStop();
     });
 
     it('History pop', async () => {
@@ -284,7 +284,7 @@ describe.runIf(typeof window !== 'undefined')(
 
       expect(location.pathname).to.eq('/test3/asd');
 
-      router.destroyHistoryListener();
+      router.historySyncStop();
     });
 
     it('Unmount check', async () => {
@@ -305,7 +305,7 @@ describe.runIf(typeof window !== 'undefined')(
 
       expect(container.innerHTML).to.eq('');
 
-      router.destroyHistoryListener();
+      router.historySyncStop();
     });
   }
 );

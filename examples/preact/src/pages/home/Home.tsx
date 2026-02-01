@@ -1,11 +1,11 @@
 export default function Home() {
   return (
-    <div className="page-container">
+    <div className="pageContainer homePage">
       <h1>Home Page</h1>
 
-      <div className="redirect-notice">
-        <div className="redirect-icon">⏱️</div>
-        <div className="redirect-message">
+      <div className="redirectNotice">
+        <div className="redirectIcon">⏱️</div>
+        <div className="redirectMessage">
           <p>This page will automatically redirect to the Static page</p>
           <p>
             This is because of the <code>beforeEnter</code> hook in the route configuration.
@@ -13,20 +13,20 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="route-info">
+      <div className="routeInfo">
         <h2>Route Configuration</h2>
         <pre>
           {`home: {
   path: '/',
   loader: () => import('./pages/home'),
-  async beforeEnter(config) {
-    return config.redirect({ name: 'static' });
+  async beforeEnter({ redirect }) {
+    return redirect({ name: 'static' });
   },
 }`}
         </pre>
       </div>
 
-      <div className="route-description">
+      <div className="routeDescription">
         <h2>How it works</h2>
         <p>
           This is the home page with the path '/'. However, it has a <code>beforeEnter</code> hook

@@ -129,47 +129,47 @@ if (selectedFile.value) {
   margin: 16px 0;
   height: 600px;
   background-color: var(--vp-c-bg-soft);
-}
 
-.file-tree {
-  width: 220px;
-  border-right: 1px solid var(--vp-c-divider);
-  overflow-y: auto;
-  padding: 12px 8px;
-  user-select: none;
-  background-color: var(--vp-c-bg-alt);
-}
+  & .file-tree {
+    width: 220px;
+    border-right: 1px solid var(--vp-c-divider);
+    overflow-y: auto;
+    padding: 12px 8px;
+    user-select: none;
+    background-color: var(--vp-c-bg-alt);
+  }
 
-.file-content {
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--vp-c-bg);
-}
+  & .file-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--vp-c-bg);
 
-.content-wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
+    & .content-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
 
-.code-block {
-  flex: 1;
-  overflow: auto;
-  padding: 0;
-  margin: 0;
-  font-size: 15px;
-}
+      & .code-block {
+        flex: 1;
+        overflow: auto;
+        padding: 0;
+        margin: 0;
+        font-size: 15px;
 
-:deep(.code-block > div[class*="language-"]) {
-  margin: 0 !important;
-  border-radius: 0 !important;
-  height: 100%;
-}
+        & :deep(> div[class*="language-"]) {
+          margin: 0 !important;
+          border-radius: 0 !important;
+          height: 100%;
+        }
 
-:deep(.code-block pre) {
-  margin: 0 !important;
-  background-color: transparent !important;
+        & :deep(pre) {
+          margin: 0 !important;
+          background-color: transparent !important;
+        }
+      }
+    }
+  }
 }
 </style>

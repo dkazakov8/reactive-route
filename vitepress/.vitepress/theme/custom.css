@@ -10,17 +10,17 @@
 }
 
 .table-td {
-  pre {
+  & pre {
     padding: 10px 0 !important;
   }
-  code {
+  & code {
     padding: 0 10px !important;
   }
-  .vp-block {
+  & .vp-block {
     margin: 0 !important;
   }
-  .copy,
-  .lang {
+  & .copy,
+  & .lang {
     display: none !important;
   }
 }
@@ -28,12 +28,14 @@
 /**
  * Extend the text block when aside is disabled (e.g. in examples)
  */
-.VPDoc:not(.has-aside) .container {
-  max-width: 100% !important;
-}
+.VPDoc:not(.has-aside) {
+  & .container {
+    max-width: 100% !important;
+  }
 
-.VPDoc:not(.has-aside) .content-container {
-  max-width: 100% !important;
+  & .content-container {
+    max-width: 100% !important;
+  }
 }
 
 /**
@@ -49,24 +51,24 @@ https://icon-sets.iconify.design/
   display: flex !important;
   align-items: center !important;
   flex-flow: row nowrap !important;
-}
 
-[data-title]::before {
-  display: inline-flex;
-  width: 17px;
-  height: 17px;
-  margin-right: 0.5em;
-  background: var(--icon) no-repeat center / contain;
-}
+  &::before {
+    display: inline-flex;
+    width: 17px;
+    height: 17px;
+    margin-right: 0.5em;
+    background: var(--icon) no-repeat center / contain;
+  }
 
-[data-title*="."]::before {
-  background: var(--vp-c-text-1);
-  -webkit-mask-image: var(--icon);
-  mask-image: var(--icon);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: cover;
-  mask-size: cover;
+  &[data-title*="."]::before {
+    background: var(--vp-c-text-1);
+    -webkit-mask-image: var(--icon);
+    mask-image: var(--icon);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: cover;
+    mask-size: cover;
+  }
 }
 
 [data-title="react" i]::before {

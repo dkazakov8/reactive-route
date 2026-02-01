@@ -15,10 +15,10 @@ function goRandom() {
 </script>
 
 <template>
-  <div class="page-container dynamic-page">
+  <div class="pageContainer dynamicPage">
     <h1>Dynamic Page</h1>
 
-    <div class="route-info">
+    <div class="routeInfo">
       <h2>Route Configuration</h2>
       <pre>dynamic: {
   path: '/page/:foo',
@@ -29,12 +29,12 @@ function goRandom() {
 }</pre>
     </div>
 
-    <div class="route-info">
+    <div class="routeInfo">
       <h2>Current Parameters</h2>
       <pre>{{ JSON.stringify(routeState.params, null, 2) }}</pre>
     </div>
 
-    <div class="route-description">
+    <div class="routeDescription">
       <h2>How it works</h2>
       <p>
         This is a dynamic route with a parameter <code>:foo</code> in the path. The parameter is
@@ -52,7 +52,7 @@ function goRandom() {
 
     <div class="actions">
       <h2>Actions</h2>
-      <button type="button" class="nav-button" @click="goRandom">Go to random dynamic value</button>
+      <button type="button" class="navButton" @click="goRandom">Go to random dynamic value</button>
       <p class="note">
         Click button and see the page update with new parameters. With SSR we don't even look at URL
         on frontend during hydration, just restore from the server.
@@ -61,11 +61,11 @@ function goRandom() {
 
     <div class="navigation">
       <h2>Navigation</h2>
-      <Link :payload="{ name: 'static' }" class="nav-button">Go to Static Page</Link>
-      <Link :payload="{ name: 'query', query: { foo: 'example' } }" class="nav-button">
+      <Link :payload="{ name: 'static' }" class="navButton">Go to Static Page</Link>
+      <Link :payload="{ name: 'query', query: { foo: 'example' } }" class="navButton">
         Go to Query Page
       </Link>
-      <Link :payload="{ name: 'preventRedirect' }" class="nav-button">
+      <Link :payload="{ name: 'preventRedirect' }" class="navButton">
         Go to Prevent Page (will redirect to Static)
       </Link>
     </div>

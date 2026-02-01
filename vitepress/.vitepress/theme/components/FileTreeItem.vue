@@ -72,24 +72,26 @@ const handleClick = () => {
 </template>
 
 <style scoped>
-.lineFile {
-  display: flex;
-  align-items: center;
-  padding: 4px 8px;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 13px;
-  color: var(--vp-c-text-1);
-  white-space: nowrap;
-  gap: 6px;
+.tree-item {
+  & .lineFile {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--vp-c-text-1);
+    white-space: nowrap;
+    gap: 6px;
 
-  &:hover {
-    background-color: var(--vp-c-bg-soft);
-  }
+    &:hover {
+      background-color: var(--vp-c-bg-soft);
+    }
 
-  &.is-selected {
-    background-color: var(--vp-c-bg-soft);
-    color: var(--vp-c-brand);
+    &.is-selected {
+      background-color: var(--vp-c-bg-soft);
+      color: var(--vp-c-brand);
+    }
   }
 }
 </style>
