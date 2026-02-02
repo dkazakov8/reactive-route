@@ -1,6 +1,6 @@
 # Установка и настройка
 
-<!-- @include: @snippets/getting-started/install.md -->
+<!-- @include: @shared/introduction/installPackage.md -->
 
 **Reactive Route** — это npm-пакет без каких-либо зависимостей с отдельными
 импортами модулей для бесшовного подключения к имеющейся системе реактивности
@@ -10,8 +10,6 @@
 Если используется не "коробочная" реактивность фреймворка, должны быть установлены подходящие
 реактивные библиотеки (см. <Link to="integration">Интеграции</Link>).
 :::
-
-
 
 <Accordion title="Карта модулей">
 
@@ -24,64 +22,35 @@
 В терминологии **Reactive Route** описание роута / маршрута и его поведения называется `Config`
 и передается в `createConfigs`:
 
-```ts
-import { createConfigs, createRouter } from 'reactive-route';
-import { adapters } from 'reactive-route/adapters/{reactive-system}';
-
-const configs = createConfigs({
-  home: { // Config
-    path: '/',
-    loader: () => import('./pages/home'),
-  }
-});
-
-export const router = createRouter({ configs, adapters });
-
-// somewhere
-await router.redirect({ name: 'home' });
-```
-
+<!-- @include: @shared/introduction/createRouterSingleton.md -->
 
 `loader` ожидает, что компонент страницы будет в экспорте `default`. 
 
+При необходимости можно объявлять `path` с переменными `/:id/:name`, в этом случае для каждой 
+переменной необходим валидатор. Никогда не доверяйте пришедшим в URL данным, особенно если есть SSR.
+
 :::info Не рекомендуется
-сразу передавать компонент `loader: () => Promise.resolve({ default: HomePage })`,
-так как создает риск возникновения циклических импортов.
+сразу передавать компонент `loader: () => Promise.resolve({ default: HomePage })`
+для исключения циклических импортов
 :::
 
+<Accordion title="Передача конфигурации объектом более типобезопасна">
 
-<Accordion title="Почему именно объект, а не массив?">
-
-<!-- @include: ./includes/why-object.md -->
-
-</Accordion>
-
-
-<Accordion title="Почему loader принимает нативный асинхронный импорт вместо тела компонента?">
-
-<!-- @include: ./includes/why-loader.md -->
+<!-- @include: ./accordion/objectConfigBetter.md -->
 
 </Accordion>
 
-При необходимости можно объявлять `path` с переменными, в этом случае для каждой
-переменной необходим валидатор.
+<Accordion title="Использование асинхронного импорта расширяет возможности">
 
-<Accordion title="TypeScript 5 умеет автоматически выводить типы из строк">
-
-<!-- @include: ./includes/ts5-types.md -->
+<!-- @include: ./accordion/asyncLoaderBetter.md -->
 
 </Accordion>
 
-Исходя из философии роутера, не поддерживаются все нетипизируемые
-паттерны - такие как файловый роутинг `posts/$postId/$/$.tsx` или 
-в объявленный внутри UI `<Route path="untyped[?-partial]-string/:id/:id/:id">`.
-Коллизии имен и опциональность полностью ломают статический анализ.
+<Accordion title="TypeScript 5 автоматически выводит необходимые валидаторы из path">
 
-Reactive Route имеет плоскую структуру конфигурации, что позволяет
-обеспечить **реальную** типобезопасность и побудить валидировать данные
-(в URL браузера пользователь может ввести любые значения и использовать 
-уязвимости, поэтому хорошая практика - никогда им не доверять, особенно с SSR).
+<!-- @include: @shared/introduction/tsConfigValidation.md -->
 
+</Accordion>
 
 ## Экспорт
 
@@ -89,17 +58,18 @@ Reactive Route имеет плоскую структуру конфигурац
 
 :::info Но вы можете сами выбрать схему
 Экспорт с помощью Singleton-паттерна (как в предыдущем примере) проще
-и подходит для CSR-проектов, но в определенных архитектурах может
-привести к циклическим зависимостям. Также для SSR необходимо изолировать
-данные пользователей, пересоздавая сущности на каждый запрос, 
-поэтому Singleton неприменим.
+и подходит для CSR-проектов. 
+
+В SSR же несколько пользователей могут одновременно зайти на разные страницы, 
+и Singlton отрендерит html-разметку из последнего текущего состояния, а не нужного конкретному
+пользователю, поэтому требуется изоляция в виде контекстов или другого DI.
 :::
 
-<!-- @include: @snippets/getting-started/router.md -->
+<!-- @include: @shared/introduction/createRouterContext.md -->
 
 <Accordion title="Наличие `notFound` и `internalError` обязательно">
 
-<!-- @include: ./includes/errors.md -->
+<!-- @include: ./accordion/errorPages.md -->
 
 </Accordion>
 
@@ -108,4 +78,9 @@ Reactive Route имеет плоскую структуру конфигурац
 Роутер готов к работе, осталось найти первоначальный `Config`,
 который соответствует URL браузера и отобразить компонент страницы.
 
-<!-- @include: @snippets/getting-started/render.md -->
+<!-- @include: @shared/introduction/renderApp.md -->
+
+:::info
+Вместо `location.pathname + location.search` можно передавать и `location.href`, то есть полный
+URL. Все лишние для работы роутера данные (protocol, domain, port, hash) очищаются автоматически.
+:::

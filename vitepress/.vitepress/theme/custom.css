@@ -25,9 +25,30 @@
   }
 }
 
+h4 code,
+.custom-block.tip a,
+.custom-block.tip code,
 .custom-block.info a,
 .custom-block.info code {
   color: var(--vp-code-color) !important;
+}
+
+.shiki .line.error {
+  background: transparent !important;
+  border-left: 3px solid var(--vp-code-line-error-color);
+
+  & span {
+    color: var(--vp-c-danger-1) !important;
+  }
+}
+
+.shiki .line.warning {
+  background: transparent !important;
+  border-left: 3px solid #183324;
+
+  & span {
+    color: #3dd68c !important;
+  }
 }
 
 /**

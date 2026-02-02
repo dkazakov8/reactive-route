@@ -1,157 +1,58 @@
 # Config
 
-Общее назначение изложено в разделе [Основные структуры](/ru/guide/core-concepts).
+Содержит всю логику работы со страницей.
 
-## Настраиваемые свойства
+<Accordion title="Настраиваемые свойства">
 
-<table>
-  <thead><tr><th>Свойство</th><th>Тип</th><th>Описание</th></tr></thead>
-  <tbody><tr>
-<td><code>path</code></td>
-<td class="table-td">
+<!-- @include: ./accordion/configConfigurable.md -->
 
-```ts
-string
-```
+</Accordion>
 
-</td>
-<td>Путь маршрута, должен начинаться с <code>/</code> и может включать динамические сегменты</td>
-</tr><tr>
-<td><code>loader</code></td>
-<td class="table-td">
+<Accordion title="Системные свойства">
 
-```ts
-() => Promise<{
-  default: PageComponent,
-  ...otherExports
-}>
-```
+<!-- @include: ./accordion/configSystem.md -->
 
-</td>
-<td>Функция, возвращающая Promise с компонентом в параметре <strong>default</strong></td>
-</tr><tr>
-<td><code>props?</code></td>
-<td class="table-td">
+</Accordion>
 
-```ts
-Record<string, any>
-```
+В **Reactive Route** нет явного разделения статичных и динамических `Config`. Сегменты
+пути с префиксом `:` контролируются валидаторами, разрешающими открывать страницу со значением из URL.
 
-</td>
-<td>Статичные props, передаваемые в компонент страницы</td>
-</tr><tr>
-<td><code>params?</code></td>
-<td class="table-td">
+<!-- @include: @shared/api/withValidators.md -->
 
-```ts
-Record<
-  TypeExtractParams<TPath>,
-  (value: string) => boolean
->
-```
+<Accordion title="TypeScript 5 автоматически выводит необходимые валидаторы из path">
 
-</td>
-<td>Валидаторы для динамических сегментов path</td>
-</tr><tr>
-<td><code>query?</code></td>
-<td class="table-td">
+<!-- @include: @shared/introduction/tsConfigValidation.md -->
 
-```ts
-Record<
-  string,
-  (value: string) => boolean
->
-```
+</Accordion>
 
-</td>
-<td>Валидаторы для query параметров</td>
-</tr><tr>
-<td><code>beforeEnter?</code></td>
-<td class="table-td">
+:::tip Важно
+В валидаторы попадают **декодированные** значения:
 
-```ts
-(data: TypeLifecycleConfig) => 
-  Promise<void>
-```
+`id: (value) => console.log(value)` покажет не `with%20space` а `with space`
+:::
 
-</td>
-<td>Функция жизненного цикла, вызываемая перед редиректом на страницу</td>
-</tr><tr>
-<td><code>beforeLeave?</code></td>
-<td class="table-td">
-
-```ts
-(data: TypeLifecycleConfig) => 
-  Promise<void>
-```
-
-</td>
-<td>Функция жизненного цикла, вызываемая перед уходом со страницы</td>
-  </tr></tbody>
-</table>
-
-## Внутренние свойства
-
-Автоматически добавляются библиотекой и не могут быть указаны вручную.
-
-<table>
-  <thead><tr><th>Свойство</th><th>Тип</th><th>Описание</th></tr></thead>
-  <tbody><tr>
-<td><code>name</code></td>
-<td class="table-td">
-
-```ts
-string
-```
-
-</td>
-<td>Соответствует ключу объекта</td>
-</tr><tr>
-<td><code>component?</code></td>
-<td class="table-td">
-
-```ts
-any
-```
-
-</td>
-<td>Поле <code>default</code>, возвращенное <code>loader</code></td>
-</tr><tr>
-<td><code>otherExports?</code></td>
-<td class="table-td">
-
-```ts
-Record<string, any>
-```
-
-</td>
-<td>Все экспорты, возвращенные <code>loader</code>, кроме <code>default</code></td>
-  </tr></tbody>
-</table>
-
-## Static / Dynamic
-
-Существует всего два варианта `Config` - `Static` и `Dynamic` (имеют части в `path` с префиксом в виде двоеточия):
-
-<!-- @include: @snippets/config/static-dynamic.md -->
-
-Валидаторы для динамических частей `path` обязательны, TS автоматически извлекает ключи из строки и подсказывает,
-как описать в `params`.
-
-Если какой-либо валидатор вернул `false` (в данном примере — если id в URL не числовой `/user/not-numeric`)
-и не найдено других подходящих `Config`, пользователь будет перенаправлен на `notFound`.
-
-Если компонент страницы отрендерен, вы можете быть уверены, что все параметры 
-провалидированы и находятся в `router.state[name].params`.
+Таким образом, **Reactive Route** гарантирует, что все параметры в `router.state.userDetails.params`
+прошли валидаторы и их можно безопасно использовать.
 
 ## Query
 
-Оба варианта `Config` могут иметь query параметры:
+Описываются в том же формате, что и `params`, в виде валидаторов:
 
-<!-- @include: @snippets/config/query.md -->
+<!-- @include: @shared/api/queryValidators.md -->
 
-Если валидатор вернет `false`, данный параметр будет `undefined` в `router.state[name].query`. Таким образом, все
-query параметры являются необязательными, и их отсутствие не приводит к редиректу на `notFound`.
+Все `query` параметры являются опциональными, и их отсутствие не приводит к редиректу на `notFound`.
+
+```ts
+const routeState = router.state['search'];
+
+await router.redirect({ name: 'search', query: { userPrompt: 'asd' }})
+
+console.log(routeState.query.userPrompt) // undefined
+
+await router.redirect({ name: 'search', query: { userPrompt: 'mammoth' }})
+
+console.log(routeState.query.userPrompt) // 'mammoth'
+```
 
 Если логика приложения требует, чтобы не только динамические части `path` были обязательными, но и
 определенные query параметры, то можно их проверять в `beforeEnter` и редиректить императивно на `notFound`
@@ -223,7 +124,7 @@ TypeState
 
 Пример использования:
 
-<!-- @include: @snippets/config/lifecycle.md -->
+<!-- @include: @shared/config/lifecycle.md -->
 
 Всегда используйте `return` с `redirect` и `preventRedirect` для стабильной логики редиректов.
 

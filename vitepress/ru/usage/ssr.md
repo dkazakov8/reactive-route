@@ -5,10 +5,10 @@
 
 ### Сервер
 
-<!-- @include: @snippets/ssr/server.md -->
+<!-- @include: @shared/ssr/server.md -->
 
 В данном коде в итоговый html не вставляются ссылки на js и css файлы, обычно это делается
-бандлером. Полный код с настройкой бандлера можно посмотреть в [Примерах](/ru/examples/react).
+бандлером. Полный код с настройкой бандлера можно посмотреть в <Link to="examples">Примерах</Link>.
 
 Для цепочек редиректов на сервере используется `if (error instanceof RedirectError) return res.redirect(error.message)`. 
 Эта ошибка выбрасывается, когда в `beforeEnter` вернулся редирект на другой `Config`, например, 
@@ -18,9 +18,9 @@
 Способ сериализации `JSON.parse(JSON.stringify(router.state))` достаточен, так как `router.state` -
 простая структура. Однако если в `Config.props` переданы сложные данные (классы, объекты с методами, Date и т.п.),
 то лучше перед сериализацией на сервере их удалять. На клиенте они проставятся автоматически при вызове 
-[router.hydrateFromState](/ru/guide/router-api#router-hydratefromstate)
+<Link to="api/router#router-hydratefromstate">router.hydrateFromState</Link>
 :::
 
 ### Клиент
 
-<!-- @include: @snippets/ssr/client.md -->
+<!-- @include: @shared/ssr/client.md -->

@@ -47,8 +47,6 @@ const processedRows = computed(() => {
 
 <style scoped>
 .comparison-container {
-  overflow-x: auto;
-
   & table {
     width: 100%;
     border-collapse: collapse;
@@ -60,11 +58,11 @@ const processedRows = computed(() => {
       border: 1px solid var(--vp-c-divider);
 
       &:nth-child(2) {
-        width: 40%;
+        width: 36%;
       }
 
       &:nth-child(3) {
-        width: 40%;
+        width: 38%;
       }
     }
 
@@ -80,13 +78,6 @@ const processedRows = computed(() => {
     & tr:nth-child(even) {
       background-color: var(--vp-c-bg-soft);
     }
-  }
-
-  & :deep(code) {
-    padding: 3px 6px;
-    border-radius: 4px;
-    background-color: var(--vp-c-bg-soft);
-    font-size: 0.9em;
   }
 }
 

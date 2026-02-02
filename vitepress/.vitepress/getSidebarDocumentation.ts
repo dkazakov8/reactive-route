@@ -22,9 +22,8 @@ export function getSidebarDocumentation(ln: TypeLocalization) {
       {
         items: [
           { text: ln.overview[lang], link: result.defaultLink[lang] },
-          { text: ln.philosophy[lang], link: `/${lang}/introduction/philosophy` },
           { text: ln.setup[lang], link: `/${lang}/introduction/first-setup` },
-          { text: ln.concepts[lang], link: `/${lang}/introduction/core-concepts` },
+          { text: ln.concepts[lang], link: `/${lang}/introduction/how-works` },
           { text: ln.limitations[lang], link: `/${lang}/introduction/limitations` },
           { text: ln.comparison[lang], link: `/${lang}/introduction/comparison` },
         ],

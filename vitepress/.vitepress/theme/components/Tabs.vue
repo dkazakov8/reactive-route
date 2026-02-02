@@ -44,7 +44,9 @@ function select(framework: string) {
 
 <style scoped>
 .vp-code-group {
-  margin-top: 0 !important;
+  & :deep(.vp-code-group) {
+    margin-top: 0 !important;
+  }
 
   & :deep(.blocks) {
     border: none !important;

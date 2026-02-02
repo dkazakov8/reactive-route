@@ -10,25 +10,21 @@ const sidebarConfig = getSidebarDocumentation({
     ru: 'Обзор и назначение',
     en: 'Overview',
   },
-  philosophy: {
-    ru: 'Философия',
-    en: 'Philosophy',
-  },
   setup: {
     ru: 'Установка и настройка',
     en: 'Getting Started',
   },
   concepts: {
-    ru: 'Ключевые термины',
-    en: 'Core Concepts',
+    ru: 'Принцип работы',
+    en: 'How it works',
   },
   limitations: {
     ru: 'Ограничения',
     en: 'Limitations',
   },
   comparison: {
-    ru: 'Сравнение с другими библиотеками',
-    en: 'Comparison with other libraries',
+    ru: 'Сравнение',
+    en: 'Comparison',
   },
 
   api: {
@@ -80,7 +76,7 @@ export default defineConfig({
     resolve: {
       alias: [
         { find: '@', replacement: path.resolve(__dirname, '..') },
-        { find: '@snippets', replacement: path.resolve(__dirname, '../snippets') },
+        { find: '@shared', replacement: path.resolve(__dirname, '../shared') },
         { find: '@scripts', replacement: path.resolve(__dirname, '../../scripts') },
       ],
     },
@@ -162,6 +158,7 @@ export default defineConfig({
       labelsPlugin(md as any);
     },
     theme: { dark: 'github-dark', light: 'github-light' },
+    codeCopyButtonTitle: 'Copy code',
   },
   themeConfig: {
     logo: '/file.svg',

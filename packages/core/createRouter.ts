@@ -145,6 +145,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
         if (!value) throw new Error(`payload missing value for ${config.name}.params.${pathPart}`);
 
+        // TODO: validators
         params[pathPart] = value;
 
         return encodeURIComponent(value);

@@ -20,7 +20,7 @@ ReturnType<typeof createConfigs>
 <td><code>adapters</code></td>
 <td class="table-td">
 
-[TypeAdapters](#typeadapters)
+<Link to="api/router#typeadapters">TypeAdapters</Link>
 
 </td>
 <td>Адаптеры для системы реактивности</td>
@@ -45,7 +45,7 @@ ReturnType<typeof createConfigs>
 
 Для всех примеров будет использоваться следующая конфигурация:
 
-<!-- @include: @snippets/router-api/sample-configs.md -->
+<!-- @include: @shared/router-api/sample-configs.md -->
 
 ## router.redirect
 
@@ -55,7 +55,7 @@ ReturnType<typeof createConfigs>
 Также можно передать в `Payload` свойство `replace: true`, чтобы заблокировать переход назад в браузере.
 
 ```ts
-const clearedUrl = await router.redirect(<!-- @include: @snippets/payload.md -->)
+const clearedUrl = await router.redirect(<!-- @include: @shared/payload.md -->)
 // был создан router.state.user и возвращен его url
 // '/user/9999?phone=123456'
 ```
@@ -99,7 +99,7 @@ redirect({ name: 'user', params: { id: '123'}, query: { foo: 'bar' } });
 ```ts
 router.urlToPayload(`/user/9999?phone=123456&gtm=value`);
   
-<!--@include: @snippets/payload-commented.md -->
+<!--@include: @shared/payload-commented.md -->
 
 router.urlToPayload(`/not-existing/admin?hacker=sql-inject`);
 
@@ -116,9 +116,9 @@ router.urlToPayload(`/not-existing/admin?hacker=sql-inject`);
 `router.redirect`.
 
 ```ts
-router.payloadToState(<!-- @include: @snippets/payload.md -->);
+router.payloadToState(<!-- @include: @shared/payload.md -->);
 
-<!--@include: @snippets/state-commented.md -->
+<!--@include: @shared/state-commented.md -->
 ```
 
 ## router.init
@@ -156,7 +156,7 @@ if (req.originalUrl !== clearedURL) res.redirect(clearedURL)
 ```ts
 console.log(router.state.user);
 
-<!-- @include: @snippets/state-commented.md -->
+<!-- @include: @shared/state-commented.md -->
 ```
 
 Предназначен для отображения значений в UI и для описания логики в autoruns/effects. При редиректе
@@ -174,13 +174,13 @@ console.log(router.state.user);
 Реактивный `boolean` для отображения индикаторов загрузки при редиректах. Ниже показаны примеры
 глобального и локального отображения:
 
-<!-- @include: @snippets/router-api/loaders.md -->
+<!-- @include: @shared/router-api/loaders.md -->
 
 ## router.getActiveState
 
 Возвращает активный `State`, если он есть. Функция может быть полезна для переключения layouts
 
-<!-- @include: @snippets/router-api/active-state.md -->
+<!-- @include: @shared/router-api/active-state.md -->
 
 Или для дебага, чтобы видеть все изменения (используя аналог autorun выбранной системы реактивности)
 
@@ -193,7 +193,7 @@ autorun(() => console.log(JSON.stringify(router.getActiveState())))
 По умолчанию роутер выполняет `loader` только во время редиректов. Но иногда может понадобиться
 предварительно загрузить js-чанки, когда приложение полностью отрендерено. Принимает `Config.name`
 
-<!-- @include: @snippets/router-api/preload.md -->
+<!-- @include: @shared/router-api/preload.md -->
 
 ## router.getGlobalArguments
 
@@ -206,7 +206,7 @@ autorun(() => console.log(JSON.stringify(router.getActiveState())))
 маршрута!) и предназначена для использования в модульных архитектурах. Например, если страницы
 экспортируют модульные сторы: `export class PageStore { data: {}, destroy() {} }`
 
-<!-- @include: @snippets/router-api/before-change.md -->
+<!-- @include: @shared/router-api/before-change.md -->
 
 Остается передать `globalStore` компонентам через Context API и получить code-splitting 
 не только для компонентов страниц, но и их сторов (или любых других данных) с поддержкой SSR. 

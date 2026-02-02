@@ -15,7 +15,7 @@ import { adapters } from 'reactive-route/adapters/mobx-react';
 `observer` в адаптерах на взятый из `mobx-react`.
 
 Reactive Route — **реактивный**, не забывайте оборачивать в `observer` компоненты, читающие его
-свойства (например, [router.state](/ru/guide/router-api#router-state) или [router.isRedirecting](/ru/guide/router-api#router-isredirecting)).
+свойства (например, <Link to="api/router#router-state">router.state</Link> или <Link to="api/router#router-isredirecting">router.isRedirecting</Link>).
 
 ## Observable
 
@@ -29,4 +29,4 @@ import { adapters } from 'reactive-route/adapters/kr-observable-react';
 Пакет `kr-observable` должен быть установлен.
 
 Reactive Route — **реактивный**, не забывайте оборачивать в `observer` компоненты, читающие его
-свойства (например, [router.state](/ru/guide/router-api#router-state) или [router.isRedirecting](/ru/guide/router-api#router-isredirecting)).
+свойства (например, <Link to="api/router#router-state">router.state</Link> или <Link to="api/router#router-isredirecting">router.isRedirecting</Link>).
