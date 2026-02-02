@@ -58,4 +58,10 @@ export async function measure() {
   ).compressed;
 
   saveMetrics({ key: 'localSize', value: `${localSize}kb` });
+
+  const coreSize = (
+    await getCompressedSize(path.resolve('./scripts/measureApps/reactive-route-core.ts'))
+  ).compressed;
+
+  saveMetrics({ key: 'coreSize', value: coreSize });
 }

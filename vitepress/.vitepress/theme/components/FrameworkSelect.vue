@@ -2,8 +2,8 @@
 import { useRoute } from 'vitepress';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 
-const frameworks = ['React', 'Preact', 'Solid', 'Vue'];
-const activeFramework = ref('');
+import { activeFramework, frameworks, selectFramework } from '../useFramework';
+
 const route = useRoute();
 const isOpen = ref(false);
 const container = ref<HTMLElement | null>(null);
@@ -51,31 +51,10 @@ function updateCodeGroups(framework: string) {
   });
 }
 
-function select(framework: string, skipStorageEvent = false) {
-  if (!frameworks.includes(framework)) return;
-
-  activeFramework.value = framework;
-
-  localStorage.setItem('vitepress-framework-preference', framework);
-
-  if (!skipStorageEvent) {
-    window.dispatchEvent(
-      new StorageEvent('storage', {
-        key: 'vitepress-framework-preference',
-        newValue: framework,
-      })
-    );
-  }
-
+function select(framework: string) {
+  selectFramework(framework);
   updateCodeGroups(framework);
 }
-
-const onStorage = (e: StorageEvent) => {
-  if (e.key === 'vitepress-framework-preference' && e.newValue && frameworks.includes(e.newValue)) {
-    activeFramework.value = e.newValue;
-    updateCodeGroups(e.newValue);
-  }
-};
 
 const onClick = (e: MouseEvent) => {
   const target = e.target as HTMLElement;
@@ -109,15 +88,6 @@ const onClick = (e: MouseEvent) => {
 };
 
 onMounted(() => {
-  const savedFramework = localStorage.getItem('vitepress-framework-preference');
-
-  if (savedFramework && frameworks.includes(savedFramework)) {
-    activeFramework.value = savedFramework;
-  } else {
-    activeFramework.value = frameworks[0];
-  }
-
-  window.addEventListener('storage', onStorage);
   window.addEventListener('click', onClick, { capture: true });
 
   // Initial sync
@@ -136,8 +106,11 @@ watch(
   }
 );
 
+watch(activeFramework, (newValue) => {
+  updateCodeGroups(newValue);
+});
+
 onUnmounted(() => {
-  window.removeEventListener('storage', onStorage);
   window.removeEventListener('click', onClick, { capture: true });
 });
 </script>

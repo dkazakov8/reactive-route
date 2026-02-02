@@ -80,6 +80,14 @@ defineProps<{
         margin-top: 16px;
       }
     }
+
+    & :deep(div[class*='language-']:first-child) {
+      margin-top: 0;
+    }
+
+    & :deep(div[class*='language-']:last-child) {
+      margin-bottom: 0;
+    }
   }
 }
 </style>

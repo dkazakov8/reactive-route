@@ -5,9 +5,6 @@ import { TypeMetrics } from '../scripts/saveMetrics';
 
 export default {
   load() {
-    const globalPkg = JSON.parse(
-      fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8')
-    );
     const metrics: TypeMetrics = JSON.parse(
       fs.readFileSync(path.resolve(process.cwd(), 'metrics.json'), 'utf8')
     );
@@ -53,11 +50,11 @@ export default {
     }
 
     return {
-      version: globalPkg.version,
-      coverage: metrics.coverage,
+      version: referenceLib.version,
       passedTests,
       metrics,
       libs,
+      sizeForLabel: `${metrics.coreSize} KB + ${(referenceLib.compressed - metrics.coreSize!).toFixed(2)} KB`,
       biggestLibMinified: Math.max(...libs.map(({ minified }) => minified)),
     };
   },

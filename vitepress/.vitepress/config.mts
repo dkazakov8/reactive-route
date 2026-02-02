@@ -1,8 +1,86 @@
+import fs from 'node:fs';
 import path from 'node:path';
 
-import { defineConfig } from 'vitepress';
+import { type DefaultTheme, defineConfig } from 'vitepress';
 
+import { getSidebarDocumentation } from './getSidebarDocumentation.js';
 import { labelsPlugin } from './theme/labelsPlugin.js';
+
+const sidebarConfig = getSidebarDocumentation({
+  overview: {
+    ru: 'Обзор и назначение',
+    en: 'Overview',
+  },
+  philosophy: {
+    ru: 'Философия',
+    en: 'Philosophy',
+  },
+  setup: {
+    ru: 'Установка и настройка',
+    en: 'Getting Started',
+  },
+  concepts: {
+    ru: 'Ключевые термины',
+    en: 'Core Concepts',
+  },
+  limitations: {
+    ru: 'Ограничения',
+    en: 'Limitations',
+  },
+  comparison: {
+    ru: 'Сравнение с другими библиотеками',
+    en: 'Comparison with other libraries',
+  },
+
+  api: {
+    ru: 'API',
+    en: 'API',
+  },
+  config: {
+    ru: 'Config',
+    en: 'Config',
+  },
+  state: {
+    ru: 'State',
+    en: 'State',
+  },
+  router: {
+    ru: 'Router',
+    en: 'Router API',
+  },
+
+  usage: {
+    ru: 'Использование',
+    en: 'Usage',
+  },
+  link: {
+    ru: 'Link',
+    en: 'Link',
+  },
+  dynamicComponents: {
+    ru: 'Динамические компоненты / Layout',
+    en: 'Dynamic components / Layout',
+  },
+  ssr: {
+    ru: 'SSR',
+    en: 'SSR',
+  },
+  redirectsChain: {
+    ru: 'Цепочки редиректов',
+    en: 'Redirects chain',
+  },
+
+  integrations: {
+    ru: 'Интеграции',
+    en: 'Framework Integration',
+  },
+});
+
+const typedLinks = `export type TypeDocLinks = ${sidebarConfig.allLinks
+  .map((link) => `'${link}'`)
+  .join(' | ')};`;
+
+fs.writeFileSync(path.resolve(__dirname, 'typedLinks.ts'), typedLinks);
 
 export default defineConfig({
   vite: {
@@ -17,7 +95,9 @@ export default defineConfig({
   title: 'Reactive Route',
   description: 'Config-based routing for different frameworks',
   base: '/reactive-route/',
-  head: [['link', { rel: 'icon', href: '/reactive-route/file.svg' }]],
+  head: [['link', { rel: 'icon', href: '/reactive-route/file.svg' }]] as Array<
+    [string, Record<string, string>]
+  >,
   appearance: 'force-dark',
   locales: {
     root: {
@@ -28,40 +108,15 @@ export default defineConfig({
         nav: [
           { component: 'FrameworkSelect' },
           { text: 'Home', link: '/en/' },
-          { text: 'Documentation', link: '/en/guide/', activeMatch: '/en/guide/' },
+          {
+            text: 'Documentation',
+            link: sidebarConfig.defaultLink.en,
+            activeMatch: `(${Array.from(Object.keys(sidebarConfig.en)).join('|')})`,
+          },
           { text: 'Examples', link: '/en/examples/react', activeMatch: '/en/examples/' },
         ],
         sidebar: {
-          '/en/guide/': [
-            {
-              text: 'Introduction',
-              items: [
-                { text: 'Why Reactive Route?', link: '/en/guide/' },
-                { text: 'Getting Started', link: '/en/guide/getting-started' },
-                { text: 'Core Concepts', link: '/en/guide/core-concepts' },
-                { text: 'Limitations', link: '/en/guide/limitations' },
-              ],
-            },
-            {
-              text: 'API',
-              items: [
-                { text: 'Config', link: '/en/guide/config' },
-                { text: 'State', link: '/en/guide/state' },
-                { text: 'Router API', link: '/en/guide/router-api' },
-                { text: 'SSR', link: '/en/guide/ssr' },
-                { text: 'Use Cases', link: '/en/guide/advanced' },
-              ],
-            },
-            {
-              text: 'Framework Integration',
-              items: [
-                { text: 'React', link: '/en/guide/react' },
-                { text: 'Preact', link: '/en/guide/preact' },
-                { text: 'Solid.js', link: '/en/guide/solid' },
-                { text: 'Vue', link: '/en/guide/vue' },
-              ],
-            },
-          ],
+          ...sidebarConfig.en,
           '/en/examples/': [
             {
               text: 'Examples',
@@ -81,49 +136,19 @@ export default defineConfig({
       lang: 'ru',
       link: '/ru/',
       themeConfig: {
-        outlineTitle: 'На этой странице:',
+        outlineTitle: 'На этой странице',
         nav: [
           { component: 'FrameworkSelect' },
           { text: 'Главная', link: '/ru/' },
-          { text: 'Документация', link: '/ru/guide/', activeMatch: '/ru/guide/' },
+          {
+            text: 'Документация',
+            link: sidebarConfig.defaultLink.ru,
+            activeMatch: `(${Array.from(Object.keys(sidebarConfig.ru)).join('|')})`,
+          },
           { text: 'Примеры', link: '/ru/examples/react', activeMatch: '/ru/examples/' },
         ],
         sidebar: {
-          '/ru/guide/': [
-            {
-              text: 'Введение',
-              items: [
-                { text: 'Зачем Reactive Route?', link: '/ru/guide/' },
-                { text: 'Философия', link: '/ru/guide/philosophy' },
-                { text: 'Пошаговая настройка', link: '/ru/guide/step-by-step' },
-                { text: 'Основные структуры', link: '/ru/guide/core-concepts' },
-                { text: 'Ограничения', link: '/ru/guide/limitations' },
-              ],
-            },
-            {
-              text: 'API',
-              items: [
-                { text: 'Config', link: '/ru/guide/config' },
-                { text: 'State', link: '/ru/guide/state' },
-                { text: 'Router API', link: '/ru/guide/router-api' },
-                { text: 'SSR', link: '/ru/guide/ssr' },
-                { text: 'Use-cases', link: '/ru/guide/advanced' },
-              ],
-            },
-            {
-              text: 'Интеграции',
-              items: [
-                { text: 'React', link: '/ru/guide/react' },
-                { text: 'Preact', link: '/ru/guide/preact' },
-                { text: 'Solid.js', link: '/ru/guide/solid' },
-                { text: 'Vue', link: '/ru/guide/vue' },
-              ],
-            },
-            {
-              text: 'Другое',
-              items: [{ text: 'Сравнение', link: '/ru/guide/size-compare' }],
-            },
-          ],
+          ...sidebarConfig.ru,
           '/ru/examples/': [
             {
               text: 'Примеры',
@@ -177,7 +202,9 @@ export default defineConfig({
         },
       },
     },
-    socialLinks: [{ icon: 'github', link: 'https://github.com/dkazakov8/reactive-route' }],
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/dkazakov8/reactive-route' },
+    ] as Array<DefaultTheme.SocialLink>,
     footer: {
       message: 'Released under the MIT License',
     },
