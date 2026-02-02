@@ -3,12 +3,15 @@
 <!-- @include: @snippets/getting-started/install.md -->
 
 **Reactive Route** — это npm-пакет без каких-либо зависимостей с отдельными
-модулями для интеграции. В проекте должны быть установлены необходимые 
-peer dependencies, уникальные для каждого стека, как описано в <Link to="integration">Интеграции</Link>.
+импортами модулей для бесшовного подключения к имеющейся системе реактивности
+на любом фреймворке (React, Preact, Solid, Vue). Настраивать tree-shaking не требуется.
 
-С помощью модулей Reactive Route бесшовно подстраивается под каждый стек, работая
-на переданной реактивности и на любом фреймворке (React, Preact, Solid, Vue и т.п.), 
-без необходимости настраивать tree-shaking при сборке.
+:::info Peer dependencies
+Если используется не "коробочная" реактивность фреймворка, должны быть установлены подходящие
+реактивные библиотеки (см. <Link to="integration">Интеграции</Link>).
+:::
+
+
 
 <Accordion title="Карта модулей">
 
@@ -18,20 +21,21 @@ peer dependencies, уникальные для каждого стека, как
 
 ## Создание конфигурации
 
-Набор `Config` (в терминологии Reactive Route) передается в `createRoutes`:
+В терминологии **Reactive Route** описание роута / маршрута и его поведения называется `Config`
+и передается в `createConfigs`:
 
 ```ts
-import { createRoutes, createRouter } from 'reactive-route';
+import { createConfigs, createRouter } from 'reactive-route';
 import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
-const routes = createRoutes({
+const configs = createConfigs({
   home: { // Config
     path: '/',
     loader: () => import('./pages/home'),
   }
 });
 
-export const router = createRouter({ routes, adapters });
+export const router = createRouter({ configs, adapters });
 
 // somewhere
 await router.redirect({ name: 'home' });
@@ -41,21 +45,21 @@ await router.redirect({ name: 'home' });
 `loader` ожидает, что компонент страницы будет в экспорте `default`. 
 
 :::info Не рекомендуется
-вместо асинхронного импорта сразу передавать компонент `loader: () => Promise.resolve({ default: HomePage })`. 
-Это создает риск возникновения циклических импортов.
+сразу передавать компонент `loader: () => Promise.resolve({ default: HomePage })`,
+так как создает риск возникновения циклических импортов.
 :::
 
 
 <Accordion title="Почему именно объект, а не массив?">
 
-<!-- @include: ./../hidden/step-by-step/why-object.md -->
+<!-- @include: ./includes/why-object.md -->
 
 </Accordion>
 
 
 <Accordion title="Почему loader принимает нативный асинхронный импорт вместо тела компонента?">
 
-<!-- @include: ./../hidden/step-by-step/why-loader.md -->
+<!-- @include: ./includes/why-loader.md -->
 
 </Accordion>
 
@@ -64,7 +68,7 @@ await router.redirect({ name: 'home' });
 
 <Accordion title="TypeScript 5 умеет автоматически выводить типы из строк">
 
-<!-- @include: ./../hidden/step-by-step/ts5-types.md -->
+<!-- @include: ./includes/ts5-types.md -->
 
 </Accordion>
 
@@ -95,7 +99,7 @@ Reactive Route имеет плоскую структуру конфигурац
 
 <Accordion title="Наличие `notFound` и `internalError` обязательно">
 
-<!-- @include: ./../hidden/step-by-step/errors.md -->
+<!-- @include: ./includes/errors.md -->
 
 </Accordion>
 

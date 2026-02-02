@@ -1,7 +1,7 @@
-import { createRoutes } from 'reactive-route';
+import { createConfigs } from 'reactive-route';
 
-export function createTestRoutes(imports: Record<string, any>) {
-  return createRoutes({
+export function createConfigsUnits(imports: Record<string, any>) {
+  return createConfigs({
     home: { path: '/', loader: imports.staticRoute },
     dynamicOneParam: {
       path: '/test/:static',

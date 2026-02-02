@@ -15,7 +15,7 @@ string
 ```
 
 </td>
-<td>Matches the key used in the routes object</td>
+<td>Matches the key used in the configs object</td>
 </tr><tr>
 <td><code>params</code></td>
 <td class="table-td">

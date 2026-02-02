@@ -1,5 +1,5 @@
 ```ts
-createRoutes({
+createConfigs({
   dashboard: {
     path: '/dashboard/:tab',
     params: {

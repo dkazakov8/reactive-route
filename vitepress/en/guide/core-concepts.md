@@ -4,7 +4,7 @@ There are only three core structures in Reactive Route: `Config`, `Payload`, and
 
 ## Config
 
-The `Config` object is passed to the `createRoutes` function under a specific key:
+The `Config` object is passed to the `createConfigs` function under a specific key:
 
 <!-- @include: @snippets/core-concepts/config-example.md -->
 
@@ -48,7 +48,7 @@ available:
 <!-- @include: @snippets/core-concepts/state-in-components.md -->
 
 The non-null assertion operator is safe here as long as only one `Config` uses the `loader` for this
-specific page component. If multiple routes share a component, you'll need to handle the logic
+specific page component. If multiple configs share a component, you'll need to handle the logic
 accordingly, e.g., `routeState = router.state.userView || router.state.userEdit`.
 
 ## Encoding and Decoding

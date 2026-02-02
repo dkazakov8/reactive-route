@@ -1,11 +1,11 @@
-<script setup lang="ts" generic="TName extends keyof TypeRoutesProject">
+<script setup lang="ts" generic="TName extends keyof TypeConfigsProject">
 import { TypePayload } from 'reactive-route';
 import { computed } from 'vue';
 
-import { TypeRoutesProject, useRouter } from '../router';
+import { TypeConfigsProject, useRouter } from '../router';
 
 const props = defineProps<{
-  payload: TypePayload<TypeRoutesProject, TName>;
+  payload: TypePayload<TypeConfigsProject, TName>;
 }>();
 
 const { router } = useRouter();

@@ -13,7 +13,7 @@ stack-specific peer dependencies.
 
 ## Creating the Router and Routes
 
-The `notFound` and `internalError` routes are required for the library's error handling. Note that
+The `notFound` and `internalError` configs are required for the library's error handling. Note that
 their configurations do not support `params` or `query`.
 
 It's recommended to use the Context API to provide the router to your components. This prevents circular

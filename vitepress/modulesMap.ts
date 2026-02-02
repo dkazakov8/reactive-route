@@ -1,4 +1,4 @@
-import { createRoutes, createRouter } from 'reactive-route';
+import { createConfigs, createRouter } from 'reactive-route';
 import { Router } from 'reactive-route/solid';
 import { Router } from 'reactive-route/react';
 import { Router } from 'reactive-route/preact';

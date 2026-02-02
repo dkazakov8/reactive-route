@@ -2,7 +2,7 @@
 const globalStore = { pages: {} };
 
 createRouter({
-  routes,
+  configs,
   adapters,
   beforeComponentChange({ prevConfig, currentConfig }) {
     const ExportedPageStore = currentConfig.otherExports.PageStore;

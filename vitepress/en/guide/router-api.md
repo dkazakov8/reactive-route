@@ -8,15 +8,15 @@ following properties:
 <table>
   <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
   <tbody><tr>
-<td><code>routes</code></td>
+<td><code>configs</code></td>
 <td class="table-td">
 
 ```ts
-ReturnType<typeof createRoutes>
+ReturnType<typeof createConfigs>
 ```
 
 </td>
-<td>A routes object created via <code>createRoutes</code></td>
+<td>A configs object created via <code>createConfigs</code></td>
 </tr><tr>
 <td><code>adapters</code></td>
 <td class="table-td">
@@ -47,7 +47,7 @@ every route change)</td>
 
 For the following examples, we'll assume this configuration:
 
-<!-- @include: @snippets/router-api/sample-routes.md -->
+<!-- @include: @snippets/router-api/sample-configs.md -->
 
 ## router.redirect
 

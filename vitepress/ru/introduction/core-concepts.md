@@ -4,7 +4,7 @@
 
 ## Config
 
-Это объект, который передается в функцию `createRoutes` с определенным ключом:
+Это объект, который передается в функцию `createConfigs` с определенным ключом:
 
 <!-- @include: @snippets/core-concepts/config-example.md -->
 

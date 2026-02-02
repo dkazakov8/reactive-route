@@ -151,7 +151,7 @@ void Promise.all([
       if (importPath.includes('adapters')) return `import { adapters } from '${importPath}'`;
       if (importPath.includes('/')) return `import { Router } from '${importPath}'`;
 
-      return `import { createRoutes, createRouter } from '${importPath}'`;
+      return `import { createConfigs, createRouter } from '${importPath}'`;
     })
     .join(';\n');
 

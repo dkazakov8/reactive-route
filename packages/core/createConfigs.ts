@@ -1,6 +1,6 @@
 import { TypeConfig, TypeConfigConfigurable } from './types';
 
-export function createRoutes<
+export function createConfigs<
   const TConfig extends {
     [K in keyof TConfig]: TypeConfigConfigurable<
       TConfig[K] extends { path: infer P extends string } ? P : string

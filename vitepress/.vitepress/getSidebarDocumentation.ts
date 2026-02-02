@@ -9,15 +9,11 @@ export type TypeLocalization = Record<string, Record<TypeLanguage, string>>;
 export function getSidebarDocumentation(ln: TypeLocalization) {
   const result: Record<TypeLanguage, DefaultTheme.SidebarMulti> & {
     defaultLink: Record<TypeLanguage, string>;
-    allLinks: Array<string>;
   } = {
     ru: {},
     en: {},
     defaultLink: { ru: '', en: '' },
-    allLinks: [],
   };
-
-  const linksSet: Set<string> = new Set();
 
   for (const lang of languages) {
     result.defaultLink[lang] = `/${lang}/introduction/overview`;
@@ -59,29 +55,10 @@ export function getSidebarDocumentation(ln: TypeLocalization) {
           { text: 'Vue', link: `/${lang}/integration/vue` },
         ],
       },
-      {
-        text: 'Examples',
-        items: [
-          { text: 'React', link: `/${lang}/examples/react` },
-          { text: 'Preact', link: `/${lang}/examples/preact` },
-          { text: 'Solid.js', link: `/${lang}/examples/solid` },
-          { text: 'Vue', link: `/${lang}/examples/vue` },
-        ],
-      },
     ];
 
     for (const item of sidebar) {
       item.items?.forEach(({ link }) => {
-        const pathParts = link!.split('/');
-        // Remove empty first part and language prefix
-        const normalizedLink = pathParts.slice(2).join('/');
-        linksSet.add(normalizedLink);
-
-        if (normalizedLink.startsWith('examples/') || normalizedLink.startsWith('integration/')) {
-          const section = normalizedLink.split('/')[0];
-          linksSet.add(`${section}/`);
-        }
-
         const sectionPath = link!.split('/').slice(0, 3).join('/');
 
         if (!result[lang][sectionPath]) {
@@ -90,8 +67,6 @@ export function getSidebarDocumentation(ln: TypeLocalization) {
       });
     }
   }
-
-  result.allLinks = Array.from(linksSet);
 
   return result;
 }

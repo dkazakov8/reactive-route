@@ -25,10 +25,10 @@ defineProps<{
 <style scoped>
 .accordion {
   margin: 16px 0;
-  border: 1px solid var(--vp-c-divider);
   border-radius: 8px;
   background-color: var(--vp-c-bg-soft);
   transition: border-color 0.25s;
+  overflow: hidden;
 
   & .summary {
     display: flex;

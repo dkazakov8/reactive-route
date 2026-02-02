@@ -78,7 +78,7 @@ test.describe('App routing E2E', () => {
     await expect(page).toHaveURL('/query?foo=bar');
   });
 
-  test('invalid routes redirect to 404', async ({ page }) => {
+  test('invalid configs redirect to 404', async ({ page }) => {
     await page.goto('/page/ab');
     await page.waitForLoadState('networkidle');
 

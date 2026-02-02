@@ -1,13 +1,13 @@
 import {
   handleComponentRerender,
   type PropsRouter,
+  type TypeConfigsDefault,
   type TypeRouterLocalObservable,
-  type TypeRoutesDefault,
 } from 'reactive-route';
 import { onCleanup, type ValidComponent } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 
-export function Router<TRoutes extends TypeRoutesDefault>(props: PropsRouter<TRoutes>) {
+export function Router<TConfigs extends TypeConfigsDefault>(props: PropsRouter<TConfigs>) {
   const { adapters } = props.router.getGlobalArguments();
 
   const localObservable: TypeRouterLocalObservable = adapters.makeObservable({

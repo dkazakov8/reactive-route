@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { createRouter, createRoutes } from 'reactive-route';
+import { createConfigs, createRouter } from 'reactive-route';
 
 // Use a static import in your project instead of a dynamic
 const { adapters } =
@@ -8,65 +8,64 @@ const { adapters } =
     : await import('reactive-route/adapters/kr-observable-react');
 
 export function getRouter() {
-  return createRouter({
-    routes: createRoutes({
-      home: {
-        path: '/',
-        loader: () => import('./pages/home'),
-        async beforeEnter({ redirect }) {
-          return redirect({ name: 'static' });
-        },
+  const configs = createConfigs({
+    home: {
+      path: '/',
+      loader: () => import('./pages/home'),
+      async beforeEnter({ redirect }) {
+        return redirect({ name: 'static' });
       },
-      static: {
-        path: '/static',
-        loader: () => import('./pages/static'),
+    },
+    static: {
+      path: '/static',
+      loader: () => import('./pages/static'),
+    },
+    dynamic: {
+      path: '/page/:foo',
+      params: {
+        foo: (value: string) => value.length > 2,
       },
-      dynamic: {
-        path: '/page/:foo',
-        params: {
-          foo: (value: string) => value.length > 2,
-        },
-        loader: () => import('./pages/dynamic'),
-      },
+      loader: () => import('./pages/dynamic'),
+    },
+    query: {
+      path: '/query',
       query: {
-        path: '/query',
-        query: {
-          foo: (value: string) => value.length > 2,
-        },
-        loader: () => import('./pages/query'),
+        foo: (value: string) => value.length > 2,
       },
-      preventRedirect: {
-        path: '/prevent',
-        async beforeEnter({ currentState, redirect }) {
-          if (currentState?.name === 'dynamic') {
-            return redirect({ name: 'static' });
-          }
-        },
-        async beforeLeave({ nextState, preventRedirect }) {
-          if (nextState.name === 'query') {
-            return preventRedirect();
-          }
-        },
-        loader: () => import('./pages/prevent'),
+      loader: () => import('./pages/query'),
+    },
+    preventRedirect: {
+      path: '/prevent',
+      async beforeEnter({ currentState, redirect }) {
+        if (currentState?.name === 'dynamic') {
+          return redirect({ name: 'static' });
+        }
       },
-      notFound: {
-        path: '/error404',
-        props: { errorCode: 404 },
-        loader: () => import('./pages/error'),
+      async beforeLeave({ nextState, preventRedirect }) {
+        if (nextState.name === 'query') {
+          return preventRedirect();
+        }
       },
-      internalError: {
-        path: '/error500',
-        props: { errorCode: 500 },
-        loader: () => import('./pages/error'),
-      },
-    }),
-    adapters,
+      loader: () => import('./pages/prevent'),
+    },
+    notFound: {
+      path: '/error404',
+      props: { errorCode: 404 },
+      loader: () => import('./pages/error'),
+    },
+    internalError: {
+      path: '/error500',
+      props: { errorCode: 500 },
+      loader: () => import('./pages/error'),
+    },
   });
+
+  return createRouter({ configs, adapters });
 }
 
 export type TypeRouterProject = ReturnType<typeof getRouter>;
 
-export type TypeRoutesProject = ReturnType<TypeRouterProject['getGlobalArguments']>['routes'];
+export type TypeConfigsProject = ReturnType<TypeRouterProject['getGlobalArguments']>['configs'];
 
 export const RouterContext = createContext<{ router: TypeRouterProject }>(undefined);
 

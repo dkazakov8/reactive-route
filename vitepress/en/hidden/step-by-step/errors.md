@@ -3,19 +3,19 @@
 
 ```tsx
 // vue-router
-const routes = [
+const configs = [
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }
 ]
 
 // mobx-router
 startRouter(
-  routes,
+  configs,
   store,
   { notfound: () => store.router.goTo(YOUR_NOT_FOUND_ROUTE), }
 );
 
 // @kitbag/router
-export const router = createRouter(routes, {
+export const router = createRouter(configs, {
   rejections: [createRejection({
     type: 'NotFound',
     component: NotFoundPage,

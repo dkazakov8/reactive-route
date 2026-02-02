@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import path from 'node:path';
 
 import { type DefaultTheme, defineConfig } from 'vitepress';
@@ -75,12 +74,6 @@ const sidebarConfig = getSidebarDocumentation({
     en: 'Framework Integration',
   },
 });
-
-const typedLinks = `export type TypeDocLinks = ${sidebarConfig.allLinks
-  .map((link) => `'${link}'`)
-  .join(' | ')};`;
-
-fs.writeFileSync(path.resolve(__dirname, 'typedLinks.ts'), typedLinks);
 
 export default defineConfig({
   vite: {

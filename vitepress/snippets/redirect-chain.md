@@ -1,5 +1,5 @@
 ```ts
-createRoutes({
+createConfigs({
   one: {
     path: '/1',
     loader: () => import('./pages/one'),

@@ -1,9 +1,9 @@
 import { TypePayload } from 'reactive-route';
 
-import { TypeRoutesProject, useRouter } from '../router';
+import { TypeConfigsProject, useRouter } from '../router';
 
-export function Link<TName extends keyof TypeRoutesProject>(props: {
-  payload: TypePayload<TypeRoutesProject, TName>;
+export function Link<TName extends keyof TypeConfigsProject>(props: {
+  payload: TypePayload<TypeConfigsProject, TName>;
   className?: string;
   children?: any;
 }) {

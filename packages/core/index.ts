@@ -1,14 +1,14 @@
 export { RedirectError } from './constants';
+export { createConfigs } from './createConfigs';
 export { createRouter } from './createRouter';
-export { createRoutes } from './createRoutes';
 export { handleComponentRerender } from './handleComponentRerender';
 export type {
   PropsRouter,
   TypeAdapters,
   TypeConfig,
+  TypeConfigsDefault,
   TypePayload,
   TypeRouter,
   TypeRouterLocalObservable,
-  TypeRoutesDefault,
   TypeState,
 } from './types';

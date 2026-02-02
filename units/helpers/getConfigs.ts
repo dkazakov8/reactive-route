@@ -1,12 +1,12 @@
-import { createTestRoutes } from './createTestRoutes';
+import { createConfigsUnits } from './createConfigsUnits';
 import { TypeOptions } from './types';
 
-export function getRoutes(options: TypeOptions) {
-  let routes: ReturnType<typeof createTestRoutes> = {} as any;
+export function getConfigs(options: TypeOptions) {
+  let configs: ReturnType<typeof createConfigsUnits> = {} as any;
 
   if (options.renderer === 'react') {
     if (options.reactivity === 'mobx') {
-      routes = createTestRoutes({
+      configs = createConfigsUnits({
         staticRoute: () => import('../pages/react/static/StaticMobx'),
         dynamicOneParam: () => import('../pages/react/dynamic/DynamicMobx'),
         dynamicRoute2: () => import('../pages/react/dynamic/DynamicMobx'),
@@ -21,7 +21,7 @@ export function getRoutes(options: TypeOptions) {
       });
     }
     if (options.reactivity === 'kr-observable') {
-      routes = createTestRoutes({
+      configs = createConfigsUnits({
         staticRoute: () => import('../pages/react/static/StaticKrObservable'),
         dynamicOneParam: () => import('../pages/react/dynamic/DynamicKrObservable'),
         dynamicRoute2: () => import('../pages/react/dynamic/DynamicKrObservable'),
@@ -39,7 +39,7 @@ export function getRoutes(options: TypeOptions) {
 
   if (options.renderer === 'preact') {
     if (options.reactivity === 'mobx') {
-      routes = createTestRoutes({
+      configs = createConfigsUnits({
         staticRoute: () => import('../pages/preact/static/StaticMobx'),
         dynamicOneParam: () => import('../pages/preact/dynamic/DynamicMobx'),
         dynamicRoute2: () => import('../pages/preact/dynamic/DynamicMobx'),
@@ -54,7 +54,7 @@ export function getRoutes(options: TypeOptions) {
       });
     }
     if (options.reactivity === 'kr-observable') {
-      routes = createTestRoutes({
+      configs = createConfigsUnits({
         staticRoute: () => import('../pages/preact/static/StaticKrObservable'),
         dynamicOneParam: () => import('../pages/preact/dynamic/DynamicKrObservable'),
         dynamicRoute2: () => import('../pages/preact/dynamic/DynamicKrObservable'),
@@ -71,7 +71,7 @@ export function getRoutes(options: TypeOptions) {
   }
 
   if (options.renderer === 'solid') {
-    routes = createTestRoutes({
+    configs = createConfigsUnits({
       staticRoute: () => import('../pages/solid/static/Static'),
       dynamicOneParam: () => import('../pages/solid/dynamic/Dynamic'),
       dynamicRoute2: () => import('../pages/solid/dynamic/Dynamic'),
@@ -87,7 +87,7 @@ export function getRoutes(options: TypeOptions) {
   }
 
   if (options.renderer === 'vue') {
-    routes = createTestRoutes({
+    configs = createConfigsUnits({
       staticRoute: () => import('../pages/vue/static'),
       dynamicOneParam: () => import('../pages/vue/dynamic'),
       dynamicRoute2: () => import('../pages/vue/dynamic'),
@@ -102,5 +102,5 @@ export function getRoutes(options: TypeOptions) {
     });
   }
 
-  return routes;
+  return configs;
 }

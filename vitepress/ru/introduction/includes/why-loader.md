@@ -12,24 +12,24 @@
 ```tsx
 // mobx-router
 
-// imports component in routes
+// imports component in configs
 import { Home } from 'components/Home';
 
-export const routes = {
+export const configs = {
   home: new Route<RootStore>({
     path: '/',
     component: <Home />
   })
 }
 
-// imports routes in component
-import { routes } from '../routes';
+// imports configs in component
+import { configs } from '../configs';
 
 export const Home = observer(() => {
   const store = useContext(StoreContext);
   const { router: { goTo } } = store;
 
-  return <Link router={store.router} route={routes.gallery} />
+  return <Link router={store.router} route={configs.gallery} />
 });
 ```
 

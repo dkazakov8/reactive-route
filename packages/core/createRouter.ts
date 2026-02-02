@@ -1,19 +1,19 @@
 import { PreventError, RedirectError } from './constants';
 import {
   TypeConfig,
+  TypeConfigsDefault,
   TypeGlobalArguments,
   TypeLifecycleFunction,
   TypePayload,
   TypeReason,
   TypeRouter,
-  TypeRoutesDefault,
   TypeState,
 } from './types';
 
-export function createRouter<TRoutes extends TypeRoutesDefault>(
-  globalArguments: TypeGlobalArguments<TRoutes>
-): TypeRouter<TRoutes> {
-  const { adapters, routes } = globalArguments;
+export function createRouter<TConfigs extends TypeConfigsDefault>(
+  globalArguments: TypeGlobalArguments<TConfigs>
+): TypeRouter<TConfigs> {
+  const { adapters, configs } = globalArguments;
 
   const win = typeof window !== 'undefined' ? window : null;
 
@@ -41,7 +41,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       /**
        * This is the initial step when we only have a URL like `/path?foo=bar`
        *
-       * 1. Try to find a relevant route from createRoutes
+       * 1. Try to find a relevant route from createConfigs
        * 2. Fill the query object with validated decoded values from search
        * 3. Fill the params object with validated decoded values from pathname
        *
@@ -71,8 +71,8 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       const query: Record<string, string> = {};
       let params: Record<string, string> = {};
 
-      for (const name of Object.keys(routes) as Array<keyof TRoutes>) {
-        const testedConfig = routes[name];
+      for (const name of Object.keys(configs) as Array<keyof TConfigs>) {
+        const testedConfig = configs[name];
         const testedPathname = testedConfig.path.replace(/(^\/|\/$)/g, '');
 
         // return a static match instantly, it has the top priority
@@ -112,7 +112,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
           return !validationPassed;
         });
 
-        // no return instantly because next routes may have static match
+        // no return instantly because next configs may have static match
         if (validationFailed) params = {};
         else config = testedConfig;
       }
@@ -136,7 +136,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     },
 
     payloadToState(payload) {
-      const config = routes[payload.name];
+      const config = configs[payload.name];
       const params: Record<string, string> = {};
       const query: Record<string, string> = {};
 
@@ -184,8 +184,8 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
       const currentState = this.getActiveState();
       let nextState = this.payloadToState(payload);
 
-      const beforeLeave = currentState ? routes[currentState.name].beforeLeave : undefined;
-      const beforeEnter = routes[nextState.name].beforeEnter;
+      const beforeLeave = currentState ? configs[currentState.name].beforeLeave : undefined;
+      const beforeEnter = configs[nextState.name].beforeEnter;
 
       let reason: TypeReason = 'unmodified';
 
@@ -206,7 +206,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
           reason,
           nextState,
           currentState,
-          redirect: ((redirectPayload: TypePayload<TRoutes, keyof TRoutes>) => {
+          redirect: ((redirectPayload: TypePayload<TConfigs, keyof TConfigs>) => {
             if (win) return redirectPayload;
 
             const redirectState = this.payloadToState(redirectPayload);
@@ -221,7 +221,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
         if (!options?.skipLifecycle) {
           await beforeLeave?.(data);
 
-          const redirectPayload: TypePayload<TRoutes, keyof TRoutes> = await beforeEnter?.(data);
+          const redirectPayload: TypePayload<TConfigs, keyof TConfigs> = await beforeEnter?.(data);
 
           if (redirectPayload) return this.redirect(redirectPayload);
         }
@@ -269,7 +269,7 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
     },
 
     async preloadComponent(name) {
-      const config = routes[name];
+      const config = configs[name];
 
       if (!config.component) {
         const { default: component, ...rest } = await config.loader();
@@ -284,9 +284,9 @@ export function createRouter<TRoutes extends TypeRoutesDefault>(
 
       return this.redirect(payload, options);
     },
-  } as TypeRouter<TRoutes>);
+  } as TypeRouter<TConfigs>);
 
-  for (const key of Object.keys(router) as Array<keyof TypeRouter<TRoutes>>) {
+  for (const key of Object.keys(router) as Array<keyof TypeRouter<TConfigs>>) {
     if (typeof router[key] === 'function') (router as any)[key] = router[key].bind(router);
   }
 

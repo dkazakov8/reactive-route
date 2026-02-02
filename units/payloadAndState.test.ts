@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { createRouter, createRoutes, TypeState } from '../packages/core';
+import { createConfigs, createRouter, TypeState } from '../packages/core';
 import { TypePayloadDefault } from '../packages/core/types';
 import { getAdapters } from './helpers/getAdapters';
 
 describe(`payloadAndState`, async () => {
   const router = createRouter({
-    routes: createRoutes({
+    configs: createConfigs({
       home: {
         path: '/',
         query: {
@@ -79,7 +79,7 @@ describe(`payloadAndState`, async () => {
     );
   }
 
-  it('Recognizes static route + prevails over dynamic routes', () => {
+  it('Recognizes static route + prevails over dynamic configs', () => {
     let expected = { name: 'static', params: {}, query: {} } as any;
 
     checkPayload('/test/static', expected);

@@ -1,7 +1,7 @@
 ```ts
 // to support SSR the arguments should be passed here
 function getRouter(api: Api, store: Store) {
-  const routes = createRoutes({
+  const configs = createConfigs({
     dashboard: {
       path: '/dashboard',
       loader: () => import('./pages/dashboard'),

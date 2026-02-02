@@ -25,6 +25,11 @@
   }
 }
 
+.custom-block.info a,
+.custom-block.info code {
+  color: var(--vp-code-color) !important;
+}
+
 /**
  * Extend the text block when aside is disabled (e.g. in examples)
  */

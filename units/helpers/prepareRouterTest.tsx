@@ -2,10 +2,10 @@ import { createRouter } from 'reactive-route';
 import { expect, vi } from 'vitest';
 
 import { getAdapters } from './getAdapters';
+import { getConfigs } from './getConfigs';
 import { getRender } from './getRender';
 import { getRouterComponent } from './getRouterComponent';
 import { getRouterContext } from './getRouterContext';
-import { getRoutes } from './getRoutes';
 import { getServerRender } from './getServerRender';
 import { TypeOptions } from './types';
 
@@ -17,12 +17,12 @@ export async function prepareRouterTest(options: TypeOptions) {
   const adapters = await getAdapters(options);
   const RouterContext = await getRouterContext(options);
   const router = createRouter({
-    routes: getRoutes(options),
+    configs: getConfigs(options),
     adapters,
     beforeComponentChange: spy_beforeComponentChange,
   });
 
-  (router.getGlobalArguments().routes.staticRouteAutorun as any).props = {
+  (router.getGlobalArguments().configs.staticRouteAutorun as any).props = {
     spy_pageRender,
     spy_pageAutorun,
   };

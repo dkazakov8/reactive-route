@@ -1,5 +1,5 @@
 ```ts
-createRoutes({
+createConfigs({
   user: {
     path: '/user/:id',
     params: {

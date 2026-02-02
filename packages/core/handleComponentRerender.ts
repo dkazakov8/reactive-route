@@ -5,7 +5,7 @@ export function handleComponentRerender(
   localObservable: TypeRouterLocalObservable,
   setComponent: (component: any) => void
 ) {
-  const { adapters, routes, beforeComponentChange } = props.router.getGlobalArguments();
+  const { adapters, configs, beforeComponentChange } = props.router.getGlobalArguments();
 
   // 1. Wait until redirect is finished
   if (props.router.isRedirecting) return;
@@ -17,8 +17,8 @@ export function handleComponentRerender(
   // changed. No need to call router lifecycle or update props
   if (!currentState || localObservable.renderedName === currentState.name) return;
 
-  const currentConfig: TypeConfig = routes[currentState.name];
-  const prevConfig: TypeConfig | undefined = routes[localObservable.renderedName];
+  const currentConfig: TypeConfig = configs[currentState.name];
+  const prevConfig: TypeConfig | undefined = configs[localObservable.renderedName];
   const prevState = props.router.state[localObservable.renderedName];
 
   adapters.batch(() => {

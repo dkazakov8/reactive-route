@@ -7,11 +7,11 @@
 <table>
   <thead><tr><th>Свойство</th><th>Тип</th><th>Описание</th></tr></thead>
   <tbody><tr>
-<td><code>routes</code></td>
+<td><code>configs</code></td>
 <td class="table-td">
 
 ```ts
-ReturnType<typeof createRoutes>
+ReturnType<typeof createConfigs>
 ```
 
 </td>
@@ -45,7 +45,7 @@ ReturnType<typeof createRoutes>
 
 Для всех примеров будет использоваться следующая конфигурация:
 
-<!-- @include: @snippets/router-api/sample-routes.md -->
+<!-- @include: @snippets/router-api/sample-configs.md -->
 
 ## router.redirect
 

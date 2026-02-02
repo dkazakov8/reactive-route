@@ -49,7 +49,7 @@ There are three primary ways to manage dynamic layouts and components:
 
 3. **Shared Loaders**: You can assign the same `loader` to multiple `Config` objects. In this
    scenario, `beforeComponentChange` is not triggered, and the page component **will not**
-   re-render when navigating between these routes. However, the active `State` will still update,
+   re-render when navigating between these configs. However, the active `State` will still update,
    allowing you to reactively change layouts:
 
 <!-- @include: @snippets/advanced/dashboard-multi.md -->

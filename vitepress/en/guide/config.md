@@ -107,7 +107,7 @@ string
 ```
 
 </td>
-<td>Matches the key used in the routes object</td>
+<td>Matches the key used in the configs object</td>
 </tr><tr>
 <td><code>component?</code></td>
 <td class="table-td">
@@ -224,7 +224,7 @@ TypeState
 ```
 
 </td>
-<td>A method to perform a redirect from within the lifecycle. Since <code>createRoutes</code> is
+<td>A method to perform a redirect from within the lifecycle. Since <code>createConfigs</code> is
 called before the router is initialized, you must use this instead of
 <code>router.redirect</code></td>
   </tr></tbody>
@@ -238,7 +238,7 @@ Always use `return` with `redirect` and `preventRedirect` to ensure predictable 
 
 ::: warning
 The `redirect` method within lifecycle functions does not have full TypeScript coverage for
-payloads. Use it with care, as TS will not catch errors if you rename routes during
+payloads. Use it with care, as TS will not catch errors if you rename configs during
 refactoring.
 :::
 
@@ -249,7 +249,7 @@ handle potential errors using `try-catch` blocks or `Promise.catch()`.
 
 ### TypeConfigConfigurable 
 
-The object structure expected by `createRoutes`.
+The object structure expected by `createConfigs`.
 
 <<< @/../packages/core/types.ts#type-config-configurable{typescript}
 

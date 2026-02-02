@@ -1,9 +1,9 @@
 ```ts
 export type TypeRouterProject = ReturnType<typeof getRouter>;
 
-export type TypeRoutesProject = ReturnType<
+export type TypeConfigsProject = ReturnType<
   TypeRouterProject['getGlobalArguments']
->['routes'];
+>['configs'];
 ```
 
 <Tabs :frameworks="['React', 'Preact', 'Solid', 'Vue']">
@@ -13,10 +13,10 @@ export type TypeRoutesProject = ReturnType<
 ```tsx [Link.tsx]
 import { TypePayload } from 'reactive-route';
 
-import { TypeRoutesProject, useRouter } from '../router';
+import { TypeConfigsProject, useRouter } from '../router';
 
-export function Link<TName extends keyof TypeRoutesProject>(props: {
-  payload: TypePayload<TypeRoutesProject, TName>;
+export function Link<TName extends keyof TypeConfigsProject>(props: {
+  payload: TypePayload<TypeConfigsProject, TName>;
   className?: string;
   children?: any;
 }) {
@@ -42,10 +42,10 @@ export function Link<TName extends keyof TypeRoutesProject>(props: {
 ```tsx [LinkProps.tsx]
 import { TypePayload } from 'reactive-route';
 
-import { TypeRoutesProject, useRouter } from '../router';
+import { TypeConfigsProject, useRouter } from '../router';
 
-export function LinkProps<TName extends keyof TypeRoutesProject>(
-  props: TypePayload<TypeRoutesProject, TName> & {
+export function LinkProps<TName extends keyof TypeConfigsProject>(
+  props: TypePayload<TypeConfigsProject, TName> & {
     className?: string;
     children?: any;
   }
@@ -56,7 +56,7 @@ export function LinkProps<TName extends keyof TypeRoutesProject>(
     name: props.name,
     query: 'query' in props ? props.query : undefined,
     params: 'params' in props ? props.params : undefined,
-  } as TypePayload<TypeRoutesProject, TName>;
+  } as TypePayload<TypeConfigsProject, TName>;
 
   const state = router.payloadToState(payload);
 
@@ -84,10 +84,10 @@ export function LinkProps<TName extends keyof TypeRoutesProject>(
 ```tsx [Link.tsx]
 import { TypePayload } from 'reactive-route';
 
-import { TypeRoutesProject, useRouter } from '../router';
+import { TypeConfigsProject, useRouter } from '../router';
 
-export function Link<TName extends keyof TypeRoutesProject>(props: {
-  payload: TypePayload<TypeRoutesProject, TName>;
+export function Link<TName extends keyof TypeConfigsProject>(props: {
+  payload: TypePayload<TypeConfigsProject, TName>;
   className?: string;
   children?: any;
 }) {
@@ -113,10 +113,10 @@ export function Link<TName extends keyof TypeRoutesProject>(props: {
 ```tsx [LinkProps.tsx]
 import { TypePayload } from 'reactive-route';
 
-import { TypeRoutesProject, useRouter } from '../router';
+import { TypeConfigsProject, useRouter } from '../router';
 
-export function LinkProps<TName extends keyof TypeRoutesProject>(
-  props: TypePayload<TypeRoutesProject, TName> & {
+export function LinkProps<TName extends keyof TypeConfigsProject>(
+  props: TypePayload<TypeConfigsProject, TName> & {
     className?: string;
     children?: any;
   }
@@ -127,7 +127,7 @@ export function LinkProps<TName extends keyof TypeRoutesProject>(
     name: props.name,
     query: 'query' in props ? props.query : undefined,
     params: 'params' in props ? props.params : undefined,
-  } as TypePayload<TypeRoutesProject, TName>;
+  } as TypePayload<TypeConfigsProject, TName>;
 
   const state = router.payloadToState(payload);
 
@@ -156,10 +156,10 @@ export function LinkProps<TName extends keyof TypeRoutesProject>(
 import { TypePayload } from 'reactive-route';
 import { createMemo } from 'solid-js';
 
-import { TypeRoutesProject, useRouter } from '../router';
+import { TypeConfigsProject, useRouter } from '../router';
 
-export function Link<TName extends keyof TypeRoutesProject>(props: {
-  payload: TypePayload<TypeRoutesProject, TName>;
+export function Link<TName extends keyof TypeConfigsProject>(props: {
+  payload: TypePayload<TypeConfigsProject, TName>;
   class?: string;
   children?: any;
 }) {
@@ -186,10 +186,10 @@ export function Link<TName extends keyof TypeRoutesProject>(props: {
 import { TypePayload } from 'reactive-route';
 import { createMemo } from 'solid-js';
 
-import { TypeRoutesProject, useRouter } from '../router';
+import { TypeConfigsProject, useRouter } from '../router';
 
-export function LinkProps<TName extends keyof TypeRoutesProject>(
-  props: TypePayload<TypeRoutesProject, TName> & {
+export function LinkProps<TName extends keyof TypeConfigsProject>(
+  props: TypePayload<TypeConfigsProject, TName> & {
     class?: string;
     children?: any;
   }
@@ -201,7 +201,7 @@ export function LinkProps<TName extends keyof TypeRoutesProject>(
       name: props.name,
       query: 'query' in props ? props.query : undefined,
       params: 'params' in props ? props.params : undefined,
-    } as TypePayload<TypeRoutesProject, TName>;
+    } as TypePayload<TypeConfigsProject, TName>;
   });
 
   const state = createMemo(() => router.payloadToState(payload()));
@@ -228,14 +228,14 @@ export function LinkProps<TName extends keyof TypeRoutesProject>(
 
 ::: code-group
 ```vue [Link.vue]
-<script setup lang="ts" generic="TName extends keyof TypeRoutesProject">
+<script setup lang="ts" generic="TName extends keyof TypeConfigsProject">
 import { TypePayload } from 'reactive-route';
 import { computed } from 'vue';
 
-import { TypeRoutesProject, useRouter } from '../router';
+import { TypeConfigsProject, useRouter } from '../router';
 
 const props = defineProps<{
-  payload: TypePayload<TypeRoutesProject, TName>;
+  payload: TypePayload<TypeConfigsProject, TName>;
 }>();
 
 const { router } = useRouter();
@@ -256,13 +256,13 @@ const handleClick = (event: MouseEvent) => {
 </template>
 ```
 ```vue [LinkProps.vue]
-<script setup lang="ts" generic="TName extends keyof TypeRoutesProject">
+<script setup lang="ts" generic="TName extends keyof TypeConfigsProject">
 import { TypePayload } from 'reactive-route';
 import { computed } from 'vue';
 
-import { TypeRoutesProject, useRouter } from '../router';
+import { TypeConfigsProject, useRouter } from '../router';
 
-const props = defineProps<TypePayload<TypeRoutesProject, TName>>();
+const props = defineProps<TypePayload<TypeConfigsProject, TName>>();
 
 const { router } = useRouter();
 
@@ -271,7 +271,7 @@ const payload = computed(() => {
     name: props.name,
     query: (props as any).query,
     params: (props as any).params,
-  } as TypePayload<TypeRoutesProject, TName>;
+  } as TypePayload<TypeConfigsProject, TName>;
 });
 
 const state = computed(() => router.payloadToState(payload.value));

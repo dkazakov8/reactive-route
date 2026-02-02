@@ -4,12 +4,12 @@
 
 ```ts
 // vue-router
-const routes = [
+const configs = [
   { name: 'home', path: '/', component: Home }
 ]
 
 // @kitbag/router
-const routes = [
+const configs = [
   createRoute({ name: 'home', path: '/', component: Home })
 ]
 ```
@@ -23,7 +23,7 @@ const routes = [
 
 ```tsx
 // mobx-router
-const routes = {
+const configs = {
   home: new Route({ path: '/', component: <Home /> })
 }
 
@@ -37,5 +37,5 @@ const indexRoute = createRoute({
 const routeTree = rootRoute.addChildren([indexRoute])
 ```
 
-Достаточно верхнеуровнево обернуть в `createRoutes` - это самый минималистичный
+Достаточно верхнеуровнево обернуть в `createConfigs` - это самый минималистичный
 и при этом типобезопасный подход среди всех библиотек для роутинга.

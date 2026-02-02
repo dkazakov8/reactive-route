@@ -2,12 +2,9 @@
 import { useData } from 'vitepress';
 import { computed } from 'vue';
 
-import type { TypeDocLinks } from '../../typedLinks';
 import { activeFramework } from '../useFramework';
 
-const props = defineProps<{
-  to: TypeDocLinks;
-}>();
+const props = defineProps<{ to: string }>();
 
 const { localeIndex, site } = useData();
 

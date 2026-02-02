@@ -6,7 +6,7 @@
 // TypeConfigConfigurable<"/user/:id/:tab">
 // Property "params" is missing but required in type 
 // { params: { id: TypeValidator; tab: TypeValidator }; }
-const routes = createRoutes({
+const configs = createConfigs({
   user: {
     path: '/user/:id/:tab',
     loader: () => import('./pages/user'),
@@ -14,7 +14,7 @@ const routes = createRoutes({
 })
 
 // No errors
-const routes = createRoutes({
+const configs = createConfigs({
   user: {
     path: '/user/:id/:tab',
     params: {
@@ -29,7 +29,7 @@ const routes = createRoutes({
 
 // TS2322: Type { foo: (value: string) => boolean; } 
 // is not assignable to type "never"
-const routes = createRoutes({
+const configs = createConfigs({
   home: {
     path: '/',
     params: {
@@ -40,7 +40,7 @@ const routes = createRoutes({
 })
 
 // No errors
-const routes = createRoutes({
+const configs = createConfigs({
   home: {
     path: '/',
     loader: () => import('./pages/home'),

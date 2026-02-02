@@ -1,5 +1,5 @@
 ```ts
-createRoutes({
+createConfigs({
   home: {
     path: '/',
     loader: () => import('./pages/home'),

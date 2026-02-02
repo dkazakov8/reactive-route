@@ -1,8 +1,8 @@
-import { createRoutes, createRouter } from 'reactive-route';
+import { createConfigs, createRouter } from 'reactive-route';
 import { adapters } from 'reactive-route/adapters/{reactive-system}';
 
 export function getRouter() {
-  const routes = createRoutes({
+  const configs = createConfigs({
     home: {
       path: '/',
       loader: () => import('./pages/home'),
@@ -29,5 +29,5 @@ export function getRouter() {
     }
   });
   
-  return createRouter({ adapters, routes });
+  return createRouter({ adapters, configs });
 }

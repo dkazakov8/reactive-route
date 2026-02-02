@@ -20,7 +20,7 @@ features:
   - title: Reactive-First
     details: Seamlessly integrates with MobX, Observable, Solid.js signals, and Vue reactivity
   - title: Simple & Declarative
-    details: Define your routes in a concise object with built-in support for lazy loading
+    details: Define your configs in a concise object with built-in support for lazy loading
   - title: Full Control
     details: Data prefetching, navigation guards, redirect chains, and robust param
       validation - everything you need is built in
