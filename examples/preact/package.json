@@ -15,7 +15,7 @@
     "mobx-preact": "3.0.0",
     "preact": "10.28.2",
     "preact-render-to-string": "6.6.5",
-    "reactive-route": "0.0.1-beta.4",
+    "reactive-route": "0.0.1-beta.5",
     "ultimate-express": "2.0.12"
   },
   "devDependencies": {

@@ -4,8 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-pnpmfileChecksum: sha256-ciCeB0LcOmfLLcE4M9GMcgkWJwbGXb85rmlRNHuM5sw=
-
 importers:
 
   .:
@@ -150,8 +148,8 @@ importers:
         specifier: 6.6.5
         version: 6.6.5(preact@10.28.2)
       reactive-route:
-        specifier: link:../../dist
-        version: link:../../dist
+        specifier: 0.0.1-beta.5
+        version: 0.0.1-beta.5(typescript@5.9.3)
       ultimate-express:
         specifier: 2.0.12
         version: 2.0.12
@@ -193,8 +191,8 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
       reactive-route:
-        specifier: link:../../dist
-        version: link:../../dist
+        specifier: 0.0.1-beta.5
+        version: 0.0.1-beta.5(typescript@5.9.3)
       ultimate-express:
         specifier: 2.0.12
         version: 2.0.12
@@ -227,8 +225,8 @@ importers:
         specifier: 6.15.0
         version: 6.15.0
       reactive-route:
-        specifier: link:../../dist
-        version: link:../../dist
+        specifier: 0.0.1-beta.5
+        version: 0.0.1-beta.5(typescript@5.9.3)
       solid-js:
         specifier: 1.9.11
         version: 1.9.11
@@ -267,8 +265,8 @@ importers:
   examples/vue:
     dependencies:
       reactive-route:
-        specifier: link:../../dist
-        version: link:../../dist
+        specifier: 0.0.1-beta.5
+        version: 0.0.1-beta.5(typescript@5.9.3)
       ultimate-express:
         specifier: 2.0.12
         version: 2.0.12
@@ -313,8 +311,8 @@ importers:
         specifier: 7.13.0
         version: 7.13.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       reactive-route:
-        specifier: 0.0.1-beta.4
-        version: 0.0.1-beta.4(typescript@5.9.3)
+        specifier: 0.0.1-beta.5
+        version: 0.0.1-beta.5(typescript@5.9.3)
       vue-router:
         specifier: 5.0.0
         version: 5.0.0(@vue/compiler-sfc@3.5.27)(vue@3.5.27(typescript@5.9.3))
@@ -2486,8 +2484,8 @@ packages:
     resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
     engines: {node: '>=0.10.0'}
 
-  reactive-route@0.0.1-beta.4:
-    resolution: {integrity: sha512-ljtAhFg3CGr6qVtIWeZPUILvvJQdBYqKIENtsJl4gMKTEh8q7F/6WbiIOXz0I4AR0ptaNQ/UeIMkUWaTqFX3Yg==}
+  reactive-route@0.0.1-beta.5:
+    resolution: {integrity: sha512-rujLVgWS1EvGVFSxvr/d4egHYnDw3ysygztiDnrHnP/UMQxPFT7r12S+nGfVgK6+j+JFS9AXNbtKtM1e3y5tag==, tarball: https://registry.npmjs.org/reactive-route/-/reactive-route-0.0.1-beta.5.tgz}
     peerDependencies:
       typescript: '>=5.0'
 
@@ -5289,7 +5287,7 @@ snapshots:
 
   react@19.2.3: {}
 
-  reactive-route@0.0.1-beta.4(typescript@5.9.3):
+  reactive-route@0.0.1-beta.5(typescript@5.9.3):
     dependencies:
       typescript: 5.9.3
 
