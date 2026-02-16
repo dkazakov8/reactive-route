@@ -2,113 +2,180 @@
 import { useRoute } from 'vitepress';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 
-import { activeFramework, frameworks, selectFramework } from '../useFramework';
+import {
+  activeFramework,
+  frameworks,
+  initFrameworkPreference,
+  isFramework,
+  selectFramework,
+  TypeFramework,
+} from '../useFramework';
 
 const route = useRoute();
 const isOpen = ref(false);
 const container = ref<HTMLElement | null>(null);
 
-function updateCodeGroups(framework: string) {
-  const codeGroups = document.querySelectorAll('.vp-code-group');
+function isInputElement(element: Element | null): element is HTMLInputElement {
+  return element instanceof HTMLInputElement;
+}
 
-  codeGroups.forEach((group) => {
-    if (group === container.value) return;
+function getFrameworkLabel(group: Element, framework: TypeFramework): HTMLLabelElement | undefined {
+  return Array.from(group.querySelectorAll<HTMLLabelElement>('label')).find(
+    (label) => label.textContent?.trim() === framework
+  );
+}
 
-    const labels = Array.from(group.querySelectorAll('label'));
-    const targetLabel = labels.find((l) => l.textContent.trim() === framework);
+function getInputIndex(group: HTMLElement, input: HTMLInputElement): number {
+  return Array.from(group.querySelectorAll('input')).indexOf(input);
+}
 
-    if (targetLabel) {
-      const inputId = targetLabel.getAttribute('for');
+function getActiveBlock(blocks: Element): Element | undefined {
+  return Array.from(blocks.children).find((block) => block.classList.contains('active'));
+}
 
-      if (inputId) {
-        const input = document.getElementById(inputId) as HTMLInputElement;
+function syncCodeGroupBlocks(group: HTMLElement, input: HTMLInputElement, index: number): void {
+  const blocks = group.querySelector('.blocks');
 
-        if (input && !input.checked) {
-          input.checked = true;
-          const group = input.parentElement?.parentElement;
-          if (group) {
-            const i = Array.from(group.querySelectorAll('input')).indexOf(input);
-            if (i >= 0) {
-              const blocks = group.querySelector('.blocks');
-              if (blocks && blocks.children.length > i) {
-                const current = Array.from(blocks.children).find((child) =>
-                  child.classList.contains('active')
-                );
-                const next = blocks.children[i];
-                if (next && current !== next) {
-                  current?.classList.remove('active');
-                  next.classList.add('active');
-                  window.dispatchEvent(
-                    new CustomEvent('vitepress:codeGroupTabActivate', { detail: next })
-                  );
-                }
-              }
-            }
-          }
-        }
-      }
+  if (!blocks || blocks.children.length <= index) {
+    return;
+  }
+
+  const current = getActiveBlock(blocks);
+  const next = blocks.children[index];
+  if (current === next) {
+    return;
+  }
+
+  if (current) {
+    current.classList.remove('active');
+  }
+
+  next.classList.add('active');
+  window.dispatchEvent(new CustomEvent('vitepress:codeGroupTabActivate', { detail: next }));
+}
+
+function syncCodeGroupInput(group: HTMLElement, input: HTMLInputElement): void {
+  if (input.checked) {
+    return;
+  }
+
+  input.checked = true;
+  const groupElement = input.parentElement?.parentElement;
+  if (!groupElement) {
+    return;
+  }
+
+  const inputIndex = getInputIndex(groupElement, input);
+  if (inputIndex < 0) {
+    return;
+  }
+
+  syncCodeGroupBlocks(groupElement, input, inputIndex);
+}
+
+function updateCodeGroups(framework: TypeFramework) {
+  const codeGroups = Array.from(document.querySelectorAll<HTMLElement>('.vp-code-group'));
+
+  for (const codeGroup of codeGroups) {
+    if (codeGroup === container.value) {
+      continue;
     }
-  });
+
+    const targetLabel = getFrameworkLabel(codeGroup, framework);
+
+    if (!targetLabel) {
+      continue;
+    }
+
+    const inputId = targetLabel.getAttribute('for');
+    if (!inputId) {
+      continue;
+    }
+
+    const inputElement = document.getElementById(inputId);
+    if (!isInputElement(inputElement)) {
+      continue;
+    }
+
+    syncCodeGroupInput(codeGroup, inputElement);
+  }
 }
 
 function select(framework: string) {
+  if (!isFramework(framework)) return;
+
   selectFramework(framework);
   updateCodeGroups(framework);
 }
 
-const onClick = (e: MouseEvent) => {
-  const target = e.target as HTMLElement;
-
-  if (target.matches('.vp-code-group input')) {
-    const group = target.parentElement?.parentElement;
-    if (group && !container.value?.contains(group)) {
-      const label = group.querySelector(`label[for="${target.id}"]`);
-      if (label) {
-        select(label.textContent?.trim() || '');
-      }
-    }
+function handleCodeGroupInputClick(targetElement: HTMLElement): void {
+  if (!targetElement.matches('.vp-code-group input') || !isInputElement(targetElement)) {
+    return;
   }
 
-  const labelElement = target.closest('.vp-code-group label');
+  const groupElement = targetElement.parentElement?.parentElement;
+
+  if (!groupElement || container.value?.contains(groupElement)) return;
+
+  const labelElement = groupElement.querySelector<HTMLLabelElement>(
+    `label[for="${targetElement.id}"]`
+  );
+  const frameworkLabel = labelElement?.textContent?.trim();
+
+  if (frameworkLabel) {
+    select(frameworkLabel);
+  }
+}
+
+function handleLabelClick(targetElement: HTMLElement): void {
+  const labelElement = targetElement.closest<HTMLLabelElement>('.vp-code-group label');
+  if (!labelElement) {
+    return;
+  }
+
+  const frameworkLabel = labelElement.textContent?.trim();
+  if (frameworkLabel) {
+    select(frameworkLabel);
+  }
+
   const dropdown = container.value?.querySelector('.dropdown');
-
-  if (labelElement) {
-    const framework = labelElement.textContent?.trim();
-
-    select(framework);
-
-    if (dropdown?.contains(labelElement)) {
-      isOpen.value = false;
-    }
-  }
-
-  if (container.value && !container.value.contains(target)) {
+  if (dropdown?.contains(labelElement)) {
     isOpen.value = false;
   }
-};
+}
+
+function handleOutsideClick(targetElement: HTMLElement): void {
+  if (container.value && !container.value.contains(targetElement)) {
+    isOpen.value = false;
+  }
+}
+
+function onClick(event: MouseEvent): void {
+  const targetElement = event.target instanceof HTMLElement ? event.target : null;
+  if (!targetElement) {
+    return;
+  }
+
+  handleCodeGroupInputClick(targetElement);
+  handleLabelClick(targetElement);
+  handleOutsideClick(targetElement);
+}
+
+function syncActiveFramework(): void {
+  setTimeout(() => updateCodeGroups(activeFramework.value), 1);
+}
 
 onMounted(() => {
+  initFrameworkPreference();
+
   window.addEventListener('click', onClick, { capture: true });
 
-  // Initial sync
-  setTimeout(() => {
-    updateCodeGroups(activeFramework.value);
-  }, 1);
+  syncActiveFramework();
 });
 
-// Re-sync on route change
-watch(
-  () => route.path,
-  () => {
-    setTimeout(() => {
-      updateCodeGroups(activeFramework.value);
-    }, 1);
-  }
-);
+watch(() => route.path, syncActiveFramework);
 
-watch(activeFramework, (newValue) => {
-  updateCodeGroups(newValue);
-});
+watch(activeFramework, updateCodeGroups);
 
 onUnmounted(() => {
   window.removeEventListener('click', onClick, { capture: true });
@@ -123,12 +190,12 @@ onUnmounted(() => {
     </button>
     <div v-if="isOpen" class="dropdown">
       <div
-        v-for="f in frameworks"
-        :key="f"
+        v-for="frameworkOption in frameworks"
+        :key="frameworkOption"
         class="option"
-        :class="{ active: f === activeFramework }"
+        :class="{ active: frameworkOption === activeFramework }"
       >
-        <label :data-title="f">{{ f }}</label>
+        <label :data-title="frameworkOption">{{ frameworkOption }}</label>
       </div>
     </div>
   </div>

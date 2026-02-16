@@ -72,6 +72,7 @@ const sidebarConfig = getSidebarDocumentation({
 });
 
 export default defineConfig({
+  outDir: path.resolve(__dirname, '../../docs'),
   vite: {
     resolve: {
       alias: [

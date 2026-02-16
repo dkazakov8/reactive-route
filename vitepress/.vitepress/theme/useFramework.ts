@@ -4,40 +4,40 @@ const STORAGE_KEY = 'vitepress-framework-preference';
 export const frameworks = ['React', 'Preact', 'Solid', 'Vue'] as const;
 export type TypeFramework = (typeof frameworks)[number];
 
-export const activeFramework = ref<string>('');
+export const activeFramework = ref<TypeFramework>(frameworks[0]);
 
-if (typeof window !== 'undefined') {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved && frameworks.includes(saved as TypeFramework)) {
-    activeFramework.value = saved;
-  } else {
-    activeFramework.value = frameworks[0];
+let isInitialized = false;
+
+export function isFramework(framework: unknown): framework is TypeFramework {
+  return frameworks.includes(framework as TypeFramework);
+}
+
+export function initFrameworkPreference() {
+  if (isInitialized || typeof window === 'undefined') return;
+
+  isInitialized = true;
+
+  const storedFramework = localStorage.getItem(STORAGE_KEY);
+
+  if (isFramework(storedFramework)) {
+    activeFramework.value = storedFramework;
   }
 
-  window.addEventListener('storage', (e) => {
-    if (e.key === STORAGE_KEY && e.newValue && frameworks.includes(e.newValue as TypeFramework)) {
-      activeFramework.value = e.newValue;
-    }
+  window.addEventListener('storage', ({ key, newValue }) => {
+    if (key !== STORAGE_KEY || !isFramework(newValue)) return;
+
+    if (activeFramework.value !== newValue) activeFramework.value = newValue;
+  });
+
+  watch(activeFramework, (newValue) => {
+    const storedValue = localStorage.getItem(STORAGE_KEY);
+
+    if (storedValue !== newValue) localStorage.setItem(STORAGE_KEY, newValue);
   });
 }
 
-watch(activeFramework, (newValue) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, newValue);
-  }
-});
+export function selectFramework(framework: TypeFramework) {
+  if (typeof window === 'undefined' || activeFramework.value === framework) return;
 
-export function selectFramework(framework: string) {
-  if (frameworks.includes(framework as TypeFramework)) {
-    activeFramework.value = framework;
-
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(
-        new StorageEvent('storage', {
-          key: STORAGE_KEY,
-          newValue: framework,
-        })
-      );
-    }
-  }
+  activeFramework.value = framework;
 }

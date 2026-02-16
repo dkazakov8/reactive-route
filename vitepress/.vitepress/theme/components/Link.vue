@@ -10,7 +10,8 @@ const { localeIndex, site } = useData();
 
 const href = computed(() => {
   const lang = localeIndex.value === 'root' ? 'en' : localeIndex.value;
-  let target = props.to as string;
+
+  let target = props.to;
 
   if (target === 'examples' || target === 'integration') {
     target = `${target}/${activeFramework.value.toLowerCase()}`;

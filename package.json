@@ -21,6 +21,7 @@
     "test-watch": "vitest --clearCache&&vitest --coverage=false --reporter=default",
     "e2e": "playwright test",
     "docs:dev": "vitepress dev vitepress",
+    "docs:preview": "pnpm run docs:build && vitepress preview vitepress",
     "docs:build": "vitepress build vitepress --outDir docs"
   },
   "lint-staged": {
