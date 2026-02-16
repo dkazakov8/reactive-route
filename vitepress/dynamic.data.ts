@@ -49,12 +49,14 @@ export default {
       });
     }
 
+    const coreSizeNumber = Number(metrics.coreSize?.replace('kb', ''));
+
     return {
       version: referenceLib.version,
       passedTests,
       metrics,
       libs,
-      sizeForLabel: `${metrics.coreSize} KB + ${(referenceLib.compressed - metrics.coreSize!).toFixed(2)} KB`,
+      sizeForLabel: `${coreSizeNumber} KB + ${(referenceLib.compressed - coreSizeNumber).toFixed(2)} KB`,
       biggestLibMinified: Math.max(...libs.map(({ minified }) => minified)),
     };
   },

@@ -47,7 +47,7 @@ export type TypeMetrics = {
   units?: number;
   e2e?: number;
   localSize?: string;
-  coreSize?: number;
+  coreSize?: string;
   sizes?: { [K in keyof typeof libsMapper]: TypeLibData };
 };
 
@@ -56,7 +56,7 @@ const logPrefix = '\x1b[32m[metrics]\x1b[0m';
 function formatSize(libData?: TypeLibData) {
   if (!libData) return 'undefined';
 
-  return `\x1b[33m${libData.minified}kb (${libData.compressed}kb)\x1b[0m`;
+  return `\x1b[33m${libData.minified}kb / ${libData.compressed}kb\x1b[0m`;
 }
 
 function getSizeChanges(prevMetrics?: TypeMetrics['sizes'], nextMetrics?: TypeMetrics['sizes']) {
