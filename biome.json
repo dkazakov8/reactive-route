@@ -7,7 +7,7 @@
       "!!**/dist_*",
       "!!**/dist",
       "!!**/docs",
-      "!!**/test-results",
+      "!!**/tmp",
       "!!**/vitepress/.vitepress/cache",
       "!vitepress/**/modulesMap.ts"
     ]

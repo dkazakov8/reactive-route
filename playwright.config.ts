@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-import globalAfter from './e2e/addons/globalAfter';
+import { handleProcessExit } from './e2e/addons/handleProcessExit';
 
 type TypeVariant = { folder: string; script: string; port?: number; name?: string };
 
@@ -34,6 +34,7 @@ const variants: Array<TypeVariant> = [...csrVariants, ...ssrVariants].map((varia
 
 export default defineConfig({
   testDir: './e2e',
+  outputDir: './tmp',
   fullyParallel: true,
   forbidOnly: false,
   retries: 0,
@@ -55,9 +56,7 @@ export default defineConfig({
       ...devices['Desktop Chrome'],
     },
   })),
-  globalTeardown: require.resolve('./e2e/addons/globalAfter'),
+  globalTeardown: require.resolve('./e2e/addons/globalTeardown'),
 });
 
-process.on('SIGINT', () => {
-  globalAfter();
-});
+handleProcessExit();

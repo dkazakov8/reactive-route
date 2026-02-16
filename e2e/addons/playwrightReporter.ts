@@ -10,6 +10,6 @@ export default class PlaywrightReporter implements Reporter {
   }
 
   onEnd() {
-    saveMetrics({ key: 'e2e', value: totalTests });
+    if (totalTests > 0) saveMetrics({ key: 'e2e', value: totalTests });
   }
 }
