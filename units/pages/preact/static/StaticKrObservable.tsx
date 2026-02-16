@@ -1,4 +1,3 @@
-// @ts-ignore
 import { observer } from 'kr-observable/preact';
 
 export const store = '';

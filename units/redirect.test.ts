@@ -275,7 +275,7 @@ allPossibleOptions.forEach((options) => {
             path: '/test/static4',
             loader: configsDefault.dynamicOneParam.loader,
             async beforeEnter() {
-              // @ts-ignore
+              // @ts-expect-error
               // biome-ignore lint/correctness/noUndeclaredVariables: false
               a;
             },
@@ -500,7 +500,7 @@ allPossibleOptions.forEach((options) => {
             path: '/test/buggy-code',
             loader: configsDefault.dynamicOneParam.loader,
             async beforeLeave() {
-              // @ts-ignore
+              // @ts-expect-error
               // biome-ignore lint/correctness/noUndeclaredVariables: false
               a;
             },
@@ -538,7 +538,7 @@ allPossibleOptions.forEach((options) => {
       // url is cleared of nonExistent
       url = await router.redirect({
         name: 'staticRoute',
-        // @ts-ignore
+        // @ts-expect-error
         query: { q: 'test', nonExistent: 'test' },
       });
 
@@ -556,7 +556,7 @@ allPossibleOptions.forEach((options) => {
       check(router, { route: configsDefault.staticRoute }, url);
 
       // url is cleared of nonExistent
-      // @ts-ignore
+      // @ts-expect-error
       url = await router.redirect({ name: 'staticRoute', query: { nonExistent: 'test' } });
 
       check(router, { route: configsDefault.staticRoute }, url);

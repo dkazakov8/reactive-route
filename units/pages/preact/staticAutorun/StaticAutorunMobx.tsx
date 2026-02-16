@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error
 import { observer } from 'mobx-preact';
 import { useContext, useState } from 'preact/hooks';
 

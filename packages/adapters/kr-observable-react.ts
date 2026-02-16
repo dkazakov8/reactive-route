@@ -1,5 +1,4 @@
 import { autorun, makeObservable } from 'kr-observable';
-// @ts-ignore
 import { observer } from 'kr-observable/react';
 import { TypeAdapters } from 'reactive-route';
 

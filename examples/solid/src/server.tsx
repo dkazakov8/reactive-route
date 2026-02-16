@@ -2,14 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { enableObservable } from 'kr-observable/solidjs';
-import { Reaction } from 'mobx';
 import { RedirectError } from 'reactive-route';
-import { enableExternalSource } from 'solid-js';
 import { generateHydrationScript, renderToString } from 'solid-js/web';
 import express from 'ultimate-express';
 
 import { App } from './components/App';
 import { getRouter, RouterContext } from './router';
+import { syncMobxWithSolid } from './syncMobxWithSolid';
 
 const publicPath = path.resolve(import.meta.dirname, 'public');
 const templatePath = path.resolve(import.meta.dirname, 'template.html');
@@ -19,22 +18,7 @@ if (REACTIVITY_SYSTEM === 'kr-observable') {
 }
 
 if (REACTIVITY_SYSTEM === 'mobx') {
-  let id = 0;
-
-  enableExternalSource((fn, trigger) => {
-    const reaction = new Reaction(`mobx@${++id}`, trigger);
-
-    return {
-      track: (x) => {
-        let next;
-
-        reaction.track(() => (next = fn(x)));
-
-        return next;
-      },
-      dispose: () => reaction.dispose(),
-    };
-  });
+  syncMobxWithSolid();
 }
 
 express()

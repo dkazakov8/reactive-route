@@ -1,4 +1,3 @@
-// @ts-ignore
 import { observer } from 'kr-observable/react';
 
 export const store = '';

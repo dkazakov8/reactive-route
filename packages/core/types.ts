@@ -94,29 +94,27 @@ export type TypeRouterLocalObservable = {
   props: Record<string, any>;
 };
 
-export type TypePayload<
-  TConfigs extends TypeConfigsDefault,
-  TName extends keyof TConfigs,
-> = TConfigs[TName]['params'] extends Record<string, TypeValidator>
-  ? TConfigs[TName]['query'] extends Record<string, TypeValidator>
-    ? {
-        name: TName;
-        params: Record<keyof TConfigs[TName]['params'], string>;
-        query?: Partial<Record<keyof TConfigs[TName]['query'], string>>;
-        replace?: boolean;
-      }
-    : {
-        name: TName;
-        params: Record<keyof TConfigs[TName]['params'], string>;
-        replace?: boolean;
-      }
-  : TConfigs[TName]['query'] extends Record<string, TypeValidator>
-    ? {
-        name: TName;
-        query?: Partial<Record<keyof TConfigs[TName]['query'], string>>;
-        replace?: boolean;
-      }
-    : { name: TName; replace?: boolean };
+export type TypePayload<TConfigs extends TypeConfigsDefault, TName extends keyof TConfigs> =
+  TConfigs[TName]['params'] extends Record<string, TypeValidator>
+    ? TConfigs[TName]['query'] extends Record<string, TypeValidator>
+      ? {
+          name: TName;
+          params: Record<keyof TConfigs[TName]['params'], string>;
+          query?: Partial<Record<keyof TConfigs[TName]['query'], string>>;
+          replace?: boolean;
+        }
+      : {
+          name: TName;
+          params: Record<keyof TConfigs[TName]['params'], string>;
+          replace?: boolean;
+        }
+    : TConfigs[TName]['query'] extends Record<string, TypeValidator>
+      ? {
+          name: TName;
+          query?: Partial<Record<keyof TConfigs[TName]['query'], string>>;
+          replace?: boolean;
+        }
+      : { name: TName; replace?: boolean };
 
 export type TypeGlobalArguments<TConfigs extends TypeConfigsDefault> = {
   adapters: TypeAdapters;

@@ -34,6 +34,7 @@ export function Router<TConfigs extends TypeConfigsDefault>(props: PropsRouter<T
   }
 
   return (
+    // biome-ignore lint/suspicious/noTsIgnore: analyze fails otherwise
     // @ts-ignore
     <Dynamic
       component={localObservable.renderedName ? Component! : undefined}

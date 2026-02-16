@@ -7,9 +7,10 @@ const toArray = (arr: any) => (arr == null ? [] : Array.isArray(arr) ? arr : [ar
 type TypeSummary = { statements: number; branches: number; functions: number; lines: number };
 
 export function getTests(suite: any, tests: Array<any> = []): Array<any> {
-  toArray(suite).forEach((task) =>
-    task.type === 'test' ? tests.push(task) : getTests(task.tasks, tests)
-  );
+  toArray(suite).forEach((task) => {
+    if (task.type === 'test') tests.push(task);
+    else getTests(task.tasks, tests);
+  });
 
   return tests;
 }

@@ -6,7 +6,6 @@ import type { TypeOptions } from './helpers/types';
 describe.runIf(typeof window !== 'undefined')(
   `Client tests Router [$renderer + $reactivity]`,
   async () => {
-    // biome-ignore lint/correctness/noUndeclaredVariables: false
     const options = OPTIONS as TypeOptions;
 
     if (options.renderer === 'solid') {
@@ -21,7 +20,7 @@ describe.runIf(typeof window !== 'undefined')(
 
           return {
             track: (x) => {
-              let next;
+              let next: any;
 
               reaction.track(() => (next = fn(x)));
 
@@ -33,7 +32,6 @@ describe.runIf(typeof window !== 'undefined')(
       }
 
       if (options.reactivity === 'kr-observable') {
-        // @ts-ignore
         const { enableObservable } = await import('kr-observable/solidjs');
 
         enableObservable();
@@ -311,7 +309,6 @@ describe.runIf(typeof window !== 'undefined')(
 );
 
 describe.runIf(typeof window === 'undefined')(`SSR tests Router [$renderer + $reactivity]`, () => {
-  // biome-ignore lint/correctness/noUndeclaredVariables: false
   const options = OPTIONS as TypeOptions;
 
   it('SSR', async () => {

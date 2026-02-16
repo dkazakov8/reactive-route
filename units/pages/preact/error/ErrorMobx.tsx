@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error
 import { observer } from 'mobx-preact';
 
 const Error = observer((props: { errorNumber: number }) => {

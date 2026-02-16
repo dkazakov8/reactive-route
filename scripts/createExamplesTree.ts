@@ -96,7 +96,7 @@ export async function createExamplesTree() {
     (fs.existsSync(outputFilePath) ? fs.statSync(outputFilePath).size : 0) / 1024
   ).toFixed(2);
 
-  fs.writeFileSync(outputFilePath, JSON.stringify(tree, null, 2), 'utf8');
+  fs.writeFileSync(outputFilePath, `${JSON.stringify(tree, null, 2)}\n`, 'utf8');
 
   const size = (
     (fs.existsSync(outputFilePath) ? fs.statSync(outputFilePath).size : 0) / 1024

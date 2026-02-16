@@ -13,7 +13,9 @@ export default function globalAfter() {
 
         return path.resolve('examples', project, folderName);
       })
-      .forEach((folderPath) => fs.rmSync(folderPath, { recursive: true, force: true }))
+      .forEach((folderPath) => {
+        fs.rmSync(folderPath, { recursive: true, force: true });
+      })
   );
 
   console.log(`\x1b[32m[e2e]\x1b[0m folders cleanup \x1b[33m${createdFolders.join(', ')}\x1b[0m`);

@@ -121,7 +121,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
       if (config.query) {
         for (const key in config.query) {
-          if (!config.query.hasOwnProperty(key)) continue;
+          if (!Object.hasOwn(config.query, key)) continue;
 
           const value = urlObject.searchParams.get(key);
           const validator = config.query[key];
@@ -153,7 +153,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
       if (config.query && 'query' in payload && payload.query) {
         for (const key in config.query) {
-          if (!config.query.hasOwnProperty(key)) continue;
+          if (!Object.hasOwn(config.query, key)) continue;
 
           const value = payload.query[key];
           const validator = config.query[key];

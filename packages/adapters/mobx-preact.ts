@@ -1,5 +1,5 @@
 import { autorun, observable, runInAction } from 'mobx';
-// @ts-ignore
+// @ts-expect-error
 import { observer } from 'mobx-preact';
 import { TypeAdapters } from 'reactive-route';
 
@@ -11,7 +11,7 @@ export const adapters: TypeAdapters = {
     runInAction(() => {
       for (const variableKey in obj) {
         /* v8 ignore if -- @preserve */
-        if ((obj as Record<string, any>).hasOwnProperty(variableKey)) {
+        if (Object.hasOwn(obj as Record<string, any>, variableKey)) {
           delete obj[variableKey];
         }
       }

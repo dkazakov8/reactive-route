@@ -10,7 +10,7 @@ export const adapters: TypeAdapters = {
     runInAction(() => {
       for (const variableKey in obj) {
         /* v8 ignore if -- @preserve */
-        if ((obj as Record<string, any>).hasOwnProperty(variableKey)) {
+        if (Object.hasOwn(obj as Record<string, any>, variableKey)) {
           delete obj[variableKey];
         }
       }
