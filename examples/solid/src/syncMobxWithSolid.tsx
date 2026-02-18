@@ -1,5 +1,3 @@
-import './style.css';
-
 import { Reaction } from 'mobx';
 import { enableExternalSource } from 'solid-js';
 

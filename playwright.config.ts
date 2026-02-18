@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { defineConfig, devices } from '@playwright/test';
 
 import { handleProcessExit } from './e2e/addons/handleProcessExit';
@@ -45,7 +47,7 @@ export default defineConfig({
     port: variant.port,
     reuseExistingServer: false,
     timeout: 10000,
-    cwd: __dirname,
+    cwd: process.cwd(),
     stdout: 'pipe',
     wait: { stdout: /started/ },
   })),
@@ -56,7 +58,7 @@ export default defineConfig({
       ...devices['Desktop Chrome'],
     },
   })),
-  globalTeardown: require.resolve('./e2e/addons/globalTeardown'),
+  globalTeardown: path.resolve('./e2e/addons/globalTeardown'),
 });
 
 handleProcessExit();

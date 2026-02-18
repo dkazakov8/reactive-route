@@ -29,7 +29,7 @@ async function traverse(
   const nodes = await Promise.all(
     entries.map(async (entry) => {
       const entryPath = path.join(dir, entry.name);
-      const relativePath = path.join(relativeDir, entry.name);
+      const relativePath = path.posix.join(relativeDir, entry.name);
 
       if (entry.isDirectory()) {
         return {

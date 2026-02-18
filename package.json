@@ -8,6 +8,7 @@
     "type": "git",
     "url": "git+https://github.com/dkazakov8/reactive-route.git"
   },
+  "type": "module",
   "scripts": {
     "clear-modules": "rm -rf ./node_modules ./examples/*/node_modules ./scripts/measureApps/node_modules",
     "upd": "pnpm run clear-modules && pnpm i --prefer-offline",
