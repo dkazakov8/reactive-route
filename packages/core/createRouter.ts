@@ -42,10 +42,14 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
        * This is the initial step when we only have a URL like `/path?foo=bar`
        *
        * 1. Try to find a relevant route from createConfigs
-       * 2. Fill the query object with validated decoded values from search
-       * 3. Fill the params object with validated decoded values from pathname
+       * 2. Fill the query object with validated decoded values from the search
+       * 3. Fill the params object with validated decoded values from the pathname
        *
        */
+
+      if (url === '' || /^\/+$/.test(url)) url = '/';
+
+      url = url.replace(/^\/+\?/, '/?');
 
       const urlObject = new URL(url, 'http://a.b');
 
@@ -102,7 +106,9 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
           const validator = testedConfig.params?.[paramName];
 
           if (typeof validator !== 'function') {
-            throw new Error(`missing validator for pathname dynamic parameter "${paramName}"`);
+            console.error(`Config "${testedConfig.name}" has no validator for "${paramName}"`);
+
+            return true;
           }
 
           const validationPassed = validator(actualValue);
@@ -112,7 +118,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
           return !validationPassed;
         });
 
-        // no return instantly because next configs may have static match
+        // no return instantly because the next Configs may have a static match
         if (validationFailed) params = {};
         else config = testedConfig;
       }
@@ -136,20 +142,45 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
     },
 
     payloadToState(payload) {
-      const config = configs[payload.name];
-      const params: Record<string, string> = {};
+      let config = configs[payload.name];
+
+      if (!config) {
+        console.error(
+          `Invalid Payload ${JSON.stringify(payload)} ${!payload?.name ? '(no Config name passed)' : '(no Config found for this name)'}`
+        );
+
+        config = configs.notFound as any;
+      }
+
+      let params: Record<string, string> = {};
       const query: Record<string, string> = {};
 
-      const pathname = config.path.replace(/:([^/]+)/g, (_, pathPart: string) => {
-        const value = (payload as any).params?.[pathPart];
+      let validationFailed = false;
 
-        if (!value) throw new Error(`payload missing value for ${config.name}.params.${pathPart}`);
+      let pathname = config.path.replace(/:([^/]+)/g, (_, paramName: string) => {
+        const value = (payload as any).params?.[paramName];
 
-        // TODO: validators
-        params[pathPart] = value;
+        const validator = config.params?.[paramName];
+
+        if (typeof validator !== 'function' || typeof value !== 'string' || !validator(value)) {
+          validationFailed = true;
+
+          console.error(`Invalid Payload ${JSON.stringify(payload)} (params failed validation)`);
+
+          return _;
+        }
+
+        params[paramName] = value;
 
         return encodeURIComponent(value);
       });
+
+      if (validationFailed) {
+        config = configs.notFound as any;
+        pathname = configs.notFound.path;
+
+        params = {};
+      }
 
       if (config.query && 'query' in payload && payload.query) {
         for (const key in config.query) {

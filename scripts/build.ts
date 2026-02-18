@@ -132,7 +132,7 @@ void Promise.all([
     description: globalPkg.description,
     repository: globalPkg.repository,
     peerDependencies: globalPkg.peerDependencies,
-    exports: exports,
+    exports,
     main: exports[`.`].require,
     module: exports[`.`].import,
     types: exports[`.`].types,

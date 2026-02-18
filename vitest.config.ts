@@ -26,6 +26,11 @@ function createProject(
   plugins: Array<any>,
   options?: TypeOptions
 ): Array<TestProjectConfiguration> {
+  const includeWithOptions = `units/component.test.ts`;
+
+  const include = [options ? includeWithOptions : `units/*.test.ts`];
+  const exclude = [options ? '' : includeWithOptions];
+
   return [
     {
       plugins,
@@ -33,8 +38,8 @@ function createProject(
       define: { OPTIONS: options },
       test: {
         name: options ? `${options.renderer}-${options.reactivity}` : `core`,
-        include: [options ? `units/component.test.ts` : `units/*.test.ts`],
-        exclude: [options ? '' : `units/component.test.ts`],
+        include,
+        exclude,
         browser: {
           enabled: true,
           headless: true,
@@ -50,8 +55,8 @@ function createProject(
       define: { OPTIONS: options },
       test: {
         name: options ? `${options.renderer}-${options.reactivity}-ssr` : `core-ssr`,
-        include: [options ? `units/component.test.ts` : `units/*.test.ts`],
-        exclude: [options ? '' : `units/component.test.ts`],
+        include,
+        exclude,
       },
     },
   ];

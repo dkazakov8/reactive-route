@@ -45,14 +45,13 @@ button.onclick = () => router.redirect(<!-- @include: @shared/payload.md -->)
 `id: (value) => console.log(value)` покажет не `with%20space` а `with space`
 :::
 
-В итоге получился валидный `Payload`, на вызывается редирект:
+В итоге получился валидный `Payload`, на который вызывается редирект:
 
 <!-- @include: @shared/introduction/initDecodedRedirect.md -->
 
 ### Схема работы редиректа
 
-- выполняется исследование причины редиректа. В данном случае `reason = 'new_config'`, так как
-до этого у роутера не было ни одного `State`
+- выполняется исследование причины редиректа. В данном случае `reason = 'new_config'`
 - выполняется `beforeLeave` предыдущего `Config` (его не было, поэтому пропускается)
 - выполняется `beforeEnter` желаемого `Config` с выполнением всей логики и прохождением
 цепочки редиректов

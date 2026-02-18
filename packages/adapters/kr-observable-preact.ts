@@ -12,6 +12,6 @@ export const adapters: TypeAdapters = {
     }
     Object.assign(obj as Record<string, any>, newObj);
   },
-  makeObservable: makeObservable,
+  makeObservable,
   observer,
 };

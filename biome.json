@@ -117,6 +117,7 @@
         "noInferrableTypes": "error",
         "noNamespace": "error",
         "noParameterAssign": "off",
+        "useConsistentObjectDefinitions": "error",
         "noRestrictedImports": "error",
         "noYodaExpression": "error",
         "useArrayLiterals": "error",
