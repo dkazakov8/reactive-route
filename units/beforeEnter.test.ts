@@ -1,54 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { createConfigs, createRouter } from '../packages/core';
-import { TypeLifecycleBefore } from '../packages/core/types';
-import { getConfigsDefault, loader, v } from './checkers';
+import { createBeforeEnterSpy, getConfigsDefault, loader, v } from './checkers';
 import { getAdapters } from './helpers/getAdapters';
 import { allPossibleOptions } from './helpers/types';
 
-function createSpy() {
-  const format = (obj: any) => JSON.stringify(obj, null, 2);
-
-  const beforeEnter = vi.fn();
-
-  function checkLastArguments(
-    expectedLifecycle: Omit<Parameters<TypeLifecycleBefore>[0], 'redirect' | 'preventRedirect'>
-  ) {
-    const actualLifecycle = beforeEnter.mock.lastCall?.[0];
-
-    if (!actualLifecycle) return;
-
-    expect(Object.keys(actualLifecycle).sort()).to.deep.eq([
-      'currentState',
-      'nextState',
-      'reason',
-      'redirect',
-    ]);
-
-    expect(actualLifecycle.reason).to.deep.eq(
-      expectedLifecycle.reason,
-      `reason mismatch: ${actualLifecycle.reason} !== ${expectedLifecycle.reason}`
-    );
-    expect(actualLifecycle.nextState).to.deep.eq(
-      expectedLifecycle.nextState,
-      `nextState mismatch: ${format(actualLifecycle.nextState)} !== ${format(expectedLifecycle.nextState)}`
-    );
-    expect(actualLifecycle.currentState).to.deep.eq(
-      expectedLifecycle.currentState,
-      `currentState mismatch: ${format(actualLifecycle.currentState)} !== ${format(expectedLifecycle.currentState)}`
-    );
-  }
-
-  function checkCount(count: number) {
-    expect(beforeEnter).toHaveBeenCalledTimes(count);
-  }
-
-  return { beforeEnter, checkLastArguments, checkCount };
-}
-
 describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
   it('Not called when Payload is the same + query', async () => {
-    const spy = createSpy();
+    const spy = createBeforeEnterSpy();
 
     const router = createRouter({
       configs: createConfigs({
@@ -118,7 +77,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
   });
 
   it('Not called when Payload is the same + params + query', async () => {
-    const spy = createSpy();
+    const spy = createBeforeEnterSpy();
 
     const router = createRouter({
       configs: createConfigs({
@@ -198,8 +157,8 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
   });
 
   it('Called when query changed', async () => {
-    const spyStatic = createSpy();
-    const spyDynamic = createSpy();
+    const spyStatic = createBeforeEnterSpy();
+    const spyDynamic = createBeforeEnterSpy();
 
     const router = createRouter({
       configs: createConfigs({
@@ -319,7 +278,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
   });
 
   it('Called when params changed + query (when changed both - reason is "new_params")', async () => {
-    const spy = createSpy();
+    const spy = createBeforeEnterSpy();
 
     const router = createRouter({
       configs: createConfigs({

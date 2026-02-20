@@ -102,7 +102,7 @@ export default defineConfig({
       reporter: ['text'],
       reportsDirectory: './test-results',
       include: ['packages/*'],
-      exclude: ['packages/*/index.ts', 'packages/declarations.d.ts'],
+      exclude: ['packages/*/index.ts', 'packages/declarations.d.ts', 'packages/core/constants.ts'],
     },
     onConsoleLog(log) {
       // if (log.includes('a is not defined')) {
