@@ -12,13 +12,19 @@ export const v = {
   length: (v: string) => v.length > 2,
 };
 
+export function getConfigsDefault() {
+  return {
+    notFound: { path: '/error404', props: { errorNumber: 404 }, loader },
+    internalError: { path: '/error500', props: { errorNumber: 500 }, loader },
+  } as const;
+}
+
 export function demoRouter(configs: any) {
   return createRouter({
     adapters,
     configs: createConfigs({
       ...configs,
-      notFound: { path: '/error404', props: { errorNumber: 404 }, loader },
-      internalError: { path: '/error500', props: { errorNumber: 500 }, loader },
+      ...getConfigsDefault(),
     }),
   });
 }
@@ -65,6 +71,6 @@ export function checkStateFromPayload({
   state: Omit<TypeState<any>, 'isActive' | 'props'>;
 }) {
   expect(router.payloadToState(payload)).to.deep.eq(
-    Object.assign({ isActive: true, props: undefined }, state)
+    Object.assign({ isActive: true, props: {} }, state)
   );
 }

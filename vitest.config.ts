@@ -105,9 +105,9 @@ export default defineConfig({
       exclude: ['packages/*/index.ts', 'packages/declarations.d.ts'],
     },
     onConsoleLog(log) {
-      if (log.includes('a is not defined')) {
-        return false;
-      }
+      // if (log.includes('a is not defined')) {
+      //   return false;
+      // }
 
       return true;
     },

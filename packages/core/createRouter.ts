@@ -3,7 +3,6 @@ import {
   TypeConfig,
   TypeConfigsDefault,
   TypeGlobalArguments,
-  TypeLifecycleFunction,
   TypePayload,
   TypeReason,
   TypeRouter,
@@ -213,7 +212,16 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
     },
 
     async redirect(payload, options) {
-      const currentState = this.getActiveState();
+      const activeState = this.getActiveState();
+
+      // this should be immutable, because activeState may change in the process
+      const currentState = activeState
+        ? this.payloadToState({
+            name: activeState.name,
+            params: activeState.params,
+            query: activeState.query,
+          } as any)
+        : undefined;
       let nextState = this.payloadToState(payload);
 
       const beforeLeave = currentState ? configs[currentState.name].beforeLeave : undefined;
@@ -234,26 +242,28 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
       this.isRedirecting = true;
 
       try {
-        const data: Parameters<TypeLifecycleFunction>[0] = {
-          reason,
-          nextState,
-          currentState,
-          redirect: ((redirectPayload: TypePayload<TConfigs, keyof TConfigs>) => {
-            if (win) return redirectPayload;
-
-            const redirectState = this.payloadToState(redirectPayload);
-
-            throw new RedirectError(redirectState.url);
-          }) as any,
-          preventRedirect() {
-            throw new PreventError(`Redirect to ${nextState.url} was prevented`);
-          },
-        };
-
         if (!options?.skipLifecycle) {
-          await beforeLeave?.(data);
+          await beforeLeave?.({
+            reason,
+            nextState,
+            currentState,
+            preventRedirect() {
+              throw new PreventError(`Redirect to ${nextState.url} was prevented`);
+            },
+          });
 
-          const redirectPayload: TypePayload<TConfigs, keyof TConfigs> = await beforeEnter?.(data);
+          const redirectPayload: TypePayload<TConfigs, keyof TConfigs> = await beforeEnter?.({
+            reason,
+            nextState,
+            currentState,
+            redirect: ((redirectPayload: TypePayload<TConfigs, keyof TConfigs>) => {
+              if (win) return redirectPayload;
+
+              const redirectState = this.payloadToState(redirectPayload);
+
+              throw new RedirectError(redirectState.url);
+            }) as any,
+          });
 
           if (redirectPayload) return this.redirect(redirectPayload);
         }
@@ -281,6 +291,19 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
         if (!this.state[nextState.name]) this.state[nextState.name] = {} as any;
 
         adapters.replaceObject(this.state[nextState.name], nextState as any);
+
+        // // a hack to enforce browsers to write props: undefined
+        // if ('props' in nextState && !('props' in this.state[nextState.name]!)) {
+        //   console.log('HERE');
+        //   this.state[nextState.name]!.props = undefined;
+        // }
+        //
+        // console.log(
+        //   'OP',
+        //   nextState.name,
+        //   Object.keys(this.state[nextState.name]),
+        //   Object.keys(nextState)
+        // );
 
         for (const state of Object.values(this.state) as Array<TypeState<any>>) {
           if (state?.name !== nextState.name) state.isActive = false;

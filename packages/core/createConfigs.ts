@@ -10,17 +10,20 @@ export function createConfigs<
     internalError: Omit<TypeConfig, 'name' | 'component' | 'otherExports' | 'params' | 'query'>;
   },
 >(
-  config: TConfig
+  configs: TConfig
 ): {
   [Key in keyof TConfig]: TConfig[Key] & {
     name: Key;
+    props: TypeConfig['props'];
     component?: TypeConfig['component'];
     otherExports?: TypeConfig['otherExports'];
   };
 } {
-  Object.entries(config).forEach(([key, value]) => {
-    (value as any).name = key;
+  Object.entries(configs).forEach(([name, config]) => {
+    (config as any).name = name;
+
+    if (!config.props) config.props = {};
   });
 
-  return config as any;
+  return configs as any;
 }
