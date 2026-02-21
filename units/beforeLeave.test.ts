@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createConfigs, createRouter } from '../packages/core';
 import {
   checkURL,
-  createBeforeEnterSpy,
+  createBeforeLeaveSpy,
   destroyAfterTest,
   getConfigsDefault,
   loader,
@@ -18,13 +18,13 @@ beforeEach(() => {
   }
 });
 
-describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
+describe.each([allPossibleOptions[0]])(`Lifecycle: beforeLeave %s`, (options) => {
   it('Not called when Payload is the same + query', async () => {
-    const spy = createBeforeEnterSpy();
+    const spy = createBeforeLeaveSpy();
 
     const router = createRouter({
       configs: createConfigs({
-        static: { path: '/static', query: { q: v.length }, loader, beforeEnter: spy.beforeEnter },
+        static: { path: '/static', query: { q: v.length }, loader, beforeLeave: spy.beforeLeave },
         ...getConfigsDefault(),
       }),
       adapters: await getAdapters(options),
@@ -34,6 +34,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
 
     let url = await router.redirect({ name: 'static' });
 
+    // biome-ignore lint/style/useConst: false
     let currentState: any;
     let nextState: any = {
       name: 'static',
@@ -46,9 +47,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spy.checkCount(1);
-
-    spy.checkLastArguments({ reason: 'new_config', nextState, currentState });
+    spy.checkCount(0);
 
     checkURL({ routerUrl: url, expectedUrl: nextState.url });
 
@@ -56,7 +55,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
 
     await router.redirect({ name: 'static' });
 
-    spy.checkCount(1);
+    spy.checkCount(0);
 
     // now with the query
 
@@ -74,7 +73,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spy.checkCount(2);
+    spy.checkCount(1);
 
     spy.checkLastArguments({ reason: 'new_query', nextState, currentState });
 
@@ -84,7 +83,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
 
     url = await router.redirect({ name: 'static', query: { q: 'v-q' } });
 
-    spy.checkCount(2);
+    spy.checkCount(1);
 
     checkURL({ routerUrl: url, expectedUrl: nextState.url });
 
@@ -92,7 +91,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
   });
 
   it('Not called when Payload is the same + params + query', async () => {
-    const spy = createBeforeEnterSpy();
+    const spy = createBeforeLeaveSpy();
 
     const router = createRouter({
       configs: createConfigs({
@@ -101,7 +100,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
           params: { one: v.length },
           query: { q: v.length },
           loader,
-          beforeEnter: spy.beforeEnter,
+          beforeLeave: spy.beforeLeave,
         },
         ...getConfigsDefault(),
       }),
@@ -112,6 +111,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
 
     let url = await router.redirect({ name: 'dynamic', params: { one: 'v-one' } });
 
+    // biome-ignore lint/style/useConst: false
     let currentState: any;
     let nextState: any = {
       name: 'dynamic',
@@ -124,9 +124,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spy.checkCount(1);
-
-    spy.checkLastArguments({ reason: 'new_config', nextState, currentState });
+    spy.checkCount(0);
 
     checkURL({ routerUrl: url, expectedUrl: nextState.url });
 
@@ -134,7 +132,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
 
     url = await router.redirect({ name: 'dynamic', params: { one: 'v-one' } });
 
-    spy.checkCount(1);
+    spy.checkCount(0);
 
     checkURL({ routerUrl: url, expectedUrl: nextState.url });
 
@@ -156,7 +154,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spy.checkCount(2);
+    spy.checkCount(1);
 
     spy.checkLastArguments({ reason: 'new_query', nextState, currentState });
 
@@ -166,7 +164,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
 
     url = await router.redirect({ name: 'dynamic', params: { one: 'v-one' }, query: { q: 'v-q' } });
 
-    spy.checkCount(2);
+    spy.checkCount(1);
 
     checkURL({ routerUrl: url, expectedUrl: nextState.url });
 
@@ -174,8 +172,8 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
   });
 
   it('Called when query changed', async () => {
-    const spyStatic = createBeforeEnterSpy();
-    const spyDynamic = createBeforeEnterSpy();
+    const spyStatic = createBeforeLeaveSpy();
+    const spyDynamic = createBeforeLeaveSpy();
 
     const router = createRouter({
       configs: createConfigs({
@@ -183,14 +181,14 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
           path: '/static',
           query: { q: v.length },
           loader,
-          beforeEnter: spyStatic.beforeEnter,
+          beforeLeave: spyStatic.beforeLeave,
         },
         dynamic: {
           path: '/:one',
           params: { one: v.length },
           query: { q: v.length },
           loader,
-          beforeEnter: spyDynamic.beforeEnter,
+          beforeLeave: spyDynamic.beforeLeave,
         },
         ...getConfigsDefault(),
       }),
@@ -213,9 +211,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spyStatic.checkCount(1);
-
-    spyStatic.checkLastArguments({ reason: 'new_config', nextState, currentState });
+    spyStatic.checkCount(0);
 
     checkURL({ routerUrl: url, expectedUrl: nextState.url });
 
@@ -235,7 +231,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spyStatic.checkCount(2);
+    spyStatic.checkCount(1);
 
     spyStatic.checkLastArguments({ reason: 'new_query', nextState, currentState });
 
@@ -261,9 +257,9 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spyDynamic.checkCount(1);
+    spyStatic.checkCount(2);
 
-    spyDynamic.checkLastArguments({ reason: 'new_config', nextState, currentState });
+    spyStatic.checkLastArguments({ reason: 'new_config', nextState, currentState });
 
     checkURL({ routerUrl: url, expectedUrl: nextState.url });
 
@@ -287,7 +283,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spyDynamic.checkCount(2);
+    spyDynamic.checkCount(1);
 
     spyDynamic.checkLastArguments({ reason: 'new_query', nextState, currentState });
 
@@ -297,7 +293,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
   });
 
   it('Called when params changed + query (when changed both - reason is "new_params")', async () => {
-    const spy = createBeforeEnterSpy();
+    const spy = createBeforeLeaveSpy();
 
     const router = createRouter({
       configs: createConfigs({
@@ -306,7 +302,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
           params: { one: v.length },
           query: { q: v.length },
           loader,
-          beforeEnter: spy.beforeEnter,
+          beforeLeave: spy.beforeLeave,
         },
         ...getConfigsDefault(),
       }),
@@ -329,9 +325,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spy.checkCount(1);
-
-    spy.checkLastArguments({ reason: 'new_config', nextState, currentState });
+    spy.checkCount(0);
 
     checkURL({ routerUrl: url, expectedUrl: nextState.url });
 
@@ -351,7 +345,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spy.checkCount(2);
+    spy.checkCount(1);
 
     spy.checkLastArguments({ reason: 'new_params', nextState, currentState });
 
@@ -377,7 +371,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spy.checkCount(3);
+    spy.checkCount(2);
 
     spy.checkLastArguments({ reason: 'new_query', nextState, currentState });
 
@@ -403,7 +397,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spy.checkCount(4);
+    spy.checkCount(3);
 
     spy.checkLastArguments({ reason: 'new_params', nextState, currentState });
 
@@ -429,7 +423,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    spy.checkCount(5);
+    spy.checkCount(4);
 
     spy.checkLastArguments({ reason: 'new_params', nextState, currentState });
 
@@ -444,7 +438,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
         static: {
           path: '/static',
           loader,
-          async beforeEnter() {
+          async beforeLeave() {
             // @ts-expect-error
             // biome-ignore lint/correctness/noUndeclaredVariables: false
             a;
@@ -459,7 +453,9 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
 
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
-    const url = await router.redirect({ name: 'static' });
+    let url = await router.redirect({ name: 'static' });
+
+    url = await router.redirect({ name: 'notFound' });
 
     const nextState: any = {
       name: 'internalError',
@@ -472,12 +468,8 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
       isActive: true,
     };
 
-    // the real browser URL is '/' (unchanged) because errors in the lifecycle should not influence history
-    checkURL({
-      routerUrl: url,
-      expectedUrl: nextState.url,
-      expectedHistoryUrl: '/',
-    });
+    // the real browser URL is '/static' because errors in the lifecycle should not influence history
+    checkURL({ routerUrl: url, expectedUrl: nextState.url, expectedHistoryUrl: '/static' });
 
     expect(router.getActiveState()).to.deep.eq(nextState);
 

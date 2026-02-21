@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { checkStateFromPayload, checkURLPayload, demoRouter, v } from './checkers';
+import { checkStateFromPayload, checkURLPayload, untypedRouter, v } from './checkers';
 
 describe(`Config detection from URL`, async () => {
   it('Config path should have urlencoded format', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       staticSpecial: { path: '/%D1%88%D0%B5%D0%BB%D0%BB%D1%8B%3Fx%3Dtest' },
     });
 
@@ -23,7 +23,7 @@ describe(`Config detection from URL`, async () => {
   });
 
   it('Config without params has priority', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       dynamicOneParam: { path: '/test/:one', params: { one: v.length } },
       static: { path: '/test/static' },
     });
@@ -43,7 +43,7 @@ describe(`Config detection from URL`, async () => {
   });
 
   it('Config params may have complex names', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       dynamic: { path: '/::!@#$%^&*()_+one', params: { ':!@#$%^&*()_+one': v.length } },
     });
 
@@ -62,7 +62,7 @@ describe(`Config detection from URL`, async () => {
   });
 
   it('Root Config path works', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       home: { path: '/', query: { q: v.length, s: v.length } },
     });
 
@@ -94,7 +94,7 @@ describe(`Config detection from URL`, async () => {
   });
 
   it('Fallback to 404 if no match', () => {
-    const router = demoRouter({});
+    const router = untypedRouter({});
 
     const payload = { name: 'notFound', params: {}, query: {} };
     const pathname = '/foo';
@@ -112,7 +112,7 @@ describe(`Config detection from URL`, async () => {
   });
 
   it('Hash is cleared', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       static: { path: '/static', query: { q: v.length } },
       dynamic: { path: '/:one', params: { one: v.length }, query: { q: v.length } },
     });
@@ -170,7 +170,7 @@ describe(`Config detection from URL`, async () => {
   });
 
   it('Protocol, host, port are cleared', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       home: { path: '/', query: { q: v.length } },
     });
 

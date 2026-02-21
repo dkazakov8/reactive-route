@@ -1,7 +1,12 @@
-import { expect, vi } from 'vitest';
+import { expect, onTestFinished, vi } from 'vitest';
 
 import { createConfigs, createRouter, TypeRouter, TypeState } from '../packages/core';
-import { TypeLifecycleBefore, TypePayloadDefault, TypeURL } from '../packages/core/types';
+import {
+  TypeBeforeEnter,
+  TypeBeforeLeave,
+  TypePayloadDefault,
+  TypeURL,
+} from '../packages/core/types';
 import { getAdapters } from './helpers/getAdapters';
 
 export const loader = () => Promise.resolve({ default: '' });
@@ -19,14 +24,28 @@ export function getConfigsDefault() {
   } as const;
 }
 
-export function demoRouter(configs: any) {
-  return createRouter({
+export function destroyAfterTest(router: TypeRouter<any>) {
+  onTestFinished(() => {
+    try {
+      router.historySyncStop();
+    } catch (_e) {
+      // noop
+    }
+  });
+}
+
+export function untypedRouter(configs: any) {
+  const router = createRouter({
     adapters,
     configs: createConfigs({
       ...configs,
       ...getConfigsDefault(),
     }),
   });
+
+  destroyAfterTest(router);
+
+  return router;
 }
 
 export function checkURLPayload({
@@ -80,9 +99,7 @@ export function createBeforeEnterSpy() {
 
   const beforeEnter = vi.fn() as any;
 
-  function checkLastArguments(
-    expectedLifecycle: Omit<Parameters<TypeLifecycleBefore>[0], 'redirect' | 'preventRedirect'>
-  ) {
+  function checkLastArguments(expectedLifecycle: Omit<Parameters<TypeBeforeEnter>[0], 'redirect'>) {
     const actualLifecycle = beforeEnter.mock.lastCall?.[0];
 
     if (!actualLifecycle) return;
@@ -113,4 +130,58 @@ export function createBeforeEnterSpy() {
   }
 
   return { beforeEnter, checkLastArguments, checkCount };
+}
+
+export function createBeforeLeaveSpy() {
+  const format = (obj: any) => JSON.stringify(obj, null, 2);
+
+  const beforeLeave = vi.fn() as any;
+
+  function checkLastArguments(
+    expectedLifecycle: Omit<Parameters<TypeBeforeLeave>[0], 'preventRedirect'>
+  ) {
+    const actualLifecycle = beforeLeave.mock.lastCall?.[0];
+
+    if (!actualLifecycle) return;
+
+    expect(Object.keys(actualLifecycle).sort()).to.deep.eq([
+      'currentState',
+      'nextState',
+      'preventRedirect',
+      'reason',
+    ]);
+
+    expect(actualLifecycle.reason).to.deep.eq(
+      expectedLifecycle.reason,
+      `reason mismatch: ${actualLifecycle.reason} !== ${expectedLifecycle.reason}`
+    );
+    expect(actualLifecycle.nextState).to.deep.eq(
+      expectedLifecycle.nextState,
+      `nextState mismatch: ${format(actualLifecycle.nextState)} !== ${format(expectedLifecycle.nextState)}`
+    );
+    expect(actualLifecycle.currentState).to.deep.eq(
+      expectedLifecycle.currentState,
+      `currentState mismatch: ${format(actualLifecycle.currentState)} !== ${format(expectedLifecycle.currentState)}`
+    );
+  }
+
+  function checkCount(count: number) {
+    expect(beforeLeave).toHaveBeenCalledTimes(count);
+  }
+
+  return { beforeLeave, checkLastArguments, checkCount };
+}
+
+export function checkURL(params: {
+  routerUrl: string;
+  expectedUrl: string;
+  expectedHistoryUrl?: string;
+}) {
+  expect(params.routerUrl).to.eq(params.expectedUrl);
+
+  if (typeof window !== 'undefined') {
+    expect(location.pathname + location.search).to.eq(
+      params.expectedHistoryUrl || params.expectedUrl
+    );
+  }
 }

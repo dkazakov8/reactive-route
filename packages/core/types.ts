@@ -30,14 +30,14 @@ export type TypePayloadDefault = {
   replace?: boolean;
 };
 
-export type TypeLifecycleBefore = (data: {
+export type TypeBeforeEnter = (data: {
   reason: TypeReason;
   nextState: TypeState<TypeConfig>;
   currentState?: TypeState<TypeConfig>;
   redirect: (payload: TypePayloadDefault) => void;
 }) => Promise<any>;
 
-export type TypeLifecycleAfter = (data: {
+export type TypeBeforeLeave = (data: {
   reason: TypeReason;
   nextState: TypeState<TypeConfig>;
   currentState?: TypeState<TypeConfig>;
@@ -51,8 +51,8 @@ export type TypeConfigConfigurable<TPath extends string> = {
 
   props?: Record<string, any>;
   query?: Record<string, TypeValidator>;
-  beforeEnter?: TypeLifecycleBefore;
-  beforeLeave?: TypeLifecycleAfter;
+  beforeEnter?: TypeBeforeEnter;
+  beforeLeave?: TypeBeforeLeave;
 } & (TypeExtractParams<TPath> extends never
   ? { params?: never }
   : { params: { [K in keyof TypeExtractParams<TPath>]: TypeValidator } });
@@ -67,8 +67,8 @@ export type TypeConfig = {
 
   query?: Record<string, TypeValidator>;
   params?: Record<string, TypeValidator>;
-  beforeEnter?: TypeLifecycleBefore;
-  beforeLeave?: TypeLifecycleAfter;
+  beforeEnter?: TypeBeforeEnter;
+  beforeLeave?: TypeBeforeLeave;
   component?: any;
   otherExports?: Record<string, any>;
 };

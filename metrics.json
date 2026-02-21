@@ -1,6 +1,6 @@
 {
   "coverage": "96.98 %",
-  "units": 384,
+  "units": 266,
   "e2e": 144,
   "sizes": {
     "reactive-route": {

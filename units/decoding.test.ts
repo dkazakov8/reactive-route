@@ -1,10 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { checkStateFromPayload, checkURLPayload, demoRouter, v } from './checkers';
+import { checkStateFromPayload, checkURLPayload, untypedRouter, v } from './checkers';
 
 describe(`URL decoding`, async () => {
   it('Decodes query', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       home: {
         path: '/',
         query: {
@@ -62,7 +62,7 @@ describe(`URL decoding`, async () => {
   });
 
   it('Decodes params', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       home: {
         path: '/:0/:1/:2/:3/:4/:5/:6',
         params: {

@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { checkStateFromPayload, checkURLPayload, demoRouter, v } from './checkers';
+import { checkStateFromPayload, checkURLPayload, untypedRouter, v } from './checkers';
 
 describe(`Config detection from URL`, async () => {
   it('Irrelevant Config "params" should be silently cleared', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       dynamic: { path: '/:one', params: { one: v.length } },
     });
 
@@ -28,7 +28,7 @@ describe(`Config detection from URL`, async () => {
   });
 
   it('Irrelevant Config "query" should be silently cleared', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       static: { path: '/static', query: { q: v.length, s: v.length } },
       dynamic: { path: '/:one', params: { one: v.length }, query: { q: v.length, s: v.length } },
     });
@@ -79,7 +79,7 @@ describe(`Config detection from URL`, async () => {
   });
 
   it('Invalid Config "params" should fallback to 404 and log error', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       dynamic: { path: '/:one', params: { one: v.length } },
     });
 
@@ -149,7 +149,7 @@ describe(`Config detection from URL`, async () => {
   });
 
   it('Invalid Config "query" should be silently cleared', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       static: { path: '/static', query: { q: v.length, s: v.length } },
       dynamic: { path: '/:one', params: { one: v.length }, query: { q: v.length, s: v.length } },
     });
@@ -200,7 +200,7 @@ describe(`Config detection from URL`, async () => {
   });
 
   it('Invalid Payload should fallback to 404 and log error', () => {
-    const router = demoRouter({});
+    const router = untypedRouter({});
 
     const payload = { name: 'notFound', params: {}, query: {} };
     const search = '';
@@ -230,7 +230,7 @@ describe(`Config detection from URL`, async () => {
   });
 
   it('Missing Config validators should fallback to 404 and log error (payloadToState)', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       dynamic: { path: '/:one' },
     });
 
@@ -298,7 +298,7 @@ describe(`Config detection from URL`, async () => {
   });
 
   it('Missing Config validators should fallback to 404 and log error (urlToPayload)', () => {
-    const router = demoRouter({
+    const router = untypedRouter({
       dynamic: { path: '/:one' },
     });
 
