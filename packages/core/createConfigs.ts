@@ -1,28 +1,19 @@
-import { TypeConfig, TypeConfigConfigurable } from './types';
+import { TypeConfigConfigurable, TypeCreatedConfigs, TypeErrorConfig, TypeExact } from './types';
 
 export function createConfigs<
   const TConfig extends {
-    [K in keyof TConfig]: TypeConfigConfigurable<
-      TConfig[K] extends { path: infer P extends string } ? P : string
-    >;
+    [K in keyof TConfig]: K extends 'notFound' | 'internalError'
+      ? TypeExact<TConfig[K], TypeErrorConfig>
+      : TypeConfigConfigurable<TConfig[K] extends { path: infer P extends string } ? P : string>;
   } & {
-    notFound: Omit<TypeConfig, 'name' | 'component' | 'otherExports' | 'params' | 'query'>;
-    internalError: Omit<TypeConfig, 'name' | 'component' | 'otherExports' | 'params' | 'query'>;
+    notFound: TypeErrorConfig;
+    internalError: TypeErrorConfig;
   },
->(
-  configs: TConfig
-): {
-  [Key in keyof TConfig]: TConfig[Key] & {
-    name: Key;
-    props: TypeConfig['props'];
-    component?: TypeConfig['component'];
-    otherExports?: TypeConfig['otherExports'];
-  };
-} {
+>(configs: TConfig): TypeCreatedConfigs<TConfig> {
   Object.entries(configs).forEach(([name, config]) => {
     (config as any).name = name;
 
-    if (!config.props) config.props = {};
+    if (!(config as any).props) (config as any).props = {};
   });
 
   return configs as any;

@@ -37,6 +37,7 @@ export function destroyAfterTest(router: TypeRouter<any>) {
 export function untypedRouter(configs: any) {
   const router = createRouter({
     adapters,
+    // @ts-expect-error
     configs: createConfigs({
       ...configs,
       ...getConfigsDefault(),
@@ -89,7 +90,7 @@ export function checkStateFromPayload({
   payload: TypePayloadDefault;
   state: Omit<TypeState<any>, 'isActive' | 'props'>;
 }) {
-  expect(router.payloadToState(payload)).to.deep.eq(
+  expect(router.payloadToState(payload as any)).to.deep.eq(
     Object.assign({ isActive: true, props: {} }, state)
   );
 }

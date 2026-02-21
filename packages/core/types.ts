@@ -6,6 +6,12 @@ type TypeExtractParams<T extends string> = string extends T
       ? { [K in Param]: string }
       : never;
 
+export type TypeExact<TTarget, TShape> = TTarget extends TShape
+  ? Exclude<keyof TTarget, keyof TShape> extends never
+    ? TTarget
+    : never
+  : never;
+
 export type TypeURL = string;
 export type TypeValidator = (param: string) => boolean;
 export type TypeReason = 'unmodified' | 'new_query' | 'new_params' | 'new_config';
@@ -89,54 +95,77 @@ export type TypeState<TConfig extends TypeConfig> = {
 };
 // #endregion type-state
 
-export type TypeConfigsDefault = Record<'notFound' | 'internalError' | string, TypeConfig>;
+export type TypeErrorConfig = Pick<TypeConfig, 'path' | 'loader'> & { props?: TypeConfig['props'] };
 
-export type PropsRouter<TConfigs extends TypeConfigsDefault> = {
-  router: TypeRouter<TConfigs>;
+export type TypeCreatedConfigs<TConfig extends Record<string, any>> = {
+  [Key in Extract<keyof TConfig, string>]: TConfig[Key] & {
+    name: Key;
+    props: TypeConfig['props'];
+    component?: TypeConfig['component'];
+    otherExports?: TypeConfig['otherExports'];
+  };
 };
 
-export type TypeRouterLocalObservable = {
-  renderedName?: any;
-  props: Record<string, any>;
+export type TypeConfigKeys<TConfigs> = Extract<keyof TConfigs, string>;
+
+export type TypeConfigsDefault = Record<string, TypeConfig> & {
+  notFound: TypeConfig;
+  internalError: TypeConfig;
 };
 
-export type TypePayload<TConfigs extends TypeConfigsDefault, TName extends keyof TConfigs> =
-  TConfigs[TName]['params'] extends Record<string, TypeValidator>
-    ? TConfigs[TName]['query'] extends Record<string, TypeValidator>
-      ? {
-          name: TName;
-          params: Record<keyof TConfigs[TName]['params'], string>;
-          query?: Partial<Record<keyof TConfigs[TName]['query'], string>>;
+export type PropsRouter<TConfigs extends TypeConfigsDefault> = { router: TypeRouter<TConfigs> };
+
+export type TypeRouterLocalObservable = { renderedName?: any; props: Record<string, any> };
+
+type TypeConfigParams<TConfig> = TConfig extends { params?: infer TParams } ? TParams : never;
+
+type TypeConfigQuery<TConfig> = TConfig extends { query?: infer TQuery } ? TQuery : never;
+
+export type TypePayload<
+  TConfigs extends Record<string, any>,
+  TName extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>,
+> = {
+  [Key in TName]: TypeConfigParams<TConfigs[Key]> extends never
+    ? TypeConfigQuery<TConfigs[Key]> extends never
+      ? // no params, no query
+        { name: Key; replace?: boolean }
+      : // only query
+        {
+          name: Key;
           replace?: boolean;
+          query?: Partial<Record<keyof TypeConfigQuery<TConfigs[Key]>, string>>;
         }
-      : {
-          name: TName;
-          params: Record<keyof TConfigs[TName]['params'], string>;
+    : TypeConfigQuery<TConfigs[Key]> extends never
+      ? // only params
+        {
+          name: Key;
           replace?: boolean;
+          params: Record<keyof TypeConfigParams<TConfigs[Key]>, string>;
         }
-    : TConfigs[TName]['query'] extends Record<string, TypeValidator>
-      ? {
-          name: TName;
-          query?: Partial<Record<keyof TConfigs[TName]['query'], string>>;
+      : // params and query
+        {
+          name: Key;
           replace?: boolean;
-        }
-      : { name: TName; replace?: boolean };
+          params: Record<keyof TypeConfigParams<TConfigs[Key]>, string>;
+          query?: Partial<Record<keyof TypeConfigQuery<TConfigs[Key]>, string>>;
+        };
+}[TName];
 
 export type TypeGlobalArguments<TConfigs extends TypeConfigsDefault> = {
   adapters: TypeAdapters;
   configs: TConfigs;
   beforeComponentChange?: (params: {
     prevState?: TypeState<TypeConfig>;
-    prevConfig?: TConfigs[keyof TConfigs];
+    prevConfig?: TConfigs[TypeConfigKeys<TConfigs>];
     currentState: TypeState<TypeConfig>;
-    currentConfig: TConfigs[keyof TConfigs];
+    currentConfig: TConfigs[TypeConfigKeys<TConfigs>];
   }) => void;
 };
 
 // #region type-router
 export type TypeRouter<TConfigs extends TypeConfigsDefault> = {
   state: {
-    [TName in keyof TConfigs | 'notFound' | 'internalError']?: TypeState<TConfigs[TName]>;
+    [TName in TypeConfigKeys<TConfigs>]?: TypeState<TConfigs[TName]>;
   };
   isRedirecting: boolean;
 
@@ -146,21 +175,26 @@ export type TypeRouter<TConfigs extends TypeConfigsDefault> = {
   historySyncStart(): void;
   historySyncStop(): void;
 
-  urlToPayload(url: TypeURL): TypePayload<TConfigs, keyof TConfigs>;
+  // The same `TypePayload<TConfigs>` type as for `redirect()` is intentional to keep typings small.
+  //
+  // Trade-off: `redirect()` must accept `query` as optional, therefore `urlToPayload()` also returns a
+  // payload where `query` stays optional even after narrowing by `name` (use `payload.query?.x`).
+  // At runtime `urlToPayload()` will definitely produce an empty `{}` query object
+  urlToPayload(url: TypeURL): TypePayload<TConfigs>;
 
-  payloadToState<TName extends keyof TConfigs>(
+  payloadToState<TName extends TypeConfigKeys<TConfigs>>(
     payload: TypePayload<TConfigs, TName>
   ): TypeState<TConfigs[TName]>;
 
-  redirect<TName extends keyof TConfigs>(
+  redirect<TName extends TypeConfigKeys<TConfigs>>(
     payload: TypePayload<TConfigs, TName>,
     options?: TypeRedirectOptions
   ): Promise<TypeURL>;
 
-  getActiveState(): TypeState<TConfigs[keyof TConfigs]> | undefined;
+  getActiveState(): TypeState<TConfigs[TypeConfigKeys<TConfigs>]> | undefined;
 
   init(url: TypeURL, options?: TypeRedirectOptions): Promise<TypeURL>;
 
-  preloadComponent(name: keyof TConfigs): Promise<void>;
+  preloadComponent(name: TypeConfigKeys<TConfigs>): Promise<void>;
 };
 // #endregion type-router
