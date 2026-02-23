@@ -124,7 +124,7 @@ if (payload.name === 'static') {
 }
 
 if (payload.name === 'staticQuery') {
-  payload.query?.q;
+  payload.query.q;
   // @ts-expect-error params are not available
   payload.params;
 }
@@ -137,7 +137,7 @@ if (payload.name === 'dynamic') {
 
 if (payload.name === 'dynamicQuery') {
   payload.params.id;
-  payload.query?.q;
+  payload.query.q;
 }
 
 void router.redirect(payload);

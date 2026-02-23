@@ -1,12 +1,7 @@
 import { expect, onTestFinished, vi } from 'vitest';
 
 import { createConfigs, createRouter, TypeRouter, TypeState } from '../packages/core';
-import {
-  TypeBeforeEnter,
-  TypeBeforeLeave,
-  TypePayloadDefault,
-  TypeURL,
-} from '../packages/core/types';
+import { TypeLifecycleData, TypePayloadDefault, TypeURL } from '../packages/core/types';
 import { getAdapters } from './helpers/getAdapters';
 
 export const loader = () => Promise.resolve({ default: '' });
@@ -24,7 +19,7 @@ export function getConfigsDefault() {
   } as const;
 }
 
-export function destroyAfterTest(router: TypeRouter<any>) {
+export function destroyAfterTest(router: TypeRouter<any, any>) {
   onTestFinished(() => {
     try {
       router.historySyncStop();
@@ -88,7 +83,7 @@ export function checkStateFromPayload({
 }: {
   router: TypeRouter<any>;
   payload: TypePayloadDefault;
-  state: Omit<TypeState<any>, 'isActive' | 'props'>;
+  state: Omit<TypeState<any, any>, 'isActive' | 'props'>;
 }) {
   expect(router.payloadToState(payload as any)).to.deep.eq(
     Object.assign({ isActive: true, props: {} }, state)
@@ -100,7 +95,7 @@ export function createBeforeEnterSpy() {
 
   const beforeEnter = vi.fn() as any;
 
-  function checkLastArguments(expectedLifecycle: Omit<Parameters<TypeBeforeEnter>[0], 'redirect'>) {
+  function checkLastArguments(expectedLifecycle: TypeLifecycleData) {
     const actualLifecycle = beforeEnter.mock.lastCall?.[0];
 
     if (!actualLifecycle) return;
@@ -138,9 +133,7 @@ export function createBeforeLeaveSpy() {
 
   const beforeLeave = vi.fn() as any;
 
-  function checkLastArguments(
-    expectedLifecycle: Omit<Parameters<TypeBeforeLeave>[0], 'preventRedirect'>
-  ) {
+  function checkLastArguments(expectedLifecycle: TypeLifecycleData) {
     const actualLifecycle = beforeLeave.mock.lastCall?.[0];
 
     if (!actualLifecycle) return;

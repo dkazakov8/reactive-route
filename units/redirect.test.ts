@@ -7,7 +7,7 @@ import { getAdapters } from './helpers/getAdapters';
 import { getConfigs } from './helpers/getConfigs';
 import { allPossibleOptions } from './helpers/types';
 
-function check(router: TypeRouter<any>, redirectParams: any, url?: string) {
+function check(router: TypeRouter<any, any>, redirectParams: any, url?: string) {
   const currentRoute = router.getActiveState()!;
 
   const expectedCurrentRoute = router.payloadToState({

@@ -4,7 +4,10 @@ import {
   TypeConfigKeys,
   TypeConfigsDefault,
   TypeGlobalArguments,
+  TypeLifecycleData,
   TypePayload,
+  TypePayloadDefault,
+  TypePayloadParsed,
   TypeReason,
   TypeRouter,
   TypeState,
@@ -17,6 +20,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
   const win = typeof window !== 'undefined' ? window : null;
 
+  // @ts-expect-error payloadToState return type is narrowed for external consumers
   const router = adapters.makeObservable({
     state: {},
     isRedirecting: false,
@@ -123,7 +127,12 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
         else config = testedConfig;
       }
 
-      if (!config) return { name: 'notFound', params: {}, query: {} };
+      if (!config)
+        return {
+          name: 'notFound',
+          params: {},
+          query: {},
+        } as unknown as TypePayloadParsed<TConfigs>;
 
       if (config.query) {
         for (const key in config.query) {
@@ -138,7 +147,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
         }
       }
 
-      return { name: config.name, query, params };
+      return { name: config.name, query, params } as unknown as TypePayloadParsed<TConfigs>;
     },
 
     payloadToState(payload) {
@@ -158,7 +167,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
       let validationFailed = false;
 
       let pathname = config.path.replace(/:([^/]+)/g, (_: string, paramName: string) => {
-        const value = (payload as any).params?.[paramName];
+        const value = (payload as TypePayloadDefault).params?.[paramName];
 
         const validator = config.params?.[paramName];
 
@@ -186,7 +195,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
         for (const key in config.query) {
           if (!Object.hasOwn(config.query, key)) continue;
 
-          const value = payload.query[key];
+          const value = (payload as TypePayloadDefault).query?.[key];
           const validator = config.query[key];
 
           if (typeof validator === 'function' && typeof value === 'string' && validator(value)) {
@@ -200,8 +209,8 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
       return {
         name: config.name,
-        query: query as any,
-        params: params as any,
+        query: query as unknown as Partial<Record<keyof TypeConfig['query'], string>>,
+        params: params as unknown as Record<keyof TypeConfig['params'], string>,
 
         url,
         search,
@@ -219,9 +228,9 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
       const currentState = activeState
         ? this.payloadToState({
             name: activeState.name,
-            params: activeState.params,
-            query: activeState.query,
-          } as any)
+            params: (activeState as any).params,
+            query: (activeState as any).query,
+          } as unknown as TypePayload<TConfigs, TypeConfigKeys<TConfigs>>)
         : undefined;
       let nextState = this.payloadToState(payload);
 
@@ -244,10 +253,14 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
       try {
         if (!options?.skipLifecycle) {
-          await beforeLeave?.({
+          const lifecycleData: TypeLifecycleData = {
             reason,
-            nextState,
-            currentState,
+            nextState: nextState as any,
+            currentState: currentState as any,
+          };
+
+          await beforeLeave?.({
+            ...lifecycleData,
             preventRedirect() {
               throw new PreventError(`Redirect to ${nextState.url} was prevented`);
             },
@@ -257,16 +270,14 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
             TConfigs,
             TypeConfigKeys<TConfigs>
           > = await beforeEnter?.({
-            reason,
-            nextState,
-            currentState,
-            redirect: ((redirectPayload: TypePayload<TConfigs, TypeConfigKeys<TConfigs>>) => {
+            ...lifecycleData,
+            redirect: (redirectPayload) => {
               if (win) return redirectPayload;
 
-              const redirectState = this.payloadToState(redirectPayload);
+              const redirectState = this.payloadToState(redirectPayload as any);
 
               throw new RedirectError(redirectState.url);
-            }) as any,
+            },
           });
 
           if (redirectPayload) return this.redirect(redirectPayload);
@@ -286,7 +297,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
         console.error(error);
 
-        nextState = this.payloadToState({ name: 'internalError' } as any);
+        nextState = this.payloadToState({ name: 'internalError' } as any) as any;
 
         await this.preloadComponent(nextState.name as TypeConfigKeys<TConfigs>);
       }
@@ -300,8 +311,10 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
           nextState as any
         );
 
-        for (const state of Object.values(this.state) as Array<TypeState<any>>) {
-          if (state?.name !== nextState.name) state.isActive = false;
+        for (const state of Object.values(this.state) as Array<
+          TypeState<TConfigs, TypeConfigKeys<TConfigs>>
+        >) {
+          if (state?.name !== nextState.name) (state as any).isActive = false;
         }
 
         if (nextState.name !== 'internalError') {
