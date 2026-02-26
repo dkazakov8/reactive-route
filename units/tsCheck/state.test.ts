@@ -2,7 +2,7 @@ import { createConfigs, createRouter } from '../../packages/core';
 
 const loader = async () => ({ default: null });
 
-const v: (param: string) => boolean = () => true;
+const v: (value: string) => boolean = () => true;
 
 const adapters = {} as any;
 
@@ -27,6 +27,18 @@ stateStatic.isActive;
 stateStatic.params;
 // @ts-expect-error query is not available
 stateStatic.query;
+
+const stateNotFound = router.payloadToState({ name: 'notFound' });
+// @ts-expect-error params are not available
+stateNotFound.params;
+// @ts-expect-error query is not available
+stateNotFound.query;
+
+const stateInternalError = router.payloadToState({ name: 'internalError' });
+// @ts-expect-error params are not available
+stateInternalError.params;
+// @ts-expect-error query is not available
+stateInternalError.query;
 
 const stateStaticQuery = router.payloadToState({ name: 'staticQuery' });
 stateStaticQuery.name;

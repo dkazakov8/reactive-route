@@ -3,7 +3,7 @@ import {
   handleComponentRerender,
   type PropsRouter,
   type TypeConfigsDefault,
-  type TypeRouterLocalObservable,
+  type TypeRouterLocal,
 } from 'reactive-route';
 
 defineOptions({ name: 'ReactiveRouteRouter' });
@@ -14,7 +14,7 @@ const { adapters } = props.router.getGlobalArguments();
 
 let Component: any;
 
-const localObservable: TypeRouterLocalObservable = adapters.makeObservable({
+const localObservable: TypeRouterLocal = adapters.makeObservable({
   renderedName: undefined,
   props: {},
 });

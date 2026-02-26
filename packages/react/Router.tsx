@@ -3,7 +3,7 @@ import {
   handleComponentRerender,
   type PropsRouter,
   type TypeConfigsDefault,
-  type TypeRouterLocalObservable,
+  type TypeRouterLocal,
 } from 'reactive-route';
 
 function RouterInner<TConfigs extends TypeConfigsDefault>(props: PropsRouter<TConfigs>) {
@@ -12,7 +12,7 @@ function RouterInner<TConfigs extends TypeConfigsDefault>(props: PropsRouter<TCo
   const disposerRef = useRef<() => void>(null);
   const ComponentRef = useRef<FC>(null);
 
-  const [localObservable] = useState<TypeRouterLocalObservable>(() =>
+  const [localObservable] = useState<TypeRouterLocal>(() =>
     adapters.makeObservable({
       renderedName: undefined,
       props: {},

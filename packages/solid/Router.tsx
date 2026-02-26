@@ -2,7 +2,7 @@ import {
   handleComponentRerender,
   type PropsRouter,
   type TypeConfigsDefault,
-  type TypeRouterLocalObservable,
+  type TypeRouterLocal,
 } from 'reactive-route';
 import { onCleanup, type ValidComponent } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
@@ -10,7 +10,7 @@ import { Dynamic } from 'solid-js/web';
 export function Router<TConfigs extends TypeConfigsDefault>(props: PropsRouter<TConfigs>) {
   const { adapters } = props.router.getGlobalArguments();
 
-  const localObservable: TypeRouterLocalObservable = adapters.makeObservable({
+  const localObservable: TypeRouterLocal = adapters.makeObservable({
     renderedName: undefined,
     props: {},
   });

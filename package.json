@@ -16,6 +16,7 @@
     "build": "rm -rf ./dist && vue-tsc -b tsconfig.build.json && node --import tsx ./scripts/build.ts",
     "npm-publish": "pnpm run build && cd ./dist && npm publish --access public --tag latest && cd ../",
     "analyze": "biome check . && tsc -p tsconfig.type-tests.json --noEmit && tsc -p tsconfig.analyze.json && vue-tsc -b tsconfig.build.json && tsc -p examples/react && tsc -p examples/preact && tsc -p examples/solid && vue-tsc -p examples/vue",
+    "analyze-types": "tsc -p tsconfig.type-tests.json --noEmit --watch",
     "prepare": "husky",
     "up": "bash -c 'pnpm upgrade -r $@' bash",
     "test": "vitest --clearCache&&vitest run",

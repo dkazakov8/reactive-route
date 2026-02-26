@@ -2,7 +2,7 @@ import { createConfigs, createRouter } from '../../packages/core';
 
 const loader = async () => ({ default: null });
 
-const v: (param: string) => boolean = () => true;
+const v: (value: string) => boolean = () => true;
 
 const adapters = {} as any;
 
@@ -115,6 +115,23 @@ await router.redirect({ name: 'dynamicQuery', params: { id: '' }, query: { unkno
 const payload = router.urlToPayload('');
 
 payload.replace;
+
+// @ts-expect-error not existing name
+payload.name === 'unknown';
+
+if (payload.name === 'notFound') {
+  // @ts-expect-error params are not available
+  payload.params;
+  // @ts-expect-error "query" are not available
+  payload.query;
+}
+
+if (payload.name === 'internalError') {
+  // @ts-expect-error params are not available
+  payload.params;
+  // @ts-expect-error "query" are not available
+  payload.query;
+}
 
 if (payload.name === 'static') {
   // @ts-expect-error params are not available

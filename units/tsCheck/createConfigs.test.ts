@@ -15,8 +15,23 @@ createConfigs({
   // @ts-expect-error params validators must be functions
   dynamic5: { path: '/:id/:tab', params: { id: v, tab: '' }, loader },
 
+  // @ts-expect-error duplicates lead to error
+  double: { path: '/:id/:id', params: { id: v }, loader },
+  // @ts-expect-error duplicates lead to error even without params
+  double2: { path: '/:id/:id', loader },
+
+  // @ts-expect-error duplicate param appears later in a path
+  double3: { path: '/:id/:tab/:id', params: { id: v, tab: v }, loader },
+  // @ts-expect-error duplicate param appears later in a path (without params)
+  double4: { path: '/:id/:tab/:id', loader },
+
+  // @ts-expect-error duplicate with trailing slash
+  double5: { path: '/:id/:id/', params: { id: v }, loader },
+  // @ts-expect-error duplicate with trailing slash (without params)
+  double6: { path: '/:id/:id/', loader },
+
   static: { path: '/', loader },
-  // @ts-expect-error params must be undefined
+  // @ts-expect-error params must be "never"
   static2: { path: '/', loader, params: {} },
 
   // props are allowed for error pages

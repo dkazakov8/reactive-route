@@ -9,6 +9,6 @@ export type {
   TypeConfigsDefault,
   TypePayload,
   TypeRouter,
-  TypeRouterLocalObservable,
+  TypeRouterLocal,
   TypeState,
 } from './types';

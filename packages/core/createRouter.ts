@@ -245,7 +245,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
             name: activeState.name,
             params: (activeState as any).params,
             query: (activeState as any).query,
-          } as unknown as TypePayload<TConfigs, TypeConfigKeys<TConfigs>>)
+          } as TypePayload<TConfigs, TypeConfigKeys<TConfigs>>)
         : undefined;
       let nextState = this.payloadToState(payload);
 
@@ -281,10 +281,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
             },
           });
 
-          const redirectPayload: TypePayload<
-            TConfigs,
-            TypeConfigKeys<TConfigs>
-          > = await beforeEnter?.({
+          const redirectPayload = await beforeEnter?.({
             ...lifecycleData,
             redirect: (redirectPayload) => {
               if (win) return redirectPayload;
@@ -295,10 +292,10 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
             },
           });
 
-          if (redirectPayload) return this.redirect(redirectPayload);
+          if (redirectPayload) return this.redirect(redirectPayload as any);
         }
 
-        await this.preloadComponent(nextState.name as TypeConfigKeys<TConfigs>);
+        await this.preloadComponent(nextState.name);
       } catch (error: any) {
         if (error instanceof PreventError || error instanceof RedirectError) {
           adapters.batch(() => {
@@ -312,19 +309,15 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
         console.error(error);
 
-        nextState = this.payloadToState({ name: 'internalError' } as any) as any;
+        nextState = this.payloadToState({ name: 'internalError' } as any);
 
-        await this.preloadComponent(nextState.name as TypeConfigKeys<TConfigs>);
+        await this.preloadComponent(nextState.name);
       }
 
       adapters.batch(() => {
-        if (!this.state[nextState.name as TypeConfigKeys<TConfigs>])
-          this.state[nextState.name as TypeConfigKeys<TConfigs>] = {} as any;
+        if (!this.state[nextState.name]) this.state[nextState.name] = {} as any;
 
-        adapters.replaceObject(
-          this.state[nextState.name as TypeConfigKeys<TConfigs>],
-          nextState as any
-        );
+        adapters.replaceObject(this.state[nextState.name], nextState as any);
 
         for (const state of Object.values(this.state) as Array<
           TypeState<TConfigs, TypeConfigKeys<TConfigs>>

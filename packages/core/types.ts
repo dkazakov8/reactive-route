@@ -1,36 +1,44 @@
 // biome-ignore-all format: Complex TS types are unreadable with auto-formatting
 
-type TypePrettify<T> = { [K in keyof T]: T[K] };
+/** Just helpers, you may skip reading them */
 
-type TypeExtractParams<TPath extends string> = string extends TPath
+type TypePrettify<TObj> = { [TKey in keyof TObj]: TObj[TKey] };
+
+type TypeExtractParams<TPath extends string, TSeen extends string = never> = string extends TPath
   ? Record<string, string>
   : TPath extends `${string}:${infer TParam}/${infer TPathRest}`
-    ? TypePrettify<Record<TParam, string> & TypeExtractParams<`/${TPathRest}`>>
-    : TPath extends `${string}:${infer TParam}`
-      ? Record<TParam, string>
-      : never;
+    ? TParam extends TSeen ? never : TypePrettify<Record<TParam, string> & TypeExtractParams<`/${TPathRest}`, TSeen | TParam>>
+    : TPath extends `${string}:${infer TParam}` ? TParam extends TSeen ? never : Record<TParam, string> : never;
 
 type TypeExact<TTarget, TShape> = TTarget extends TShape
   ? Exclude<keyof TTarget, keyof TShape> extends never ? TTarget : never
   : never;
 
-type TypeErrorConfig = Pick<TypeConfig, 'path' | 'loader'> & { props?: TypeConfig['props'] };
+type TypeInferPath<TConfig> = TConfig extends { path: infer TPath extends string }
+  ? TPath
+  : string;
 
-type TypeConfigParams<TPath extends string> =
-  TypeExtractParams<TPath> extends never
-    ? { params?: never }
-    : { params: { [TParam in keyof TypeExtractParams<TPath>]: TypeValidator } };
+type TypeInferParams<TConfig> = TConfig extends { params?: infer TValue }
+  ? Exclude<TValue, undefined>
+  : never;
 
-type TypeInferPath<TConfig> = TConfig extends { path: infer TPath extends string } ? TPath : string;
+type TypeInferQuery<TConfig> = TConfig extends { query?: infer TValue }
+  ? Exclude<TValue, undefined>
+  : never;
 
-type TypeInferField<TConfig, TField extends 'params' | 'query'> =
-  TConfig extends { [_ in TField]?: infer TValue } ? Exclude<TValue, undefined> : never;
+type TypeParams<TConfig> = TypeInferParams<TConfig> extends never
+  ? {}
+  : { params: Record<keyof TypeInferParams<TConfig>, string> };
 
-type TypeValidator = (param: string) => boolean;
-type TypeRedirectOptions = { skipLifecycle?: boolean; };
+type TypeQuery<TConfig> = TypeInferQuery<TConfig> extends never
+  ? {}
+  : { query: Partial<Record<keyof TypeInferQuery<TConfig>, string>> };
 
-export type TypeURL = string;
-export type TypeReason = 'unmodified' | 'new_query' | 'new_params' | 'new_config';
+type TypeQueryOptional<TConfig> = TypeInferQuery<TConfig> extends never
+  ? {}
+  : { query?: Partial<Record<keyof TypeInferQuery<TConfig>, string>> };
+
+/** Types for adapters */
 
 // #region type-adapters
 export type TypeAdapters = {
@@ -41,6 +49,28 @@ export type TypeAdapters = {
   observer?: (component: any) => any;
 };
 // #endregion type-adapters
+
+/** Types for a Router component */
+
+export type PropsRouter<
+  TConfigs extends TypeConfigsDefault,
+  TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>,
+> = { router: TypeRouter<TConfigs, TNames> };
+
+export type TypeRouterLocal = { renderedName?: any; props: Record<string, any> };
+
+/** Some static types as a basic structure */
+
+type TypeValidator = (param: string) => boolean;
+type TypeRedirectOptions = { skipLifecycle?: boolean };
+
+export type TypeURL = string;
+export type TypeReason = 'unmodified' | 'new_query' | 'new_params' | 'new_config';
+
+export type TypeConfigsDefault = Record<string, TypeConfig> & {
+  notFound: TypeErrorConfig;
+  internalError: TypeErrorConfig;
+};
 
 export type TypePayloadDefault = {
   name: string;
@@ -55,13 +85,13 @@ export type TypeLifecycleData = {
   currentState?: TypeState<TypeConfigsDefault, any>;
 };
 
-export type TypeBeforeEnter = (data: TypeLifecycleData & {
-  redirect: (payload: TypePayloadDefault) => void;
-}) => Promise<any>;
+export type TypeBeforeEnter = (
+  data: TypeLifecycleData & { redirect: (payload: TypePayloadDefault) => void; }
+) => Promise<void | TypePayloadDefault>;
 
-export type TypeBeforeLeave = (data: TypeLifecycleData & {
-  preventRedirect: () => void;
-}) => Promise<any>;
+export type TypeBeforeLeave = (
+  data: TypeLifecycleData & { preventRedirect: () => void; }
+) => Promise<void>;
 
 // #region type-config
 export type TypeConfig = {
@@ -79,44 +109,57 @@ export type TypeConfig = {
 };
 // #endregion type-config
 
+type TypeErrorConfig = Pick<TypeConfig, 'path' | 'loader'> & { props?: TypeConfig['props'] };
+
+/** Dynamic types which are really used for the router */
+
+export type TypeConfigKeys<TConfigs extends TypeConfigsDefault> = string & keyof TConfigs;
+
+type TypePathHasParams<TPath extends string> = string extends TPath
+  ? true
+  : TPath extends `${string}:${string}` ? true : false;
+
+type TypeConfigParams<TPath extends string> = [TypeExtractParams<TPath>] extends [never]
+  ? TypePathHasParams<TPath> extends true ? never : {} | { params: never }
+  : { params: { [TParam in keyof TypeExtractParams<TPath>]: TypeValidator } };
+
+type TypeConfigBase<TPath extends string> = {
+  path: TPath;
+  loader: () => Promise<{ default: any }>;
+  props?: Record<string, any>;
+  query?: Record<string, TypeValidator>;
+
+  // It is impossible for TS 5 to make a double self-inference, so these functions are loosely-typed
+  // I tried tens of approaches and hacks
+  beforeEnter?: TypeBeforeEnter;
+  beforeLeave?: TypeBeforeLeave;
+};
+
 // #region type-state
 export type TypeState<
   TConfigs extends TypeConfigsDefault,
-  TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>
+  TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>,
 > = {
-  [TName in TNames]: TypePrettify<{
-    name: TName;
-    url: TypeURL;
-    search: string;
-    pathname: string;
-    props: TConfigs[TName]['props'];
-    isActive: boolean;
-  } & (
-    TypeInferField<TConfigs[TName], 'query'> extends never
-      ? {}
-      : { query: Partial<Record<keyof TypeInferField<TConfigs[TName], 'query'>, string>> }
-  ) & (
-    TypeInferField<TConfigs[TName], 'params'> extends never
-      ? {}
-      : { params: Record<keyof TypeInferField<TConfigs[TName], 'params'>, string> }
-  )>;
+  [TName in TNames]: TypePrettify<
+    {
+      name: TName;
+      url: TypeURL;
+      search: string;
+      pathname: string;
+      props: TConfigs[TName]['props'];
+      isActive: boolean;
+    } & TypeQuery<TConfigs[TName]> & TypeParams<TConfigs[TName]>
+  >;
 }[TNames];
 // #endregion type-state
 
 export type TypeConfigurableConfigs<TConfigConfigurable> = {
   [TName in keyof TConfigConfigurable]: TName extends 'notFound' | 'internalError'
     ? TypeExact<TConfigConfigurable[TName], TypeErrorConfig>
-    : {
-      path: TypeInferPath<TConfigConfigurable[TName]>;
-      loader: () => Promise<{ default: any }>;
-      props?: Record<string, any>;
-      query?: Record<string, TypeValidator>;
-      beforeEnter?: TypeBeforeEnter;
-      beforeLeave?: TypeBeforeLeave;
-    } & TypeConfigParams<TypeInferPath<TConfigConfigurable[TName]>>;
+    : TypeConfigBase<TypeInferPath<TConfigConfigurable[TName]>> & TypeConfigParams<TypeInferPath<TConfigConfigurable[TName]>>;
 } & { notFound: TypeErrorConfig; internalError: TypeErrorConfig };
 
-export type TypeConfigsExtended<TConfigConfigurable extends Record<string, any>> = {
+export type TypeConfigs<TConfigConfigurable extends Record<string, any>> = {
   [TName in string & keyof TConfigConfigurable]: TConfigConfigurable[TName] & {
     name: TName;
     props: TypeConfig['props'];
@@ -125,19 +168,6 @@ export type TypeConfigsExtended<TConfigConfigurable extends Record<string, any>>
   };
 };
 
-export type TypeConfigKeys<TConfigs extends TypeConfigsDefault> = string & keyof TConfigs;
-
-export type TypeConfigsDefault = Record<string, TypeConfig> & {
-  notFound: TypeConfig;
-  internalError: TypeConfig;
-};
-
-export type PropsRouter<TConfigs extends TypeConfigsDefault> = {
-  router: TypeRouter<TConfigs, any>;
-};
-
-export type TypeRouterLocalObservable = { renderedName?: any; props: Record<string, any> };
-
 export type TypePayload<
   TConfigs extends TypeConfigsDefault,
   TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>,
@@ -145,17 +175,8 @@ export type TypePayload<
 > = {
   [TName in TNames]: TypePrettify<
     { name: TName; replace?: boolean }
-    & (
-      TypeInferField<TConfigs[TName], 'params'> extends never
-        ? {}
-        : { params: Record<keyof TypeInferField<TConfigs[TName], 'params'>, string> }
-    )
-    & (
-      TypeInferField<TConfigs[TName], 'query'> extends never
-        ? {}
-        : TQueryRequired extends true
-          ? { query: Partial<Record<keyof TypeInferField<TConfigs[TName], 'query'>, string>> }
-          : { query?: Partial<Record<keyof TypeInferField<TConfigs[TName], 'query'>, string>> })
+    & TypeParams<TConfigs[TName]>
+    & (TQueryRequired extends true ? TypeQuery<TConfigs[TName]> : TypeQueryOptional<TConfigs[TName]>)
   >;
 }[TNames];
 
@@ -166,7 +187,7 @@ export type TypePayloadParsed<
 
 export type TypeGlobalArguments<
   TConfigs extends TypeConfigsDefault,
-  TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>
+  TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>,
 > = {
   adapters: TypeAdapters;
   configs: TConfigs;
@@ -178,7 +199,6 @@ export type TypeGlobalArguments<
   }) => void;
 };
 
-// #region type-router
 export type TypeRouter<
   TConfigs extends TypeConfigsDefault,
   TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>,
