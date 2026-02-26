@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { checkStateFromPayload, checkURLPayload, untypedRouter, v } from './checkers';
 
@@ -109,6 +109,33 @@ describe(`Config detection from URL`, async () => {
 
     checkURLPayload({ router, pathname, payload, search });
     checkStateFromPayload({ router, payload, state });
+  });
+
+  it('Fallback to 404 and log an error when URL can not be constructed', () => {
+    const router = untypedRouter({});
+
+    const payload = { name: 'notFound', params: {}, query: {} };
+    const pathname = '://&!@#$%^&*(';
+    const search = '';
+    const state = {
+      ...payload,
+      url: `/error404`,
+      search: `${search.slice(1)}`,
+      pathname: '/error404',
+      props: { errorNumber: 404 },
+    };
+
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    checkURLPayload({ router, pathname, payload, search });
+    checkStateFromPayload({ router, payload, state });
+
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(2);
+
+    expect(consoleErrorSpy).nthCalledWith(1, 'Invalid URL "//&!@#$%^&*(", fallback to notFound');
+    expect(consoleErrorSpy).nthCalledWith(2, 'Invalid URL "//&!@#$%^&*(/", fallback to notFound');
+
+    consoleErrorSpy.mockRestore();
   });
 
   it('Hash is cleared', () => {

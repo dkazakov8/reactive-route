@@ -20,7 +20,6 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
   const win = typeof window !== 'undefined' ? window : null;
 
-  // @ts-expect-error payloadToState return type is narrowed for external consumers
   const router = adapters.makeObservable({
     state: {},
     isRedirecting: false,
@@ -55,7 +54,19 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
       url = url.replace(/^\/+\?/, '/?');
 
-      const urlObject = new URL(url, 'http://a.b');
+      let urlObject: URL;
+
+      try {
+        urlObject = new URL(url, 'http://a.b');
+      } catch (_e) {
+        console.error(`Invalid URL "${url}", fallback to notFound`);
+
+        return {
+          name: 'notFound',
+          params: {},
+          query: {},
+        } as unknown as TypePayloadParsed<TConfigs>;
+      }
 
       const partsDecoded: Array<string> = [];
 
@@ -127,12 +138,13 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
         else config = testedConfig;
       }
 
-      if (!config)
+      if (!config) {
         return {
           name: 'notFound',
           params: {},
           query: {},
         } as unknown as TypePayloadParsed<TConfigs>;
+      }
 
       if (config.query) {
         for (const key in config.query) {
@@ -207,10 +219,11 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
       const search = new URLSearchParams(query).toString().replace(/\+/g, '%20');
       const url = `${pathname}${search ? `?${search}` : ''}`;
 
-      return {
+      const state = {
         name: config.name,
-        query: query as unknown as Partial<Record<keyof TypeConfig['query'], string>>,
-        params: params as unknown as Record<keyof TypeConfig['params'], string>,
+        // @ts-expect-error
+        query: query as Partial<Record<keyof TypeConfig['query'], string>>,
+        params: params as Record<keyof TypeConfig['params'], string>,
 
         url,
         search,
@@ -218,7 +231,9 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
         props: config.props,
         isActive: true,
-      };
+      } satisfies TypeState<TConfigs, TypeConfigKeys<TConfigs>>;
+
+      return state as any;
     },
 
     async redirect(payload, options) {
@@ -347,7 +362,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
       return this.redirect(payload, options);
     },
-  } as TypeRouter<TConfigs>);
+  } satisfies TypeRouter<TConfigs>);
 
   for (const key of Object.keys(router) as Array<keyof TypeRouter<TConfigs>>) {
     if (typeof router[key] === 'function') (router as any)[key] = router[key].bind(router);
