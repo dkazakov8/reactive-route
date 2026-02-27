@@ -1,8 +1,7 @@
-import { createConfigs } from 'reactive-route';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { createRouter } from '../packages/core/createRouter';
-import { checkURL, destroyAfterTest, getConfigsDefault, loader, v } from './checkers';
+import { createConfigs, createRouter } from '../packages/core';
+import { checkURL, destroyAfterTest, getConfigsDefault, loader, v } from './helpers/checkers';
 import { getAdapters } from './helpers/getAdapters';
 import { allPossibleOptions } from './helpers/types';
 

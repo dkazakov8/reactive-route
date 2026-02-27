@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createConfigs, createRouter, RedirectError } from '../packages/core';
-import { createBeforeEnterSpy, getConfigsDefault, loader, v } from './checkers';
+import { createBeforeEnterSpy, getConfigsDefault, loader, v } from './helpers/checkers';
 import { getAdapters } from './helpers/getAdapters';
 import { allPossibleOptions } from './helpers/types';
 

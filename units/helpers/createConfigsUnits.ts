@@ -1,4 +1,4 @@
-import { createConfigs } from 'reactive-route';
+import { createConfigs } from '../../packages/core';
 
 export function createConfigsUnits(imports: Record<string, any>) {
   return createConfigs({

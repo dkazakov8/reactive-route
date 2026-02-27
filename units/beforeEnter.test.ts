@@ -8,7 +8,7 @@ import {
   getConfigsDefault,
   loader,
   v,
-} from './checkers';
+} from './helpers/checkers';
 import { getAdapters } from './helpers/getAdapters';
 import { allPossibleOptions } from './helpers/types';
 

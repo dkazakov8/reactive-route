@@ -1,5 +1,4 @@
-import { TypeAdapters } from 'reactive-route';
-
+import { TypeAdapters } from '../../packages/core';
 import { TypeOptions } from './types';
 
 export async function getAdapters(options: TypeOptions) {

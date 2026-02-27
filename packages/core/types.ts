@@ -173,11 +173,10 @@ export type TypePayload<
   TNames extends TypeConfigKeys<TConfigs> = TypeConfigKeys<TConfigs>,
   TQueryRequired extends boolean = false,
 > = {
-  [TName in TNames]: TypePrettify<
+  [TName in TNames]:
     { name: TName; replace?: boolean }
     & TypeParams<TConfigs[TName]>
-    & (TQueryRequired extends true ? TypeQuery<TConfigs[TName]> : TypeQueryOptional<TConfigs[TName]>)
-  >;
+    & (TQueryRequired extends true ? TypeQuery<TConfigs[TName]> : TypeQueryOptional<TConfigs[TName]>);
 }[TNames];
 
 export type TypePayloadParsed<

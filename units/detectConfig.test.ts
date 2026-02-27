@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { checkStateFromPayload, checkURLPayload, untypedRouter, v } from './checkers';
+import { checkStateFromPayload, checkURLPayload, untypedRouter, v } from './helpers/checkers';
 
 describe(`Config detection from URL`, async () => {
   it('Config path should have urlencoded format', () => {

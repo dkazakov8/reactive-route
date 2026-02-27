@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { checkStateFromPayload, checkURLPayload, untypedRouter, v } from './checkers';
+import { checkStateFromPayload, checkURLPayload, untypedRouter, v } from './helpers/checkers';
 
 describe(`URL decoding`, async () => {
   it('Decodes query', () => {
