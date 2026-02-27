@@ -18,7 +18,7 @@ beforeEach(() => {
   }
 });
 
-describe.each([allPossibleOptions[0]])(`Lifecycle: beforeLeave %s`, (options) => {
+describe.each(allPossibleOptions)(`Lifecycle: beforeLeave %s`, (options) => {
   it('Not called when Payload is the same + query', async () => {
     const spy = createBeforeLeaveSpy();
 
@@ -478,5 +478,100 @@ describe.each([allPossibleOptions[0]])(`Lifecycle: beforeLeave %s`, (options) =>
     expect(consoleErrorSpy).nthCalledWith(1, new ReferenceError('a is not defined'));
 
     consoleErrorSpy.mockRestore();
+  });
+
+  it('Prevent redirect', async () => {
+    const spy = createBeforeLeaveSpy();
+
+    const router = createRouter({
+      configs: createConfigs({
+        static: { path: '/static', query: { q: v.length }, loader },
+        prevent1: {
+          path: '/prevent1',
+          loader,
+          async beforeLeave(data) {
+            if (data.nextState.name === 'static') {
+              return data.preventRedirect();
+            }
+
+            spy.beforeLeave(data);
+          },
+        },
+        prevent2: {
+          path: '/prevent2',
+          loader,
+          async beforeLeave(data) {
+            if (data.nextState.query?.q === 'v-q') {
+              return data.preventRedirect();
+            }
+
+            spy.beforeLeave(data);
+          },
+        },
+        ...getConfigsDefault(),
+      }),
+      adapters: await getAdapters(options),
+    });
+
+    destroyAfterTest(router);
+
+    let url = await router.redirect({ name: 'prevent1' });
+
+    // biome-ignore lint/style/useConst: false
+    let currentState: any;
+    let nextState: any = {
+      name: 'prevent1',
+      query: {},
+      params: {},
+      url: '/prevent1',
+      search: '',
+      pathname: '/prevent1',
+      props: {},
+      isActive: true,
+    };
+
+    spy.checkCount(0);
+
+    checkURL({ routerUrl: url, expectedUrl: nextState.url });
+
+    expect(router.getActiveState()).to.deep.eq(nextState);
+
+    url = await router.redirect({ name: 'static' });
+
+    spy.checkCount(0);
+
+    checkURL({ routerUrl: url, expectedUrl: nextState.url });
+
+    expect(router.getActiveState()).to.deep.eq(nextState);
+
+    url = await router.redirect({ name: 'prevent2' });
+
+    currentState = nextState;
+    nextState = {
+      name: 'prevent2',
+      query: {},
+      params: {},
+      url: '/prevent2',
+      search: '',
+      pathname: '/prevent2',
+      props: {},
+      isActive: true,
+    };
+
+    spy.checkCount(1);
+
+    spy.checkLastArguments({ reason: 'new_config', nextState, currentState });
+
+    checkURL({ routerUrl: url, expectedUrl: nextState.url });
+
+    url = await router.redirect({ name: 'static', query: { q: 'v-q' } });
+
+    spy.checkCount(1);
+
+    spy.checkLastArguments({ reason: 'new_config', nextState, currentState });
+
+    checkURL({ routerUrl: url, expectedUrl: nextState.url });
+
+    expect(router.getActiveState()).to.deep.eq(nextState);
   });
 });
