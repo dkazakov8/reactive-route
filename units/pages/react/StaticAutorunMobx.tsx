@@ -1,7 +1,7 @@
-import { observer } from 'kr-observable/preact';
-import { useContext, useState } from 'preact/hooks';
+import { observer } from 'mobx-react-lite';
+import { useContext, useState } from 'react';
 
-import { RouterContext } from '../RouterContext';
+import { RouterContext } from './RouterContext';
 
 const StaticAutorun = observer(
   (props: { spy_pageRender: () => void; spy_pageAutorun: (arg: any) => void }) => {
@@ -18,7 +18,7 @@ const StaticAutorun = observer(
       });
     });
 
-    return <>StaticAutorun</>;
+    return 'StaticAutorun';
   }
 );
 

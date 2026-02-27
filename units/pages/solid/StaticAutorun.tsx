@@ -1,6 +1,6 @@
 import { useContext } from 'solid-js';
 
-import { RouterContext } from '../RouterContext';
+import { RouterContext } from './RouterContext';
 
 export default function StaticAutorun(props: {
   spy_pageRender: () => void;

@@ -1,6 +1,7 @@
 import { expect, vi } from 'vitest';
 
 import { createRouter } from '../../packages/core';
+import { destroyAfterTest } from './checkers';
 import { getAdapters } from './getAdapters';
 import { getConfigs } from './getConfigs';
 import { getRender } from './getRender';
@@ -21,6 +22,8 @@ export async function prepareRouterTest(options: TypeOptions) {
     adapters,
     beforeComponentChange: spy_beforeComponentChange,
   });
+
+  destroyAfterTest(router);
 
   (router.getGlobalArguments().configs.staticRouteAutorun as any).props = {
     spy_pageRender,
