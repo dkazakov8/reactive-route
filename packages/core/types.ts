@@ -43,7 +43,7 @@ type TypeQueryOptional<TConfig> = TypeInferQuery<TConfig> extends never
 // #region type-adapters
 export type TypeAdapters = {
   batch: (cb: () => void) => void;
-  autorun: (cb: () => void) => any;
+  autorun: (cb: () => void) => void | (() => void);
   replaceObject: <T extends Record<string, any>>(obj: T, newObj: T) => void;
   makeObservable: <T extends Record<string, any>>(obj: T) => T;
   observer?: (component: any) => any;

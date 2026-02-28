@@ -91,7 +91,7 @@ describe(`Config detection from URL`, async () => {
       url: `/error404`,
       search: `${search.slice(1)}`,
       pathname: `/error404`,
-      props: { errorNumber: 404 },
+      props: { error: 404 },
     };
 
     checkURLPayload({ router, pathname, payload, search });
@@ -209,7 +209,7 @@ describe(`Config detection from URL`, async () => {
       url: `/error404`,
       search: `${search.slice(1)}`,
       pathname: '/error404',
-      props: { errorNumber: 404 },
+      props: { error: 404 },
     };
 
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
@@ -241,7 +241,7 @@ describe(`Config detection from URL`, async () => {
       url: `/error404`,
       search: `${search.slice(1)}`,
       pathname: `/error404`,
-      props: { errorNumber: 404 },
+      props: { error: 404 },
     };
 
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);

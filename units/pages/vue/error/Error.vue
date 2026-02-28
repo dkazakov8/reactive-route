@@ -1,6 +1,6 @@
-<template>Error {{ errorNumber }}</template>
+<template>Error {{ error }}</template>
 
 <script setup lang="ts">
-defineProps<{ errorNumber: number }>();
+defineProps<{ error: number }>();
 defineOptions({ inheritAttrs: false });
 </script>

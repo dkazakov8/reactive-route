@@ -464,7 +464,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeLeave %s`, (options) => {
       url: '/error500',
       search: '',
       pathname: '/error500',
-      props: { errorNumber: 500 },
+      props: { error: 500 },
       isActive: true,
     };
 

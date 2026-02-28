@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import {
   handleComponentRerender,
   type PropsRouter,
+  type TypeAdapters,
   type TypeConfigsDefault,
   type TypeRouterLocal,
 } from 'reactive-route';
@@ -9,7 +10,7 @@ import {
 function RouterInner<TConfigs extends TypeConfigsDefault>(props: PropsRouter<TConfigs>) {
   const [{ adapters }] = useState(() => props.router.getGlobalArguments());
 
-  const disposerRef = useRef<() => void>(null);
+  const disposerRef = useRef<ReturnType<TypeAdapters['autorun']>>(undefined);
   const ComponentRef = useRef<any>(null);
 
   const [localObservable] = useState<TypeRouterLocal>(() =>

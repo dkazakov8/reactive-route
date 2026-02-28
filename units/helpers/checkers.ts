@@ -14,8 +14,8 @@ export const v = {
 
 export function getConfigsDefault() {
   return {
-    notFound: { path: '/error404', props: { errorNumber: 404 }, loader },
-    internalError: { path: '/error500', props: { errorNumber: 500 }, loader },
+    notFound: { path: '/error404', props: { error: 404 }, loader },
+    internalError: { path: '/error500', props: { error: 500 }, loader },
   } as const;
 }
 

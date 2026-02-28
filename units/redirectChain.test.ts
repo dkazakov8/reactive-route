@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
 import { createConfigs, createRouter, RedirectError } from '../packages/core';
-import { createBeforeEnterSpy, getConfigsDefault, loader, v } from './helpers/checkers';
+import {
+  checkURL,
+  createBeforeEnterSpy,
+  destroyAfterTest,
+  getConfigsDefault,
+  loader,
+  v,
+} from './helpers/checkers';
 import { getAdapters } from './helpers/getAdapters';
 import { allPossibleOptions } from './helpers/types';
 
@@ -128,6 +135,42 @@ describe.runIf(typeof window !== 'undefined').each(allPossibleOptions)(
       expect(router.getActiveState()).to.deep.eq(nextState);
 
       expect(location.pathname).to.eq(nextState.url);
+    });
+
+    it('Supports replace', async () => {
+      const router = createRouter({
+        configs: createConfigs({
+          start: {
+            path: '/start',
+            loader,
+            async beforeEnter(data) {
+              return data.redirect({ name: 'target', replace: true });
+            },
+          },
+          target: { path: '/target', loader },
+          ...getConfigsDefault(),
+        }),
+        adapters: await getAdapters(options),
+      });
+
+      destroyAfterTest(router);
+
+      const url = await router.redirect({ name: 'start', replace: true });
+
+      const nextState: any = {
+        name: 'target',
+        query: {},
+        params: {},
+        url: '/target',
+        search: '',
+        pathname: '/target',
+        props: {},
+        isActive: true,
+      };
+
+      checkURL({ routerUrl: url, expectedUrl: nextState.url });
+
+      expect(router.getActiveState()).to.deep.eq(nextState);
     });
   }
 );
@@ -293,6 +336,29 @@ describe.runIf(typeof window === 'undefined').each(allPossibleOptions)(
       spyTarget.checkLastArguments({ reason: 'new_config', nextState, currentState });
 
       expect(router.getActiveState()).to.deep.eq(nextState);
+    });
+
+    it('Supports replace', async () => {
+      const router = createRouter({
+        configs: createConfigs({
+          start: {
+            path: '/start',
+            loader,
+            async beforeEnter(data) {
+              return data.redirect({ name: 'target', replace: true });
+            },
+          },
+          target: { path: '/target', loader },
+          ...getConfigsDefault(),
+        }),
+        adapters: await getAdapters(options),
+      });
+
+      destroyAfterTest(router);
+
+      await expect(async () => {
+        await router.redirect({ name: 'start' });
+      }).rejects.toThrowError(new RedirectError('/target'));
     });
   }
 );

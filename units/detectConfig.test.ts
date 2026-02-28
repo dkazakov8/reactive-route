@@ -104,7 +104,7 @@ describe(`Config detection from URL`, async () => {
       url: `/error404`,
       search: `${search.slice(1)}`,
       pathname: '/error404',
-      props: { errorNumber: 404 },
+      props: { error: 404 },
     };
 
     checkURLPayload({ router, pathname, payload, search });
@@ -122,7 +122,7 @@ describe(`Config detection from URL`, async () => {
       url: `/error404`,
       search: `${search.slice(1)}`,
       pathname: '/error404',
-      props: { errorNumber: 404 },
+      props: { error: 404 },
     };
 
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
@@ -233,6 +233,26 @@ describe(`Config detection from URL`, async () => {
     expect(router.urlToPayload('//localhost:3000?q=v-q')).to.deep.eq(payload);
     expect(router.urlToPayload('//localhost:3000/?q=v-q')).to.deep.eq(payload);
 
+    checkStateFromPayload({ router, payload, state });
+  });
+
+  it('Fallback to next config when validator fails', () => {
+    const router = untypedRouter({
+      dynamicInvalid: { path: '/:one', params: { one: () => false } },
+      dynamicValid: { path: '/:one', params: { one: v.length } },
+    });
+
+    const payload = { name: 'dynamicValid', params: { one: 'v-one' }, query: {} } as any;
+    const pathname = '/v-one';
+    const search = '';
+    const state = {
+      ...payload,
+      url: `${pathname}${search}`,
+      search: `${search.slice(1)}`,
+      pathname,
+    };
+
+    checkURLPayload({ router, pathname, payload, search });
     checkStateFromPayload({ router, payload, state });
   });
 });

@@ -11,11 +11,11 @@ const props = defineProps<{
 const { router } = useRouterStore();
 const { adapters } = router.getGlobalArguments();
 
-const currentRoute = router.state.staticRouteAutorun!;
+const currentState = router.state.autorun!;
 
 props.spy_pageRender();
 
 adapters.autorun(() => {
-  props.spy_pageAutorun(currentRoute.name);
+  props.spy_pageAutorun(currentState.name);
 });
 </script>

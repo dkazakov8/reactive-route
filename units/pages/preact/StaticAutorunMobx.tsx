@@ -1,6 +1,6 @@
 // @ts-expect-error
 import { observer } from 'mobx-preact';
-import { useContext, useState } from 'preact/hooks';
+import { useContext, useEffect, useState } from 'preact/hooks';
 
 import { RouterContext } from './RouterContext';
 
@@ -9,15 +9,22 @@ const StaticAutorun = observer(
     const { router } = useContext(RouterContext);
     const { adapters } = router.getGlobalArguments();
 
-    const currentRoute = router.state.staticRouteAutorun!;
+    const currentState = router.state.autorun!;
 
     props.spy_pageRender();
 
-    useState(() => {
-      adapters.autorun(() => {
-        props.spy_pageAutorun(currentRoute.name);
+    const [disposer] = useState(() => {
+      return adapters.autorun(() => {
+        props.spy_pageAutorun(currentState.name);
       });
     });
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: false
+    useEffect(() => {
+      return () => {
+        disposer?.();
+      };
+    }, []);
 
     return 'StaticAutorun';
   }

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createConfigs, createRouter } from '../packages/core';
 import { checkURL, destroyAfterTest, getConfigsDefault, loader, v } from './helpers/checkers';
@@ -58,9 +58,44 @@ describe.each(allPossibleOptions)(`Router.init %s`, (options) => {
       url: `/error404`,
       search: ``,
       pathname: '/error404',
-      props: { errorNumber: 404 },
+      props: { error: 404 },
       isActive: true,
     };
+
+    checkURL({ routerUrl: url, expectedUrl: nextState.url });
+
+    expect(router.getActiveState()).to.deep.eq(nextState);
+  });
+
+  it('Can skip lifecycle', async () => {
+    const beforeEnter = vi.fn();
+    const beforeLeave = vi.fn();
+
+    const router = createRouter({
+      configs: createConfigs({
+        static: { path: '/static', loader, beforeEnter, beforeLeave },
+        ...getConfigsDefault(),
+      }),
+      adapters: await getAdapters(options),
+    });
+
+    destroyAfterTest(router);
+
+    const url = await router.init('/static', { skipLifecycle: true });
+
+    const nextState: any = {
+      name: 'static',
+      query: {},
+      params: {},
+      url: '/static',
+      search: '',
+      pathname: '/static',
+      props: {},
+      isActive: true,
+    };
+
+    expect(beforeEnter).toHaveBeenCalledTimes(0);
+    expect(beforeLeave).toHaveBeenCalledTimes(0);
 
     checkURL({ routerUrl: url, expectedUrl: nextState.url });
 

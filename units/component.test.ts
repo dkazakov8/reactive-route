@@ -1,39 +1,15 @@
+import { createConfigs } from 'reactive-route';
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { attachReactivity } from './helpers/attachReactivity';
+import { v } from './helpers/checkers';
+import { getPageComponents } from './helpers/getPageComponents';
 import { prepareRouterTest } from './helpers/prepareRouterTest';
 import type { TypeOptions } from './helpers/types';
 
 const options = OPTIONS as TypeOptions;
 
-if (options.renderer === 'solid') {
-  if (options.reactivity === 'mobx') {
-    const { enableExternalSource } = await import('solid-js');
-    const { Reaction } = await import('mobx');
-
-    let id = 0;
-
-    enableExternalSource((fn, trigger) => {
-      const reaction = new Reaction(`mobx@${++id}`, trigger);
-
-      return {
-        track: (x) => {
-          let next: any;
-
-          reaction.track(() => (next = fn(x)));
-
-          return next;
-        },
-        dispose: () => reaction.dispose(),
-      };
-    });
-  }
-
-  if (options.reactivity === 'kr-observable') {
-    const { enableObservable } = await import('kr-observable/solidjs');
-
-    enableObservable();
-  }
-}
+await attachReactivity(options);
 
 beforeEach(() => {
   if (typeof window !== 'undefined') {
@@ -44,229 +20,226 @@ beforeEach(() => {
 describe.runIf(typeof window !== 'undefined').each([options])(
   `Router component [browser]: %s`,
   () => {
-    it('Spy render and autorun', async () => {
-      const { router, checkSpy, calls, render, spy_pageAutorun } = await prepareRouterTest(options);
+    const { components, expectedContent } = getPageComponents(options);
 
-      const container = (await render()).container;
+    const errorConfigs = {
+      notFound: { path: '/error404', props: { error: 404 }, loader: components.notFound },
+      internalError: { path: '/error500', props: { error: 500 }, loader: components.internalError },
+    } as const;
 
-      await router.redirect({ name: 'staticRouteAutorun' });
+    it('Should not modify currentState and call reactions on unmount', async () => {
+      const { router, checkSpy, calls, render } = await prepareRouterTest({
+        options,
+        configs: createConfigs({
+          static: { path: '/static', loader: components.static },
+          autorun: { path: '/autorun', loader: components.autorun },
+          ...errorConfigs,
+        }),
+      });
+
+      const screen = await render();
+
+      const container = screen.container;
+
+      await router.redirect({ name: 'autorun' });
 
       calls.pageRender += 1;
       calls.pageAutorun += 1;
       calls.beforeComponentChange += 1;
 
-      expect(container.innerHTML).to.eq('StaticAutorun');
+      expect(container.innerHTML).to.eq(expectedContent.autorun);
 
-      expect(spy_pageAutorun).toHaveBeenLastCalledWith('staticRouteAutorun');
+      checkSpy('autorun');
 
-      checkSpy();
-
-      await router.redirect({ name: 'staticRoute' });
+      await router.redirect({ name: 'static' });
 
       calls.beforeComponentChange += 1;
 
-      expect(container.innerHTML).to.eq('Static');
+      expect(container.innerHTML).to.eq(expectedContent.static);
 
-      expect(spy_pageAutorun).toHaveBeenLastCalledWith('staticRouteAutorun');
-
-      checkSpy();
-    });
-
-    it('Only beforeComponentChange called on first render', async () => {
-      const { router, checkSpy, calls, render } = await prepareRouterTest(options);
-
-      const container = (await render()).container;
-
-      await router.redirect({ name: 'staticRoute' });
-
-      calls.beforeComponentChange += 1;
-
-      expect(container.innerHTML).to.eq('Static');
-
-      checkSpy();
-    });
-
-    it('No lifecycle if only params changed (with page name)', async () => {
-      const { router, render, checkSpy, calls } = await prepareRouterTest(options);
-
-      const container = (await render()).container;
-
-      await router.redirect({ name: 'dynamicOneParam', params: { static: 'asd' } });
-
-      calls.beforeComponentChange += 1;
-
-      expect(container.innerHTML).to.eq('<div>Dynamic</div>');
-
-      checkSpy();
-
-      await router.redirect({ name: 'dynamicOneParam', params: { static: 'dsa' } });
-
-      expect(container.innerHTML).to.eq('<div>Dynamic</div>');
-
-      checkSpy();
-    });
-
-    it('No router lifecycle (same component)', async () => {
-      const { router, render, checkSpy, calls } = await prepareRouterTest(options);
-
-      const container = (await render()).container;
-
-      await router.redirect({ name: 'dynamicOneParam', params: { static: 'asd' } });
-
-      calls.beforeComponentChange += 1;
-
-      expect(container.innerHTML).to.eq('<div>Dynamic</div>');
-
-      checkSpy();
-
-      await router.redirect({ name: 'dynamicRoute2', params: { static: 'dsa' } });
-
-      expect(container.innerHTML).to.eq('<div>Dynamic</div>');
-
-      checkSpy();
-    });
-
-    it('No rerender and lifecycle on props change', async () => {
-      const { router, render, checkSpy, calls } = await prepareRouterTest(options);
-
-      const container = (await render()).container;
-
-      await router.redirect({ name: 'notFound' });
-
-      calls.beforeComponentChange += 1;
-
-      expect(container.innerHTML).to.eq('Error 404');
-
-      checkSpy();
-
-      await router.redirect({ name: 'internalError' });
-
-      expect(container.innerHTML).to.eq('Error 500');
-
-      checkSpy();
-    });
-
-    it('History pop', async () => {
-      const { router, render, checkSpy, calls } = await prepareRouterTest(options);
-
-      function waitForRedirect() {
-        return new Promise((resolve) => {
-          const interval = setInterval(() => {
-            if (!router.isRedirecting) {
-              clearInterval(interval);
-              resolve(null);
-            }
-          }, 10);
-        });
-      }
-
-      const container = (await render()).container;
-
-      await router.redirect({ name: 'staticRoute' });
-
-      calls.beforeComponentChange += 1;
-
-      expect(container.innerHTML).to.eq('Static');
-
-      checkSpy();
-
-      expect(location.pathname).to.eq('/test/static');
-
-      await router.redirect({ name: 'dynamicOneParam', params: { static: 'asd' } });
-
-      calls.beforeComponentChange += 1;
-
-      expect(container.innerHTML).to.eq('<div>Dynamic</div>');
-
-      checkSpy();
-
-      expect(location.pathname).to.eq('/test/asd');
-
-      await router.redirect({ name: 'dynamicRoute2', params: { static: 'asd' } });
-
-      expect(container.innerHTML).to.eq('<div>Dynamic</div>');
-
-      checkSpy();
-
-      expect(location.pathname).to.eq('/test3/asd');
-
-      history.back();
-
-      await waitForRedirect();
-
-      expect(container.innerHTML).to.eq('<div>Dynamic</div>');
-
-      checkSpy();
-
-      expect(location.pathname).to.eq('/test/asd');
-
-      history.back();
-
-      await waitForRedirect();
-
-      calls.beforeComponentChange += 1;
-
-      expect(container.innerHTML).to.eq('Static');
-
-      checkSpy();
-
-      expect(location.pathname).to.eq('/test/static');
-
-      history.forward();
-
-      await waitForRedirect();
-
-      calls.beforeComponentChange += 1;
-
-      expect(container.innerHTML).to.eq('<div>Dynamic</div>');
-
-      checkSpy();
-
-      expect(location.pathname).to.eq('/test/asd');
-
-      history.forward();
-
-      await waitForRedirect();
-
-      expect(container.innerHTML).to.eq('<div>Dynamic</div>');
-
-      checkSpy();
-
-      expect(location.pathname).to.eq('/test3/asd');
-    });
-
-    it('Unmount check', async () => {
-      const { router, checkSpy, calls, render } = await prepareRouterTest(options);
-
-      const screen = await render();
-      const container = screen.container;
-
-      await router.redirect({ name: 'staticRoute' });
-
-      calls.beforeComponentChange += 1;
-
-      expect(container.innerHTML).to.eq('Static');
-
-      checkSpy();
+      checkSpy('autorun');
 
       screen.unmount();
 
       expect(container.innerHTML).to.eq('');
     });
+
+    it('beforeComponentChange not called on params or query change', async () => {
+      const { router, render, checkSpy, calls } = await prepareRouterTest({
+        options,
+        configs: createConfigs({
+          autorun: { path: '/autorun', loader: components.autorun },
+          dynamic: {
+            path: '/:one',
+            params: { one: v.length },
+            query: { q: v.length },
+            loader: components.dynamic,
+          },
+          ...errorConfigs,
+        }),
+      });
+
+      const screen = await render();
+
+      const container = screen.container;
+
+      await router.redirect({ name: 'dynamic', params: { one: 'v-one' } });
+      await router.redirect({ name: 'dynamic', params: { one: 'v-one2' } });
+      await router.redirect({ name: 'dynamic', params: { one: 'v-one2' }, query: { q: 'v-q' } });
+      await router.redirect({ name: 'dynamic', params: { one: 'v-one2' }, query: { q: 'v-q2' } });
+
+      calls.beforeComponentChange += 1;
+
+      expect(container.innerHTML).to.eq(expectedContent.dynamic);
+
+      checkSpy();
+    });
+
+    it('beforeComponentChange not called for another Config but same loader', async () => {
+      const { router, render, checkSpy, calls } = await prepareRouterTest({
+        options,
+        configs: createConfigs({
+          autorun: { path: '/autorun', loader: components.autorun },
+          dynamic: { path: '/:one', params: { one: v.length }, loader: components.dynamic },
+          dynamic2: { path: '/2/:one', params: { one: v.length }, loader: components.dynamic },
+          ...errorConfigs,
+        }),
+      });
+
+      const screen = await render();
+
+      const container = screen.container;
+
+      await router.redirect({ name: 'dynamic', params: { one: 'v-one' } });
+      await router.redirect({ name: 'dynamic2', params: { one: 'v-one' } });
+
+      calls.beforeComponentChange += 1;
+
+      expect(container.innerHTML).to.eq(expectedContent.dynamic);
+
+      checkSpy();
+
+      // Now check with props change
+      await router.redirect({ name: 'notFound' });
+
+      expect(container.innerHTML).to.eq(expectedContent.notFound);
+
+      await router.redirect({ name: 'internalError' });
+
+      expect(container.innerHTML).to.eq(expectedContent.internalError);
+
+      calls.beforeComponentChange += 1;
+
+      checkSpy();
+    });
+
+    it('History pop', async () => {
+      const { router, render, checkSpy, calls, waitForRedirect } = await prepareRouterTest({
+        options,
+        configs: createConfigs({
+          static: { path: '/static', query: { q: v.length }, loader: components.static },
+          autorun: { path: '/autorun', loader: components.autorun },
+          dynamic: { path: '/:one', params: { one: v.length }, loader: components.dynamic },
+          dynamic2: { path: '/2/:one', params: { one: v.length }, loader: components.dynamic },
+          ...errorConfigs,
+        }),
+      });
+
+      const screen = await render();
+
+      const container = screen.container;
+
+      function checkHistory(url: string, content: string, pathsHistory: Array<string> = []) {
+        expect(container.innerHTML).to.eq(content);
+
+        checkSpy();
+
+        pathsHistory.push(url);
+
+        expect(`${location.pathname}${location.search}`).to.eq(
+          pathsHistory[pathsHistory.length - 1]
+        );
+      }
+
+      // manual redirecting to 4 configs
+
+      await router.redirect({ name: 'static' });
+
+      calls.beforeComponentChange += 1;
+
+      checkHistory('/static', expectedContent.static);
+
+      await router.redirect({ name: 'static', query: { q: 'v-q' } });
+
+      checkHistory('/static?q=v-q', expectedContent.static);
+
+      await router.redirect({ name: 'dynamic', params: { one: 'v-one' } });
+
+      calls.beforeComponentChange += 1;
+
+      checkHistory('/v-one', expectedContent.dynamic);
+
+      await router.redirect({ name: 'dynamic2', params: { one: 'v-one' } });
+
+      checkHistory('/2/v-one', expectedContent.dynamic);
+
+      // go back to start
+
+      await waitForRedirect(() => history.back());
+
+      checkHistory('/v-one', expectedContent.dynamic);
+
+      await waitForRedirect(() => history.back());
+
+      calls.beforeComponentChange += 1;
+
+      checkHistory('/static?q=v-q', expectedContent.static);
+
+      await waitForRedirect(() => history.back());
+
+      checkHistory('/static', expectedContent.static);
+
+      // go forward to end
+
+      await waitForRedirect(() => history.forward());
+
+      checkHistory('/static?q=v-q', expectedContent.static);
+
+      await waitForRedirect(() => history.forward());
+
+      calls.beforeComponentChange += 1;
+
+      checkHistory('/v-one', expectedContent.dynamic);
+
+      await waitForRedirect(() => history.forward());
+
+      checkHistory('/2/v-one', expectedContent.dynamic);
+    });
   }
 );
 
 describe.runIf(typeof window === 'undefined').each([options])(`Router component [node]: %s`, () => {
-  const options = OPTIONS as TypeOptions;
+  const { components, expectedContent } = getPageComponents(options);
+
+  const errorConfigs = {
+    notFound: { path: '/error404', props: { error: 404 }, loader: components.notFound },
+    internalError: { path: '/error500', props: { error: 500 }, loader: components.internalError },
+  } as const;
 
   it('SSR', async () => {
-    const { router, renderToString, checkSpy, calls } = await prepareRouterTest(options);
+    const { router, renderToString, checkSpy, calls } = await prepareRouterTest({
+      options,
+      configs: createConfigs({
+        static: { path: '/static', loader: components.static },
+        ...errorConfigs,
+      }),
+    });
 
-    await router.redirect({ name: 'staticRoute' });
+    await router.redirect({ name: 'static' });
 
-    const html1 = await renderToString();
+    const html = await renderToString();
 
-    expect(html1).to.eq('Static');
+    expect(html).to.eq(expectedContent.static);
 
     calls.beforeComponentChange += 1;
 
