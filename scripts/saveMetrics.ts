@@ -87,13 +87,13 @@ export function saveMetrics({
 
   if (isDeepStrictEqual(metrics[key], value)) {
     console.log(
-      `${logPrefix} unchanged ${key}: ${
+      `${logPrefix} ${key}: ${
         key === 'sizes' ? `\n${getSizeChanges(value)}` : `\x1b[33m${String(value)}\x1b[0m`
       }`
     );
   } else {
     console.log(
-      `${logPrefix} changed ${key}: ${
+      `${logPrefix} ${key}: ${
         key === 'sizes'
           ? `\n${getSizeChanges(metrics[key], value)}`
           : `\x1b[33m${String(metrics[key])}\x1b[0m -> \x1b[33m${String(value)}\x1b[0m`
