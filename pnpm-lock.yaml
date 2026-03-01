@@ -313,8 +313,8 @@ importers:
         specifier: 7.13.0
         version: 7.13.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       reactive-route:
-        specifier: 0.0.1-beta.5
-        version: 0.0.1-beta.5(typescript@5.9.3)
+        specifier: 0.0.1-beta.6
+        version: 0.0.1-beta.6(typescript@5.9.3)
       vue-router:
         specifier: 5.0.0
         version: 5.0.0(@vue/compiler-sfc@3.5.27)(vue@3.5.27(typescript@5.9.3))
@@ -2509,8 +2509,8 @@ packages:
     resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
     engines: {node: '>=0.10.0'}
 
-  reactive-route@0.0.1-beta.5:
-    resolution: {integrity: sha512-rujLVgWS1EvGVFSxvr/d4egHYnDw3ysygztiDnrHnP/UMQxPFT7r12S+nGfVgK6+j+JFS9AXNbtKtM1e3y5tag==, tarball: https://registry.npmjs.org/reactive-route/-/reactive-route-0.0.1-beta.5.tgz}
+  reactive-route@0.0.1-beta.6:
+    resolution: {integrity: sha512-15GD5p3WzF6SOWZh7X9WGxcQ+l9tuEHcKq//ZqoXIP8Up6oraqD9trLJO8jVyboBA2o50dKsqwIsW2m+ILnwXw==, tarball: https://registry.npmjs.org/reactive-route/-/reactive-route-0.0.1-beta.6.tgz}
     peerDependencies:
       typescript: '>=5.0'
 
@@ -5230,7 +5230,7 @@ snapshots:
 
   react@19.2.3: {}
 
-  reactive-route@0.0.1-beta.5(typescript@5.9.3):
+  reactive-route@0.0.1-beta.6(typescript@5.9.3):
     dependencies:
       typescript: 5.9.3
 

@@ -4,9 +4,9 @@
   "e2e": 144,
   "sizes": {
     "reactive-route": {
-      "minified": 4.87,
-      "compressed": 1.9,
-      "version": "0.0.1-beta.5",
+      "minified": 5.24,
+      "compressed": 2.1,
+      "version": "0.0.1-beta.6",
       "link": "https://github.com/m-dmitry/reactive-route"
     },
     "@kitbag/router": {
@@ -47,5 +47,5 @@
     }
   },
   "localSize": "2.1kb",
-  "coreSize": "1.58kb"
+  "coreSize": "1.77kb"
 }
