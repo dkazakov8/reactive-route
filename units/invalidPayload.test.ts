@@ -296,28 +296,4 @@ describe(`Config detection from URL`, async () => {
 
     consoleErrorSpy.mockRestore();
   });
-
-  it('Missing Config validators should fallback to 404 and log error (urlToPayload)', () => {
-    const router = untypedRouter({
-      dynamic: { path: '/:one' },
-    });
-
-    const payload = { name: 'notFound', params: {}, query: {} } as any;
-    const search = '';
-
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
-
-    checkURLPayload({ router, pathname: '/param', payload, search });
-
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(6);
-
-    expect(consoleErrorSpy).nthCalledWith(1, 'Config "dynamic" has no validator for "one"');
-    expect(consoleErrorSpy).nthCalledWith(2, 'Config "dynamic" has no validator for "one"');
-    expect(consoleErrorSpy).nthCalledWith(3, 'Config "dynamic" has no validator for "one"');
-    expect(consoleErrorSpy).nthCalledWith(4, 'Config "dynamic" has no validator for "one"');
-    expect(consoleErrorSpy).nthCalledWith(5, 'Config "dynamic" has no validator for "one"');
-    expect(consoleErrorSpy).nthCalledWith(6, 'Config "dynamic" has no validator for "one"');
-
-    consoleErrorSpy.mockRestore();
-  });
 });

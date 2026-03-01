@@ -19,6 +19,12 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
   const { adapters, configs } = globalArguments;
 
   const win = typeof window !== 'undefined' ? window : null;
+  const configNames = Object.keys(configs) as Array<TypeConfigKeys<TConfigs>>;
+  const fallbackPayload: TypePayloadParsed<TConfigs> = {
+    name: 'notFound',
+    params: {},
+    query: {},
+  } as any;
 
   const router = adapters.makeObservable({
     state: {},
@@ -61,11 +67,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
       } catch (_e) {
         console.error(`Invalid URL "${url}", fallback to notFound`);
 
-        return {
-          name: 'notFound',
-          params: {},
-          query: {},
-        } as unknown as TypePayloadParsed<TConfigs>;
+        return fallbackPayload;
       }
 
       const partsDecoded: Array<string> = [];
@@ -86,80 +88,73 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
         })
         .replace(/(^\/|\/$)/g, '');
 
-      let config: TypeConfig | undefined;
-      const query: Record<string, string> = {};
-      let params: Record<string, string> = {};
+      const payloadParsed: {
+        name?: TypeConfigKeys<TConfigs>;
+        params: Record<string, string>;
+        query: Record<string, string>;
+      } = {
+        name: undefined,
+        params: {},
+        query: {},
+      };
 
-      for (const name of Object.keys(configs) as Array<TypeConfigKeys<TConfigs>>) {
+      for (const name of configNames) {
         const testedConfig = configs[name];
         const testedPathname = testedConfig.path.replace(/(^\/|\/$)/g, '');
 
-        // return a static match instantly, it has the top priority
-        if (!testedPathname.includes(':') && testedPathname === pathname) {
-          config = testedConfig;
-          params = {};
+        if (!testedConfig.params || payloadParsed.name) {
+          // return a static match instantly, it has the top priority
+          if (testedPathname === pathname) {
+            payloadParsed.params = {};
+            payloadParsed.name = name;
 
-          break;
+            break;
+          }
+
+          // if a dynamic route has been found, no need to search for another
+          continue;
         }
-
-        // if a dynamic route has been found, no need to search for another
-        if (config) continue;
 
         const testedParts = testedPathname.split('/').filter(Boolean);
 
         if (testedParts.length !== partsDecoded.length) continue;
 
-        // Dynamic params must have functional validators
-        // and static params should match
-        const validationFailed = testedParts.some((expectedValue: string, i: number) => {
+        const validationFailed = testedParts.some((expectedValue, i) => {
           const actualValue = partsDecoded[i];
 
           if (!expectedValue.startsWith(':')) return expectedValue !== actualValue;
 
-          const paramName = expectedValue.slice(1);
+          const param = expectedValue.slice(1);
+          const validator = testedConfig.params![param];
 
-          const validator = testedConfig.params?.[paramName];
+          if (actualValue && validator(actualValue)) {
+            payloadParsed.params[param] = actualValue;
 
-          if (typeof validator !== 'function') {
-            console.error(`Config "${testedConfig.name}" has no validator for "${paramName}"`);
-
-            return true;
+            return false;
           }
 
-          const validationPassed = validator(actualValue);
-
-          if (validationPassed) params[paramName] = actualValue;
-
-          return !validationPassed;
+          return true;
         });
 
         // no return instantly because the next Configs may have a static match
-        if (validationFailed) params = {};
-        else config = testedConfig;
+        if (validationFailed) payloadParsed.params = {};
+        else payloadParsed.name = name;
       }
 
-      if (!config) {
-        return {
-          name: 'notFound',
-          params: {},
-          query: {},
-        } as unknown as TypePayloadParsed<TConfigs>;
-      }
+      if (!payloadParsed.name) return fallbackPayload;
 
-      if (config.query) {
-        for (const key in config.query) {
-          if (!Object.hasOwn(config.query, key)) continue;
+      const config = configs[payloadParsed.name];
 
-          const value = urlObject.searchParams.get(key);
-          const validator = config.query[key];
+      Object.keys(config.query || {}).forEach((key) => {
+        const actualValue = urlObject.searchParams.get(key);
+        const validator = config.query![key];
 
-          if (typeof validator === 'function' && typeof value === 'string' && validator(value)) {
-            query[key] = value;
-          }
+        if (actualValue && validator(actualValue)) {
+          payloadParsed.query[key] = actualValue;
         }
-      }
+      });
 
-      return { name: config.name, query, params } as unknown as TypePayloadParsed<TConfigs>;
+      return payloadParsed as TypePayloadParsed<TConfigs>;
     },
 
     payloadToState(payload) {
@@ -183,7 +178,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
         const validator = config.params?.[paramName];
 
-        if (typeof validator !== 'function' || typeof value !== 'string' || !validator(value)) {
+        if (!validator || !value || !validator(value)) {
           validationFailed = true;
 
           console.error(`Invalid Payload ${JSON.stringify(payload)} (params failed validation)`);

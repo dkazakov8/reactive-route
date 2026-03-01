@@ -179,3 +179,21 @@ export function checkURL(params: {
     );
   }
 }
+
+export function checkHistory({
+  url,
+  content,
+  checkSpy,
+  container,
+}: {
+  url: string;
+  content: string;
+  container: { innerHTML: string };
+  checkSpy?: () => void;
+}) {
+  expect(container.innerHTML).to.eq(content);
+
+  checkSpy?.();
+
+  expect(`${location.pathname}${location.search}`).to.eq(url);
+}

@@ -2,7 +2,7 @@ import { createConfigs } from 'reactive-route';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { attachReactivity } from './helpers/attachReactivity';
-import { v } from './helpers/checkers';
+import { checkHistory, v } from './helpers/checkers';
 import { getPageComponents } from './helpers/getPageComponents';
 import { prepareRouterTest } from './helpers/prepareRouterTest';
 import type { TypeOptions } from './helpers/types';
@@ -27,7 +27,7 @@ describe.runIf(typeof window !== 'undefined').each([options])(
       internalError: { path: '/error500', props: { error: 500 }, loader: components.internalError },
     } as const;
 
-    it('Should not modify currentState and call reactions on unmount', async () => {
+    it('Should preserve currentState on unmount', async () => {
       const { router, checkSpy, calls, render } = await prepareRouterTest({
         options,
         configs: createConfigs({
@@ -133,7 +133,7 @@ describe.runIf(typeof window !== 'undefined').each([options])(
       checkSpy();
     });
 
-    it('History pop', async () => {
+    it('Native history.go works', async () => {
       const { router, render, checkSpy, calls, waitForRedirect } = await prepareRouterTest({
         options,
         configs: createConfigs({
@@ -149,17 +149,88 @@ describe.runIf(typeof window !== 'undefined').each([options])(
 
       const container = screen.container;
 
-      function checkHistory(url: string, content: string, pathsHistory: Array<string> = []) {
-        expect(container.innerHTML).to.eq(content);
+      // manual redirecting to 4 configs
 
-        checkSpy();
+      await router.redirect({ name: 'static' });
 
-        pathsHistory.push(url);
+      calls.beforeComponentChange += 1;
 
-        expect(`${location.pathname}${location.search}`).to.eq(
-          pathsHistory[pathsHistory.length - 1]
-        );
-      }
+      checkHistory({ container, checkSpy, url: '/static', content: expectedContent.static });
+
+      await router.redirect({ name: 'static', query: { q: 'v-q' } });
+
+      checkHistory({ container, checkSpy, url: '/static?q=v-q', content: expectedContent.static });
+
+      await router.redirect({ name: 'dynamic', params: { one: 'v-one' } });
+
+      calls.beforeComponentChange += 1;
+
+      checkHistory({ container, checkSpy, url: '/v-one', content: expectedContent.dynamic });
+
+      await router.redirect({ name: 'dynamic2', params: { one: 'v-one' } });
+
+      checkHistory({ container, checkSpy, url: '/2/v-one', content: expectedContent.dynamic });
+
+      // go back to start
+
+      await waitForRedirect(() => history.back());
+
+      checkHistory({ container, checkSpy, url: '/v-one', content: expectedContent.dynamic });
+
+      await waitForRedirect(() => history.back());
+
+      calls.beforeComponentChange += 1;
+
+      checkHistory({ container, checkSpy, url: '/static?q=v-q', content: expectedContent.static });
+
+      await waitForRedirect(() => history.back());
+
+      checkHistory({ container, checkSpy, url: '/static', content: expectedContent.static });
+
+      await waitForRedirect(() => history.back());
+
+      calls.beforeComponentChange += 1;
+
+      checkHistory({ container, checkSpy, url: '/error404', content: expectedContent.notFound });
+
+      // go forward to end
+
+      await waitForRedirect(() => history.forward());
+
+      calls.beforeComponentChange += 1;
+
+      checkHistory({ container, checkSpy, url: '/static', content: expectedContent.static });
+
+      await waitForRedirect(() => history.forward());
+
+      checkHistory({ container, checkSpy, url: '/static?q=v-q', content: expectedContent.static });
+
+      await waitForRedirect(() => history.forward());
+
+      calls.beforeComponentChange += 1;
+
+      checkHistory({ container, checkSpy, url: '/v-one', content: expectedContent.dynamic });
+
+      await waitForRedirect(() => history.forward());
+
+      checkHistory({ container, checkSpy, url: '/2/v-one', content: expectedContent.dynamic });
+    });
+
+    it('Native history.go works (with replace)', async () => {
+      const { router, render, checkSpy, calls, waitForRedirect } = await prepareRouterTest({
+        options,
+        configs: createConfigs({
+          static: { path: '/static', query: { q: v.length }, loader: components.static },
+          autorun: { path: '/autorun', loader: components.autorun },
+          dynamic: { path: '/:one', params: { one: v.length }, loader: components.dynamic },
+          dynamic2: { path: '/2/:one', params: { one: v.length }, loader: components.dynamic },
+          ...errorConfigs,
+        }),
+      });
+
+      const screen = await render();
+
+      const container = screen.container;
 
       // manual redirecting to 4 configs
 
@@ -167,53 +238,35 @@ describe.runIf(typeof window !== 'undefined').each([options])(
 
       calls.beforeComponentChange += 1;
 
-      checkHistory('/static', expectedContent.static);
+      checkHistory({ container, checkSpy, url: '/static', content: expectedContent.static });
 
-      await router.redirect({ name: 'static', query: { q: 'v-q' } });
+      await router.redirect({ name: 'static', query: { q: 'v-q' }, replace: true });
 
-      checkHistory('/static?q=v-q', expectedContent.static);
+      checkHistory({ container, checkSpy, url: '/static?q=v-q', content: expectedContent.static });
 
-      await router.redirect({ name: 'dynamic', params: { one: 'v-one' } });
+      await router.redirect({ name: 'dynamic', params: { one: 'v-one' }, replace: true });
 
       calls.beforeComponentChange += 1;
 
-      checkHistory('/v-one', expectedContent.dynamic);
+      checkHistory({ container, checkSpy, url: '/v-one', content: expectedContent.dynamic });
 
-      await router.redirect({ name: 'dynamic2', params: { one: 'v-one' } });
+      await router.redirect({ name: 'dynamic2', params: { one: 'v-one' }, replace: true });
 
-      checkHistory('/2/v-one', expectedContent.dynamic);
+      checkHistory({ container, checkSpy, url: '/2/v-one', content: expectedContent.dynamic });
 
       // go back to start
 
       await waitForRedirect(() => history.back());
 
-      checkHistory('/v-one', expectedContent.dynamic);
-
-      await waitForRedirect(() => history.back());
-
       calls.beforeComponentChange += 1;
 
-      checkHistory('/static?q=v-q', expectedContent.static);
-
-      await waitForRedirect(() => history.back());
-
-      checkHistory('/static', expectedContent.static);
-
-      // go forward to end
-
-      await waitForRedirect(() => history.forward());
-
-      checkHistory('/static?q=v-q', expectedContent.static);
+      checkHistory({ container, checkSpy, url: '/error404', content: expectedContent.notFound });
 
       await waitForRedirect(() => history.forward());
 
       calls.beforeComponentChange += 1;
 
-      checkHistory('/v-one', expectedContent.dynamic);
-
-      await waitForRedirect(() => history.forward());
-
-      checkHistory('/2/v-one', expectedContent.dynamic);
+      checkHistory({ container, checkSpy, url: '/2/v-one', content: expectedContent.dynamic });
     });
   }
 );
@@ -226,7 +279,7 @@ describe.runIf(typeof window === 'undefined').each([options])(`Router component 
     internalError: { path: '/error500', props: { error: 500 }, loader: components.internalError },
   } as const;
 
-  it('SSR', async () => {
+  it('Renders a static config', async () => {
     const { router, renderToString, checkSpy, calls } = await prepareRouterTest({
       options,
       configs: createConfigs({
@@ -241,6 +294,28 @@ describe.runIf(typeof window === 'undefined').each([options])(`Router component 
 
     expect(html).to.eq(expectedContent.static);
 
+    calls.beforeComponentChange += 1;
+
+    checkSpy();
+  });
+
+  it('Renders autorun', async () => {
+    const { router, renderToString, checkSpy, calls } = await prepareRouterTest({
+      options,
+      configs: createConfigs({
+        autorun: { path: '/autorun', loader: components.autorun },
+        ...errorConfigs,
+      }),
+    });
+
+    await router.redirect({ name: 'autorun' });
+
+    const html = await renderToString();
+
+    expect(html).to.eq(expectedContent.autorun);
+
+    calls.pageRender += 1;
+    calls.pageAutorun += 1;
     calls.beforeComponentChange += 1;
 
     checkSpy();
