@@ -2,7 +2,7 @@
   "name": "reactive-route",
   "author": "Dmitry Kazakov",
   "license": "MIT",
-  "version": "0.0.1-beta.7",
+  "version": "1.0.0",
   "description": "A reactive, framework-agnostic router in 2 KB",
   "keywords": [
     "router",
