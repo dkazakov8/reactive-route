@@ -1,6 +1,6 @@
 import { expect, type Page, test } from '@playwright/test';
 
-const pageTitle = (page: Page) => page.getByRole('heading', { level: 1 });
+const pageTitle = (page: Page) => page.locator('[class*="pageTitle"]').first();
 const errorCode = (page: Page) => page.getByText('404', { exact: true });
 
 async function expectRoute(page: Page, url: string, title: string) {
@@ -37,7 +37,7 @@ test.describe('App routing E2E', () => {
     const preLocator = page.locator('pre');
 
     await expect(preLocator).toContainText('"foo": "example"');
-    await page.getByRole('button', { name: 'Random value' }).click();
+    await page.getByText('Random value', { exact: true }).click();
 
     const randomFoo = ((await preLocator.textContent()) || '').match(/foo": "(\d+)"/)?.[1];
 
@@ -61,7 +61,7 @@ test.describe('App routing E2E', () => {
     await expect(pageTitle(page)).toHaveText('Query Page');
     await expect(preLocator).toContainText('{}');
 
-    await page.getByRole('button', { name: 'Random query' }).click();
+    await page.getByText('Random query', { exact: true }).click();
 
     const randomFoo = ((await preLocator.textContent()) || '').match(/foo": "(\d+)"/)?.[1];
 
@@ -109,7 +109,7 @@ test.describe('App routing E2E', () => {
 
     await expect(preLocator).toContainText('"foo": "example"');
 
-    await page.getByRole('button', { name: 'Random value' }).click();
+    await page.getByText('Random value', { exact: true }).click();
 
     const randomFoo = ((await preLocator.textContent()) || '').match(/foo": "(\d+)"/)?.[1];
 

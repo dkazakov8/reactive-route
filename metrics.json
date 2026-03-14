@@ -1,12 +1,12 @@
 {
-  "coverage": "94.64 %",
+  "coverage": "94.93 %",
   "units": 354,
   "e2e": 144,
   "sizes": {
     "reactive-route": {
-      "minified": 5.26,
-      "compressed": 2.1,
-      "version": "0.0.1-beta.7",
+      "minified": 5.27,
+      "compressed": 2.11,
+      "version": "1.0.0",
       "link": "https://github.com/m-dmitry/reactive-route"
     },
     "@kitbag/router": {
@@ -47,6 +47,6 @@
     }
   },
   "localSize": "2.11kb",
-  "coreSize": "1.77kb",
+  "coreSize": "1.78kb",
   "widgetSize": "13.3 KB"
 }
