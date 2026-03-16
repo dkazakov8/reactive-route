@@ -126,7 +126,7 @@ const configClient: BuildOptions = {
   entryPoints: ['src/client.tsx'],
   outdir: publicPath,
   publicPath: '/',
-  splitting: true,
+  splitting: false,
   platform: 'browser',
   target: 'es2022',
   packages: 'bundle',

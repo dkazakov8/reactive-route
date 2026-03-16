@@ -198,24 +198,29 @@ outside `createConfigs` causes page logic to spread out and worsens DX.
 # Widget mode
 
 **Reactive Route** can be detached from `window.history` and used in widget mode, fully
-embedding into websites without iframes. Here, the Solid.js variant from <Link to="examples">Examples</Link>
-was taken, replacing `await router.init(location.href)` with this code:
+embedding into websites without iframes. This page shows two working widgets at once:
+one built with Solid.js and native reactivity (<span style="color:var(--docsearch-focus-color)">{{ data.metrics.widgetSizeSolid }}</span>), 
+and another with Preact and Observable (<span style="color:var(--docsearch-focus-color)">{{ data.metrics.widgetSizePreact }}</span>).
+Both use the corresponding code from <Link to="examples">Examples</Link>, replacing
+`await router.init(location.href)` with this code:
 
 <!-- @include: @shared/usage/widgetProject.md -->
 
 You only need to listen for the `'storage'` event if you plan to control the widget from outside:
 it is enough to write a new URL to `localStorage` and in some cases trigger this event manually
-according to the browser specification. Thus, the two buttons below are native VitePress (Vue)
-buttons and on click execute the following code:
+according to the browser specification. The two buttons below are native VitePress (Vue)
+controls that drive both widgets at once and execute the following code on click:
 
 <!-- @include: @shared/usage/widgetButtons.md -->
 
-<WidgetPreview :widget-urls="data.widgetUrls" />
+<WidgetPreview :widget-urls="data.widgetUrlsSolid" :containerId="'example-app-solid'" />
 
-The compressed js bundle size for this widget is <span style="color:var(--docsearch-focus-color)">{{ data.metrics.widgetSize }}</span>, 
-while it still contains a full
-reactivity and rendering system plus **Reactive Route**. Naturally, you can embed several widgets
-on different stacks, and even large websites and admin panels, as well as design microfrontends.
+The second example below uses a different UI stack and reactivity model but stays synchronized 
+on the same page through the same external controls. 
+
+<WidgetPreview :widget-urls="data.widgetUrlsPreact" :containerId="'example-app-preact'" :showButtons="false" />
+
+Naturally, you can embed large websites and admin panels, as well as design microfrontends.
 The main thing is to ensure isolation of styles and variables by configuring the bundler correctly.
 
 // #endregion usage-widget

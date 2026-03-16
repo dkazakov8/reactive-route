@@ -48,7 +48,8 @@ export type TypeMetrics = {
   e2e?: number;
   localSize?: string;
   coreSize?: string;
-  widgetSize?: string;
+  widgetSizeSolid?: string;
+  widgetSizePreact?: string;
   sizes?: { [K in keyof typeof libsMapper]: TypeLibData };
 };
 

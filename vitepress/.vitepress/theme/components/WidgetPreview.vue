@@ -3,9 +3,14 @@ import { useData } from 'vitepress';
 import { VPButton } from 'vitepress/theme';
 import { computed, onBeforeUnmount, onMounted } from 'vue';
 
-const props = defineProps<{
-  widgetUrls: Array<string>;
-}>();
+const props = withDefaults(
+  defineProps<{
+    widgetUrls: Array<string>;
+    showButtons?: boolean;
+    containerId: string;
+  }>(),
+  { showButtons: true }
+);
 
 const { site } = useData();
 const cssUrl = computed(() => {
@@ -65,12 +70,12 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="widgetDemo vp-raw">
-    <div class="externalControls">
+    <div v-if="props.showButtons" class="externalControls">
       <VPButton theme="alt" text="/query?foo=89245213" @click="setWidgetUrl('/query?foo=89245213')" />
       <VPButton theme="alt" text="/page/77853418" @click="setWidgetUrl('/page/77853418')" />
     </div>
     <div class="widgetFrame">
-      <div id="example-app" class="widgetMount" />
+      <div :id="props.containerId" class="widgetMount" />
     </div>
   </div>
 </template>

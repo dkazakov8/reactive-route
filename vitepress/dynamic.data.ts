@@ -3,14 +3,14 @@ import path from 'node:path';
 
 import { TypeMetrics } from '../scripts/saveMetrics';
 
-function getWidgetUrls(): Array<string> {
-  const widgetDirectory = path.resolve(process.cwd(), 'vitepress/public/widget');
+function getWidgetUrls(widgetFolder: string): Array<string> {
+  const widgetDirectory = path.resolve(process.cwd(), `vitepress/public/${widgetFolder}`);
 
   return !fs.existsSync(widgetDirectory)
     ? []
     : fs
         .readdirSync(widgetDirectory, { withFileTypes: true })
-        .map((entry) => `widget/${entry.name}`);
+        .map((entry) => `${widgetFolder}/${entry.name}`);
 }
 
 export default {
@@ -66,7 +66,8 @@ export default {
       passedTests,
       metrics,
       libs,
-      widgetUrls: getWidgetUrls(),
+      widgetUrlsSolid: getWidgetUrls('widget_solid'),
+      widgetUrlsPreact: getWidgetUrls('widget_preact'),
       sizeForLabel: `${coreSizeNumber} KB + ${(referenceLib.compressed - coreSizeNumber).toFixed(2)} KB`,
       biggestLibMinified: Math.max(...libs.map(({ minified }) => minified)),
     };

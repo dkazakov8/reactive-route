@@ -1,15 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { pluginReplace } from '@espcom/esbuild-plugin-replace';
+import { modifierMobxObserverFC, pluginReplace } from '@espcom/esbuild-plugin-replace';
 import esbuild, { type BuildOptions, type Plugin } from 'esbuild';
 
-import { generateSolidModifier } from '../examples/solid/plugins';
 import { getCompressedSize } from './measure';
 import { saveMetrics } from './saveMetrics';
 
 const rootDir = path.resolve(import.meta.dirname, '..');
-const outdir = path.resolve(rootDir, 'vitepress/public/widget');
+const outdir = path.resolve(rootDir, 'vitepress/public/widget_preact');
 
 const localReactiveStatePlugin: Plugin = {
   name: 'local-reactive-route',
@@ -35,7 +34,7 @@ const localReactiveStatePlugin: Plugin = {
 };
 
 const configClient: BuildOptions = {
-  entryPoints: ['examples/solid/src/client.tsx'],
+  entryPoints: ['examples/preact/src/client.tsx'],
   bundle: true,
   write: true,
   metafile: true,
@@ -53,24 +52,33 @@ const configClient: BuildOptions = {
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
     SSR_ENABLED: JSON.stringify(false),
-    REACTIVITY_SYSTEM: JSON.stringify('solid'),
+    REACTIVITY_SYSTEM: JSON.stringify('kr-observable'),
   },
   resolveExtensions: ['.js', '.ts', '.tsx'],
   plugins: [
     localReactiveStatePlugin,
     pluginReplace([
-      generateSolidModifier(false, (source) => {
-        return source.replace(
-          'await router.init(location.href, { skipLifecycle: Boolean(SSR_ENABLED) });',
-          `
-import { createRenderEffect } from 'solid-js';
+      modifierMobxObserverFC({
+        filter: /\.tsx?$/,
+        customImport: `import { observer } from 'kr-observable/preact';`,
+      }),
+      {
+        filter: /\.tsx?$/,
+        replace: /.*/gs,
+        replacer(onLoadArgs) {
+          return (source) => {
+            return source
+              .replace(
+                'await router.init(location.href, { skipLifecycle: Boolean(SSR_ENABLED) });',
+                `
+import { autorun } from 'kr-observable';
 
 router.historySyncStop();
 
 await router.init(localStorage.getItem('WIDGET_URL') || '/');
 
 // save to external storage
-createRenderEffect(() => {
+autorun(() => {
   const currentUrl = router.activeName
     ? router.stateToUrl(router.state[router.activeName])
     : '/';
@@ -85,13 +93,16 @@ window.addEventListener('storage', (event) => {
   }
 });
         `
-        );
-      }),
+              )
+              .replaceAll('example-app', 'example-app-preact');
+          };
+        },
+      },
     ]),
   ],
 };
 
-export async function buildWidget() {
+export async function buildWidgetPreact() {
   fs.rmSync(outdir, { recursive: true, force: true });
   fs.mkdirSync(outdir, { recursive: true });
 
@@ -101,7 +112,7 @@ export async function buildWidget() {
     if (outputPath.endsWith('.js')) {
       const compressedSize = await getCompressedSize(outputPath);
 
-      saveMetrics({ key: 'widgetSize', value: `${compressedSize.compressed} KB` });
+      saveMetrics({ key: 'widgetSizePreact', value: `${compressedSize.compressed} KB` });
     }
   }
 }

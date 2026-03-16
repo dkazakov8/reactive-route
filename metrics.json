@@ -48,5 +48,6 @@
   },
   "localSize": "2.11kb",
   "coreSize": "1.78kb",
-  "widgetSize": "13.3 KB"
+  "widgetSizeSolid": "13.3 KB",
+  "widgetSizePreact": "11.85 KB"
 }

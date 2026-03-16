@@ -199,23 +199,29 @@ TypeScript 5 пока не умеет рекурсивно выводить ти
 # Widget mode
 
 **Reactive Route** можно отвязать от `window.history` и использовать в режиме виджетов, полноценно
-и без iframe встраивая в сайты. Здесь был взят вариант c Solid.js из <Link to="examples">Примеров</Link>
-с заменой `await router.init(location.href)` на этот код:
+и без iframe встраивая в сайты. На этой странице показаны два виджета:
+первый на Solid.js и нативной реактивности (<span style="color:var(--docsearch-focus-color)">{{ data.metrics.widgetSizeSolid }}</span>),
+второй — на Preact и Observable (<span style="color:var(--docsearch-focus-color)">{{ data.metrics.widgetSizePreact }}</span>).
+Оба используют соответствующий код из <Link to="examples">Примеров</Link> с заменой
+`await router.init(location.href)` на этот код:
 
 <!-- @include: @shared/usage/widgetProject.md -->
 
-Слушать за событием `'storage'` нужно только если планируется управлять виджетом из-вне: достаточно 
+Слушать за событием `'storage'` нужно если планируется управлять виджетом извне: достаточно
 записать новый URL в `localStorage` и в ряде случаев вызвать это событие вручную по спецификации
-бразуера. Так, две кнопки ниже — нативные для Vitepress (Vue) и при клике выполняют следующий код:
+браузера. Две кнопки ниже (нативные для Vue VitePress) одновременно
+управляют обоими виджетами:
 
 <!-- @include: @shared/usage/widgetButtons.md -->
 
-<WidgetPreview :widget-urls="data.widgetUrls" />
+<WidgetPreview :widget-urls="data.widgetUrlsSolid" :containerId="'example-app-solid'" />
 
-Размер js-бандла для этого виджета в сжатом виде <span style="color:var(--docsearch-focus-color)">{{ data.metrics.widgetSize }}</span>, 
-при этом в нем полноценная система
-реактивности и рендеринга + **Reactive Route**. Разумеется, можно встраивать несколько виджетов
-на разных стеках, и даже крупные сайты и админ-панели, а также проектировать микрофронтенды. Главное 
-— обеспечить изоляцию стилей и переменных, правильно настроив бандлер.
+Второй пример использует другой UI-стек и систему реактивности, но управляется тем же
+внешним механизмом.
+
+<WidgetPreview :widget-urls="data.widgetUrlsPreact" :containerId="'example-app-preact'" :showButtons="false" />
+
+Разумеется, можно встраивать и крупные сайты и админ-панели, а также проектировать микрофронтенды.
+Главное — обеспечить изоляцию стилей и переменных, правильно настроив бандлер.
 
 // #endregion usage-widget

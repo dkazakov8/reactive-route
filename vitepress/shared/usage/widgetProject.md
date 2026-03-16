@@ -1,4 +1,5 @@
 ```ts
+// import { autorun } from 'kr-observable';
 import { createRenderEffect } from 'solid-js';
 
 router.historySyncStop();
@@ -6,7 +7,7 @@ router.historySyncStop();
 await router.init(localStorage.getItem('WIDGET_URL') || '/');
 
 // save to external storage
-createRenderEffect(() => {
+createRenderEffect(() => { // autorun(() => {
   const currentUrl = router.activeName
     ? router.stateToUrl(router.state[router.activeName])
     : '/';

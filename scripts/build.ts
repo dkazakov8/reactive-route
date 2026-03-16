@@ -8,7 +8,8 @@ import { pluginReplace } from '@espcom/esbuild-plugin-replace';
 import esbuild, { BuildOptions, Plugin } from 'esbuild';
 import pluginVue from 'unplugin-vue';
 
-import { buildWidget } from './buildWidget';
+import { buildWidgetPreact } from './buildWidgetPreact';
+import { buildWidgetSolid } from './buildWidgetSolid';
 import { createExamplesTree } from './createExamplesTree';
 import { measure } from './measure';
 
@@ -166,5 +167,7 @@ void Promise.all([
 
   await createExamplesTree();
 
-  await buildWidget();
+  await buildWidgetSolid();
+
+  await buildWidgetPreact();
 });
