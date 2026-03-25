@@ -69,8 +69,8 @@ export type TypeRouterProject = ReturnType<typeof getRouter>;
 
 export type TypeConfigsProject = ReturnType<TypeRouterProject['getGlobalArguments']>['configs'];
 
-export const RouterContext = createContext<{ router: TypeRouterProject }>(undefined);
+export const RouterContext = createContext<{ router: TypeRouterProject }>(undefined!);
 
 export function useRouter() {
-  return useContext(RouterContext);
+  return useContext(RouterContext)!;
 }

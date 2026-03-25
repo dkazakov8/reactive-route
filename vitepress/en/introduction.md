@@ -51,6 +51,11 @@ Carefully designed reactivity support lets you build applications with granular 
 without running into inconsistencies in how reactions and UI framework mount / unmount
 mechanisms are triggered when route state changes.
 
+## Requirements
+
+The library can be used with TypeScript `5.0 - 5.6`, but some types will degrade.
+Full functionality requires TypeScript `>= 5.7`.
+
 ## Browser support
 
 **Reactive Route** uses Dual Packaging (CJS and ESM are selected automatically based on the

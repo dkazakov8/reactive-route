@@ -136,7 +136,9 @@ const configClient: BuildOptions = {
     {
       name: 'plugin-parallel',
       setup(build) {
-        build.onStart(() => activeProcesses.add('client'));
+        build.onStart(() => {
+          activeProcesses.add('client');
+        });
         build.onEnd(() => {
           activeProcesses.delete('client');
           sendReload('client was rebuilt last');
@@ -161,9 +163,10 @@ const configClient: BuildOptions = {
             : undefined,
       },
     ]),
-    !IS_E2E &&
-      pluginWebpackAnalyzer({ port: analyzerPort, extensions: ['.js', '.ts', '.tsx', '.vue'] }),
-  ].filter(Boolean),
+    ...(!IS_E2E
+      ? [pluginWebpackAnalyzer({ port: analyzerPort, extensions: ['.js', '.ts', '.tsx', '.vue'] })]
+      : []),
+  ],
 };
 
 fs.rmSync(outdirPath, { recursive: true, force: true });
