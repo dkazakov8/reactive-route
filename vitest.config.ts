@@ -4,7 +4,7 @@ import preact from '@preact/preset-vite';
 import { playwright } from '@vitest/browser-playwright';
 import vue from 'unplugin-vue';
 import babel from 'vite-plugin-babel';
-import { defineConfig, TestProjectConfiguration } from 'vitest/config';
+import { defineConfig, type TestProjectConfiguration } from 'vitest/config';
 
 import { VitestReporter } from './units/addons/vitestReporter';
 import type { TypeOptions } from './units/helpers/types';

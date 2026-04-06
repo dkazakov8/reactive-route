@@ -1,4 +1,4 @@
-import Markdown from 'markdown-it';
+import type Markdown from 'markdown-it';
 
 export function labelsPlugin(md: Markdown) {
   const labels: Record<string, Record<string, string>> = {

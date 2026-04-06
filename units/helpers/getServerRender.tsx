@@ -1,4 +1,4 @@
-import { TypeOptions } from './types';
+import type { TypeOptions } from './types';
 
 export async function getServerRender(options: TypeOptions, App: any) {
   let renderFunction: any;

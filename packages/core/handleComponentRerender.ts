@@ -1,4 +1,4 @@
-import { PropsRouter, TypeConfig, TypeRouterLocal } from './types';
+import type { PropsRouter, TypeConfig, TypeRouterLocal } from './types';
 
 export function handleComponentRerender(
   props: PropsRouter<any>,

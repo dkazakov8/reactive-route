@@ -1,7 +1,7 @@
 import { expect, onTestFinished, vi } from 'vitest';
 
-import { createConfigs, createRouter, TypeRouter, TypeState } from '../../packages/core';
-import { TypeBeforeEnter, TypeBeforeLeave, TypeURL } from '../../packages/core/types';
+import { createConfigs, createRouter, type TypeRouter, type TypeState } from '../../packages/core';
+import type { TypeBeforeEnter, TypeBeforeLeave, TypeURL } from '../../packages/core/types';
 import { getAdapters } from './getAdapters';
 
 export const loader = () => Promise.resolve({ default: '' });

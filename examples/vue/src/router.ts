@@ -1,5 +1,5 @@
 import { createConfigs, createRouter } from 'reactive-route';
-import { InjectionKey, inject } from 'vue';
+import { type InjectionKey, inject } from 'vue';
 
 // Use a static import in your project instead of a dynamic
 const { adapters } = await import('reactive-route/adapters/vue');

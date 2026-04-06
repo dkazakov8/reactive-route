@@ -1,13 +1,13 @@
 import { expect, vi } from 'vitest';
 
-import { createRouter, TypeConfigsDefault } from '../../packages/core';
+import { createRouter, type TypeConfigsDefault } from '../../packages/core';
 import { destroyAfterTest } from './checkers';
 import { getAdapters } from './getAdapters';
 import { getRender } from './getRender';
 import { getRouterComponent } from './getRouterComponent';
 import { getRouterContext } from './getRouterContext';
 import { getServerRender } from './getServerRender';
-import { TypeOptions } from './types';
+import type { TypeOptions } from './types';
 
 export async function prepareRouterTest<TConfigs extends TypeConfigsDefault>({
   options,

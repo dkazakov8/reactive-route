@@ -33,6 +33,7 @@
     "esModuleInterop": true,
     "emitDeclarationOnly": true,
     "allowArbitraryExtensions": true,
+    "allowImportingTsExtensions": true,
     "paths": { "reactive-route": ["./packages/core/index.ts"] }
   }
 }

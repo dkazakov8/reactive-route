@@ -41,7 +41,7 @@ export function generateV8CoverageSummary(coverage: any): any {
   for (const fileCoverageObj of Object.values(fileCoverages)) {
     const fileCoverage = fileCoverageObj?.data;
 
-    if (!fileCoverage || !fileCoverage.s || !fileCoverage.f || !fileCoverage.b) {
+    if (!fileCoverage?.s || !fileCoverage?.f || !fileCoverage?.b) {
       continue;
     }
 

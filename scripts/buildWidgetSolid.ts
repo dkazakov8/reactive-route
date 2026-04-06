@@ -4,9 +4,9 @@ import path from 'node:path';
 import { pluginReplace } from '@espcom/esbuild-plugin-replace';
 import esbuild, { type BuildOptions, type Plugin } from 'esbuild';
 
-import { generateSolidModifier } from '../examples/solid/plugins';
-import { getCompressedSize } from './measure';
-import { saveMetrics } from './saveMetrics';
+import { generateSolidModifier } from '../examples/solid/plugins.ts';
+import { getCompressedSize } from './measure.ts';
+import { saveMetrics } from './saveMetrics.ts';
 
 const rootDir = path.resolve(import.meta.dirname, '..');
 const outdir = path.resolve(rootDir, 'vitepress/public/widget_solid');

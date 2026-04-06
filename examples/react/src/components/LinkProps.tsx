@@ -1,6 +1,6 @@
-import { TypeStateDynamic } from 'reactive-route';
+import type { TypeStateDynamic } from 'reactive-route';
 
-import { TypeConfigsProject, useRouter } from '../router';
+import { type TypeConfigsProject, useRouter } from '../router';
 
 export function LinkProps<TName extends keyof TypeConfigsProject>(
   props: TypeStateDynamic<TypeConfigsProject, TName> & {

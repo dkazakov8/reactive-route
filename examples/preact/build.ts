@@ -5,10 +5,10 @@ import path from 'node:path';
 import { pluginInjectPreload } from '@espcom/esbuild-plugin-inject-preload';
 import { pluginReplace } from '@espcom/esbuild-plugin-replace';
 import { pluginWebpackAnalyzer } from '@espcom/esbuild-plugin-webpack-analyzer';
-import { BuildOptions, context } from 'esbuild';
+import { type BuildOptions, context } from 'esbuild';
 import express from 'ultimate-express';
 
-import { componentWrapper } from './plugins';
+import { componentWrapper } from './plugins.ts';
 
 const reloadScript = (port: number) => `(function refresh() {
   let attempt = 0;

@@ -4,8 +4,8 @@ import path from 'node:path';
 import { modifierMobxObserverFC, pluginReplace } from '@espcom/esbuild-plugin-replace';
 import esbuild, { type BuildOptions, type Plugin } from 'esbuild';
 
-import { getCompressedSize } from './measure';
-import { saveMetrics } from './saveMetrics';
+import { getCompressedSize } from './measure.ts';
+import { saveMetrics } from './saveMetrics.ts';
 
 const rootDir = path.resolve(import.meta.dirname, '..');
 const outdir = path.resolve(rootDir, 'vitepress/public/widget_preact');

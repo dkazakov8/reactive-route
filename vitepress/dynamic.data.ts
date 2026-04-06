@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { TypeMetrics } from '../scripts/saveMetrics';
+import type { TypeMetrics } from '../scripts/saveMetrics';
 
 function getWidgetUrls(widgetFolder: string): Array<string> {
   const widgetDirectory = path.resolve(process.cwd(), `vitepress/public/${widgetFolder}`);

@@ -4,12 +4,12 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "solid": "tsx build.ts solid csr",
-    "observable": "tsx build.ts kr-observable csr",
-    "mobx": "tsx build.ts mobx csr",
-    "ssr-solid": "tsx build.ts solid ssr",
-    "ssr-observable": "tsx build.ts kr-observable ssr",
-    "ssr-mobx": "tsx build.ts mobx ssr"
+    "solid": "node build.ts solid csr",
+    "observable": "node build.ts kr-observable csr",
+    "mobx": "node build.ts mobx csr",
+    "ssr-solid": "node build.ts solid ssr",
+    "ssr-observable": "node build.ts kr-observable ssr",
+    "ssr-mobx": "node build.ts mobx ssr"
   },
   "dependencies": {
     "kr-observable": "3.1.14",
@@ -26,7 +26,9 @@
     "@espcom/esbuild-plugin-webpack-analyzer": "1.1.1",
     "babel-preset-solid": "1.9.10",
     "esbuild": "0.27.2",
-    "tsx": "4.21.0",
     "typescript": "6.0.2"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

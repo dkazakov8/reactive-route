@@ -1,4 +1,4 @@
-import { TypeOptions } from './types';
+import type { TypeOptions } from './types';
 
 export function getPageComponents(options: TypeOptions) {
   let components: {

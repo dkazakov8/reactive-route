@@ -1,4 +1,4 @@
-import { TypeAdapters } from 'reactive-route';
+import type { TypeAdapters } from 'reactive-route';
 import { batch, createRenderEffect } from 'solid-js';
 import { createMutable, modifyMutable, produce } from 'solid-js/store';
 

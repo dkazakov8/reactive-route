@@ -1,5 +1,5 @@
 import { PreventError, RedirectError } from './constants';
-import {
+import type {
   TypeConfigKeys,
   TypeConfigsDefault,
   TypeGlobalArguments,

@@ -5,13 +5,13 @@ import { parse } from 'node:path';
 // @ts-expect-error no types
 import { transformAsync } from '@babel/core';
 import { pluginReplace } from '@espcom/esbuild-plugin-replace';
-import esbuild, { BuildOptions, Plugin } from 'esbuild';
+import esbuild, { type BuildOptions, type Plugin } from 'esbuild';
 import pluginVue from 'unplugin-vue';
 
-import { buildWidgetPreact } from './buildWidgetPreact';
-import { buildWidgetSolid } from './buildWidgetSolid';
-import { createExamplesTree } from './createExamplesTree';
-import { measure } from './measure';
+import { buildWidgetPreact } from './buildWidgetPreact.ts';
+import { buildWidgetSolid } from './buildWidgetSolid.ts';
+import { createExamplesTree } from './createExamplesTree.ts';
+import { measure } from './measure.ts';
 
 function getPlugins(framework: 'vue' | 'solid') {
   const plugins: Array<Plugin> = [];

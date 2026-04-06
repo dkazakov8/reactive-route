@@ -1,4 +1,4 @@
-import { TypeOptions } from './types';
+import type { TypeOptions } from './types';
 
 export async function attachReactivity(options: TypeOptions) {
   if (options.renderer === 'solid') {

@@ -1,4 +1,4 @@
-import { TypeAdapters } from 'reactive-route';
+import type { TypeAdapters } from 'reactive-route';
 import { reactive, watchEffect } from 'vue';
 
 export const adapters: TypeAdapters = {

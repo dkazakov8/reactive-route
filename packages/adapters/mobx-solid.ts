@@ -1,5 +1,5 @@
 import { autorun, observable, runInAction } from 'mobx';
-import { TypeAdapters } from 'reactive-route';
+import type { TypeAdapters } from 'reactive-route';
 
 export const adapters: TypeAdapters = {
   batch: runInAction,

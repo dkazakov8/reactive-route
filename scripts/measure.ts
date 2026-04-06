@@ -4,7 +4,7 @@ import * as zlib from 'node:zlib';
 
 import * as esbuild from 'esbuild';
 
-import { libsMapper, saveMetrics, TypeLibData, TypeLibs } from './saveMetrics';
+import { libsMapper, saveMetrics, type TypeLibData, type TypeLibs } from './saveMetrics.ts';
 
 function format(size: number) {
   return Number((size / 1024).toFixed(2));

@@ -4,7 +4,7 @@ import path from 'node:path';
 
 import { pluginInjectPreload } from '@espcom/esbuild-plugin-inject-preload';
 import { pluginWebpackAnalyzer } from '@espcom/esbuild-plugin-webpack-analyzer';
-import { BuildOptions, context } from 'esbuild';
+import { type BuildOptions, context } from 'esbuild';
 import express from 'ultimate-express';
 import pluginVue from 'unplugin-vue';
 

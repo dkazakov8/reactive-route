@@ -1,5 +1,5 @@
-import { TypeAdapters } from '../../packages/core';
-import { TypeOptions } from './types';
+import type { TypeAdapters } from '../../packages/core';
+import type { TypeOptions } from './types';
 
 export async function getAdapters(options: TypeOptions) {
   let adapters = {} as TypeAdapters;

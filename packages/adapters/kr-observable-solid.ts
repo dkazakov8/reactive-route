@@ -1,5 +1,5 @@
 import { autorun, makeObservable } from 'kr-observable';
-import { TypeAdapters } from 'reactive-route';
+import type { TypeAdapters } from 'reactive-route';
 
 export const adapters: TypeAdapters = {
   batch: (cb) => cb(),

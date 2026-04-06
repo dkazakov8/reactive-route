@@ -3,7 +3,7 @@ import { parse } from 'node:path';
 
 // @ts-ignore no types
 import { transformAsync } from '@babel/core';
-import { pluginReplace } from '@espcom/esbuild-plugin-replace';
+import type { pluginReplace } from '@espcom/esbuild-plugin-replace';
 
 export function generateSolidModifier(
   ssr: boolean,

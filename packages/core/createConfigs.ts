@@ -1,4 +1,4 @@
-import { TypeConfigs, TypeConfigurableConfigs } from './types';
+import type { TypeConfigs, TypeConfigurableConfigs } from './types';
 
 export function createConfigs<
   const TConfigConfigurable extends TypeConfigurableConfigs<TConfigConfigurable>,

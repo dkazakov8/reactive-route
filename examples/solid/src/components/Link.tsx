@@ -1,7 +1,7 @@
-import { TypeStateDynamic } from 'reactive-route';
+import type { TypeStateDynamic } from 'reactive-route';
 import { createMemo } from 'solid-js';
 
-import { TypeConfigsProject, useRouter } from '../router';
+import { type TypeConfigsProject, useRouter } from '../router';
 
 export function Link<TName extends keyof TypeConfigsProject>(props: {
   to: TypeStateDynamic<TypeConfigsProject, TName> & { replace?: boolean };

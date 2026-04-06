@@ -1,4 +1,4 @@
-import { TypeOptions } from './types';
+import type { TypeOptions } from './types';
 
 export async function getRouterContext(options: TypeOptions) {
   let context: any;
