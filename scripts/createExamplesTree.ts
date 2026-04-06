@@ -85,7 +85,6 @@ function getSize() {
 
 export async function createExamplesTree() {
   md = await createMarkdownRenderer(process.cwd(), {
-    theme: 'github-dark',
     languages: ['ts', 'tsx', 'js', 'jsx', 'vue', 'css', 'html', 'json'],
   });
 

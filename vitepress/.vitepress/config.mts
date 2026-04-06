@@ -39,7 +39,7 @@ export default defineConfig({
   description: 'A reactive, framework-agnostic router in 2 KB',
   base: '/reactive-route/',
   head: [['link', { rel: 'icon', href: '/reactive-route/file.svg' }]],
-  appearance: 'force-dark',
+  appearance: { initialValue: 'dark' },
   locales: {
     root: {
       label: 'English',

@@ -1,13 +1,20 @@
 :root {
-  --vp-c-brand-1: #8d5de1;
+  --vp-c-brand-1: #542a9c;
   --vp-button-brand-bg: #6231b6;
   --vp-button-brand-hover-bg: #542a9c;
   --docsearch-search-button-background: var(--vp-c-bg-alt) !important;
+  --success-comment-color: #21754c;
+  --success-comment-border-color: #72aa8c;
 }
 
 :root.dark {
+  --vp-c-brand-1: #8d5de1;
+  --vp-button-brand-bg: #6231b6;
+  --vp-button-brand-hover-bg: #542a9c;
   --vp-code-color: #bb9ee1;
   --docsearch-focus-color: #9ecbff;
+  --success-comment-color: #3dd68c;
+  --success-comment-border-color: #183324;
 }
 
 .table-td {
@@ -90,10 +97,10 @@ h4 code,
 
 .shiki .line.warning {
   background: transparent !important;
-  border-left: 3px solid #183324;
+  border-left: 3px solid var(--success-comment-border-color);
 
   & span {
-    color: #3dd68c !important;
+    color: var(--success-comment-color) !important;
   }
 }
 

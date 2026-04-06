@@ -266,11 +266,11 @@ onUnmounted(() => {
       background-color: var(--vp-c-bg-alt);
 
       &:hover {
-        background-color: var(--vp-c-bg-soft);
+        background-color: var(--vp-c-bg);
       }
 
       &.active {
-        background-color: var(--vp-c-bg-soft) !important;
+        background-color: var(--vp-c-bg) !important;
       }
 
       & label {
