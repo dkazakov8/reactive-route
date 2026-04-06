@@ -328,9 +328,7 @@ describe.each(allPossibleOptions)(`Lifecycle: beforeEnter %s`, (options) => {
           path: '/static',
           loader,
           async beforeEnter() {
-            // @ts-expect-error
-            // biome-ignore lint/correctness/noUndeclaredVariables: false
-            a;
+            throw new ReferenceError('a is not defined');
           },
         },
         ...getConfigsDefault(),
