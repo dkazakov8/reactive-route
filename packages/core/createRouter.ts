@@ -34,6 +34,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
   const win = typeof window !== 'undefined' ? window : null;
   const configNames = Object.keys(configs) as Array<TypeConfigKeys<TConfigs>>;
   let syncStopped = false;
+  let activeTransitionId = 0;
 
   function isValidNonEmptyValue(validator: unknown, value: unknown): value is string {
     return (
@@ -99,7 +100,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
     listener() {
       const state = this.urlToState(location.href);
 
-      void this.redirect({ ...(state as any), replace: true });
+      void this.redirect({ ...(state as any), replace: true }, { fromBrowserPopstate: true });
     },
     historySyncStart() {
       win?.addEventListener('popstate', this.listener);
@@ -196,6 +197,12 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
     },
 
     async redirect(stateDynamic, options) {
+      const transitionId = ++activeTransitionId;
+
+      function isStale() {
+        return transitionId !== activeTransitionId;
+      }
+
       // this should be immutable, because activeState may change in the process
       const currentState = this.activeName ? { ...this.state[this.activeName] } : undefined;
       const currentUrl = currentState ? this.stateToUrl(currentState) : '';
@@ -207,6 +214,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
       const beforeEnter = configs[nextState.name].beforeEnter;
 
       let reason: TypeReason = 'unmodified';
+      const currentBrowserUrl = `${win?.location.pathname || ''}${win?.location.search || ''}`;
 
       const [currentPathname = '', currentSearch = ''] = currentUrl.split('?');
       const [nextPathname = '', nextSearch = ''] = nextUrl.split('?');
@@ -219,20 +227,36 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
         reason = 'new_query';
       }
 
-      if (reason === 'unmodified') return currentUrl;
+      if (reason === 'unmodified') {
+        if (!isStale()) {
+          adapters.batch(() => {
+            this.isRedirecting = false;
+
+            if (options?.fromBrowserPopstate && currentBrowserUrl !== currentUrl && !syncStopped) {
+              win?.history.replaceState(null, '', currentUrl);
+            }
+          });
+        }
+
+        return currentUrl;
+      }
 
       this.isRedirecting = true;
 
       try {
         if (!options?.skipLifecycle) {
-          await beforeLeave?.({
-            reason,
-            nextState: nextState as any,
-            currentState: currentState as any,
-            preventRedirect() {
-              throw new PreventError();
-            },
-          });
+          if (!options?.fromBrowserPopstate) {
+            await beforeLeave?.({
+              reason,
+              nextState: nextState as any,
+              currentState: currentState as any,
+              preventRedirect() {
+                throw new PreventError();
+              },
+            });
+
+            if (isStale()) return currentUrl;
+          }
 
           const redirectState = await beforeEnter?.({
             reason,
@@ -245,13 +269,25 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
             },
           });
 
+          if (isStale()) return currentUrl;
+
           // redirectState is untyped because of TS limitations,
           // so we trust a user input - it will be validated anyway
-          if (redirectState) return this.redirect(redirectState as any);
+          if (redirectState) {
+            return this.redirect(
+              {
+                ...redirectState,
+                replace: options?.fromBrowserPopstate ? true : redirectState.replace,
+              } as any,
+              options
+            );
+          }
         }
 
         await this.preloadComponent(nextState.name);
       } catch (error: unknown) {
+        if (isStale()) return currentUrl;
+
         if (error instanceof PreventError || error instanceof RedirectError) {
           adapters.batch(() => {
             this.isRedirecting = false;
@@ -278,13 +314,17 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
         }
       }
 
+      if (isStale()) return currentUrl;
+
       adapters.batch(() => {
         this.state[nextState.name] ??= {} as any;
 
         adapters.replaceObject(this.state[nextState.name]!, nextState);
 
         if (nextState.name !== 'internalError' && !syncStopped) {
-          win?.history[stateDynamic.replace ? 'replaceState' : 'pushState'](null, '', nextUrl);
+          if (!options?.fromBrowserPopstate || currentBrowserUrl !== nextUrl) {
+            win?.history[stateDynamic.replace ? 'replaceState' : 'pushState'](null, '', nextUrl);
+          }
         }
 
         this.activeName = nextState.name;

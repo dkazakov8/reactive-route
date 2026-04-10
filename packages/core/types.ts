@@ -47,7 +47,7 @@ export type TypeConfigKeys<TConfigs extends TypeConfigsDefault> = string & keyof
 /** Some static types as a basic structure */
 
 type TypeValidator = (param: string) => boolean;
-type TypeRedirectOptions = { skipLifecycle?: boolean };
+type TypeRedirectOptions = { skipLifecycle?: boolean, fromBrowserPopstate?: boolean };
 
 export type TypeURL = string;
 export type TypeReason = 'unmodified' | 'new_query' | 'new_params' | 'new_config';

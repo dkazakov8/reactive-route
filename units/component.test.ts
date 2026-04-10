@@ -1,5 +1,5 @@
 import { createConfigs } from 'reactive-route';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { attachReactivity } from './helpers/attachReactivity';
 import { checkHistory, v } from './helpers/checkers';
@@ -10,6 +10,14 @@ import type { TypeOptions } from './helpers/types';
 const options = OPTIONS as TypeOptions;
 
 await attachReactivity(options);
+
+async function waitForRouterIdle(router: { isRedirecting: boolean }) {
+  await vi.waitFor(() => expect(router.isRedirecting).toBe(false));
+}
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 beforeEach(() => {
   if (typeof window !== 'undefined') {
@@ -369,6 +377,306 @@ describe.runIf(typeof window !== 'undefined').each([options])(
       calls.beforeComponentChange += 1;
 
       checkHistory({ container, checkSpy, url: '/2/v-one', content: expectedContent.dynamic });
+    });
+
+    it('popstate skips beforeLeave and syncs router state without mutating history', async () => {
+      const beforeLeave = vi.fn(async (data: any) => {
+        if (data.nextState.name === 'notFound') return data.preventRedirect();
+      });
+
+      const { router, render, checkSpy, calls, waitForRedirect } = await prepareRouterTest({
+        options,
+        configs: createConfigs({
+          static: { path: '/static', loader: components.static, beforeLeave },
+          ...errorConfigs,
+        }),
+      });
+
+      const screen = await render();
+
+      const container = screen.container;
+
+      await router.redirect({ name: 'notFound' });
+
+      calls.beforeComponentChange += 1;
+
+      await router.redirect({ name: 'static' });
+
+      calls.beforeComponentChange += 1;
+
+      const pushStateSpy = vi.spyOn(window.history, 'pushState');
+      const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
+
+      pushStateSpy.mockClear();
+      replaceStateSpy.mockClear();
+
+      await waitForRedirect(() => history.back());
+      await waitForRouterIdle(router);
+
+      calls.beforeComponentChange += 1;
+
+      expect(beforeLeave).toHaveBeenCalledTimes(0);
+      expect(pushStateSpy).toHaveBeenCalledTimes(0);
+      expect(replaceStateSpy).toHaveBeenCalledTimes(0);
+
+      checkHistory({
+        container,
+        checkSpy,
+        url: '/error404',
+        content: expectedContent.notFound,
+      });
+    });
+
+    it('popstate redirect from beforeEnter replaces the current history entry', async () => {
+      const { router, render, checkSpy, calls, waitForRedirect } = await prepareRouterTest({
+        options,
+        configs: createConfigs({
+          start: {
+            path: '/start',
+            loader: components.static,
+            async beforeEnter(data) {
+              if (data.currentState?.name === 'notFound') {
+                return data.redirect({ name: 'target', params: { one: 'v-one' } });
+              }
+            },
+          },
+          target: {
+            path: '/target/:one',
+            params: { one: v.length },
+            loader: components.dynamic,
+          },
+          ...errorConfigs,
+        }),
+      });
+
+      const screen = await render();
+
+      const container = screen.container;
+
+      await router.redirect({ name: 'start' });
+
+      calls.beforeComponentChange += 1;
+
+      await router.redirect({ name: 'notFound' });
+
+      calls.beforeComponentChange += 1;
+
+      const pushStateSpy = vi.spyOn(window.history, 'pushState').mockClear();
+      const replaceStateSpy = vi.spyOn(window.history, 'replaceState').mockClear();
+
+      await waitForRedirect(() => history.back());
+      await waitForRouterIdle(router);
+
+      calls.beforeComponentChange += 1;
+
+      expect(pushStateSpy).toHaveBeenCalledTimes(0);
+      expect(replaceStateSpy).toHaveBeenCalledTimes(1);
+
+      checkHistory({
+        container,
+        checkSpy,
+        url: '/target/v-one',
+        content: expectedContent.dynamic,
+      });
+    });
+
+    it('popstate redirect back to currentState restores the current URL and clears redirecting', async () => {
+      const { router, render, checkSpy, calls, waitForRedirect } = await prepareRouterTest({
+        options,
+        configs: createConfigs({
+          start: {
+            path: '/start',
+            loader: components.static,
+            async beforeEnter(data) {
+              if (data.currentState?.name === 'notFound') {
+                return data.redirect(data.currentState);
+              }
+            },
+          },
+          ...errorConfigs,
+        }),
+      });
+
+      const screen = await render();
+
+      const container = screen.container;
+
+      await router.redirect({ name: 'start' });
+
+      calls.beforeComponentChange += 1;
+
+      await router.redirect({ name: 'notFound' });
+
+      calls.beforeComponentChange += 1;
+
+      const pushStateSpy = vi.spyOn(window.history, 'pushState');
+      const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
+
+      pushStateSpy.mockClear();
+      replaceStateSpy.mockClear();
+
+      await waitForRedirect(() => history.back());
+      await waitForRouterIdle(router);
+
+      expect(pushStateSpy).toHaveBeenCalledTimes(0);
+      expect(replaceStateSpy).toHaveBeenCalledTimes(1);
+      expect(location.pathname).toBe('/error404');
+      expect(router.isRedirecting).toBe(false);
+      expect(router.activeName).toBe('notFound');
+      expect(router.state[router.activeName!]).to.deep.eq({
+        name: 'notFound',
+        params: {},
+        query: {},
+      });
+      expect(container.innerHTML).to.eq(expectedContent.notFound);
+
+      checkSpy();
+    });
+
+    it('popstate transitions race: the latest browser navigation wins', async () => {
+      let resolveDelayedBack: (() => void) | undefined;
+      let notifyDelayedBackStarted: (() => void) | undefined;
+
+      const delayedBackStarted = new Promise<void>((resolve) => {
+        notifyDelayedBackStarted = resolve;
+      });
+      const delayedBack = new Promise<void>((resolve) => {
+        resolveDelayedBack = resolve;
+      });
+
+      const { router, render, checkSpy, calls, waitForRedirect } = await prepareRouterTest({
+        options,
+        configs: createConfigs({
+          first: { path: '/first', loader: components.static },
+          blocked: {
+            path: '/blocked',
+            props: { error: 404 },
+            loader: components.notFound,
+            async beforeEnter(data) {
+              if (data.currentState?.name === 'third') {
+                notifyDelayedBackStarted?.();
+                await delayedBack;
+              }
+            },
+          },
+          third: { path: '/third', loader: components.static },
+          ...errorConfigs,
+        }),
+      });
+
+      const screen = await render();
+      const container = screen.container;
+
+      await router.redirect({ name: 'first' });
+      calls.beforeComponentChange += 1;
+
+      await router.redirect({ name: 'blocked' });
+      calls.beforeComponentChange += 1;
+
+      await router.redirect({ name: 'third' });
+      calls.beforeComponentChange += 1;
+
+      const backEvent = waitForRedirect(() => history.back());
+
+      await delayedBackStarted;
+      await backEvent;
+
+      expect(location.pathname).toBe('/blocked');
+      expect(router.activeName).toBe('third');
+      expect(router.isRedirecting).toBe(true);
+
+      await waitForRedirect(() => history.forward());
+      await vi.waitFor(() => expect(location.pathname).toBe('/third'));
+
+      expect(router.activeName).toBe('third');
+      expect(router.isRedirecting).toBe(false);
+
+      resolveDelayedBack?.();
+
+      await waitForRouterIdle(router);
+
+      expect(location.pathname).toBe('/third');
+      expect(router.activeName).toBe('third');
+      expect(router.state[router.activeName!]).to.deep.eq({
+        name: 'third',
+        params: {},
+        query: {},
+      });
+      expect(container.innerHTML).to.eq(expectedContent.static);
+
+      checkSpy();
+    });
+
+    it('an older external redirect chain does not steal activeTransitionId from a newer redirect', async () => {
+      let resolveOldRedirect: (() => void) | undefined;
+      let notifyOldRedirectStarted: (() => void) | undefined;
+
+      const oldRedirectStarted = new Promise<void>((resolve) => {
+        notifyOldRedirectStarted = resolve;
+      });
+      const oldRedirectBlocked = new Promise<void>((resolve) => {
+        resolveOldRedirect = resolve;
+      });
+
+      const { router, render } = await prepareRouterTest({
+        options,
+        configs: createConfigs({
+          oldStart: {
+            path: '/old-start',
+            loader: components.static,
+            async beforeEnter(data) {
+              notifyOldRedirectStarted?.();
+              await oldRedirectBlocked;
+
+              return data.redirect({ name: 'oldFinal' });
+            },
+          },
+          oldFinal: {
+            path: '/old-final',
+            props: { error: 404 },
+            loader: components.notFound,
+          },
+          middle: { path: '/middle', loader: components.static },
+          latest: {
+            path: '/latest/:one',
+            params: { one: v.length },
+            loader: components.dynamic,
+          },
+          ...errorConfigs,
+        }),
+      });
+
+      await render();
+
+      const oldPromise = router.redirect({ name: 'oldStart' });
+
+      await oldRedirectStarted;
+
+      await router.redirect({ name: 'middle' });
+      await vi.waitFor(() => expect(router.activeName).toBe('middle'));
+      expect(location.pathname).toBe('/middle');
+
+      await router.redirect({ name: 'latest', params: { one: 'v-one' } });
+      await vi.waitFor(() => expect(router.activeName).toBe('latest'));
+      expect(location.pathname).toBe('/latest/v-one');
+      expect(router.state[router.activeName!]).to.deep.eq({
+        name: 'latest',
+        params: { one: 'v-one' },
+        query: {},
+      });
+
+      resolveOldRedirect?.();
+
+      await oldPromise;
+      await waitForRouterIdle(router);
+
+      expect(router.activeName).toBe('latest');
+      expect(location.pathname).toBe('/latest/v-one');
+      expect(router.state[router.activeName!]).to.deep.eq({
+        name: 'latest',
+        params: { one: 'v-one' },
+        query: {},
+      });
     });
   }
 );
