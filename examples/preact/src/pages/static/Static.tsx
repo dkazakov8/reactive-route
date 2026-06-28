@@ -26,7 +26,7 @@ export default function Static() {
         <Link className={styles.navButton} to={{ name: 'query', query: { foo: 'example' } }}>
           Query
         </Link>
-        <Link className={styles.navButton} to={{ name: 'preventRedirect' }}>
+        <Link className={styles.navButton} to={{ name: 'guards' }}>
           Guards
         </Link>
       </div>

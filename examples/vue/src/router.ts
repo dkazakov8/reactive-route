@@ -31,16 +31,11 @@ export function getRouter() {
       },
       loader: () => import('./pages/query'),
     },
-    preventRedirect: {
+    guards: {
       path: '/prevent',
       async beforeEnter({ currentState, redirect }) {
         if (currentState?.name === 'dynamic') {
           return redirect({ name: 'static' });
-        }
-      },
-      async beforeLeave({ nextState, preventRedirect }) {
-        if (nextState.name === 'query') {
-          return preventRedirect();
         }
       },
       loader: () => import('./pages/prevent'),

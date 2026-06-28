@@ -81,22 +81,11 @@ test.describe('App routing E2E', () => {
     await expectRoute(page, '/error404', 'Page Not Found');
   });
 
-  test('prevent: coming from Dynamic to Prevent redirects to Static (beforeEnter)', async ({
-    page,
-  }) => {
+  test('coming from Dynamic to Guards redirects to Static (beforeEnter)', async ({ page }) => {
     await gotoRoute(page, '/page/example', 'Dynamic Page');
 
     await page.getByRole('link', { name: 'Guards' }).click();
     await expectRoute(page, '/static', 'Static Page');
-  });
-
-  test('prevent: from Prevent trying to go to Query is blocked (beforeLeave) and URL remains the same', async ({
-    page,
-  }) => {
-    await gotoRoute(page, '/prevent', 'Navigation guards');
-
-    await page.getByRole('link', { name: 'Blocked query' }).click();
-    await expectRoute(page, '/prevent', 'Navigation guards');
   });
 
   test('browser back-forward works', async ({ page }) => {

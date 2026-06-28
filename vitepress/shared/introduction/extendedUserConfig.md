@@ -18,11 +18,6 @@ user: {
         query: { returnTo: nextState.name }
       });
     }
-  },
-  async beforeLeave({ nextState, preventRedirect }) {
-    if (nextState.name === 'home') {
-      return preventRedirect();
-    }
   }
 }
 ```

@@ -42,8 +42,9 @@ fast navigation and autocomplete + stable generation with AI models).
 The component tree in the project remains clean, and there are no restrictions
 on folder structure or file names.
 
-Async `beforeEnter` and `beforeLeave` methods let you control access
-and load data into stores, while `beforeComponentChange` lets you design modular architectures
+Async `beforeEnter` methods let you redirect by access rules and load data into stores.
+`beforeLeave` runs before leaving the active route and is useful for cleanup
+or analytics, while `beforeComponentChange` lets you design modular architectures
 with code-splitting support not only for page components, but also for other entities (and
 "destroy" them when navigating to other pages), with seamless SSR support.
 
@@ -241,6 +242,12 @@ Validators receive **decoded** values for convenience when working with non-Engl
 - the normalized `State` is written to the corresponding `router.state[config.name]`, in this case `router.state.user`
 - if synchronization with the History API is enabled (by default it is enabled for the browser environment),
   native `pushState / replaceState` are called
+
+Browser Back/Forward navigation has already changed the current history entry by the time `popstate`
+is handled, so Reactive Route does not try to cancel it. `beforeLeave` still runs as a lifecycle
+side effect, but it cannot revert the browser navigation.
+If `beforeEnter` redirects during `popstate`, the current entry is canonicalized with `replaceState`
+instead of adding another entry with `pushState`.
 
 // #endregion introduction-how-works
 

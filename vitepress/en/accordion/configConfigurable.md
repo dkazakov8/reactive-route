@@ -81,7 +81,6 @@ beforeLeave?: (data: {
   reason: TypeReason;
   nextState: TypeStateUntyped;
   currentState: TypeStateUntyped;
-  preventRedirect: () => void;
 }) => Promise<void>;
 ```
 

@@ -42,7 +42,7 @@ export default function Error(props: { errorCode: number }) {
         <Link to={{ name: 'query', query: { foo: 'example' } }} className={styles.navButton}>
           Query
         </Link>
-        <Link to={{ name: 'preventRedirect' }} className={styles.navButton}>
+        <Link to={{ name: 'guards' }} className={styles.navButton}>
           Guards
         </Link>
       </div>

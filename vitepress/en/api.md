@@ -89,12 +89,21 @@ Only in lifecycle functions do `redirect`, `currentState`, and `nextState` have 
 :::
 
 :::tip
-Always use `return` with `redirect` and `preventRedirect` for stable redirect logic.
+Always use `return` with `redirect` for stable redirect logic.
 :::
+
+Browser Back/Forward navigation is not blocked. If `beforeEnter` redirects during a browser
+`popstate`, Reactive Route canonicalizes the current history entry with `replaceState` instead of
+adding another entry with `pushState`.
+
+This avoids history loops like Back -> forbidden page -> push protected page -> Back -> forbidden page.
+The tradeoff is that Forward can look like a no-op when two adjacent entries end up canonicalized
+to the same URL.
 
 ### config.beforeLeave
 
-This async function can be used to interrupt a redirect. Unhandled errors will lead to
+This async function runs before leaving the current route, including browser Back/Forward
+`popstate` navigation. It cannot block or revert navigation. Unhandled errors will lead to
 rendering `internalError` without changing the URL in the browser.
 
 <Accordion title="Arguments">
@@ -117,7 +126,7 @@ Only in lifecycle functions do `redirect`, `currentState`, and `nextState` have 
 :::
 
 :::tip
-Always use `return` with `redirect` and `preventRedirect` for stable redirect logic.
+Use `beforeEnter` redirects to canonicalize forbidden destinations instead of trying to block them.
 :::
 
 ## State

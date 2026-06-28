@@ -31,7 +31,7 @@ createConfigs({
       // @ts-expect-error redirect params values must be strings
       redirect({ name: 'dynamic', params: { id: 1 } });
     },
-    async beforeLeave({ currentState, nextState, reason, preventRedirect }) {
+    async beforeLeave({ currentState, nextState, reason }) {
       currentState.name;
       currentState.params;
       currentState.query;
@@ -48,9 +48,8 @@ createConfigs({
       // @ts-expect-error unknown reason is not assignable
       reason satisfies 'unknown';
 
-      preventRedirect();
-      // @ts-expect-error "preventRedirect" does not accept arguments
-      preventRedirect(true);
+      // @ts-expect-error unknown "nextState" property is not available
+      nextState.unknown;
     },
   },
   notFound: { path: '/404', loader },
