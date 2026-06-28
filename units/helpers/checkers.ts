@@ -135,19 +135,12 @@ export function createBeforeLeaveSpy() {
 
   const beforeLeave = vi.fn() as any;
 
-  function checkLastArguments(
-    expectedLifecycle: Omit<Parameters<TypeBeforeLeave>[0], 'preventRedirect'>
-  ) {
+  function checkLastArguments(expectedLifecycle: Parameters<TypeBeforeLeave>[0]) {
     const actualLifecycle = beforeLeave.mock.lastCall?.[0];
 
     if (!actualLifecycle) return;
 
-    expect(Object.keys(actualLifecycle).sort()).to.deep.eq([
-      'currentState',
-      'nextState',
-      'preventRedirect',
-      'reason',
-    ]);
+    expect(Object.keys(actualLifecycle).sort()).to.deep.eq(['currentState', 'nextState', 'reason']);
 
     expect(actualLifecycle.reason).to.deep.eq(
       expectedLifecycle.reason,

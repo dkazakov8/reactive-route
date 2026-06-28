@@ -28,17 +28,5 @@ currentState: TypeStateUntyped
 
 </td>
 <td>Current active <code>State</code></td>
-</tr><tr>
-</tr><tr>
-<td class="table-td">
-
-```ts wrap
-preventRedirect: () => void
-```
-
-</td>
-<td>Method for stopping the redirect</td>
 </tr>
-
 </tbody></table>
-

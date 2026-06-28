@@ -7,12 +7,14 @@ export default function Prevent() {
       <div className={styles.pageTitle}>Navigation guards</div>
 
       <div className={styles.panel}>
-        <div className={styles.sectionTitle}>beforeEnter + beforeLeave</div>
-        <div className={styles.textBlock}>This page shows both lifecycle guards on one route.</div>
+        <div className={styles.sectionTitle}>beforeEnter redirects</div>
+        <div className={styles.textBlock}>
+          This page shows a route guard that redirects on entry.
+        </div>
         <div className={styles.textBlock}>
           Entering from <code className={styles.inlineCode}>dynamic</code> redirects to{' '}
-          <code className={styles.inlineCode}>static</code>. Leaving to{' '}
-          <code className={styles.inlineCode}>query</code> is blocked.
+          <code className={styles.inlineCode}>static</code>. Browser Back/Forward entries are
+          canonicalized with replace when a guard redirects.
         </div>
       </div>
 
@@ -30,7 +32,8 @@ export default function Prevent() {
           <div className={styles.itemIcon}>🚫</div>
           <div className={styles.itemBody}>
             <div className={styles.textBlock}>
-              <div className={styles.labelStrong}>To query:</div> navigation is prevented.
+              <div className={styles.labelStrong}>Back/Forward:</div> redirected entries are
+              replaced, not pushed.
             </div>
           </div>
         </div>
@@ -44,11 +47,8 @@ export default function Prevent() {
         <Link to={{ name: 'dynamic', params: { foo: 'example' } }} className={styles.navButton}>
           Dynamic
         </Link>
-        <Link
-          to={{ name: 'query', query: { foo: 'example' } }}
-          className={`${styles.navButton} ${styles.navButtonBlocked}`}
-        >
-          Blocked query
+        <Link to={{ name: 'query', query: { foo: 'example' } }} className={styles.navButton}>
+          Query
         </Link>
       </div>
     </div>

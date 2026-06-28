@@ -68,7 +68,6 @@ export type TypeBeforeLeave = (
     reason: TypeReason;
     nextState: TypeStateUntyped;
     currentState: TypeStateUntyped;
-    preventRedirect: () => void;
   }
 ) => Promise<void>;
 

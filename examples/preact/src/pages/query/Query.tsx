@@ -50,7 +50,7 @@ export default function Query() {
         <Link to={{ name: 'dynamic', params: { foo: 'example' } }} className={styles.navButton}>
           Dynamic
         </Link>
-        <Link to={{ name: 'preventRedirect' }} className={styles.navButton}>
+        <Link to={{ name: 'guards' }} className={styles.navButton}>
           Guards
         </Link>
       </div>

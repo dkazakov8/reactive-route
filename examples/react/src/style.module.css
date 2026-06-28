@@ -265,11 +265,3 @@
     }
   }
 }
-
-.navButtonBlocked {
-  background: #f14158;
-
-  &:hover {
-    background: #b62a3c;
-  }
-}

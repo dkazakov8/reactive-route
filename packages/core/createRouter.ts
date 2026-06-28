@@ -1,4 +1,4 @@
-import { PreventError, RedirectError } from './constants';
+import { RedirectError } from './constants';
 import type {
   TypeConfigKeys,
   TypeConfigsDefault,
@@ -229,9 +229,6 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
             reason,
             nextState: nextState as any,
             currentState: currentState as any,
-            preventRedirect() {
-              throw new PreventError();
-            },
           });
 
           const redirectState = await beforeEnter?.({
@@ -252,13 +249,11 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
         await this.preloadComponent(nextState.name);
       } catch (error: unknown) {
-        if (error instanceof PreventError || error instanceof RedirectError) {
+        if (error instanceof RedirectError) {
           adapters.batch(() => {
             this.isRedirecting = false;
           });
         }
-
-        if (error instanceof PreventError) return currentUrl;
 
         if (error instanceof RedirectError) throw error;
 

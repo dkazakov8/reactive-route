@@ -43,7 +43,7 @@ function goRandom() {
       <Link :to="{ name: 'query', query: { foo: 'example' } }" :class="styles.navButton">
         Query
       </Link>
-      <Link :to="{ name: 'preventRedirect' }" :class="styles.navButton">Guards</Link>
+      <Link :to="{ name: 'guards' }" :class="styles.navButton">Guards</Link>
     </div>
   </div>
 </template>

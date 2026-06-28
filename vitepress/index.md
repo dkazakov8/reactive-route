@@ -22,7 +22,7 @@ features:
   - title: Centralized
     details: All routing behavior lives in a single object with built-in lazy-loading support
   - title: Feature-rich
-    details: Data loading and permission checks on navigation, navigation blocking, redirect chains, query and dynamic parameters validation
+    details: Data loading, permission redirects, redirect chains, query and dynamic parameters validation
   - title: Great DX
     details: Strict TypeScript typing, no external dependencies, thorough test coverage, and both CJS and ESM builds for compatibility
   - title: SSR / MPA / Widget modes
