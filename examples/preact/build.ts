@@ -1,32 +1,67 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
+import http from 'node:http';
 import path from 'node:path';
 
 import { pluginInjectPreload } from '@espcom/esbuild-plugin-inject-preload';
 import { pluginReplace } from '@espcom/esbuild-plugin-replace';
 import { pluginWebpackAnalyzer } from '@espcom/esbuild-plugin-webpack-analyzer';
 import { type BuildOptions, context } from 'esbuild';
-import express from 'ultimate-express';
 
 import { componentWrapper } from './plugins.ts';
 
-const reloadScript = (port: number) => `(function refresh() {
+export function createReloadScript(reloadServerUrl: string) {
+  return `(function refresh() {
   let attempt = 0;
-  const maxAttempts = 5;
-  const socketUrl = window.location.origin.replace(/(^http(s?):\\/\\/)(.*:)(.*)/,${`'ws$2://$3${port}`}');
+  const maxAttempts = 3;
 
-  function websocketWaiter() {
-    if (attempt > maxAttempts) return console.warn('[page-reload] has stopped due to reconnection issues');
-  
-    const socket = new WebSocket(socketUrl);
-
-    socket.onopen = () => { attempt = 0; }
-    socket.onmessage = (msg) => { if (msg.data === 'reload') { socket.close(); window.location.reload(); } };
-    socket.onclose = () => { setTimeout(websocketWaiter, 1000); attempt++; };
-  }
-
-  window.addEventListener('load', websocketWaiter);
+  window.addEventListener(
+    'load', 
+    () => {
+      const events = new EventSource('${reloadServerUrl}');
+      events.addEventListener('reload', () => window.location.reload());
+      events.onopen = () => { attempt = 0; };
+      events.onerror = () => attempt < maxAttempts ? attempt++ : events.close();
+    }, 
+    { once: true }
+  );
 })();`;
+}
+
+export function runReloadServer(params: { port: number }) {
+  const clients = new Set<http.ServerResponse>();
+
+  http
+    .createServer((req, res) => {
+      if (req.url !== '/reload') {
+        res.writeHead(404);
+        res.end();
+        return;
+      }
+
+      res.writeHead(200, {
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'no-cache, no-transform',
+        Connection: 'keep-alive',
+        'Content-Type': 'text/event-stream',
+      });
+
+      res.write(`retry: 1000\n\n`);
+
+      clients.add(res);
+
+      req.on('close', () => clients.delete(res));
+    })
+    .listen(params.port);
+
+  return {
+    sendReloadSignal() {
+      clients.forEach((client) => {
+        client.write(`event: reload\ndata: reload\n\n`);
+      });
+    },
+  };
+}
 
 const REACTIVITY_SYSTEM: 'mobx' | 'kr-observable' = process.argv[2] as any;
 const SSR_ENABLED = process.argv[3] === 'ssr';
@@ -41,8 +76,9 @@ const serverBundlePath = path.resolve(outdirPath, 'server.js');
 
 const watchPort = PORT + 100;
 const analyzerPort = PORT + 101;
+const reloadServerUrl = `http://localhost:${watchPort}/reload`;
 
-let reloadSocket: WebSocket | undefined;
+let reloadServer: ReturnType<typeof runReloadServer> | undefined;
 let serverSign = '';
 
 const activeProcesses = new Set<'server' | 'client'>();
@@ -68,14 +104,10 @@ function compareServerSignature() {
 }
 
 function sendReload(reason: string) {
-  if (!reloadSocket) return;
-
-  const socket = reloadSocket;
-
   setTimeout(() => {
-    if (activeProcesses.size !== 0 || socket !== reloadSocket) return;
+    if (activeProcesses.size !== 0 || !reloadServer) return;
 
-    socket.send('reload');
+    reloadServer.sendReloadSignal();
 
     console.log(`[page-reload]`, reason);
   }, 0);
@@ -157,7 +189,7 @@ const configClient: BuildOptions = {
         replace: '<!-- ENTRY_JS --><!-- /ENTRY_JS -->',
         as: (filePath) =>
           /client([^.]+)?\.js$/.test(filePath)
-            ? `<script src="${filePath}" type="module"></script><script>${reloadScript(watchPort)}</script>`
+            ? `<script src="${filePath}" type="module"></script><script>${createReloadScript(reloadServerUrl)}</script>`
             : undefined,
       },
     ]),
@@ -178,15 +210,7 @@ const ctxServer = await context(configServer);
 await Promise.all([ctxClient.rebuild(), ctxServer.rebuild()]);
 
 if (!IS_E2E) {
-  // start a websocket server to reload browser on changes
-  express()
-    .uwsApp.ws('/*', {
-      open: (ws) => (reloadSocket = ws as any),
-      close: (ws) => {
-        if (reloadSocket === (ws as any)) reloadSocket = undefined;
-      },
-    })
-    .listen(watchPort, () => undefined);
+  reloadServer = runReloadServer({ port: watchPort });
 
   await Promise.all([ctxClient.watch(), ctxServer.watch()]);
 }

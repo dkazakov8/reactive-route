@@ -16,8 +16,7 @@
     "kr-observable": "3.1.14",
     "mobx": "6.16.1",
     "reactive-route": "1.0.0",
-    "solid-js": "1.9.13",
-    "ultimate-express": "2.0.12"
+    "solid-js": "1.9.13"
   },
   "devDependencies": {
     "@babel/core": "7.29.7",

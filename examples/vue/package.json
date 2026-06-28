@@ -10,8 +10,7 @@
   "dependencies": {
     "reactive-route": "1.0.0",
     "vue": "3.5.32",
-    "express": "5.2.1",
-    "ultimate-express": "2.0.12"
+    "express": "5.2.1"
   },
   "devDependencies": {
     "@types/node": "26.0.1",
