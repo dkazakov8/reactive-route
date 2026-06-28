@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import express from 'express';
 import { RedirectError } from 'reactive-route';
-import express from 'ultimate-express';
 import { createSSRApp } from 'vue';
 import { renderToString } from 'vue/server-renderer';
 
@@ -14,7 +14,7 @@ const templatePath = path.resolve(import.meta.dirname, 'template.html');
 
 express()
   .use(express.static(publicPath, { index: false, etag: true }))
-  .get('*', async (req, res) => {
+  .get('/{*splat}', async (req, res) => {
     if (req.originalUrl.includes('.')) return res.sendStatus(404);
 
     const template = fs.readFileSync(templatePath, 'utf-8');
