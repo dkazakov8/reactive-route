@@ -41,6 +41,6 @@ redirect: (
 ```
 
 </td>
-<td>Method for redirecting inside the lifecycle. Since <code>createConfigs</code> is called before the router is created, <code>router.redirect</code> cannot be used here</td>
+<td>Method for redirecting inside the lifecycle. Since <code>createConfigs</code> is called before the router is created, <code>router.redirect</code> cannot be used here. During browser <code>popstate</code>, redirects are forced to <code>replace: true</code>.</td>
   </tr></tbody>
 </table>
