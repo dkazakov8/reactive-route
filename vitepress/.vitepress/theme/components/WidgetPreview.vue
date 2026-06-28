@@ -7,12 +7,13 @@ const props = withDefaults(
   defineProps<{
     widgetUrls: Array<string>;
     showButtons?: boolean;
+    skipCss?: boolean;
     containerId: string;
   }>(),
-  { showButtons: true }
+  { showButtons: true, skipCss: false }
 );
 
-const { site } = useData();
+const { isDark, site } = useData();
 const cssUrl = computed(() => {
   const url = props.widgetUrls.find((item) => item.endsWith('.css'));
 
@@ -47,7 +48,7 @@ function withBase(url: string) {
 }
 
 onMounted(() => {
-  if (cssUrl.value) {
+  if (!props.skipCss && cssUrl.value) {
     styleElement = document.createElement('link');
     styleElement.rel = 'stylesheet';
     styleElement.href = `${cssUrl.value}?date=${Date.now()}`;
@@ -75,7 +76,7 @@ onBeforeUnmount(() => {
       <VPButton theme="alt" text="/page/77853418" @click="setWidgetUrl('/page/77853418')" />
     </div>
     <div class="widgetFrame">
-      <div :id="props.containerId" class="widgetMount" />
+      <div :id="props.containerId" class="widgetMount" :data-widget-theme="isDark ? 'dark' : 'light'" />
     </div>
   </div>
 </template>

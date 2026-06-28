@@ -219,7 +219,7 @@ TypeScript 5 пока не умеет рекурсивно выводить ти
 Второй пример использует другой UI-стек и систему реактивности, но управляется тем же
 внешним механизмом.
 
-<WidgetPreview :widget-urls="data.widgetUrlsPreact" :containerId="'example-app-preact'" :showButtons="false" />
+<WidgetPreview :widget-urls="data.widgetUrlsPreact" :containerId="'example-app-preact'" :showButtons="false" skipCss />
 
 Разумеется, можно встраивать и крупные сайты и админ-панели, а также проектировать микрофронтенды.
 Главное — обеспечить изоляцию стилей и переменных, правильно настроив бандлер.

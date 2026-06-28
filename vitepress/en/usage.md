@@ -218,7 +218,7 @@ controls that drive both widgets at once and execute the following code on click
 The second example below uses a different UI stack and reactivity model but stays synchronized 
 on the same page through the same external controls. 
 
-<WidgetPreview :widget-urls="data.widgetUrlsPreact" :containerId="'example-app-preact'" :showButtons="false" />
+<WidgetPreview :widget-urls="data.widgetUrlsPreact" :containerId="'example-app-preact'" :showButtons="false" skipCss />
 
 Naturally, you can embed large websites and admin panels, as well as design microfrontends.
 The main thing is to ensure isolation of styles and variables by configuring the bundler correctly.
