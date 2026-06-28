@@ -1,9 +1,10 @@
 import path from 'node:path';
 
+// @ts-expect-error
+import { transformAsync } from '@babel/core';
 import preact from '@preact/preset-vite';
 import { playwright } from '@vitest/browser-playwright';
 import vue from 'unplugin-vue';
-import babel from 'vite-plugin-babel';
 import { defineConfig, type TestProjectConfiguration } from 'vitest/config';
 
 import { VitestReporter } from './units/addons/vitestReporter';
@@ -11,12 +12,26 @@ import type { TypeOptions } from './units/helpers/types';
 
 process.setMaxListeners(20);
 
-const solidPlugin = babel({
-  filter: /\.tsx?$/,
-  babelConfig: { presets: ['@babel/preset-typescript', 'babel-preset-solid'] },
-});
+const solidPlugin = {
+  name: 'solid-babel',
+  enforce: 'pre' as const,
+  async transform(code: string, id: string) {
+    if (!/\.tsx?$/.test(id)) return;
+
+    const result = await transformAsync(code, {
+      filename: id,
+      presets: ['@babel/preset-typescript', 'babel-preset-solid'],
+      sourceMaps: true,
+    });
+
+    if (!result) return;
+
+    return { code: result.code ?? code, map: result.map };
+  },
+};
 
 const preactPlugin = preact({
+  babel: {},
   devToolsEnabled: false,
   prefreshEnabled: false,
   reactAliasesEnabled: false,

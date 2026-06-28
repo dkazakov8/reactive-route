@@ -9,12 +9,15 @@
   },
   "dependencies": {
     "reactive-route": "1.0.0",
-    "ultimate-express": "2.0.12",
-    "vue": "3.5.32"
+    "vue": "3.5.32",
+    "express": "5.2.1",
+    "ultimate-express": "2.0.12"
   },
   "devDependencies": {
+    "@types/node": "26.0.1",
+    "@types/express": "5.0.6",
     "@espcom/esbuild-plugin-inject-preload": "1.0.1",
-    "@espcom/esbuild-plugin-webpack-analyzer": "1.1.1",
+    "@espcom/esbuild-plugin-webpack-analyzer": "2.0.0",
     "esbuild": "0.28.0",
     "typescript": "6.0.2",
     "unplugin-vue": "7.1.1"

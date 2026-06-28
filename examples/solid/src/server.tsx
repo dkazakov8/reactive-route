@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import express from 'express';
 import { enableObservable } from 'kr-observable/solidjs';
 import { RedirectError } from 'reactive-route';
 import { generateHydrationScript, renderToString } from 'solid-js/web';
-import express from 'ultimate-express';
 
 import { App } from './components/App';
 import { getRouter, RouterContext } from './router';
@@ -23,7 +23,7 @@ if (REACTIVITY_SYSTEM === 'mobx') {
 
 express()
   .use(express.static(publicPath, { index: false, etag: true }))
-  .get('*', async (req, res) => {
+  .get('/{*splat}', async (req, res) => {
     if (req.originalUrl.includes('.')) return res.sendStatus(404);
 
     const template = fs.readFileSync(templatePath, 'utf-8');
