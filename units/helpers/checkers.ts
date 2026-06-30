@@ -174,7 +174,7 @@ export function checkURL(params: {
   );
 
   if (typeof window !== 'undefined') {
-    expect(location.pathname + location.search).to.eq(
+    expect(`${location.pathname}${location.search}`).to.eq(
       params.expectedHistoryUrl || params.expectedUrl,
       `checkURL:\nExpected expectedHistoryUrl: ${params.expectedHistoryUrl || params.expectedUrl}\nActual browser url: ${location.pathname + location.search}\n`
     );

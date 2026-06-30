@@ -41,7 +41,7 @@ function createProject(
   plugins: Array<any>,
   options?: TypeOptions
 ): Array<TestProjectConfiguration> {
-  const includeWithOptions = `units/component.test.ts`;
+  const includeWithOptions = `units/component*.test.ts`;
 
   const include = [options ? includeWithOptions : `units/*.test.ts`];
   const exclude = [options ? '' : includeWithOptions];
