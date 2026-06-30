@@ -1,6 +1,6 @@
 {
-  "coverage": "97.87 %",
-  "units": 378,
+  "coverage": "98.58 %",
+  "units": 394,
   "e2e": 128,
   "sizes": {
     "reactive-route": {
@@ -48,6 +48,6 @@
   },
   "localSize": "2.2kb",
   "coreSize": "1.78kb",
-  "widgetSizeSolid": "13.43 KB",
-  "widgetSizePreact": "11.91 KB"
+  "widgetSizeSolid": "13.45 KB",
+  "widgetSizePreact": "11.9 KB"
 }

@@ -39,7 +39,8 @@
     "e2e": "playwright test",
     "docs:dev": "vitepress dev vitepress",
     "docs:preview": "pnpm run docs:build && vitepress preview vitepress",
-    "docs:build": "vitepress build vitepress --outDir docs"
+    "docs:build": "vitepress build vitepress --outDir docs",
+    "full-check": "pnpm run analyze && pnpm run build && pnpm run test && pnpm run e2e"
   },
   "devDependencies": {
     "@babel/core": "7.29.7",
@@ -59,7 +60,7 @@
     "baseline-browser-mapping": "2.10.40",
     "esbuild": "0.28.0",
     "husky": "9.1.7",
-    "kr-observable": "3.1.14",
+    "kr-observable": "3.2.2",
     "mobx": "6.16.1",
     "mobx-preact": "3.0.0",
     "mobx-react-lite": "4.1.1",

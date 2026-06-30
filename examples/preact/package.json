@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "express": "5.2.1",
-    "kr-observable": "3.1.14",
+    "kr-observable": "3.2.2",
     "mobx": "6.16.1",
     "mobx-preact": "3.0.0",
     "preact": "10.29.3",

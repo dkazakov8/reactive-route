@@ -65,8 +65,8 @@ importers:
         specifier: 9.1.7
         version: 9.1.7
       kr-observable:
-        specifier: 3.1.14
-        version: 3.1.14
+        specifier: 3.2.2
+        version: 3.2.2
       mobx:
         specifier: 6.16.1
         version: 6.16.1
@@ -128,8 +128,8 @@ importers:
         specifier: 5.2.1
         version: 5.2.1
       kr-observable:
-        specifier: 3.1.14
-        version: 3.1.14
+        specifier: 3.2.2
+        version: 3.2.2
       mobx:
         specifier: 6.16.1
         version: 6.16.1
@@ -174,8 +174,8 @@ importers:
         specifier: 5.2.1
         version: 5.2.1
       kr-observable:
-        specifier: 3.1.14
-        version: 3.1.14
+        specifier: 3.2.2
+        version: 3.2.2
       mobx:
         specifier: 6.16.1
         version: 6.16.1
@@ -226,8 +226,8 @@ importers:
         specifier: 5.2.1
         version: 5.2.1
       kr-observable:
-        specifier: 3.1.14
-        version: 3.1.14
+        specifier: 3.2.2
+        version: 3.2.2
       mobx:
         specifier: 6.16.1
         version: 6.16.1
@@ -2154,8 +2154,8 @@ packages:
   kolorist@1.8.0:
     resolution: {integrity: sha512-Y+60/zizpJ3HRH8DCss+q95yr6145JXZo46OTpFvDZWLfRCE4qChOyk1b26nMaNpfHHgxagk9dXT5OP0Tfe+dQ==}
 
-  kr-observable@3.1.14:
-    resolution: {integrity: sha512-Kn+Z+xCbwFCxXju+Okm5dxlQKqIf/MGfF3WLjQsokxi3p4BG5Ow17ESJflpMvHALNdLMvc6DRZJnURNG9e4N5w==}
+  kr-observable@3.2.2:
+    resolution: {integrity: sha512-WU4bcGJaGMjUvr1EbQih8bFQ358TR0wpleip75dD2+FxyGH3tEXRK+ueCGZKkzWiP+UHN6prI3BWboByZ3WkDA==}
 
   lightningcss-android-arm64@1.30.2:
     resolution: {integrity: sha512-BH9sEdOCahSgmkVhBLeU7Hc9DWeZ1Eb6wNS6Da8igvUwAe0sqROHddIlvU06q3WyXVEOYDZ6ykBZQnjTbmo4+A==}
@@ -4790,7 +4790,7 @@ snapshots:
 
   kolorist@1.8.0: {}
 
-  kr-observable@3.1.14: {}
+  kr-observable@3.2.2: {}
 
   lightningcss-android-arm64@1.30.2:
     optional: true
