@@ -88,6 +88,36 @@ test.describe('App routing E2E', () => {
     await expectRoute(page, '/static', 'Static Page');
   });
 
+  test('popstate redirect from Guards replaces the traversed history entry', async ({ page }) => {
+    // Prepare the history stack: ['/static', '/prevent', '/page/example'],
+    // pointer at '/page/example'.
+    await gotoRoute(page, '/static', 'Static Page');
+
+    await page.getByRole('link', { name: 'Guards' }).click();
+    await expectRoute(page, '/prevent', 'Navigation guards');
+
+    await page.getByRole('link', { name: 'Dynamic' }).click();
+    await expectRoute(page, '/page/example', 'Dynamic Page');
+
+    // history.back() moves from '/page/example' to '/prevent',
+    // then beforeEnter redirects to '/static' and replaces '/prevent' with it.
+    // Now the history stack is ['/static', '/static', '/page/example'], pointer at element 1.
+    await page.goBack();
+    await expectRoute(page, '/static', 'Static Page');
+
+    // Moves the pointer to element 0 of ['/static', '/static', '/page/example'].
+    await page.goBack();
+    await expectRoute(page, '/static', 'Static Page');
+
+    // Moves the pointer to element 1 of ['/static', '/static', '/page/example'].
+    await page.goForward();
+    await expectRoute(page, '/static', 'Static Page');
+
+    // Moves the pointer to element 2 of ['/static', '/static', '/page/example'].
+    await page.goForward();
+    await expectRoute(page, '/page/example', 'Dynamic Page');
+  });
+
   test('browser back-forward works', async ({ page }) => {
     await gotoRoute(page, '/static', 'Static Page');
 

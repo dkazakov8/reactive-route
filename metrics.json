@@ -1,7 +1,7 @@
 {
   "coverage": "98.58 %",
-  "units": 394,
-  "e2e": 128,
+  "units": 386,
+  "e2e": 144,
   "sizes": {
     "reactive-route": {
       "minified": 5.27,

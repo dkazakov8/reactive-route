@@ -219,13 +219,9 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
       const [currentPathname = '', currentSearch = ''] = currentUrl.split('?');
       const [nextPathname = '', nextSearch = ''] = nextUrl.split('?');
 
-      if (currentState?.name !== nextState.name) {
-        reason = 'new_config';
-      } else if (currentPathname !== nextPathname) {
-        reason = 'new_params';
-      } else if (currentSearch !== nextSearch) {
-        reason = 'new_query';
-      }
+      if (currentState?.name !== nextState.name) reason = 'new_config';
+      else if (currentPathname !== nextPathname) reason = 'new_params';
+      else if (currentSearch !== nextSearch) reason = 'new_query';
 
       if (reason === 'unmodified') {
         if (!isStale()) {
@@ -233,6 +229,9 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
             this.isRedirecting = false;
 
             if (options?.fromBrowserPopstate && currentBrowserUrl !== currentUrl && !syncStopped) {
+              // For example, beforeEnter(({ redirect, currentState }) => redirect(currentState))
+              // resolves to the same state after popstate has already changed the browser URL.
+              // Restore the canonical URL without adding a new history entry.
               win?.history.replaceState(null, '', currentUrl);
             }
           });
@@ -245,37 +244,41 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
 
       try {
         if (!options?.skipLifecycle) {
-          await beforeLeave?.({
-            reason,
-            nextState: nextState as any,
-            currentState: currentState as any,
-          });
+          if (beforeLeave) {
+            await beforeLeave({
+              reason,
+              nextState: nextState as any,
+              currentState: currentState as any,
+            });
+          }
 
           if (isStale()) return currentUrl;
 
-          const redirectState = await beforeEnter?.({
-            reason,
-            nextState: nextState as any,
-            currentState: currentState as any,
-            redirect: (untypedState) => {
-              if (win) return untypedState;
+          if (beforeEnter) {
+            const redirectState = await beforeEnter({
+              reason,
+              nextState: nextState as any,
+              currentState: currentState as any,
+              redirect: (untypedState) => {
+                if (win) return untypedState;
 
-              throw new RedirectError(this.stateToUrl(untypedState));
-            },
-          });
+                throw new RedirectError(this.stateToUrl(untypedState));
+              },
+            });
 
-          if (isStale()) return currentUrl;
+            if (isStale()) return currentUrl;
 
-          // redirectState is untyped because of TS limitations,
-          // so we trust a user input - it will be validated anyway
-          if (redirectState) {
-            return this.redirect(
-              {
-                ...redirectState,
-                replace: options?.fromBrowserPopstate ? true : redirectState.replace,
-              } as any,
-              options
-            );
+            // redirectState is untyped because of TS limitations,
+            // so we trust a user input - it will be validated anyway
+            if (redirectState) {
+              return this.redirect(
+                {
+                  ...redirectState,
+                  replace: options?.fromBrowserPopstate ? true : redirectState.replace,
+                } as any,
+                options
+              );
+            }
           }
         }
 
@@ -287,9 +290,9 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
           adapters.batch(() => {
             this.isRedirecting = false;
           });
-        }
 
-        if (error instanceof RedirectError) throw error;
+          throw error;
+        }
 
         // may happen when there is a syntax error in beforeEnter / beforeLeave
         // or a network problem with preloadComponent when a chunk can't be loaded
