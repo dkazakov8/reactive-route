@@ -1,9 +1,9 @@
-import { autorun, makeObservable } from 'kr-observable';
+import { autorun, makeObservable, transaction } from 'kr-observable';
 import { observer } from 'kr-observable/react';
 import type { TypeAdapters } from 'reactive-route';
 
 export const adapters: TypeAdapters = {
-  batch: (cb) => cb(),
+  batch: transaction,
   autorun,
   replaceObject: (obj, newObj) => {
     // biome-ignore lint/suspicious/useGuardForIn: false

@@ -26,7 +26,8 @@ const StaticAutorun = observer(
     }, []);
 
     return <>StaticAutorun</>;
-  }
+  },
+  false
 );
 
 export default StaticAutorun;
