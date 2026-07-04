@@ -1,6 +1,6 @@
 {
   "coverage": "98.58 %",
-  "units": 386,
+  "units": 394,
   "e2e": 144,
   "sizes": {
     "reactive-route": {
@@ -46,8 +46,8 @@
       "link": "https://docs.solidjs.com/solid-router/"
     }
   },
-  "localSize": "2.2kb",
+  "localSize": "2.19kb",
   "coreSize": "1.78kb",
-  "widgetSizeSolid": "13.45 KB",
-  "widgetSizePreact": "11.9 KB"
+  "widgetSizeSolid": "13.39 KB",
+  "widgetSizePreact": "12.02 KB"
 }

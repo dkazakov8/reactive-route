@@ -34,13 +34,11 @@ currentState?: TypeStateUntyped
 
 ```ts wrap
 redirect: (
-  stateDynamic: 
-    TypeStateDynamicUntyped &
-    { replace?: boolean; }
+  stateDynamic: TypeStateDynamicUntyped
 ) => void
 ```
 
 </td>
-<td>Метод для редиректа внутри жизненного цикла. Так как <code>createConfigs</code> вызывается до создания роутера, здесь не получится использовать <code>router.redirect</code>. Во время браузерного <code>popstate</code> редиректы принудительно получают <code>replace: true</code>.</td>
+<td>Метод для редиректа внутри жизненного цикла. Так как <code>createConfigs</code> вызывается до создания роутера, здесь не получится использовать <code>router.redirect</code></td>
   </tr></tbody>
 </table>

@@ -42,9 +42,8 @@ fast navigation and autocomplete + stable generation with AI models).
 The component tree in the project remains clean, and there are no restrictions
 on folder structure or file names.
 
-Async `beforeEnter` methods let you redirect by access rules and load data into stores.
-`beforeLeave` runs before leaving the active route and is useful for cleanup
-or analytics, while `beforeComponentChange` lets you design modular architectures
+Async `beforeEnter` and `beforeLeave` methods let you control access
+and load data into stores, while `beforeComponentChange` lets you design modular architectures
 with code-splitting support not only for page components, but also for other entities (and
 "destroy" them when navigating to other pages), with seamless SSR support.
 
@@ -243,12 +242,6 @@ Validators receive **decoded** values for convenience when working with non-Engl
 - if synchronization with the History API is enabled (by default it is enabled for the browser environment),
   native `pushState / replaceState` are called
 
-Browser Back/Forward navigation has already changed the current history entry by the time `popstate`
-is handled, so Reactive Route does not try to cancel it. `beforeLeave` still runs as a lifecycle
-side effect, but it cannot revert the browser navigation.
-If `beforeEnter` redirects during `popstate`, the current entry is canonicalized with `replaceState`
-instead of adding another entry with `pushState`.
-
 // #endregion introduction-how-works
 
 // #region introduction-comparison
@@ -303,3 +296,25 @@ With tree shaking enabled in real projects, sizes may be smaller.
 />
 
 // #endregion introduction-comparison
+
+
+// #region introduction-migration
+
+# Migrations
+
+A list of breaking changes that may require code changes.
+
+## v1 -> v2
+
+- `beforeEnter redirect` no longer accepts `replace`. It is inherited from the
+  original navigation: `router.redirect({ ..., replace: true })` completes the whole
+  redirect chain with `replaceState`, while a regular `router.redirect(...)` uses `pushState`
+
+- In browser Back / Forward `popstate` navigations, `beforeEnter redirect` always uses
+  `replaceState` to avoid infinite loops and broken Back navigation
+
+- `preventRedirect` was removed from `beforeLeave` because it created a false expectation that browser
+  Back / Forward `popstate` navigations can be blocked. If you need to handle a forbidden
+  navigation, use `beforeEnter redirect`
+
+// #endregion introduction-migration

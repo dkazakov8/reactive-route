@@ -40,6 +40,10 @@ const linkText = computed(() => (isRu.value ? 'На главную' : 'Take me h
   text-align: center;
 }
 
+.action > a {
+  text-decoration: none;
+}
+
 .code {
   line-height: 64px;
   font-size: 64px;

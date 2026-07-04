@@ -26,6 +26,7 @@ export function getSidebarDocumentation(ln: TypeLocalization) {
           { text: ln.concepts[lang], link: `/${lang}/introduction/how-works` },
           { text: ln.comparison[lang], link: `/${lang}/introduction/comparison` },
           { text: ln.api[lang], link: `/${lang}/api` },
+          { text: ln.migration[lang], link: `/${lang}/introduction/migration` },
         ],
       },
       {
