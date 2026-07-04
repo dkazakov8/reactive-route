@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createConfigs, createRouter, RedirectError } from '../packages/core';
 import {
@@ -67,6 +67,11 @@ describe.runIf(typeof window !== 'undefined').each(allPossibleOptions)(
         adapters: await getAdapters(options),
       });
 
+      destroyAfterTest(router);
+
+      const pushStateSpy = vi.spyOn(window.history, 'pushState').mockClear();
+      const replaceStateSpy = vi.spyOn(window.history, 'replaceState').mockClear();
+
       const url = await router.redirect({
         name: 'start',
         params: { param: 'v-param' },
@@ -94,21 +99,22 @@ describe.runIf(typeof window !== 'undefined').each(allPossibleOptions)(
       spyTarget.checkCount(1);
       spyTarget.checkLastArguments({ reason: 'new_config', nextState, currentState });
 
-      expect(url).to.eq('/target');
+      checkURL({ routerUrl: url, expectedUrl: '/target' });
 
       expect(router.state[router.activeName!]).to.deep.eq(nextState);
 
-      expect(location.pathname).to.eq('/target');
+      expect(pushStateSpy).toHaveBeenCalledTimes(1);
+      expect(replaceStateSpy).toHaveBeenCalledTimes(0);
     });
 
-    it('Supports replace', async () => {
+    it('Inherits replace from the initial redirect', async () => {
       const router = createRouter({
         configs: createConfigs({
           start: {
             path: '/start',
             loader,
             async beforeEnter(data) {
-              return data.redirect({ name: 'target', replace: true });
+              return data.redirect({ name: 'target' });
             },
           },
           target: { path: '/target', loader },
@@ -119,6 +125,9 @@ describe.runIf(typeof window !== 'undefined').each(allPossibleOptions)(
 
       destroyAfterTest(router);
 
+      const pushStateSpy = vi.spyOn(window.history, 'pushState').mockClear();
+      const replaceStateSpy = vi.spyOn(window.history, 'replaceState').mockClear();
+
       const url = await router.redirect({ name: 'start', replace: true });
 
       const nextState: any = { name: 'target', query: {}, params: {} };
@@ -126,6 +135,42 @@ describe.runIf(typeof window !== 'undefined').each(allPossibleOptions)(
       checkURL({ routerUrl: url, expectedUrl: '/target' });
 
       expect(router.state[router.activeName!]).to.deep.eq(nextState);
+
+      expect(pushStateSpy).toHaveBeenCalledTimes(0);
+      expect(replaceStateSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('Ignores replace from beforeEnter redirects', async () => {
+      const router = createRouter({
+        configs: createConfigs({
+          start: {
+            path: '/start',
+            loader,
+            async beforeEnter(data) {
+              return data.redirect({ name: 'target', replace: true } as any);
+            },
+          },
+          target: { path: '/target', loader },
+          ...getConfigsDefault(),
+        }),
+        adapters: await getAdapters(options),
+      });
+
+      destroyAfterTest(router);
+
+      const pushStateSpy = vi.spyOn(window.history, 'pushState').mockClear();
+      const replaceStateSpy = vi.spyOn(window.history, 'replaceState').mockClear();
+
+      const url = await router.redirect({ name: 'start' });
+
+      const nextState: any = { name: 'target', query: {}, params: {} };
+
+      checkURL({ routerUrl: url, expectedUrl: '/target' });
+
+      expect(router.state[router.activeName!]).to.deep.eq(nextState);
+
+      expect(pushStateSpy).toHaveBeenCalledTimes(1);
+      expect(replaceStateSpy).toHaveBeenCalledTimes(0);
     });
   }
 );
@@ -257,14 +302,14 @@ describe.runIf(typeof window === 'undefined').each(allPossibleOptions)(
       expect(router.state[router.activeName!]).to.deep.eq(nextState);
     });
 
-    it('Supports replace', async () => {
+    it('Redirects from beforeEnter throw target URL', async () => {
       const router = createRouter({
         configs: createConfigs({
           start: {
             path: '/start',
             loader,
             async beforeEnter(data) {
-              return data.redirect({ name: 'target', replace: true });
+              return data.redirect({ name: 'target' });
             },
           },
           target: { path: '/target', loader },

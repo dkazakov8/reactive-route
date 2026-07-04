@@ -59,9 +59,9 @@ export type TypeBeforeEnter = (
     reason: TypeReason;
     nextState: TypeStateUntyped;
     currentState?: TypeStateUntyped;
-    redirect: (stateDynamic: TypeStateDynamicUntyped & { replace?: boolean; }) => void;
+    redirect: (stateDynamic: TypeStateDynamicUntyped) => void;
   }
-) => Promise<void | (TypeStateDynamicUntyped & { replace?: boolean; })>;
+) => Promise<void | TypeStateDynamicUntyped>;
 
 export type TypeBeforeLeave = (
   data: {

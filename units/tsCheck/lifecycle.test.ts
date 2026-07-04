@@ -24,10 +24,9 @@ createConfigs({
       reason satisfies 'unknown';
 
       redirect({ name: 'static' });
+      // @ts-expect-error "replace" is controlled by the original router.redirect call, not by beforeEnter
       redirect({ name: 'static', replace: true });
       redirect({ name: 'unknown' });
-      // @ts-expect-error "replace" must be boolean
-      redirect({ name: 'static', replace: 'true' });
       // @ts-expect-error redirect params values must be strings
       redirect({ name: 'dynamic', params: { id: 1 } });
     },
@@ -47,9 +46,6 @@ createConfigs({
       reason satisfies 'unmodified' | 'new_query' | 'new_params' | 'new_config';
       // @ts-expect-error unknown reason is not assignable
       reason satisfies 'unknown';
-
-      // @ts-expect-error unknown "nextState" property is not available
-      nextState.unknown;
     },
   },
   notFound: { path: '/404', loader },

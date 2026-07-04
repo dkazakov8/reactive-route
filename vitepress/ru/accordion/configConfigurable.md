@@ -61,14 +61,9 @@ beforeEnter?: (data: {
   nextState: TypeStateUntyped;
   currentState?: TypeStateUntyped;
   redirect: (
-    stateDynamic: 
-      TypeStateDynamicUntyped & 
-      { replace?: boolean; }
+    stateDynamic: TypeStateDynamicUntyped
   ) => void;
-}) => Promise<void | (
-  TypeStateDynamicUntyped & 
-  { replace?: boolean; }
-)>;
+}) => Promise<void | TypeStateDynamicUntyped>;
 ```
 
 </td><td>

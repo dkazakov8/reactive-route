@@ -92,19 +92,25 @@ Only in lifecycle functions do `redirect`, `currentState`, and `nextState` have 
 Always use `return` with `redirect` for stable redirect logic.
 :::
 
-Browser Back/Forward navigation is not blocked. If `beforeEnter` redirects during a browser
-`popstate`, Reactive Route canonicalizes the current history entry with `replaceState` instead of
-adding another entry with `pushState`.
+Redirects from `beforeEnter` inherit the history mode of the original navigation: a regular
+`router.redirect` chain ends with `pushState`, and `router.redirect({ ..., replace: true })` ends with
+`replaceState`. Because of browser limitations, Back / Forward navigations cannot be blocked, so
+**Reactive Route** forces `replace: true` for redirects during browser `popstate`. This solves many
+problems and loops like Back -> forbidden page -> push to allowed page -> Back -> forbidden page.
+To emulate "blocking navigation", you can use this pattern:
 
-This avoids history loops like Back -> forbidden page -> push protected page -> Back -> forbidden page.
-The tradeoff is that Forward can look like a no-op when two adjacent entries end up canonicalized
-to the same URL.
+```ts
+beforeEnter: ({ redirect, currentState }) => redirect(currentState)
+```
+
+However, duplicate History Entries will appear in the browser history, and moving back and forward
+will not visibly change the page. Unfortunately, no approach can work around this limitation.
 
 ### config.beforeLeave
 
 This async function runs before leaving the current route, including browser Back/Forward
-`popstate` navigation. It cannot block or revert navigation. Unhandled errors will lead to
-rendering `internalError` without changing the URL in the browser.
+`popstate` navigation. Unhandled errors will lead to rendering `internalError` without 
+changing the URL in the browser.
 
 <Accordion title="Arguments">
 
@@ -123,10 +129,6 @@ rendering `internalError` without changing the URL in the browser.
 ::: info Limitations
 Only in lifecycle functions do `redirect`, `currentState`, and `nextState` have incomplete typings
 (`name` is just `string`) due to TypeScript 5 limitations, so TS will not report errors during refactoring.
-:::
-
-:::tip
-Use `beforeEnter` redirects to canonicalize forbidden destinations instead of trying to block them.
 :::
 
 ## State

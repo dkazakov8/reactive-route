@@ -14,6 +14,7 @@ const sidebarConfig = getSidebarDocumentation({
   limitations: { ru: 'Ограничения', en: 'Limitations' },
   comparison: { ru: 'Сравнение', en: 'Comparison' },
   api: { ru: 'API', en: 'API' },
+  migration: { ru: 'Миграция версий', en: 'Version migration' },
 
   usage: { ru: 'Использование', en: 'Usage' },
   link: { ru: 'Link', en: 'Link' },

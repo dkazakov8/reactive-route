@@ -274,7 +274,7 @@ export function createRouter<TConfigs extends TypeConfigsDefault>(
               return this.redirect(
                 {
                   ...redirectState,
-                  replace: options?.fromBrowserPopstate ? true : redirectState.replace,
+                  replace: options?.fromBrowserPopstate ? true : stateDynamic.replace,
                 } as any,
                 options
               );
