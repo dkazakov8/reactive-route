@@ -16,7 +16,7 @@
     "mobx-react-lite": "4.1.1",
     "react": "19.2.7",
     "react-dom": "19.2.7",
-    "reactive-route": "1.0.0"
+    "reactive-route": "2.0.0"
   },
   "devDependencies": {
     "@espcom/esbuild-plugin-inject-preload": "1.0.1",

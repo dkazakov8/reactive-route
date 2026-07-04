@@ -16,7 +16,7 @@
     "mobx-preact": "3.0.0",
     "preact": "10.29.3",
     "preact-render-to-string": "6.7.0",
-    "reactive-route": "1.0.0"
+    "reactive-route": "2.0.0"
   },
   "devDependencies": {
     "@espcom/esbuild-plugin-inject-preload": "1.0.1",

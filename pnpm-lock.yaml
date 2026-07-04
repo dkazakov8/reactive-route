@@ -321,8 +321,8 @@ importers:
         specifier: 7.13.0
         version: 7.13.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       reactive-route:
-        specifier: 1.0.0
-        version: 1.0.0(typescript@6.0.2)
+        specifier: 2.0.0
+        version: 2.0.0(typescript@6.0.2)
       vue-router:
         specifier: 5.0.0
         version: 5.0.0(@vue/compiler-sfc@3.5.32)(vue@3.5.32(typescript@6.0.2))
@@ -2543,8 +2543,8 @@ packages:
     resolution: {integrity: sha512-HNe9WslTbXmFK8o8cmwgAeJFSBvt1bPdHCVKtaaV+WlAN36mpT4hcRpwbf3fY56ar2oIXzsBpOAiIRHAdY0OlQ==}
     engines: {node: '>=0.10.0'}
 
-  reactive-route@1.0.0:
-    resolution: {integrity: sha512-sxUFJoZgfnI9lHtDBjKQdHk57//kuOTf4RXuYjj9993cS2ymYfX7RqJO75+YuAEDFVEpOBO2p7CqNhvnD09k4w==}
+  reactive-route@2.0.0:
+    resolution: {integrity: sha512-rbsNA6ofez+Eem3PQDNJOXcz18XKaYfHs0nUfN94hnTSh/avCjosLGtndN6GEmMTSMzvMZaM58VOVXf0fkvcJw==}
     peerDependencies:
       typescript: '>=5.0'
 
@@ -5135,7 +5135,7 @@ snapshots:
 
   react@19.2.7: {}
 
-  reactive-route@1.0.0(typescript@6.0.2):
+  reactive-route@2.0.0(typescript@6.0.2):
     dependencies:
       typescript: 6.0.2
 
