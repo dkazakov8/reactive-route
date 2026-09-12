@@ -15,6 +15,10 @@ export async function getRouterContext(options: TypeOptions) {
     context = await import('../pages/solid/RouterContext').then((m) => m.RouterContext);
   }
 
+  if (options.renderer === 'solid2') {
+    context = await import('../pages/solid2/RouterContext').then((m) => m.RouterContext);
+  }
+
   if (options.renderer === 'vue') {
     context = await import('../pages/vue/useRouterStore').then((m) => m.provideRouterStore);
   }

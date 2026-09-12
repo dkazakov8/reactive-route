@@ -15,6 +15,9 @@ export async function getServerRender(options: TypeOptions, App: any) {
   if (options.renderer === 'solid') {
     renderFunction = (await import('solid-js/web')).renderToString;
   }
+  if (options.renderer === 'solid2') {
+    renderFunction = (await import('@solidjs/web2')).renderToString;
+  }
   if (options.renderer === 'vue') {
     renderFunction = (await import('vue/server-renderer')).renderToString;
   }
@@ -26,6 +29,9 @@ export async function getServerRender(options: TypeOptions, App: any) {
     renderToString = () => Promise.resolve(renderFunction(<App />));
   }
   if (options.renderer === 'solid') {
+    renderToString = () => Promise.resolve(renderFunction(App));
+  }
+  if (options.renderer === 'solid2') {
     renderToString = () => Promise.resolve(renderFunction(App));
   }
   if (options.renderer === 'vue') {

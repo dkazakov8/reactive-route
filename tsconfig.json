@@ -16,6 +16,7 @@
     { "path": "./packages/core" },
     { "path": "./packages/react" },
     { "path": "./packages/solid" },
+    { "path": "./packages/solid2" },
     { "path": "./packages/preact" },
     { "path": "./packages/vue" }
   ],

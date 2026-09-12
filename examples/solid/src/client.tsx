@@ -1,16 +1,16 @@
 import { enableObservable } from 'kr-observable/solidjs';
+import { enableObservableTracking } from 'mobx-solid';
 import { hydrate, render } from 'solid-js/web';
 
 import { App } from './components/App';
 import { getRouter, RouterContext } from './router';
-import { syncMobxWithSolid } from './syncMobxWithSolid';
 
 if (REACTIVITY_SYSTEM === 'kr-observable') {
   enableObservable(false);
 }
 
 if (REACTIVITY_SYSTEM === 'mobx') {
-  syncMobxWithSolid();
+  enableObservableTracking();
 }
 
 const router = getRouter();

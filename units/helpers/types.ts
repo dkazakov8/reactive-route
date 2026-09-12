@@ -1,5 +1,17 @@
 export type TypeOptions =
   | {
+      renderer: 'solid2';
+      reactivity: 'solid2';
+    }
+  | {
+      renderer: 'solid2';
+      reactivity: 'mobx';
+    }
+  | {
+      renderer: 'solid2';
+      reactivity: 'kr-observable';
+    }
+  | {
       renderer: 'solid';
       reactivity: 'solid';
     }
@@ -33,6 +45,18 @@ export type TypeOptions =
     };
 
 export const allPossibleOptions: Array<TypeOptions> = [
+  {
+    renderer: 'solid2',
+    reactivity: 'solid2',
+  },
+  {
+    renderer: 'solid2',
+    reactivity: 'mobx',
+  },
+  {
+    renderer: 'solid2',
+    reactivity: 'kr-observable',
+  },
   {
     renderer: 'solid',
     reactivity: 'solid',

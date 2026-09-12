@@ -69,6 +69,16 @@ export function getPageComponents(options: TypeOptions) {
     };
   }
 
+  if (options.renderer === 'solid2') {
+    components = {
+      static: () => import('../pages/solid2/Static'),
+      dynamic: () => import('../pages/solid2/Dynamic'),
+      autorun: () => import('../pages/solid2/StaticAutorun'),
+      notFound: () => import('../pages/solid2/Error'),
+      internalError: () => import('../pages/solid2/Error'),
+    };
+  }
+
   if (options.renderer === 'vue') {
     components = {
       static: () => import('../pages/vue/static'),

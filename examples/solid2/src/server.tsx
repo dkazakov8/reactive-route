@@ -1,0 +1,72 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { generateHydrationScript, renderToString } from '@solidjs/web';
+import express from 'express';
+import { enableObservable } from 'kr-observable/solidjs';
+import { RedirectError } from 'reactive-route';
+
+import { App } from './components/App';
+import { getRouter, RouterContext } from './router';
+import { syncMobxWithSolid } from './syncMobxWithSolid';
+
+const publicPath = path.resolve(import.meta.dirname, 'public');
+const templatePath = path.resolve(import.meta.dirname, 'template.html');
+
+if (REACTIVITY_SYSTEM === 'kr-observable') {
+  enableObservable(false);
+}
+
+if (REACTIVITY_SYSTEM === 'mobx') {
+  syncMobxWithSolid();
+}
+
+express()
+  .use(express.static(publicPath, { index: false, etag: true }))
+  .get('/{*splat}', async (req, res) => {
+    if (req.originalUrl.includes('.')) return res.sendStatus(404);
+
+    const template = fs.readFileSync(templatePath, 'utf-8');
+
+    if (!SSR_ENABLED) {
+      return res.send(template.replace(`<!-- HTML -->`, ''));
+    }
+
+    const router = getRouter();
+
+    try {
+      const clearedUrl = await router.init(req.originalUrl);
+
+      if (req.originalUrl !== clearedUrl) {
+        console.log(
+          `Server redirected from ${req.originalUrl} to ${clearedUrl} to clear irrelevant query`
+        );
+
+        return res.redirect(clearedUrl);
+      }
+    } catch (error: unknown) {
+      if (error instanceof RedirectError) {
+        console.log(
+          `Some beforeEnter issued a redirect from ${req.originalUrl} to ${error.message}`
+        );
+
+        return res.redirect(error.message);
+      }
+
+      return res.status(500).send('Unexpected error');
+    }
+
+    res.send(
+      template
+        .replace(
+          `<!-- HTML -->`,
+          renderToString(() => (
+            <RouterContext value={{ router }}>
+              <App />
+            </RouterContext>
+          ))
+        )
+        .replace(`<!-- HYDRATION -->`, generateHydrationScript())
+    );
+  })
+  .listen(PORT, () => console.log(`started on`, `http://localhost:${PORT}`));
