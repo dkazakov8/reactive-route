@@ -59,7 +59,7 @@ export function getPageComponents(options: TypeOptions) {
     }
   }
 
-  if (options.renderer === 'solid') {
+  if (options.renderer === 'solid' || options.renderer === 'solid2') {
     components = {
       static: () => import('../pages/solid/Static'),
       dynamic: () => import('../pages/solid/Dynamic'),
@@ -67,6 +67,10 @@ export function getPageComponents(options: TypeOptions) {
       notFound: () => import('../pages/solid/Error'),
       internalError: () => import('../pages/solid/Error'),
     };
+
+    if (options.renderer === 'solid2') {
+      components.autorun = () => import('../pages/solid2/StaticAutorun');
+    }
   }
 
   if (options.renderer === 'vue') {

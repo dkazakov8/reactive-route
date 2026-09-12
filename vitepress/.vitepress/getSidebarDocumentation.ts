@@ -46,6 +46,7 @@ export function getSidebarDocumentation(ln: TypeLocalization) {
           { text: 'React', link: `/${lang}/integration/react` },
           { text: 'Preact', link: `/${lang}/integration/preact` },
           { text: 'Solid.js', link: `/${lang}/integration/solid` },
+          { text: 'Solid.js 2', link: `/${lang}/integration/solid2` },
           { text: 'Vue', link: `/${lang}/integration/vue` },
         ],
       },

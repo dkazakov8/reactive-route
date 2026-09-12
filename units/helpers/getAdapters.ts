@@ -10,6 +10,8 @@ export async function getAdapters(options: TypeOptions) {
       adapters = await import('../../packages/adapters/mobx-preact').then((m) => m.adapters);
     if (options.renderer === 'solid')
       adapters = await import('../../packages/adapters/mobx-solid').then((m) => m.adapters);
+    if (options.renderer === 'solid2')
+      adapters = await import('../../packages/adapters/mobx-solid').then((m) => m.adapters);
   }
   if (options.reactivity === 'solid')
     adapters = await import('../../packages/adapters/solid').then((m) => m.adapters);
@@ -25,6 +27,10 @@ export async function getAdapters(options: TypeOptions) {
         (m) => m.adapters
       );
     if (options.renderer === 'solid')
+      adapters = await import('../../packages/adapters/kr-observable-solid').then(
+        (m) => m.adapters
+      );
+    if (options.renderer === 'solid2')
       adapters = await import('../../packages/adapters/kr-observable-solid').then(
         (m) => m.adapters
       );

@@ -15,6 +15,9 @@ export async function getRender(options: TypeOptions, App: any) {
   if (options.renderer === 'solid') {
     renderFunction = (await import('@solidjs/testing-library')).render;
   }
+  if (options.renderer === 'solid2') {
+    renderFunction = (await import('@solidjs/web2')).render;
+  }
   if (options.renderer === 'vue') {
     renderFunction = (await import('vitest-browser-vue')).render;
   }
@@ -27,6 +30,23 @@ export async function getRender(options: TypeOptions, App: any) {
   }
   if (options.renderer === 'solid') {
     render = () => renderFunction(() => <App />);
+  }
+  if (options.renderer === 'solid2') {
+    render = async () => {
+      const container = document.createElement('div');
+
+      document.body.append(container);
+
+      const dispose = renderFunction(() => <App />, container);
+
+      return {
+        container,
+        unmount: () => {
+          dispose();
+          container.remove();
+        },
+      };
+    };
   }
   if (options.renderer === 'vue') {
     render = async () => await renderFunction(App);

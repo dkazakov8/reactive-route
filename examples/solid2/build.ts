@@ -1,0 +1,247 @@
+import { spawn } from 'node:child_process';
+import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
+
+import { pluginInjectPreload } from '@espcom/esbuild-plugin-inject-preload';
+import { pluginReplace } from '@espcom/esbuild-plugin-replace';
+import { pluginWebpackAnalyzer } from '@espcom/esbuild-plugin-webpack-analyzer';
+import { type BuildOptions, context } from 'esbuild';
+
+import { generateSolid2Modifier } from './plugins.ts';
+
+export function createReloadScript(reloadServerUrl: string) {
+  return `(function refresh() {
+  let attempt = 0;
+  const maxAttempts = 3;
+
+  window.addEventListener(
+    'load', 
+    () => {
+      const events = new EventSource('${reloadServerUrl}');
+      events.addEventListener('reload', () => window.location.reload());
+      events.onopen = () => { attempt = 0; };
+      events.onerror = () => attempt < maxAttempts ? attempt++ : events.close();
+    }, 
+    { once: true }
+  );
+})();`;
+}
+
+export function runReloadServer(params: { port: number }) {
+  const clients = new Set<http.ServerResponse>();
+
+  http
+    .createServer((req, res) => {
+      if (req.url !== '/reload') {
+        res.writeHead(404);
+        res.end();
+        return;
+      }
+
+      res.writeHead(200, {
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'no-cache, no-transform',
+        Connection: 'keep-alive',
+        'Content-Type': 'text/event-stream',
+      });
+
+      res.write(`retry: 1000\n\n`);
+
+      clients.add(res);
+
+      req.on('close', () => clients.delete(res));
+    })
+    .listen(params.port);
+
+  return {
+    sendReloadSignal() {
+      clients.forEach((client) => {
+        client.write(`event: reload\ndata: reload\n\n`);
+      });
+    },
+  };
+}
+
+const REACTIVITY_SYSTEM: 'kr-observable' | 'mobx' = process.argv[2] as any;
+const SSR_ENABLED = process.argv[3] === 'ssr';
+const PORT = Number(process.argv[4] || '8000');
+const IS_E2E = process.argv[5] === 'test';
+
+const __dirname = import.meta.dirname;
+const outdirPath = path.resolve(__dirname, `dist_${PORT}`);
+const publicPath = path.resolve(outdirPath, 'public');
+const templatePath = path.resolve(outdirPath, 'template.html');
+const serverBundlePath = path.resolve(outdirPath, 'server.js');
+
+const watchPort = PORT + 100;
+const analyzerPort = PORT + 101;
+const reloadServerUrl = `http://localhost:${watchPort}/reload`;
+
+let reloadServer: ReturnType<typeof runReloadServer> | undefined;
+let serverSign = '';
+
+const activeProcesses = new Set<'server' | 'client'>();
+
+function compareServerSignature() {
+  // when only styles changed esbuild triggers server rebuild,
+  // but the server file is not modified and node --watch is not triggered, so this hack is needed
+  try {
+    const stats = fs.statSync(serverBundlePath);
+    const newSign = `${stats.size}:${stats.mtimeMs}`;
+
+    // in the real app only styles refresh needed, not full reload
+    if (newSign === serverSign) {
+      return true;
+    }
+
+    serverSign = newSign;
+  } catch (_e) {
+    // noop
+  }
+
+  return false;
+}
+
+function sendReload(reason: string) {
+  setTimeout(() => {
+    if (activeProcesses.size !== 0 || !reloadServer) return;
+
+    reloadServer.sendReloadSignal();
+
+    console.log(`[page-reload]`, reason);
+  }, 0);
+}
+
+const configServer: BuildOptions = {
+  entryPoints: ['src/server.tsx'],
+  bundle: true,
+  write: true,
+  metafile: true,
+  treeShaking: true,
+  sourcemap: false,
+  outdir: outdirPath,
+  platform: 'node',
+  packages: 'bundle',
+  external: ['express'],
+  format: 'esm',
+  target: 'node22',
+  alias: {
+    '@solidjs/web': path.resolve(__dirname, 'node_modules/@solidjs/web/dist/server.js'),
+    'solid-js': path.resolve(__dirname, 'node_modules/solid-js/dist/server.js'),
+  },
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('development'),
+    PORT: JSON.stringify(PORT),
+    SSR_ENABLED: JSON.stringify(SSR_ENABLED),
+    REACTIVITY_SYSTEM: JSON.stringify(REACTIVITY_SYSTEM),
+  },
+  resolveExtensions: ['.js', '.ts', '.tsx'],
+  plugins: [
+    pluginReplace([generateSolid2Modifier(true)]),
+    {
+      name: 'plugin-parallel',
+      setup(build) {
+        build.onStart(() => {
+          compareServerSignature();
+          activeProcesses.add('server');
+        });
+
+        build.onEnd(() => {
+          if (compareServerSignature()) {
+            activeProcesses.delete('server');
+            sendReload('server was rebuilt last');
+          }
+        });
+      },
+    },
+  ],
+};
+
+const configClient: BuildOptions = {
+  ...configServer,
+  entryPoints: ['src/client.tsx'],
+  alias: {
+    '@solidjs/web': path.resolve(__dirname, 'node_modules/@solidjs/web/dist/web.js'),
+    'solid-js': path.resolve(__dirname, 'node_modules/solid-js/dist/solid.js'),
+  },
+  outdir: publicPath,
+  publicPath: '/',
+  splitting: false,
+  platform: 'browser',
+  target: 'es2022',
+  packages: 'bundle',
+  plugins: [
+    pluginReplace([generateSolid2Modifier(false)]),
+    {
+      name: 'plugin-parallel',
+      setup(build) {
+        build.onStart(() => {
+          activeProcesses.add('client');
+        });
+        build.onEnd(() => {
+          activeProcesses.delete('client');
+          sendReload('client was rebuilt last');
+        });
+      },
+    },
+    pluginInjectPreload([
+      {
+        templatePath,
+        replace: '<!-- ENTRY_CSS --><!-- /ENTRY_CSS -->',
+        as: (filePath) =>
+          /client([^.]+)?\.css$/.test(filePath)
+            ? `<link rel="stylesheet" type="text/css" href="${filePath}" />`
+            : undefined,
+      },
+      {
+        templatePath,
+        replace: '<!-- ENTRY_JS --><!-- /ENTRY_JS -->',
+        as: (filePath) =>
+          /client([^.]+)?\.js$/.test(filePath)
+            ? `<script src="${filePath}" type="module"></script><script>${createReloadScript(reloadServerUrl)}</script>`
+            : undefined,
+      },
+    ]),
+    ...(!IS_E2E
+      ? [pluginWebpackAnalyzer({ port: analyzerPort, extensions: ['.js', '.ts', '.tsx'] })]
+      : []),
+  ],
+};
+
+fs.rmSync(outdirPath, { recursive: true, force: true });
+fs.mkdirSync(outdirPath);
+fs.mkdirSync(publicPath);
+fs.cpSync(path.resolve(__dirname, './src/template.html'), templatePath, { force: true });
+
+const ctxClient = await context(configClient);
+const ctxServer = await context(configServer);
+
+await Promise.all([ctxClient.rebuild(), ctxServer.rebuild()]);
+
+if (!IS_E2E) {
+  reloadServer = runReloadServer({ port: watchPort });
+
+  await Promise.all([ctxClient.watch(), ctxServer.watch()]);
+}
+
+const serverProcess = spawn('node', ['--watch', `./dist_${PORT}/server.js`], {
+  stdio: ['pipe', 'pipe', 'pipe'],
+});
+
+serverProcess.stdout?.on('data', (msg: Buffer) => {
+  const message = msg.toString().trim();
+
+  console.log('[server]', message);
+
+  if (message.includes('started on')) {
+    activeProcesses.delete('server');
+
+    sendReload(`server was restarted`);
+  }
+});
+serverProcess.stderr?.on('data', (msg: Buffer) => console.error(msg.toString().trim()));
+
+process.on('exit', () => serverProcess?.kill());
+process.on('SIGINT', () => process.exit(0));
+process.on('SIGTERM', () => process.exit(0));

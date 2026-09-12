@@ -17,6 +17,8 @@ Ready-made integrations are available for:
 - Solid.js + Solid reactivity
 - Solid.js + MobX
 - Solid.js + Observable
+- Solid.js 2 + MobX
+- Solid.js 2 + Observable
 - Vue + Vue reactivity
 
 The library focuses on a small runtime, strong typing, mandatory URL parameter validation, 

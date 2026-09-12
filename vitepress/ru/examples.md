@@ -89,6 +89,34 @@ npm install
 
 // #endregion examples-solid
 
+// #region examples-solid2
+
+# Пример для Solid.js 2
+
+Так как библиотека роутинга — сложный интеграционный пакет, требующий сервера для SSR и работы
+с History API, Live Preview недоступно. Однако вы можете загрузить готовые примеры.
+
+### Предпросмотр
+
+<CodeView framework="solid2" :tree="examplesTree" />
+
+### Скачивание
+
+```shell
+npx degit dkazakov8/reactive-route/examples/solid2 solid2-example
+cd solid2-example
+npm install
+```
+
+Затем выберите режим и систему реактивности для запуска:
+
+- `npm run mobx` — CSR (только клиентский рендеринг) для MobX
+- `npm run observable` — CSR (только клиентский рендеринг) для Observable
+- `npm run ssr-mobx` — SSR для MobX
+- `npm run ssr-observable` — SSR для Observable
+
+// #endregion examples-solid2
+
 // #region examples-preact
 
 # Пример для Preact

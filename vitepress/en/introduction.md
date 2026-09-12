@@ -27,6 +27,8 @@ Ready-made integrations are available for:
 - Solid.js + [Solid.js reactivity](https://docs.solidjs.com/concepts/intro-to-reactivity)
 - Solid.js + MobX
 - Solid.js + Observable
+- Solid.js 2 + MobX
+- Solid.js 2 + Observable
 - Vue + [Vue reactivity](https://vuejs.org/guide/extras/reactivity-in-depth)
 
 ## Advantages

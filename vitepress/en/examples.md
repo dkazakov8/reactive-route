@@ -89,6 +89,34 @@ Then choose the mode and reactivity system to run:
 
 // #endregion examples-solid
 
+// #region examples-solid2
+
+# Example for Solid.js 2
+
+Since the routing library is a complex integration package that requires a server for SSR and work
+with the History API, Live Preview is unavailable. However, you can download ready-made examples.
+
+### Preview
+
+<CodeView framework="solid2" :tree="examplesTree" />
+
+### Download
+
+```shell
+npx degit dkazakov8/reactive-route/examples/solid2 solid2-example
+cd solid2-example
+npm install
+```
+
+Then choose the mode and reactivity system to run:
+
+- `npm run mobx` — CSR (client-side rendering only) for MobX
+- `npm run observable` — CSR (client-side rendering only) for Observable
+- `npm run ssr-mobx` — SSR for MobX
+- `npm run ssr-observable` — SSR for Observable
+
+// #endregion examples-solid2
+
 // #region examples-preact
 
 # Example for Preact

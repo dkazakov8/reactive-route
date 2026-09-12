@@ -1,0 +1,14 @@
+{
+  "include": ["src", "build.ts", "plugins.ts"],
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "@solidjs/web",
+    "target": "es2022",
+    "module": "es2022",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "moduleResolution": "bundler",
+    "types": ["node"]
+  }
+}

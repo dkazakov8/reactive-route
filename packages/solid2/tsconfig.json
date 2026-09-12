@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["."],
+  "exclude": [],
+  "references": [{ "path": "../core" }],
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "@solidjs/web2",
+    "composite": true,
+    "rootDir": ".",
+    "outDir": "../../dist/solid2"
+  }
+}

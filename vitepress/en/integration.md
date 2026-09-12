@@ -76,12 +76,8 @@ import { Router } from 'reactive-route/solid';
 import { adapters } from 'reactive-route/adapters/mobx-solid';
 ```
 
-The `mobx` package must be installed.
-
-Solid.js has no native integration with MobX. Therefore, the relevant code must be included in the
-entry file, for example:
-
-<!-- @include: @shared/integration/mobx.md -->
+The `mobx` package must be installed. You may use [mobx-solid](https://github.com/js2me/mobx-solid)
+to synchronize reactivity between MobX and Solid.
 
 ## Observable
 
@@ -103,6 +99,43 @@ enableObservable();
 ```
 
 // #endregion integration-solid
+
+// #region integration-solid2
+
+# Integration with Solid.js 2
+
+## MobX
+
+Relevant imports:
+
+```ts
+import { Router } from 'reactive-route/solid2';
+import { adapters } from 'reactive-route/adapters/mobx-solid';
+```
+
+The `mobx` package must be installed. You may use [mobx-solid](https://github.com/js2me/mobx-solid)
+to synchronize reactivity between MobX and Solid.
+
+## Observable
+
+Relevant imports:
+
+```ts
+import { Router } from 'reactive-route/solid2';
+import { adapters } from 'reactive-route/adapters/kr-observable-solid';
+```
+
+The `kr-observable` package must be installed.
+
+Do not forget to enable the integration in the entry file:
+
+```ts
+import { enableObservable } from 'kr-observable/solidjs';
+
+enableObservable();
+```
+
+// #endregion integration-solid2
 
 // #region integration-preact
 

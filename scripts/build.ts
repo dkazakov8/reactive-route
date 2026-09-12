@@ -5,6 +5,7 @@ import { parse } from 'node:path';
 // @ts-expect-error no types
 import { transformAsync } from '@babel/core';
 import { pluginReplace } from '@espcom/esbuild-plugin-replace';
+import solid2Plugin from '@solidjs/babel-plugin';
 import esbuild, { type BuildOptions, type Plugin } from 'esbuild';
 import pluginVue from 'unplugin-vue';
 
@@ -13,7 +14,7 @@ import { buildWidgetSolid } from './buildWidgetSolid.ts';
 import { createExamplesTree } from './createExamplesTree.ts';
 import { measure } from './measure.ts';
 
-function getPlugins(framework: 'vue' | 'solid') {
+function getPlugins(framework: 'vue' | 'solid' | 'solid2') {
   const plugins: Array<Plugin> = [];
 
   if (framework === 'solid') {
@@ -25,6 +26,29 @@ function getPlugins(framework: 'vue' | 'solid') {
           replacer: (onLoadArgs) => async (source) => {
             const result = await transformAsync(source, {
               presets: ['@babel/preset-typescript', 'babel-preset-solid'],
+              filename: parse(onLoadArgs.path).base,
+              sourceMaps: false,
+            });
+
+            if (result?.code == null) throw new Error('No result was provided from Babel');
+
+            return result.code;
+          },
+        },
+      ])
+    );
+  }
+
+  if (framework === 'solid2') {
+    plugins.push(
+      pluginReplace([
+        {
+          filter: /\.tsx?$/,
+          replace: /.*/gs,
+          replacer: (onLoadArgs) => async (source) => {
+            const result = await transformAsync(source, {
+              plugins: [[solid2Plugin, { moduleName: '@solidjs/web' }]],
+              presets: ['@babel/preset-typescript'],
               filename: parse(onLoadArgs.path).base,
               sourceMaps: false,
             });
@@ -62,6 +86,12 @@ async function generateBuild(folderName: string) {
   const outFolder_path = path.resolve(entryFolder_path, entryTsconfig.compilerOptions.outDir);
   const outFile_path = path.resolve(outFolder_path, fileName);
 
+  let alias: Record<string, string> | undefined;
+
+  if (folderName === 'solid2') {
+    alias = { 'solid-js2': 'solid-js', '@solidjs/web2': '@solidjs/web' };
+  }
+
   const buildOptions: BuildOptions = {
     bundle: true,
     metafile: true,
@@ -73,6 +103,7 @@ async function generateBuild(folderName: string) {
     minify: false,
     treeShaking: true,
     external: ['reactive-route'],
+    alias,
     entryPoints: [entryFile_path],
     plugins: getPlugins(folderName as any),
   };
@@ -102,6 +133,7 @@ async function generateBuild(folderName: string) {
 void Promise.all([
   generateBuild('core'),
   generateBuild('solid'),
+  generateBuild('solid2'),
   generateBuild('react'),
   generateBuild('preact'),
   generateBuild('vue'),

@@ -14,6 +14,8 @@ const csrVariants: Array<TypeVariant> = [
   { folder: 'solid', script: 'mobx' },
   { folder: 'solid', script: 'observable' },
   { folder: 'solid', script: 'solid' },
+  { folder: 'solid2', script: 'mobx' },
+  { folder: 'solid2', script: 'observable' },
   { folder: 'vue', script: 'vue' },
 ];
 
@@ -25,6 +27,8 @@ const ssrVariants: Array<TypeVariant> = [
   { folder: 'solid', script: 'ssr-mobx' },
   { folder: 'solid', script: 'ssr-observable' },
   { folder: 'solid', script: 'ssr-solid' },
+  { folder: 'solid2', script: 'ssr-mobx' },
+  { folder: 'solid2', script: 'ssr-observable' },
   { folder: 'vue', script: 'ssr-vue' },
 ];
 

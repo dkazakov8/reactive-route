@@ -1,5 +1,6 @@
 import { createConfigs, createRouter } from 'reactive-route';
 import { Router } from 'reactive-route/solid';
+import { Router } from 'reactive-route/solid2';
 import { Router } from 'reactive-route/react';
 import { Router } from 'reactive-route/preact';
 import { Router } from 'reactive-route/vue';

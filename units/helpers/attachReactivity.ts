@@ -1,27 +1,11 @@
 import type { TypeOptions } from './types';
 
 export async function attachReactivity(options: TypeOptions) {
-  if (options.renderer === 'solid') {
+  if (options.renderer === 'solid' || options.renderer === 'solid2') {
     if (options.reactivity === 'mobx') {
-      const { enableExternalSource } = await import('solid-js');
-      const { Reaction } = await import('mobx');
+      const { enableObservableTracking } = await import('mobx-solid');
 
-      let id = 0;
-
-      enableExternalSource((fn, trigger) => {
-        const reaction = new Reaction(`mobx@${++id}`, trigger);
-
-        return {
-          track: (x) => {
-            let next: any;
-
-            reaction.track(() => (next = fn(x)));
-
-            return next;
-          },
-          dispose: () => reaction.dispose(),
-        };
-      });
+      enableObservableTracking();
     }
 
     if (options.reactivity === 'kr-observable') {

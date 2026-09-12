@@ -1,15 +1,12 @@
 import { createConfigs } from 'reactive-route';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { attachReactivity } from './helpers/attachReactivity';
 import { v } from './helpers/checkers';
 import { getPageComponents } from './helpers/getPageComponents';
 import { prepareRouterTest } from './helpers/prepareRouterTest';
 import type { TypeOptions } from './helpers/types';
 
 const options = OPTIONS as TypeOptions;
-
-await attachReactivity(options);
 
 afterEach(() => {
   vi.restoreAllMocks();

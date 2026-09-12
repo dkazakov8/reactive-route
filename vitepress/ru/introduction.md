@@ -27,6 +27,8 @@ import { data } from '@/dynamic.data';
 - Solid.js + [реактивность Solid.js](https://docs.solidjs.com/concepts/intro-to-reactivity)
 - Solid.js + MobX
 - Solid.js + Observable
+- Solid.js 2 + MobX
+- Solid.js 2 + Observable
 - Vue + [реактивность Vue](https://vuejs.org/guide/extras/reactivity-in-depth)
 
 ## Преимущества

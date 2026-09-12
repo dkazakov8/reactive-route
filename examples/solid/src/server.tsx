@@ -3,12 +3,12 @@ import path from 'node:path';
 
 import express from 'express';
 import { enableObservable } from 'kr-observable/solidjs';
+import { enableObservableTracking } from 'mobx-solid';
 import { RedirectError } from 'reactive-route';
 import { generateHydrationScript, renderToString } from 'solid-js/web';
 
 import { App } from './components/App';
 import { getRouter, RouterContext } from './router';
-import { syncMobxWithSolid } from './syncMobxWithSolid';
 
 const publicPath = path.resolve(import.meta.dirname, 'public');
 const templatePath = path.resolve(import.meta.dirname, 'template.html');
@@ -18,7 +18,7 @@ if (REACTIVITY_SYSTEM === 'kr-observable') {
 }
 
 if (REACTIVITY_SYSTEM === 'mobx') {
-  syncMobxWithSolid();
+  enableObservableTracking();
 }
 
 express()
@@ -56,16 +56,15 @@ express()
       return res.status(500).send('Unexpected error');
     }
 
+    const html = renderToString(() => (
+      <RouterContext.Provider value={{ router }}>
+        <App />
+      </RouterContext.Provider>
+    ));
+
     res.send(
       template
-        .replace(
-          `<!-- HTML -->`,
-          renderToString(() => (
-            <RouterContext.Provider value={{ router }}>
-              <App />
-            </RouterContext.Provider>
-          ))
-        )
+        .replace(`<!-- HTML -->`, html)
         .replace(`<!-- HYDRATION -->`, generateHydrationScript())
     );
   })

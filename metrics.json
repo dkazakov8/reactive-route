@@ -1,7 +1,7 @@
 {
-  "coverage": "98.58 %",
-  "units": 394,
-  "e2e": 144,
+  "coverage": "98.11 %",
+  "units": 488,
+  "e2e": 180,
   "sizes": {
     "reactive-route": {
       "minified": 5.53,
@@ -28,8 +28,8 @@
       "link": "https://reactrouter.com/"
     },
     "@tanstack/react-router": {
-      "minified": 151.71,
-      "compressed": 40.93,
+      "minified": 158.82,
+      "compressed": 42.24,
       "version": "1.157.15",
       "link": "https://tanstack.com/router"
     },
@@ -48,6 +48,6 @@
   },
   "localSize": "2.19kb",
   "coreSize": "1.87kb",
-  "widgetSizeSolid": "13.39 KB",
-  "widgetSizePreact": "12.02 KB"
+  "widgetSizeSolid": "13.38 KB",
+  "widgetSizePreact": "12.05 KB"
 }

@@ -1,15 +1,12 @@
 import { createConfigs } from 'reactive-route';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { attachReactivity } from './helpers/attachReactivity';
 import { checkHistory } from './helpers/checkers';
 import { getPageComponents } from './helpers/getPageComponents';
 import { prepareRouterTest } from './helpers/prepareRouterTest';
 import type { TypeOptions } from './helpers/types';
 
 const options = OPTIONS as TypeOptions;
-
-await attachReactivity(options);
 
 async function waitForRouterIdle(router: { isRedirecting: boolean }) {
   await vi.waitFor(() => expect(router.isRedirecting).toBe(false));

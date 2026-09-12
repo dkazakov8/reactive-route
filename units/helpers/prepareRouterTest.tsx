@@ -92,6 +92,12 @@ export async function prepareRouterTest<TConfigs extends TypeConfigsDefault>({
         return () => h(Router, { router });
       },
     });
+  } else if (options.renderer === 'solid2') {
+    App = () => (
+      <RouterContext value={{ router }}>
+        <Router router={router} />
+      </RouterContext>
+    );
   } else {
     App = () => (
       <RouterContext.Provider value={{ router }}>
