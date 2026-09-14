@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/dkazakov8/reactive-route/compare/reactive-route-v2.0.0...reactive-route-v2.1.0) (2026-09-14)
+
+
+### Features
+
+* solid 2 support ([3cae6ee](https://github.com/dkazakov8/reactive-route/commit/3cae6ee1357e7d1fa6d12f7c81ab4338f6587f36))
+
 ## [2.0.0](https://github.com/dkazakov8/reactive-route/compare/reactive-route-v1.0.0...reactive-route-v2.0.0) (2026-07-04)
 
 
