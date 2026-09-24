@@ -32,3 +32,4 @@ minimumReleaseAgeExclude:
   - '@solidjs/compiler-win32-x64-msvc@2.0.0-rc.8'
   - '@solidjs/compiler@2.0.0-rc.8'
   - '@solidjs/vite-plugin@3.0.0-next.43'
+  - reactive-route@2.1.0
